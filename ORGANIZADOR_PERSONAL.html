@@ -210,16 +210,15 @@
   .hidden{display:none!important}
   .fab{display:none}
 
-  /* Sync pill */
-  .sync-pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;
-    padding:6px 12px;border-radius:20px;background:var(--panel2);border:1px solid var(--line);
-    color:var(--txt2);cursor:pointer;white-space:nowrap;transition:.15s}
-  .sync-pill.ok{color:var(--green);border-color:var(--green)}
+  /* Nube de sincronización (compacta) */
+  .sync-pill{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;
+    background:var(--panel);border:1px solid var(--line);color:var(--muted);cursor:pointer;transition:.15s}
+  .sync-pill:hover{background:var(--panel2)}
+  .sync-pill.ok{color:var(--green)}
   .sync-pill.err{color:var(--gold);border-color:var(--gold)}
-  .sync-pill.syncing{color:var(--accent2);border-color:var(--accent)}
-  .sync-pill.syncing::before{content:'';width:11px;height:11px;border:2px solid var(--accent);
-    border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
+  .sync-pill.syncing{color:var(--accent2)}
+  .sync-pill.syncing svg{animation:pulse 1.2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
   .warn-box{background:rgba(244,185,66,.12);border:1px solid var(--gold);color:var(--txt);
     padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.55;margin-bottom:14px}
   details{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:0 14px;background:var(--panel2)}
@@ -257,6 +256,26 @@
     .botnav button.active{color:var(--accent2)}
     .botnav button .bdot{position:absolute;top:0;left:calc(50% + 7px);width:8px;height:8px;border-radius:50%;background:var(--red);border:2px solid var(--bg2)}
   }
+
+  /* ---- Accesibilidad / ergonomía táctil ---- */
+  *{-webkit-tap-highlight-color:rgba(61,125,255,.15)}
+  button,a,.filter,.item,.check,.cal-cell{touch-action:manipulation}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media(max-width:860px){
+    input,textarea,select{font-size:16px;padding:12px 13px}   /* 16px evita el zoom automático en iOS */
+    .btn{padding:12px 18px;font-size:15px}
+    .btn.sm{padding:9px 14px;font-size:14px}
+    .mini-btn{padding:9px;font-size:18px;border-radius:9px}
+    .check{width:26px;height:26px}
+    .filter{padding:9px 15px;font-size:14px}
+    .item{padding:15px 16px;gap:14px}
+    .it-title{font-size:15.5px}
+    .icon-btn{width:44px;height:44px}
+    .cal-cell{min-height:60px}
+    .nav button{padding:13px 14px;font-size:15.5px}
+    .view-title{font-size:20px}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 
 <!-- ===== SIDEBAR ===== -->
@@ -366,7 +385,11 @@ const IC = {
   moon:'<path d="M20.5 14.8A8.2 8.2 0 1 1 9.2 3.5a6.6 6.6 0 0 0 11.3 11.3Z"/>',
   orbit:'<ellipse cx="12" cy="12" rx="9" ry="4.4" transform="rotate(-25 12 12)"/><circle cx="10.6" cy="12.4" r="2.7" fill="currentColor" stroke="none"/><circle cx="17.6" cy="8.4" r="1.5" fill="currentColor" stroke="none"/>',
   event:'<circle cx="12" cy="12" r="8.4"/><path d="M12 7.5V12l3 1.8"/>',
-  check:'<circle cx="12" cy="12" r="8.4"/><path d="m8.2 12 2.6 2.6 5-5.4"/>'
+  check:'<circle cx="12" cy="12" r="8.4"/><path d="m8.2 12 2.6 2.6 5-5.4"/>',
+  upcoming:'<circle cx="5" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="5" cy="18" r="1.5" fill="currentColor" stroke="none"/><path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h7"/>',
+  cloud:'<path d="M7 18.3A4.1 4.1 0 0 1 6.5 10.1a5.4 5.4 0 0 1 10.4-1A3.85 3.85 0 0 1 17 18.3H7Z"/>',
+  cloudCheck:'<path d="M7.4 17.8A3.9 3.9 0 0 1 7 10.1a5.3 5.3 0 0 1 10.2-1A3.7 3.7 0 0 1 17.2 17.8"/><path d="m9.4 13.7 2 2 3.6-3.9"/>',
+  cloudAlert:'<path d="M7.4 17.8A3.9 3.9 0 0 1 7 10.1a5.3 5.3 0 0 1 10.2-1A3.7 3.7 0 0 1 17.2 17.8"/><path d="M12 10.4v3"/><path d="M12 16h.01"/>'
 };
 function icon(n,s){ s=s||22; return `<svg class="ic-svg" viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${IC[n]||''}</svg>`; }
 
@@ -375,13 +398,14 @@ const NAV = [
   {v:'hoy',         ic:'home',       lbl:'Hoy'},
   {v:'tareas',      ic:'tareas',     lbl:'Tareas', badge:'badgeTareas'},
   {v:'agenda',      ic:'agenda',     lbl:'Agenda'},
+  {v:'proximo',     ic:'upcoming',   lbl:'Próximo'},
   {v:'universidad', ic:'cap',        lbl:'Universidad'},
   {v:'ingles',      ic:'globe',      lbl:'Inglés'},
   {v:'inspeccion',  ic:'inspeccion', lbl:'Inspección'},
   {v:'notas',       ic:'notas',      lbl:'Notas'},
   {v:'ajustes',     ic:'ajustes',    lbl:'Ajustes'}
 ];
-const BOTNAV = ['hoy','tareas','agenda','universidad'];
+const BOTNAV = ['hoy','proximo','tareas','agenda'];
 function buildChrome(){
   const lg=document.getElementById('brandLogo'); if(lg) lg.innerHTML=icon('orbit',26);
   const nav=document.getElementById('nav');
@@ -448,6 +472,7 @@ const VIEWS = {
   hoy:{t:'Hoy', s:()=>fmtLargo(hoyISO())},
   tareas:{t:'Tareas', s:()=>'Todo lo que tienes por hacer'},
   agenda:{t:'Agenda', s:()=>'Tu calendario mensual'},
+  proximo:{t:'Próximo', s:()=>'Todo lo que se viene'},
   universidad:{t:'Universidad', s:()=>'Ingeniería Industrial'},
   ingles:{t:'Inglés', s:()=>'Sesiones y vocabulario'},
   inspeccion:{t:'Inspección de Armamento', s:()=>'Registros y checklists'},
@@ -471,7 +496,7 @@ function render(){
   const c = document.getElementById('content');
   const top = document.getElementById('topActions');
   top.innerHTML='';
-  ({hoy:vHoy, tareas:vTareas, agenda:vAgenda, universidad:vUniversidad,
+  ({hoy:vHoy, tareas:vTareas, agenda:vAgenda, proximo:vProximo, universidad:vUniversidad,
     ingles:vIngles, inspeccion:vInspeccion, notas:vNotas, ajustes:vAjustes})[view](c, top);
 }
 function updateBadges(){
@@ -542,6 +567,58 @@ function vHoy(c){
 function stat(cls,ic,val,lbl){
   const g = (typeof IC!=='undefined' && IC[ic]) ? icon(ic,20) : ic;
   return `<div class="stat ${cls}"><div class="si">${g}</div><div class="sv">${val}</div><div class="sl">${lbl}</div></div>`;
+}
+
+/* ============================================================
+   VISTA: PRÓXIMO — todo lo que viene (tareas + eventos + exámenes)
+   ============================================================ */
+function proxRow(it){
+  return `<div class="item" style="border-left:4px solid ${it.color}">
+    <div style="color:${it.color};display:flex;align-items:center">${icon(it.ic,22)}</div>
+    <div class="it-body"><div class="it-title">${esc(it.titulo)}</div>
+    <div class="it-meta">${[it.tipo,it.hora,it.cat].filter(Boolean).map(esc).join(' · ')}</div></div>
+  </div>`;
+}
+function vProximo(c){
+  const hoy=hoyISO();
+  const items=[];
+  S.tareas.filter(t=>!t.done && t.fecha && t.fecha>=hoy)
+    .forEach(t=>items.push({fecha:t.fecha,hora:'',tipo:'Tarea',ic:'check',titulo:t.titulo,cat:t.cat,color:'var(--accent)'}));
+  S.eventos.filter(e=>e.fecha && e.fecha>=hoy)
+    .forEach(e=>items.push({fecha:e.fecha,hora:e.hora||'',tipo:'Evento',ic:'event',titulo:e.titulo,cat:e.cat,color:'var(--purple)'}));
+  examenesTodos().filter(x=>x.fecha && x.fecha>=hoy)
+    .forEach(x=>items.push({fecha:x.fecha,hora:'',tipo:'Examen',ic:'cap',titulo:x.titulo,cat:'',color:'var(--gold)'}));
+  const overdue=S.tareas.filter(t=>!t.done && t.fecha && t.fecha<hoy).sort((a,b)=>a.fecha<b.fecha?-1:1);
+  items.sort((a,b)=> a.fecha!==b.fecha ? (a.fecha<b.fecha?-1:1) : ((a.hora||'99')<(b.hora||'99')?-1:1));
+
+  let html=`<div class="stats">
+    ${stat('a','tareas', items.filter(i=>i.tipo==='Tarea').length, 'Tareas por venir')}
+    ${stat('p','agenda', items.filter(i=>i.tipo==='Evento').length, 'Eventos')}
+    ${stat('go','cap', items.filter(i=>i.tipo==='Examen').length, 'Exámenes')}
+    ${stat('r','alert', overdue.length, 'Atrasadas')}
+  </div>`;
+
+  if(overdue.length){
+    html += `<div class="section-head"><h2 style="color:var(--red)">Atrasado</h2><span class="chip" style="color:var(--red)">${overdue.length}</span></div>`;
+    html += overdue.map(t=>proxRow({tipo:'Tarea',ic:'check',titulo:t.titulo,cat:t.cat,hora:'',color:'var(--red)'})).join('');
+  }
+
+  if(!items.length && !overdue.length){
+    html += `<div class="card"><div class="empty"><span class="em-ic">🗓️</span>No tienes nada programado hacia adelante. ¡Todo al día!</div></div>`;
+  } else if(items.length){
+    let cur=null;
+    items.forEach(it=>{
+      if(it.fecha!==cur){
+        cur=it.fecha;
+        const d=diasHasta(it.fecha);
+        const etq = d===0?'Hoy':d===1?'Mañana':fmtLargo(it.fecha);
+        const extra = d>1?` · en ${d} días`:'';
+        html += `<div class="section-head" style="margin:22px 0 10px"><h2 style="font-size:14px;color:var(--txt2)">${etq}${extra}</h2></div>`;
+      }
+      html += proxRow(it);
+    });
+  }
+  c.innerHTML=html;
 }
 
 /* ============================================================
@@ -1234,11 +1311,15 @@ function copyAppsScript(){
 function updateSyncPill(){
   const el=document.getElementById('syncPill'); if(!el) return;
   if(!syncEnabled()){ el.classList.add('hidden'); return; }
-  el.classList.remove('hidden'); el.onclick=()=>go('ajustes'); el.title=SYNC.error||'';
-  if(SYNC.syncing){ el.className='sync-pill syncing'; el.innerHTML='Sincronizando…'; }
-  else if(SYNC.error){ el.className='sync-pill err'; el.innerHTML='⚠️ Revisar sync'; }
-  else if(SYNC.connected){ el.className='sync-pill ok'; el.innerHTML='☁️ Sincronizado'; }
-  else { el.className='sync-pill'; el.innerHTML='☁️ Conectar'; }
+  el.classList.remove('hidden'); el.onclick=()=>go('ajustes');
+  let cls, ic, ttl;
+  if(SYNC.error){ cls='sync-pill err'; ic='cloudAlert'; ttl='Sincronización: revisar (toca)'; }
+  else if(SYNC.lastSync || SYNC.connected){ cls='sync-pill ok'; ic='cloudCheck'; ttl='Sincronizado con Google Drive'; }
+  else if(SYNC.syncing){ cls='sync-pill syncing'; ic='cloud'; ttl='Sincronizando…'; }
+  else { cls='sync-pill'; ic='cloud'; ttl='Conectar sincronización'; }
+  // Nota: una vez que hay lastSync, los guardados en segundo plano mantienen la nube verde
+  // (no vuelve a "sincronizando"), evitando el parpadeo constante.
+  el.className=cls; el.title=ttl; el.setAttribute('aria-label',ttl); el.innerHTML=icon(ic,20);
 }
 
 /* ---- Petición al conector (POST texto plano: evita preflight CORS) ---- */
