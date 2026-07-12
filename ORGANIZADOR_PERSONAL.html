@@ -1,0 +1,1198 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitácora · Organizador Personal</title>
+<style>
+  :root{
+    --bg:#0e1524; --bg2:#131c30; --panel:#18233b; --panel2:#1f2c48;
+    --line:#2a3a5c; --txt:#e8eefb; --txt2:#9fb0d0; --muted:#6b7c9e;
+    --accent:#3d7dff; --accent2:#5b9bff; --gold:#f4b942; --green:#38c172; --red:#ef5b6b;
+    --purple:#9b6bff; --teal:#22c7c7; --shadow:0 10px 30px rgba(0,0,0,.35);
+    --r:14px;
+  }
+  [data-theme="light"]{
+    --bg:#eef2f9; --bg2:#e6ecf6; --panel:#ffffff; --panel2:#f4f7fc;
+    --line:#dbe3f0; --txt:#16233d; --txt2:#4a5b7a; --muted:#7688a6;
+    --shadow:0 8px 24px rgba(30,50,90,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:var(--bg);color:var(--txt);min-height:100vh;
+    display:flex;transition:background .3s,color .3s;
+  }
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:246px;background:var(--bg2);border-right:1px solid var(--line);
+    height:100vh;position:sticky;top:0;display:flex;flex-direction:column;
+    padding:20px 14px;flex-shrink:0;transition:transform .25s;z-index:50;
+  }
+  .brand{display:flex;align-items:center;gap:11px;padding:4px 8px 18px}
+  .brand .logo{
+    width:40px;height:40px;border-radius:11px;flex-shrink:0;
+    background:linear-gradient(135deg,var(--accent),var(--purple));
+    display:grid;place-items:center;font-size:20px;box-shadow:var(--shadow);
+  }
+  .brand h1{font-size:18px;font-weight:700;letter-spacing:.2px}
+  .brand span{font-size:11px;color:var(--muted);display:block;font-weight:500}
+  .nav{display:flex;flex-direction:column;gap:3px;overflow-y:auto;flex:1}
+  .nav button{
+    display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+    padding:11px 13px;border:none;background:transparent;color:var(--txt2);
+    border-radius:10px;cursor:pointer;font-size:14.5px;font-weight:500;
+    transition:.15s;font-family:inherit;
+  }
+  .nav button .ic{font-size:17px;width:22px;text-align:center}
+  .nav button:hover{background:var(--panel);color:var(--txt)}
+  .nav button.active{
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    color:#fff;box-shadow:0 6px 16px rgba(61,125,255,.35);
+  }
+  .nav button .badge{
+    margin-left:auto;background:var(--red);color:#fff;font-size:11px;
+    font-weight:700;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;
+  }
+  .nav button.active .badge{background:rgba(255,255,255,.25)}
+  .side-foot{padding-top:12px;border-top:1px solid var(--line);margin-top:8px}
+  .side-foot button{
+    width:100%;padding:9px;border:none;background:var(--panel);color:var(--txt2);
+    border-radius:9px;cursor:pointer;font-size:13px;font-family:inherit;display:flex;
+    align-items:center;justify-content:center;gap:8px;transition:.15s
+  }
+  .side-foot button:hover{background:var(--panel2);color:var(--txt)}
+
+  /* ---------- Main ---------- */
+  .main{flex:1;min-width:0;height:100vh;overflow-y:auto}
+  .topbar{
+    position:sticky;top:0;z-index:20;background:var(--bg);
+    border-bottom:1px solid var(--line);padding:14px 26px;
+    display:flex;align-items:center;gap:16px;
+  }
+  .menu-btn{display:none;background:var(--panel);border:1px solid var(--line);color:var(--txt);
+    width:40px;height:40px;border-radius:10px;font-size:18px;cursor:pointer}
+  .topbar .view-title{font-size:21px;font-weight:700}
+  .topbar .view-sub{font-size:12.5px;color:var(--muted);font-weight:500}
+  .top-actions{margin-left:auto;display:flex;gap:9px;align-items:center}
+  .content{padding:26px;max-width:1160px}
+
+  /* ---------- Common UI ---------- */
+  .btn{
+    background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;
+    padding:10px 17px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;
+    font-family:inherit;display:inline-flex;align-items:center;gap:7px;transition:.15s;
+    box-shadow:0 4px 12px rgba(61,125,255,.28)
+  }
+  .btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
+  .btn.ghost{background:var(--panel);color:var(--txt);box-shadow:none;border:1px solid var(--line)}
+  .btn.ghost:hover{background:var(--panel2)}
+  .btn.sm{padding:7px 12px;font-size:13px}
+  .btn.danger{background:linear-gradient(135deg,#ef5b6b,#d84455);box-shadow:none}
+  .icon-btn{background:var(--panel);border:1px solid var(--line);color:var(--txt2);
+    width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:16px;transition:.15s}
+  .icon-btn:hover{color:var(--txt);background:var(--panel2)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)}
+  .grid{display:grid;gap:16px}
+  .chip{
+    display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
+    padding:3px 9px;border-radius:20px;background:var(--panel2);color:var(--txt2);
+  }
+  .empty{text-align:center;color:var(--muted);padding:40px 20px;font-size:14px}
+  .empty .em-ic{font-size:38px;display:block;margin-bottom:10px;opacity:.6}
+
+  input,textarea,select{
+    width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+    padding:10px 12px;border-radius:9px;font-size:14px;font-family:inherit;transition:.15s
+  }
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+  label.fld{display:block;margin-bottom:13px}
+  label.fld span{display:block;font-size:12.5px;color:var(--txt2);margin-bottom:5px;font-weight:600}
+  .row{display:flex;gap:12px}.row>*{flex:1}
+
+  /* Modal */
+  .overlay{position:fixed;inset:0;background:rgba(5,10,20,.6);backdrop-filter:blur(4px);
+    z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+  .overlay.open{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow);animation:pop .2s}
+  @keyframes pop{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+  .modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .modal-head h3{font-size:17px}
+  .modal-body{padding:20px}
+  .modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+
+  /* Toast */
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:12px 20px;
+    border-radius:12px;box-shadow:var(--shadow);z-index:200;font-size:14px;font-weight:600;
+    transition:transform .3s;display:flex;align-items:center;gap:9px}
+  #toast.show{transform:translateX(-50%) translateY(0)}
+
+  /* Stat cards */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:22px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
+  .stat .sv{font-size:30px;font-weight:800;line-height:1}
+  .stat .sl{font-size:12.5px;color:var(--txt2);margin-top:5px;font-weight:600}
+  .stat .si{position:absolute;right:12px;top:12px;font-size:22px;opacity:.35}
+  .stat.a{border-left:3px solid var(--accent)} .stat.g{border-left:3px solid var(--green)}
+  .stat.r{border-left:3px solid var(--red)} .stat.p{border-left:3px solid var(--purple)}
+  .stat.t{border-left:3px solid var(--teal)} .stat.go{border-left:3px solid var(--gold)}
+
+  /* Task / list items */
+  .item{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+    display:flex;align-items:flex-start;gap:13px;margin-bottom:10px;transition:.15s}
+  .item:hover{border-color:var(--accent)}
+  .item.done{opacity:.55}
+  .item.done .it-title{text-decoration:line-through}
+  .check{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);cursor:pointer;
+    flex-shrink:0;margin-top:1px;display:grid;place-items:center;transition:.15s;background:transparent}
+  .check.on{background:var(--green);border-color:var(--green);color:#fff}
+  .it-body{flex:1;min-width:0}
+  .it-title{font-size:15px;font-weight:600;margin-bottom:3px}
+  .it-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+  .it-actions{display:flex;gap:6px;flex-shrink:0}
+  .mini-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:3px;border-radius:6px;transition:.15s}
+  .mini-btn:hover{color:var(--txt);background:var(--panel2)}
+  .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+  .pri-alta{color:var(--red)} .pri-media{color:var(--gold)} .pri-baja{color:var(--txt2)}
+  .bg-alta{background:var(--red)} .bg-media{background:var(--gold)} .bg-baja{background:var(--muted)}
+
+  .section-head{display:flex;align-items:center;justify-content:space-between;margin:24px 0 14px}
+  .section-head h2{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .filter{padding:6px 13px;border-radius:20px;border:1px solid var(--line);background:var(--panel);
+    color:var(--txt2);cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:.15s}
+  .filter.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* Calendar */
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .cal-dow{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:6px 0;text-transform:uppercase}
+  .cal-cell{background:var(--panel);border:1px solid var(--line);border-radius:9px;min-height:82px;padding:6px 7px;cursor:pointer;transition:.15s;overflow:hidden}
+  .cal-cell:hover{border-color:var(--accent)}
+  .cal-cell.other{opacity:.35}
+  .cal-cell.today{border-color:var(--accent);background:var(--panel2)}
+  .cal-cell .cn{font-size:13px;font-weight:700;margin-bottom:4px}
+  .cal-cell.today .cn{color:var(--accent2)}
+  .cal-ev{font-size:10.5px;padding:2px 5px;border-radius:5px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+
+  /* Guardia timeline */
+  .guardia-card{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--teal);
+    border-radius:12px;padding:15px 17px;margin-bottom:11px;display:flex;align-items:center;gap:15px}
+  .g-date{text-align:center;flex-shrink:0;min-width:52px}
+  .g-date .gd{font-size:24px;font-weight:800;line-height:1}
+  .g-date .gm{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700}
+
+  .progress{height:8px;background:var(--panel2);border-radius:10px;overflow:hidden;margin-top:8px}
+  .progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:10px;transition:width .4s}
+
+  .note-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px;position:relative;transition:.15s}
+  .note-card:hover{border-color:var(--gold)}
+  .note-card h4{font-size:15px;margin-bottom:6px;padding-right:24px}
+  .note-card p{font-size:13px;color:var(--txt2);white-space:pre-wrap;line-height:1.5}
+  .note-del{position:absolute;top:10px;right:10px}
+
+  .tabs{display:flex;gap:4px;background:var(--panel2);padding:4px;border-radius:11px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{flex:1;padding:9px;border:none;background:transparent;color:var(--txt2);border-radius:8px;
+    cursor:pointer;font-size:13.5px;font-weight:600;font-family:inherit;transition:.15s;min-width:90px}
+  .tab.active{background:var(--panel);color:var(--txt);box-shadow:var(--shadow)}
+
+  .hidden{display:none!important}
+  .fab{display:none}
+
+  /* Sync pill */
+  .sync-pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;
+    padding:6px 12px;border-radius:20px;background:var(--panel2);border:1px solid var(--line);
+    color:var(--txt2);cursor:pointer;white-space:nowrap;transition:.15s}
+  .sync-pill.ok{color:var(--green);border-color:var(--green)}
+  .sync-pill.err{color:var(--gold);border-color:var(--gold)}
+  .sync-pill.syncing{color:var(--accent2);border-color:var(--accent)}
+  .sync-pill.syncing::before{content:'';width:11px;height:11px;border:2px solid var(--accent);
+    border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .warn-box{background:rgba(244,185,66,.12);border:1px solid var(--gold);color:var(--txt);
+    padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.55;margin-bottom:14px}
+  details{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:0 14px;background:var(--panel2)}
+  details summary{cursor:pointer;padding:12px 0;font-weight:600;font-size:13.5px;color:var(--accent2)}
+  details ol{margin:4px 0 14px 18px;font-size:13px;color:var(--txt2);line-height:1.7}
+  details ol li{margin-bottom:6px}
+  details code{background:var(--bg);padding:1px 6px;border-radius:5px;font-size:12px;word-break:break-all}
+  @media(max-width:860px){
+    .sidebar{position:fixed;transform:translateX(-100%);box-shadow:var(--shadow)}
+    .sidebar.open{transform:translateX(0)}
+    .menu-btn{display:block}
+    .content{padding:18px}
+    .topbar{padding:12px 16px}
+    .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;display:none}
+    .scrim.open{display:block}
+  }
+</style>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="logo">⚓</div>
+    <div><h1>Bitácora</h1><span id="brandSub">Organizador personal</span></div>
+  </div>
+  <nav class="nav" id="nav">
+    <button data-view="hoy" class="active"><span class="ic">🏠</span> Hoy</button>
+    <button data-view="tareas"><span class="ic">✅</span> Tareas <span class="badge hidden" id="badgeTareas"></span></button>
+    <button data-view="agenda"><span class="ic">📅</span> Agenda</button>
+    <button data-view="guardias"><span class="ic">🛡️</span> Guardias <span class="badge hidden" id="badgeGuardias"></span></button>
+    <button data-view="universidad"><span class="ic">🎓</span> Universidad</button>
+    <button data-view="ingles"><span class="ic">🇬🇧</span> Inglés</button>
+    <button data-view="inspeccion"><span class="ic">🔫</span> Inspección</button>
+    <button data-view="notas"><span class="ic">📝</span> Notas</button>
+    <button data-view="ajustes"><span class="ic">⚙️</span> Ajustes</button>
+  </nav>
+  <div class="side-foot">
+    <button onclick="toggleTheme()"><span id="themeIc">🌙</span> <span id="themeLbl">Modo oscuro</span></button>
+  </div>
+</aside>
+<div class="scrim" id="scrim" onclick="closeSidebar()"></div>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+  <div class="topbar">
+    <button class="menu-btn" onclick="openSidebar()">☰</button>
+    <div>
+      <div class="view-title" id="viewTitle">Hoy</div>
+      <div class="view-sub" id="viewSub"></div>
+    </div>
+    <div id="syncPill" class="sync-pill hidden"></div>
+    <div class="top-actions" id="topActions"></div>
+  </div>
+  <div class="content" id="content"></div>
+</main>
+
+<!-- ===== MODAL ===== -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modalTitle">Título</h3><button class="mini-btn" style="font-size:20px" onclick="closeModal()">✕</button></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   BITÁCORA — Organizador personal (100% local + respaldo)
+   ============================================================ */
+const LS_KEY = 'bitacora_v1';
+const DEFAULT = {
+  profile:{ nombre:'', grado:'' },
+  settings:{ theme:'dark' },
+  tareas:[], eventos:[], guardias:[], ramos:[], notas:[],
+  ingles:{ sesiones:[], vocab:[] },
+  inspecciones:[]
+};
+let S = load();
+let view = 'hoy';
+let calDate = new Date();
+let applyingRemote = false;
+
+/* ---------- Persistencia ---------- */
+function load(){
+  try{ const r = localStorage.getItem(LS_KEY); if(r) return Object.assign(structuredClone(DEFAULT), JSON.parse(r)); }catch(e){}
+  return structuredClone(DEFAULT);
+}
+let storageOK = true, storageWarned = false;
+function save(bump=true){
+  if(bump && !applyingRemote) S.updatedAt = Date.now();
+  try{
+    localStorage.setItem(LS_KEY, JSON.stringify(S));
+    storageOK = true;
+  }catch(e){
+    // Algunos navegadores bloquean localStorage al abrir con doble clic (file://)
+    // o con cookies/almacenamiento deshabilitado. No rompemos la app: los datos
+    // siguen en memoria durante la sesión y se avisa para usar Exportar respaldo.
+    storageOK = false;
+    if(!storageWarned){
+      storageWarned = true;
+      toast('⚠️ Tu navegador no permite guardar aquí. Los cambios funcionan, pero exporta un respaldo desde Ajustes.','⚠️');
+    }
+  }
+  if(bump && !applyingRemote) scheduleSyncPush();
+}
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+
+/* ---------- Utilidades fecha ---------- */
+const MES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const MES_C = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const DOW = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+function hoyISO(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function fmtFecha(iso){ if(!iso) return ''; const d=new Date(iso+'T00:00:00'); return `${d.getDate()} ${MES_C[d.getMonth()]}`; }
+function fmtLargo(iso){ if(!iso) return ''; const d=new Date(iso+'T00:00:00'); return `${DOW[d.getDay()]} ${d.getDate()} ${MES[d.getMonth()]}`; }
+function diasHasta(iso){ if(!iso) return null; const a=new Date(hoyISO()+'T00:00:00'), b=new Date(iso+'T00:00:00'); return Math.round((b-a)/86400000); }
+function relFecha(iso){
+  const d = diasHasta(iso);
+  if(d===null) return '';
+  if(d<0) return `hace ${Math.abs(d)}d`;
+  if(d===0) return 'Hoy';
+  if(d===1) return 'Mañana';
+  if(d<7) return `en ${d}d`;
+  return fmtFecha(iso);
+}
+
+/* ---------- Toast ---------- */
+let toastT;
+function toast(msg,ic='✅'){
+  const t=document.getElementById('toast'); t.innerHTML=`<span>${ic}</span> ${msg}`;
+  t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+/* ---------- Modal ---------- */
+function openModal(title, bodyHTML, footHTML){
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHTML;
+  document.getElementById('modalFoot').innerHTML = footHTML;
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
+document.getElementById('overlay').addEventListener('click',e=>{ if(e.target.id==='overlay') closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+/* ---------- Sidebar móvil ---------- */
+function openSidebar(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('scrim').classList.add('open'); }
+function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('scrim').classList.remove('open'); }
+
+/* ---------- Tema ---------- */
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', S.settings.theme);
+  const dark = S.settings.theme==='dark';
+  document.getElementById('themeIc').textContent = dark?'☀️':'🌙';
+  document.getElementById('themeLbl').textContent = dark?'Modo claro':'Modo oscuro';
+}
+function toggleTheme(){ S.settings.theme = S.settings.theme==='dark'?'light':'dark'; save(); applyTheme(); }
+
+/* ============================================================
+   NAVEGACIÓN
+   ============================================================ */
+const VIEWS = {
+  hoy:{t:'Hoy', s:()=>fmtLargo(hoyISO())},
+  tareas:{t:'Tareas', s:()=>'Todo lo que tienes por hacer'},
+  agenda:{t:'Agenda', s:()=>'Tu calendario mensual'},
+  guardias:{t:'Guardias', s:()=>'Turnos y servicios'},
+  universidad:{t:'Universidad', s:()=>'Ingeniería Industrial'},
+  ingles:{t:'Inglés', s:()=>'Sesiones y vocabulario'},
+  inspeccion:{t:'Inspección de Armamento', s:()=>'Registros y checklists'},
+  notas:{t:'Notas', s:()=>'Ideas y apuntes rápidos'},
+  ajustes:{t:'Ajustes', s:()=>'Perfil, respaldo y datos'}
+};
+function go(v){
+  view=v; closeSidebar();
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+  document.getElementById('viewTitle').textContent = VIEWS[v].t;
+  document.getElementById('viewSub').textContent = VIEWS[v].s();
+  render();
+}
+document.querySelectorAll('#nav button').forEach(b=> b.onclick=()=>go(b.dataset.view));
+
+/* ============================================================
+   RENDER PRINCIPAL
+   ============================================================ */
+function render(){
+  updateBadges();
+  const c = document.getElementById('content');
+  const top = document.getElementById('topActions');
+  top.innerHTML='';
+  ({hoy:vHoy, tareas:vTareas, agenda:vAgenda, guardias:vGuardias, universidad:vUniversidad,
+    ingles:vIngles, inspeccion:vInspeccion, notas:vNotas, ajustes:vAjustes})[view](c, top);
+}
+function updateBadges(){
+  const tp = S.tareas.filter(t=>!t.done).length;
+  setBadge('badgeTareas', tp);
+  const gf = S.guardias.filter(g=> diasHasta(g.fecha)>=0).length;
+  setBadge('badgeGuardias', gf);
+}
+function setBadge(id,n){ const el=document.getElementById(id); if(n>0){el.textContent=n;el.classList.remove('hidden');}else el.classList.add('hidden'); }
+
+/* ============================================================
+   VISTA: HOY
+   ============================================================ */
+function vHoy(c){
+  const nombre = S.profile.nombre ? S.profile.nombre.split(' ')[0] : '';
+  const h = new Date().getHours();
+  const saludo = h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches';
+  const hoy = hoyISO();
+
+  const tareasHoy = S.tareas.filter(t=>!t.done && t.fecha===hoy);
+  const tareasVenc = S.tareas.filter(t=>!t.done && t.fecha && diasHasta(t.fecha)<0);
+  const proxTareas = S.tareas.filter(t=>!t.done).sort((a,b)=>(a.fecha||'9')<(b.fecha||'9')?-1:1).slice(0,5);
+  const evHoy = S.eventos.filter(e=>e.fecha===hoy);
+  const guardiaProx = S.guardias.filter(g=>diasHasta(g.fecha)>=0).sort((a,b)=>a.fecha<b.fecha?-1:1)[0];
+  const examProx = examenesTodos().filter(e=>diasHasta(e.fecha)>=0).sort((a,b)=>a.fecha<b.fecha?-1:1)[0];
+  const pend = S.tareas.filter(t=>!t.done).length;
+
+  let html = `
+  <div class="card" style="background:linear-gradient(135deg,var(--accent),var(--purple));border:none;color:#fff;margin-bottom:22px">
+    <div style="font-size:24px;font-weight:800">${saludo}${nombre?', '+nombre:''} ⚓</div>
+    <div style="opacity:.9;margin-top:4px;font-size:14px">${fmtLargo(hoy)} · ${pend} tarea${pend!==1?'s':''} pendiente${pend!==1?'s':''}${tareasVenc.length?` · <b>${tareasVenc.length} vencida${tareasVenc.length!==1?'s':''}</b>`:''}</div>
+  </div>`;
+
+  html += `<div class="stats">
+    ${stat('a','📋', tareasHoy.length, 'Tareas para hoy')}
+    ${stat('r','⚠️', tareasVenc.length, 'Vencidas')}
+    ${stat('t','🛡️', guardiaProx?relFecha(guardiaProx.fecha):'—', 'Próxima guardia')}
+    ${stat('go','🎓', examProx?relFecha(examProx.fecha):'—', 'Próximo examen')}
+  </div>`;
+
+  // Agenda de hoy
+  html += `<div class="section-head"><h2>📌 Tu día de hoy</h2><button class="btn sm" onclick="go('agenda')">Ver agenda</button></div>`;
+  const dayItems = [
+    ...evHoy.map(e=>({tipo:'evento',...e})),
+    ...tareasHoy.map(t=>({tipo:'tarea',...t}))
+  ];
+  if(guardiaProx && guardiaProx.fecha===hoy) dayItems.unshift({tipo:'guardia',...guardiaProx});
+  if(!dayItems.length){
+    html += `<div class="card"><div class="empty"><span class="em-ic">🌤️</span>Nada agendado para hoy. ¡Aprovecha para adelantar estudios!</div></div>`;
+  } else {
+    html += '<div>';
+    dayItems.forEach(it=>{
+      const ic = it.tipo==='guardia'?'🛡️':it.tipo==='evento'?'📅':'✅';
+      const col = it.tipo==='guardia'?'var(--teal)':it.tipo==='evento'?'var(--purple)':'var(--accent)';
+      html += `<div class="item" style="border-left:4px solid ${col}">
+        <div style="font-size:20px">${ic}</div>
+        <div class="it-body"><div class="it-title">${esc(it.titulo||it.tipo)}</div>
+        <div class="it-meta">${it.hora?'🕐 '+it.hora:''} ${it.cat?'· '+it.cat:''} ${it.tipo==='guardia'&&it.turno?'· '+esc(it.turno):''}</div></div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  // Próximas tareas
+  if(proxTareas.length){
+    html += `<div class="section-head"><h2>⏭️ Próximas tareas</h2><button class="btn sm ghost" onclick="go('tareas')">Todas</button></div><div>`;
+    proxTareas.forEach(t=> html += taskItem(t));
+    html += '</div>';
+  }
+  c.innerHTML = html;
+}
+function stat(cls,ic,val,lbl){
+  return `<div class="stat ${cls}"><div class="si">${ic}</div><div class="sv">${val}</div><div class="sl">${lbl}</div></div>`;
+}
+
+/* ============================================================
+   VISTA: TAREAS
+   ============================================================ */
+let tareaFiltro='pend', tareaCat='todas';
+const CATS = ['Inspección','Guardia','Universidad','Inglés','Personal'];
+const CAT_COLOR = {'Inspección':'var(--red)','Guardia':'var(--teal)','Universidad':'var(--gold)','Inglés':'var(--purple)','Personal':'var(--green)'};
+function vTareas(c, top){
+  top.innerHTML = `<button class="btn" onclick="modalTarea()">＋ Nueva tarea</button>`;
+  let list = S.tareas.slice();
+  if(tareaFiltro==='pend') list=list.filter(t=>!t.done);
+  if(tareaFiltro==='hechas') list=list.filter(t=>t.done);
+  if(tareaCat!=='todas') list=list.filter(t=>t.cat===tareaCat);
+  list.sort((a,b)=>{
+    if(a.done!==b.done) return a.done?1:-1;
+    return (a.fecha||'9999')<(b.fecha||'9999')?-1:1;
+  });
+  let html = `<div class="filters">
+    ${filterBtn('tareaFiltro','pend','Pendientes')} ${filterBtn('tareaFiltro','hechas','Completadas')} ${filterBtn('tareaFiltro','todas','Todas')}
+  </div><div class="filters">
+    ${filterBtn('tareaCat','todas','Todas las áreas')}
+    ${CATS.map(cat=>filterBtn('tareaCat',cat,cat)).join('')}
+  </div>`;
+  if(!list.length){
+    html += `<div class="card"><div class="empty"><span class="em-ic">🗂️</span>No hay tareas aquí. ¡Crea una con el botón de arriba!</div></div>`;
+  } else {
+    html += list.map(taskItem).join('');
+  }
+  c.innerHTML = html;
+}
+function filterBtn(varName,val,lbl){
+  const cur = window[varName];
+  return `<button class="filter ${cur===val?'active':''}" onclick="${varName}='${val}';render()">${lbl}</button>`;
+}
+function taskItem(t){
+  const venc = t.fecha && diasHasta(t.fecha)<0 && !t.done;
+  return `<div class="item ${t.done?'done':''}">
+    <button class="check ${t.done?'on':''}" onclick="toggleTarea('${t.id}')">${t.done?'✓':''}</button>
+    <div class="it-body">
+      <div class="it-title">${esc(t.titulo)}</div>
+      <div class="it-meta">
+        ${t.cat?`<span class="chip" style="background:${CAT_COLOR[t.cat]}22;color:${CAT_COLOR[t.cat]}">${t.cat}</span>`:''}
+        <span class="dot bg-${t.pri}"></span><span class="pri-${t.pri}">${t.pri}</span>
+        ${t.fecha?`<span style="color:${venc?'var(--red)':'var(--muted)'}">📅 ${relFecha(t.fecha)}</span>`:''}
+      </div>
+    </div>
+    <div class="it-actions">
+      <button class="mini-btn" onclick="modalTarea('${t.id}')">✏️</button>
+      <button class="mini-btn" onclick="delTarea('${t.id}')">🗑️</button>
+    </div>
+  </div>`;
+}
+function toggleTarea(id){ const t=S.tareas.find(x=>x.id===id); t.done=!t.done; save(); render(); if(t.done) toast('¡Tarea completada!','🎉'); }
+function delTarea(id){ S.tareas=S.tareas.filter(x=>x.id!==id); save(); render(); toast('Tarea eliminada','🗑️'); }
+function modalTarea(id){
+  const t = id ? S.tareas.find(x=>x.id===id) : {titulo:'',cat:'Personal',pri:'media',fecha:'',notas:''};
+  openModal(id?'Editar tarea':'Nueva tarea', `
+    <label class="fld"><span>¿Qué tienes que hacer?</span><input id="mT" value="${esc(t.titulo)}" placeholder="Ej: Estudiar cálculo, revisar armamento..."></label>
+    <div class="row">
+      <label class="fld"><span>Área</span><select id="mC">${CATS.map(x=>`<option ${t.cat===x?'selected':''}>${x}</option>`).join('')}</select></label>
+      <label class="fld"><span>Prioridad</span><select id="mP">${['alta','media','baja'].map(x=>`<option ${t.pri===x?'selected':''}>${x}</option>`).join('')}</select></label>
+    </div>
+    <label class="fld"><span>Fecha límite (opcional)</span><input type="date" id="mF" value="${t.fecha||''}"></label>
+    <label class="fld"><span>Notas (opcional)</span><textarea id="mN" rows="2">${esc(t.notas||'')}</textarea></label>
+  `, `<button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveTarea('${id||''}')">Guardar</button>`);
+  setTimeout(()=>document.getElementById('mT').focus(),50);
+}
+function saveTarea(id){
+  const titulo=document.getElementById('mT').value.trim();
+  if(!titulo){ toast('Escribe un título','⚠️'); return; }
+  const data={ titulo, cat:mC.value, pri:mP.value, fecha:mF.value, notas:mN.value.trim() };
+  if(id){ Object.assign(S.tareas.find(x=>x.id===id), data); } else { S.tareas.push({id:uid(),done:false,...data}); }
+  save(); closeModal(); render(); toast(id?'Tarea actualizada':'Tarea creada');
+}
+
+/* ============================================================
+   VISTA: AGENDA (calendario)
+   ============================================================ */
+function vAgenda(c, top){
+  top.innerHTML = `<button class="btn" onclick="modalEvento()">＋ Evento</button>`;
+  const y=calDate.getFullYear(), m=calDate.getMonth();
+  const first=new Date(y,m,1), start=first.getDay(), days=new Date(y,m+1,0).getDate();
+  const prevDays=new Date(y,m,0).getDate();
+
+  // reunir marcas por fecha
+  const marks={};
+  const add=(iso,label,color)=>{ (marks[iso]=marks[iso]||[]).push({label,color}); };
+  S.eventos.forEach(e=>add(e.fecha, e.titulo,'var(--purple)'));
+  S.guardias.forEach(g=>add(g.fecha,'🛡️ Guardia','var(--teal)'));
+  S.tareas.filter(t=>t.fecha&&!t.done).forEach(t=>add(t.fecha,'✅ '+t.titulo,'var(--accent)'));
+  examenesTodos().forEach(e=>add(e.fecha,'🎓 '+e.titulo,'var(--gold)'));
+
+  let cells='';
+  for(let i=0;i<start;i++){ const d=prevDays-start+i+1; cells+=`<div class="cal-cell other"><div class="cn">${d}</div></div>`; }
+  for(let d=1;d<=days;d++){
+    const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=iso===hoyISO();
+    const evs=(marks[iso]||[]).slice(0,3);
+    let inner=`<div class="cn">${d}</div>`;
+    evs.forEach(e=> inner+=`<div class="cal-ev" style="background:${e.color}22;color:${e.color}">${esc(e.label)}</div>`);
+    if((marks[iso]||[]).length>3) inner+=`<div style="font-size:10px;color:var(--muted)">+${marks[iso].length-3} más</div>`;
+    cells+=`<div class="cal-cell ${isToday?'today':''}" onclick="modalEvento(null,'${iso}')">${inner}</div>`;
+  }
+  const nextFill=(7-((start+days)%7))%7;
+  for(let i=1;i<=nextFill;i++) cells+=`<div class="cal-cell other"><div class="cn">${i}</div></div>`;
+
+  c.innerHTML = `
+    <div class="cal-head">
+      <button class="icon-btn" onclick="calMove(-1)">‹</button>
+      <h2 style="font-size:19px">${MES[m]} ${y}</h2>
+      <div style="display:flex;gap:8px"><button class="btn sm ghost" onclick="calDate=new Date();render()">Hoy</button><button class="icon-btn" onclick="calMove(1)">›</button></div>
+    </div>
+    <div class="cal-grid">${DOW.map(d=>`<div class="cal-dow">${d}</div>`).join('')}${cells}</div>
+    <div style="margin-top:16px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)">
+      <span>🟣 Eventos</span><span>🔵 Tareas</span><span>🟢 Guardias</span><span>🟡 Exámenes</span>
+    </div>`;
+}
+function calMove(n){ calDate.setMonth(calDate.getMonth()+n); render(); }
+function modalEvento(id,fecha){
+  const e = id ? S.eventos.find(x=>x.id===id) : {titulo:'',fecha:fecha||hoyISO(),hora:'',cat:'Personal',notas:''};
+  openModal(id?'Editar evento':'Nuevo evento',`
+    <label class="fld"><span>Título</span><input id="eT" value="${esc(e.titulo)}" placeholder="Ej: Sesión de inglés, reunión..."></label>
+    <div class="row">
+      <label class="fld"><span>Fecha</span><input type="date" id="eF" value="${e.fecha}"></label>
+      <label class="fld"><span>Hora</span><input type="time" id="eH" value="${e.hora||''}"></label>
+    </div>
+    <label class="fld"><span>Categoría</span><select id="eC">${CATS.map(x=>`<option ${e.cat===x?'selected':''}>${x}</option>`).join('')}</select></label>
+    <label class="fld"><span>Notas</span><textarea id="eN" rows="2">${esc(e.notas||'')}</textarea></label>
+    ${id?`<button class="btn danger sm" onclick="delEvento('${id}')">🗑️ Eliminar evento</button>`:''}
+  `,`<button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveEvento('${id||''}')">Guardar</button>`);
+  setTimeout(()=>document.getElementById('eT').focus(),50);
+}
+function saveEvento(id){
+  const titulo=eT.value.trim(); if(!titulo){toast('Escribe un título','⚠️');return;}
+  const data={titulo,fecha:eF.value,hora:eH.value,cat:eC.value,notas:eN.value.trim()};
+  if(id) Object.assign(S.eventos.find(x=>x.id===id),data); else S.eventos.push({id:uid(),...data});
+  save(); closeModal(); render(); toast(id?'Evento actualizado':'Evento creado');
+}
+function delEvento(id){ S.eventos=S.eventos.filter(x=>x.id!==id); save(); closeModal(); render(); toast('Evento eliminado','🗑️'); }
+
+/* ============================================================
+   VISTA: GUARDIAS
+   ============================================================ */
+function vGuardias(c, top){
+  top.innerHTML = `<button class="btn" onclick="modalGuardia()">＋ Guardia</button>`;
+  const futuras = S.guardias.filter(g=>diasHasta(g.fecha)>=0).sort((a,b)=>a.fecha<b.fecha?-1:1);
+  const pasadas = S.guardias.filter(g=>diasHasta(g.fecha)<0).sort((a,b)=>a.fecha>b.fecha?-1:1);
+  let html='';
+  html += `<div class="section-head"><h2>🔜 Próximas guardias</h2></div>`;
+  if(!futuras.length) html+=`<div class="card"><div class="empty"><span class="em-ic">🛡️</span>Sin guardias programadas. Agrega tus turnos para no olvidarlos.</div></div>`;
+  else html += futuras.map(guardiaCard).join('');
+  if(pasadas.length){
+    html += `<div class="section-head"><h2>📖 Historial</h2><span class="chip">${pasadas.length}</span></div>`;
+    html += pasadas.slice(0,10).map(guardiaCard).join('');
+  }
+  c.innerHTML=html;
+}
+function guardiaCard(g){
+  const d=new Date(g.fecha+'T00:00:00');
+  const rel=relFecha(g.fecha);
+  return `<div class="guardia-card">
+    <div class="g-date"><div class="gd">${d.getDate()}</div><div class="gm">${MES_C[d.getMonth()]}</div></div>
+    <div style="flex:1">
+      <div style="font-weight:700;font-size:15px">${esc(g.turno||'Guardia')} ${rel==='Hoy'?'<span class="chip" style="background:var(--teal)22;color:var(--teal)">HOY</span>':''}</div>
+      <div class="it-meta" style="margin-top:4px">${DOW[d.getDay()]} · ${g.horaIni||'—'}${g.horaFin?' a '+g.horaFin:''} ${g.lugar?'· 📍 '+esc(g.lugar):''}</div>
+      ${g.notas?`<div style="font-size:12.5px;color:var(--txt2);margin-top:5px">${esc(g.notas)}</div>`:''}
+    </div>
+    <div class="it-actions">
+      <button class="mini-btn" onclick="modalGuardia('${g.id}')">✏️</button>
+      <button class="mini-btn" onclick="delGuardia('${g.id}')">🗑️</button>
+    </div>
+  </div>`;
+}
+function modalGuardia(id){
+  const g = id ? S.guardias.find(x=>x.id===id) : {turno:'Guardia',fecha:hoyISO(),horaIni:'08:00',horaFin:'20:00',lugar:'',notas:''};
+  openModal(id?'Editar guardia':'Nueva guardia',`
+    <label class="fld"><span>Tipo de turno</span><input id="gT" value="${esc(g.turno)}" placeholder="Ej: Guardia de puerto, servicio nocturno..."></label>
+    <label class="fld"><span>Fecha</span><input type="date" id="gF" value="${g.fecha}"></label>
+    <div class="row">
+      <label class="fld"><span>Desde</span><input type="time" id="gHi" value="${g.horaIni||''}"></label>
+      <label class="fld"><span>Hasta</span><input type="time" id="gHf" value="${g.horaFin||''}"></label>
+    </div>
+    <label class="fld"><span>Lugar (opcional)</span><input id="gL" value="${esc(g.lugar||'')}" placeholder="Ej: Muelle, sala de armas..."></label>
+    <label class="fld"><span>Notas (opcional)</span><textarea id="gN" rows="2">${esc(g.notas||'')}</textarea></label>
+  `,`<button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveGuardia('${id||''}')">Guardar</button>`);
+}
+function saveGuardia(id){
+  const data={turno:gT.value.trim()||'Guardia',fecha:gF.value,horaIni:gHi.value,horaFin:gHf.value,lugar:gL.value.trim(),notas:gN.value.trim()};
+  if(id) Object.assign(S.guardias.find(x=>x.id===id),data); else S.guardias.push({id:uid(),...data});
+  save(); closeModal(); render(); toast(id?'Guardia actualizada':'Guardia agregada','🛡️');
+}
+function delGuardia(id){ S.guardias=S.guardias.filter(x=>x.id!==id); save(); render(); toast('Guardia eliminada','🗑️'); }
+
+/* ============================================================
+   VISTA: UNIVERSIDAD
+   ============================================================ */
+function examenesTodos(){ const r=[]; S.ramos.forEach(ra=>(ra.examenes||[]).forEach(e=>r.push({...e,ramo:ra.nombre,ramoId:ra.id, titulo:e.titulo+' · '+ra.nombre}))); return r; }
+function vUniversidad(c, top){
+  top.innerHTML = `<button class="btn" onclick="modalRamo()">＋ Ramo</button>`;
+  if(!S.ramos.length){ c.innerHTML=`<div class="card"><div class="empty"><span class="em-ic">🎓</span>Agrega los ramos de tu carrera para llevar el control de evaluaciones, tareas y notas.</div></div>`; return; }
+  let html='';
+  S.ramos.forEach(ra=>{
+    const ev=(ra.examenes||[]);
+    const tareas=(ra.tareas||[]);
+    const tHechas=tareas.filter(t=>t.done).length;
+    const prog = tareas.length? Math.round(tHechas/tareas.length*100):0;
+    const prom = ra.notas&&ra.notas.length ? (ra.notas.reduce((a,n)=>a+n.valor*(n.peso||1),0)/ra.notas.reduce((a,n)=>a+(n.peso||1),0)).toFixed(1) : '—';
+    html += `<div class="card" style="margin-bottom:16px;border-left:4px solid ${ra.color||'var(--gold)'}">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div><div style="font-size:17px;font-weight:700">${esc(ra.nombre)}</div>
+        <div class="it-meta" style="margin-top:3px">${ra.profe?'👤 '+esc(ra.profe):''} ${ra.horario?'· 🕐 '+esc(ra.horario):''}</div></div>
+        <div style="text-align:right"><div style="font-size:22px;font-weight:800;color:${prom!=='—'&&prom<4?'var(--red)':'var(--green)'}">${prom}</div><div style="font-size:11px;color:var(--muted)">promedio</div></div>
+      </div>
+      <div class="progress"><i style="width:${prog}%"></i></div>
+      <div style="font-size:11.5px;color:var(--muted);margin-top:5px">${tHechas}/${tareas.length} tareas · ${ev.length} evaluaciones</div>
+      <div style="display:flex;gap:8px;margin-top:13px;flex-wrap:wrap">
+        <button class="btn sm ghost" onclick="modalRamoDetalle('${ra.id}')">📂 Abrir</button>
+        <button class="btn sm ghost" onclick="modalRamo('${ra.id}')">✏️ Editar</button>
+        <button class="btn sm ghost" onclick="delRamo('${ra.id}')">🗑️</button>
+      </div>
+    </div>`;
+  });
+  c.innerHTML=html;
+}
+const RAMO_COLORS=['var(--gold)','var(--accent)','var(--purple)','var(--teal)','var(--green)','var(--red)'];
+function modalRamo(id){
+  const r = id ? S.ramos.find(x=>x.id===id) : {nombre:'',profe:'',horario:'',color:RAMO_COLORS[S.ramos.length%6]};
+  openModal(id?'Editar ramo':'Nuevo ramo',`
+    <label class="fld"><span>Nombre del ramo</span><input id="rN" value="${esc(r.nombre)}" placeholder="Ej: Cálculo II, Investigación de operaciones..."></label>
+    <label class="fld"><span>Profesor(a)</span><input id="rP" value="${esc(r.profe||'')}"></label>
+    <label class="fld"><span>Horario</span><input id="rH" value="${esc(r.horario||'')}" placeholder="Ej: Lun y Mié 10:00"></label>
+    <label class="fld"><span>Color</span><div style="display:flex;gap:8px">${RAMO_COLORS.map(col=>`<button type="button" onclick="document.getElementById('rColor').value='${col}';[...this.parentNode.children].forEach(b=>b.style.outline='');this.style.outline='2px solid #fff'" style="width:34px;height:34px;border-radius:8px;border:none;cursor:pointer;background:${col};outline:${r.color===col?'2px solid #fff':''}"></button>`).join('')}</div><input type="hidden" id="rColor" value="${r.color}"></label>
+  `,`<button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveRamo('${id||''}')">Guardar</button>`);
+}
+function saveRamo(id){
+  const nombre=rN.value.trim(); if(!nombre){toast('Escribe un nombre','⚠️');return;}
+  const data={nombre,profe:rP.value.trim(),horario:rH.value.trim(),color:rColor.value};
+  if(id) Object.assign(S.ramos.find(x=>x.id===id),data);
+  else S.ramos.push({id:uid(),tareas:[],examenes:[],notas:[],...data});
+  save(); closeModal(); render(); toast(id?'Ramo actualizado':'Ramo agregado','🎓');
+}
+function delRamo(id){ if(!confirm('¿Eliminar este ramo y todos sus datos?'))return; S.ramos=S.ramos.filter(x=>x.id!==id); save(); render(); toast('Ramo eliminado','🗑️'); }
+
+function modalRamoDetalle(id){
+  const r=S.ramos.find(x=>x.id===id);
+  const ev=(r.examenes||[]).slice().sort((a,b)=>a.fecha<b.fecha?-1:1);
+  const tareas=(r.tareas||[]);
+  const notas=(r.notas||[]);
+  const body=`
+    <div class="tabs">
+      <button class="tab active" onclick="rdTab(event,'ev')">📝 Evaluaciones</button>
+      <button class="tab" onclick="rdTab(event,'ta')">✅ Tareas</button>
+      <button class="tab" onclick="rdTab(event,'no')">📊 Notas</button>
+    </div>
+    <div id="rd-ev">
+      ${ev.length?ev.map(e=>`<div class="item"><div class="it-body"><div class="it-title">${esc(e.titulo)}</div><div class="it-meta">📅 ${fmtLargo(e.fecha)} · ${relFecha(e.fecha)}</div></div><button class="mini-btn" onclick="delSub('${id}','examenes','${e.id}')">🗑️</button></div>`).join(''):'<div class="empty" style="padding:20px">Sin evaluaciones</div>'}
+      <button class="btn sm ghost" style="width:100%;margin-top:8px" onclick="addSub('${id}','examenes')">＋ Agregar evaluación</button>
+    </div>
+    <div id="rd-ta" class="hidden">
+      ${tareas.length?tareas.map(t=>`<div class="item ${t.done?'done':''}"><button class="check ${t.done?'on':''}" onclick="toggleSubTarea('${id}','${t.id}')">${t.done?'✓':''}</button><div class="it-body"><div class="it-title">${esc(t.titulo)}</div>${t.fecha?`<div class="it-meta">📅 ${relFecha(t.fecha)}</div>`:''}</div><button class="mini-btn" onclick="delSub('${id}','tareas','${t.id}')">🗑️</button></div>`).join(''):'<div class="empty" style="padding:20px">Sin tareas</div>'}
+      <button class="btn sm ghost" style="width:100%;margin-top:8px" onclick="addSub('${id}','tareas')">＋ Agregar tarea</button>
+    </div>
+    <div id="rd-no" class="hidden">
+      ${notas.length?notas.map(n=>`<div class="item"><div class="it-body"><div class="it-title">${esc(n.titulo)}</div><div class="it-meta">Peso: ${n.peso||1}</div></div><div style="font-size:20px;font-weight:800;color:${n.valor<4?'var(--red)':'var(--green)'};margin-right:8px">${n.valor}</div><button class="mini-btn" onclick="delSub('${id}','notas','${n.id}')">🗑️</button></div>`).join(''):'<div class="empty" style="padding:20px">Sin notas registradas</div>'}
+      <button class="btn sm ghost" style="width:100%;margin-top:8px" onclick="addSub('${id}','notas')">＋ Registrar nota</button>
+    </div>`;
+  openModal(r.nombre, body, `<button class="btn" onclick="closeModal()">Cerrar</button>`);
+}
+function rdTab(e,which){
+  e.target.parentNode.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  e.target.classList.add('active');
+  ['ev','ta','no'].forEach(k=>document.getElementById('rd-'+k).classList.toggle('hidden',k!==which));
+}
+function addSub(ramoId,tipo){
+  const r=S.ramos.find(x=>x.id===ramoId);
+  if(tipo==='examenes'){
+    const titulo=prompt('Nombre de la evaluación (ej: Prueba 1, Examen final):'); if(!titulo)return;
+    const fecha=prompt('Fecha (AAAA-MM-DD):',hoyISO()); if(!fecha)return;
+    r.examenes.push({id:uid(),titulo,fecha});
+  } else if(tipo==='tareas'){
+    const titulo=prompt('Tarea a realizar:'); if(!titulo)return;
+    const fecha=prompt('Fecha límite (AAAA-MM-DD, opcional):','')||'';
+    r.tareas.push({id:uid(),titulo,fecha,done:false});
+  } else {
+    const titulo=prompt('Nombre de la nota (ej: Prueba 1):'); if(!titulo)return;
+    const valor=parseFloat(prompt('Nota obtenida (ej: 5.5):')); if(isNaN(valor))return;
+    const peso=parseFloat(prompt('Peso/ponderación (ej: 1, 2):','1'))||1;
+    r.notas.push({id:uid(),titulo,valor,peso});
+  }
+  save(); modalRamoDetalle(ramoId); render(); toast('Agregado');
+}
+function delSub(ramoId,tipo,subId){ const r=S.ramos.find(x=>x.id===ramoId); r[tipo]=r[tipo].filter(x=>x.id!==subId); save(); modalRamoDetalle(ramoId); render(); }
+function toggleSubTarea(ramoId,subId){ const r=S.ramos.find(x=>x.id===ramoId); const t=r.tareas.find(x=>x.id===subId); t.done=!t.done; save(); modalRamoDetalle(ramoId); render(); }
+
+/* ============================================================
+   VISTA: INGLÉS
+   ============================================================ */
+function vIngles(c, top){
+  top.innerHTML = `<button class="btn ghost sm" onclick="modalSesion()">＋ Sesión</button><button class="btn sm" onclick="modalVocab()">＋ Palabra</button>`;
+  const ses=S.ingles.sesiones.slice().sort((a,b)=>a.fecha<b.fecha?1:-1);
+  const vocab=S.ingles.vocab.slice();
+  const prox=ses.filter(s=>diasHasta(s.fecha)>=0).sort((a,b)=>a.fecha<b.fecha?-1:1)[0];
+  const total=ses.length;
+  let html=`<div class="stats">
+    ${stat('p','🇬🇧',total,'Sesiones registradas')}
+    ${stat('a','🗓️',prox?relFecha(prox.fecha):'—','Próxima sesión')}
+    ${stat('t','📚',vocab.length,'Palabras guardadas')}
+  </div>`;
+
+  html+=`<div class="tabs">
+    <button class="tab active" onclick="inTab(event,'ses')">🗓️ Sesiones</button>
+    <button class="tab" onclick="inTab(event,'voc')">📚 Vocabulario</button>
+  </div>`;
+
+  html+=`<div id="in-ses">`;
+  if(!ses.length) html+=`<div class="card"><div class="empty"><span class="em-ic">🎧</span>Registra tus sesiones de inglés y lo que trabajaste en cada una.</div></div>`;
+  else ses.forEach(s=>{
+    html+=`<div class="item" style="border-left:4px solid var(--purple)">
+      <div class="it-body"><div class="it-title">${esc(s.tema||'Sesión de inglés')}</div>
+      <div class="it-meta">📅 ${fmtLargo(s.fecha)} · ${relFecha(s.fecha)} ${s.hora?'· 🕐 '+s.hora:''}</div>
+      ${s.notas?`<div style="font-size:12.5px;color:var(--txt2);margin-top:5px">${esc(s.notas)}</div>`:''}</div>
+      <button class="mini-btn" onclick="delSesion('${s.id}')">🗑️</button></div>`;
+  });
+  html+=`</div>`;
+
+  html+=`<div id="in-voc" class="hidden">`;
+  if(!vocab.length) html+=`<div class="card"><div class="empty"><span class="em-ic">📖</span>Guarda palabras nuevas con su traducción para repasarlas.</div></div>`;
+  else{
+    html+=`<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))">`;
+    vocab.forEach(v=>{
+      html+=`<div class="note-card"><button class="mini-btn note-del" onclick="delVocab('${v.id}')">🗑️</button>
+        <h4>${esc(v.en)}</h4><p style="color:var(--accent2);font-weight:600">${esc(v.es)}</p>
+        ${v.ej?`<p style="font-style:italic;margin-top:6px;font-size:12px">"${esc(v.ej)}"</p>`:''}</div>`;
+    });
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+  c.innerHTML=html;
+}
+function inTab(e,which){
+  e.target.parentNode.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById('in-ses').classList.toggle('hidden',which!=='ses');
+  document.getElementById('in-voc').classList.toggle('hidden',which!=='voc');
+}
+function modalSesion(){
+  openModal('Nueva sesión de inglés',`
+    <label class="fld"><span>Tema trabajado</span><input id="sT" placeholder="Ej: Present perfect, conversación..."></label>
+    <div class="row">
+      <label class="fld"><span>Fecha</span><input type="date" id="sF" value="${hoyISO()}"></label>
+      <label class="fld"><span>Hora</span><input type="time" id="sH"></label>
+    </div>
+    <label class="fld"><span>Notas / vocabulario</span><textarea id="sN" rows="3"></textarea></label>
+  `,`<button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveSesion()">Guardar</button>`);
+}
+function saveSesion(){ S.ingles.sesiones.push({id:uid(),tema:sT.value.trim(),fecha:sF.value,hora:sH.value,notas:sN.value.trim()}); save(); closeModal(); render(); toast('Sesión registrada','🇬🇧'); }
+function delSesion(id){ S.ingles.sesiones=S.ingles.sesiones.filter(x=>x.id!==id); save(); render(); }
+function modalVocab(){
+  openModal('Nueva palabra',`
+    <label class="fld"><span>En inglés</span><input id="vE" placeholder="word"></label>
+    <label class="fld"><span>En español</span><input id="vS" placeholder="palabra"></label>
+    <label class="fld"><span>Ejemplo (opcional)</span><input id="vJ" placeholder="A sentence using it..."></label>
+  `,`<button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveVocab()">Guardar</button>`);
+  setTimeout(()=>document.getElementById('vE').focus(),50);
+}
+function saveVocab(){ if(!vE.value.trim()){toast('Escribe la palabra','⚠️');return;} S.ingles.vocab.unshift({id:uid(),en:vE.value.trim(),es:vS.value.trim(),ej:vJ.value.trim()}); save(); closeModal(); render(); toast('Palabra guardada','📚'); }
+function delVocab(id){ S.ingles.vocab=S.ingles.vocab.filter(x=>x.id!==id); save(); render(); }
+
+/* ============================================================
+   VISTA: INSPECCIÓN DE ARMAMENTO
+   ============================================================ */
+function vInspeccion(c, top){
+  top.innerHTML = `<button class="btn" onclick="modalInsp()">＋ Registro</button>`;
+  const list=S.inspecciones.slice().sort((a,b)=>a.fecha<b.fecha?1:-1);
+  if(!list.length){ c.innerHTML=`<div class="card"><div class="empty"><span class="em-ic">🔫</span>Registra tus inspecciones de armamento con checklist, observaciones y estado.</div></div>`; return; }
+  let html='';
+  list.forEach(r=>{
+    const items=r.items||[];
+    const ok=items.filter(i=>i.ok).length;
+    const estColor = r.estado==='Conforme'?'var(--green)':r.estado==='Observado'?'var(--gold)':'var(--red)';
+    html+=`<div class="card" style="margin-bottom:14px;border-left:4px solid ${estColor}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <div><div style="font-size:16px;font-weight:700">${esc(r.titulo)}</div>
+        <div class="it-meta" style="margin-top:3px">📅 ${fmtLargo(r.fecha)} ${r.lugar?'· 📍 '+esc(r.lugar):''}</div></div>
+        <span class="chip" style="background:${estColor}22;color:${estColor}">${r.estado||'—'}</span>
+      </div>
+      ${items.length?`<div class="progress"><i style="width:${Math.round(ok/items.length*100)}%"></i></div><div style="font-size:11.5px;color:var(--muted);margin-top:5px">${ok}/${items.length} ítems verificados</div>
+      <div style="margin-top:10px">${items.map((i,idx)=>`<div style="display:flex;align-items:center;gap:9px;padding:5px 0;font-size:13.5px"><button class="check ${i.ok?'on':''}" style="width:19px;height:19px" onclick="toggleInspItem('${r.id}',${idx})">${i.ok?'✓':''}</button><span style="${i.ok?'color:var(--muted)':''}">${esc(i.txt)}</span></div>`).join('')}</div>`:''}
+      ${r.obs?`<div style="font-size:13px;color:var(--txt2);margin-top:10px;padding:10px;background:var(--panel2);border-radius:9px">📋 ${esc(r.obs)}</div>`:''}
+      <div style="display:flex;gap:8px;margin-top:12px"><button class="btn sm ghost" onclick="modalInsp('${r.id}')">✏️ Editar</button><button class="btn sm ghost" onclick="delInsp('${r.id}')">🗑️</button></div>
+    </div>`;
+  });
+  c.innerHTML=html;
+}
+function toggleInspItem(id,idx){ const r=S.inspecciones.find(x=>x.id===id); r.items[idx].ok=!r.items[idx].ok; save(); render(); }
+function modalInsp(id){
+  const r = id ? S.inspecciones.find(x=>x.id===id) : {titulo:'',fecha:hoyISO(),lugar:'',estado:'Pendiente',obs:'',items:[]};
+  const itemsTxt=(r.items||[]).map(i=>i.txt).join('\n');
+  openModal(id?'Editar registro':'Nuevo registro de inspección',`
+    <label class="fld"><span>Título / arma o lote</span><input id="iT" value="${esc(r.titulo)}" placeholder="Ej: Fusil SIG 540 Nº123, lote munición..."></label>
+    <div class="row">
+      <label class="fld"><span>Fecha</span><input type="date" id="iF" value="${r.fecha}"></label>
+      <label class="fld"><span>Estado</span><select id="iE">${['Pendiente','Conforme','Observado','No conforme'].map(x=>`<option ${r.estado===x?'selected':''}>${x}</option>`).join('')}</select></label>
+    </div>
+    <label class="fld"><span>Lugar</span><input id="iL" value="${esc(r.lugar||'')}" placeholder="Ej: Pañol, sala de armas..."></label>
+    <label class="fld"><span>Checklist (una línea por ítem)</span><textarea id="iI" rows="4" placeholder="Estado del cañón&#10;Mecanismo de disparo&#10;Numeración legible&#10;Limpieza y lubricación">${esc(itemsTxt)}</textarea></label>
+    <label class="fld"><span>Observaciones</span><textarea id="iO" rows="2">${esc(r.obs||'')}</textarea></label>
+  `,`<button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveInsp('${id||''}')">Guardar</button>`);
+}
+function saveInsp(id){
+  const titulo=iT.value.trim(); if(!titulo){toast('Escribe un título','⚠️');return;}
+  const nuevos=iI.value.split('\n').map(s=>s.trim()).filter(Boolean);
+  let items;
+  if(id){ const old=S.inspecciones.find(x=>x.id===id).items||[]; items=nuevos.map(txt=>{ const prev=old.find(o=>o.txt===txt); return {txt,ok:prev?prev.ok:false}; }); }
+  else items=nuevos.map(txt=>({txt,ok:false}));
+  const data={titulo,fecha:iF.value,lugar:iL.value.trim(),estado:iE.value,obs:iO.value.trim(),items};
+  if(id) Object.assign(S.inspecciones.find(x=>x.id===id),data); else S.inspecciones.push({id:uid(),...data});
+  save(); closeModal(); render(); toast(id?'Registro actualizado':'Registro creado','🔫');
+}
+function delInsp(id){ if(!confirm('¿Eliminar este registro?'))return; S.inspecciones=S.inspecciones.filter(x=>x.id!==id); save(); render(); toast('Registro eliminado','🗑️'); }
+
+/* ============================================================
+   VISTA: NOTAS
+   ============================================================ */
+function vNotas(c, top){
+  top.innerHTML = `<button class="btn" onclick="modalNota()">＋ Nota</button>`;
+  if(!S.notas.length){ c.innerHTML=`<div class="card"><div class="empty"><span class="em-ic">📝</span>Guarda ideas, pendientes rápidos o cualquier apunte.</div></div>`; return; }
+  c.innerHTML=`<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">${
+    S.notas.map(n=>`<div class="note-card"><button class="mini-btn note-del" onclick="delNota('${n.id}')">🗑️</button>
+      <h4 onclick="modalNota('${n.id}')" style="cursor:pointer">${esc(n.titulo||'Sin título')}</h4>
+      <p onclick="modalNota('${n.id}')" style="cursor:pointer">${esc(n.texto||'')}</p></div>`).join('')
+  }</div>`;
+}
+function modalNota(id){
+  const n = id ? S.notas.find(x=>x.id===id) : {titulo:'',texto:''};
+  openModal(id?'Editar nota':'Nueva nota',`
+    <label class="fld"><span>Título</span><input id="nT" value="${esc(n.titulo)}"></label>
+    <label class="fld"><span>Contenido</span><textarea id="nX" rows="6">${esc(n.texto)}</textarea></label>
+  `,`<button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveNota('${id||''}')">Guardar</button>`);
+  setTimeout(()=>document.getElementById('nT').focus(),50);
+}
+function saveNota(id){
+  const data={titulo:nT.value.trim(),texto:nX.value.trim()};
+  if(!data.titulo&&!data.texto){toast('La nota está vacía','⚠️');return;}
+  if(id) Object.assign(S.notas.find(x=>x.id===id),data); else S.notas.unshift({id:uid(),...data});
+  save(); closeModal(); render(); toast(id?'Nota actualizada':'Nota creada','📝');
+}
+function delNota(id){ S.notas=S.notas.filter(x=>x.id!==id); save(); render(); toast('Nota eliminada','🗑️'); }
+
+/* ============================================================
+   VISTA: AJUSTES
+   ============================================================ */
+function driveCardHTML(){
+  const url=syncUrl(), secret=syncSecret(), on=syncEnabled();
+  let estado;
+  if(SYNC.syncing) estado='⏳ Sincronizando…';
+  else if(SYNC.error) estado='⚠️ '+esc(SYNC.error);
+  else if(SYNC.connected) estado='✅ Conectado'+(SYNC.lastSync?' · última: '+new Date(SYNC.lastSync).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'}):'');
+  else if(on) estado='🔌 Listo para conectar';
+  else estado='No conectado';
+  return `<div class="card" style="margin-bottom:18px;border-left:3px solid var(--accent)">
+    <h2 style="font-size:16px;margin-bottom:6px">☁️ Sincronización automática con Google Drive</h2>
+    <p style="font-size:13px;color:var(--txt2);line-height:1.55;margin-bottom:14px">
+      Sincroniza tus datos solos entre <b>todos tus dispositivos</b> (celular, computador) guardándolos en <b>tu propio Google Drive</b>.
+      Funciona incluso abriendo la app con doble clic o desde el celular. <b>Seguridad:</b> el conector corre <b>solo dentro de tu cuenta</b>
+      de Google (tú lo autorizas), protegido por una <b>clave secreta tuya</b> que viaja cifrada por HTTPS; solo lee y escribe <b>un único archivo</b>.
+    </p>
+    <label class="fld"><span>URL del conector (Web App, termina en <code>/exec</code>)</span>
+      <input id="syncUrl" value="${esc(url)}" placeholder="https://script.google.com/macros/s/…/exec"></label>
+    <label class="fld"><span>Clave secreta (la misma que pones en el código)</span>
+      <input id="syncSecret" type="password" value="${esc(secret)}" placeholder="inventa una clave, ej: marino-2026"></label>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      ${on ? `<button class="btn" onclick="pushNow()">🔄 Sincronizar ahora</button>
+              <button class="btn" onclick="syncConnectClick()">🔗 Reconectar</button>
+              <button class="btn ghost" onclick="syncDisconnect()">Desconectar</button>`
+           : `<button class="btn" onclick="syncConnectClick()">🔗 Conectar</button>`}
+      <span style="font-size:12.5px;color:var(--muted)">${estado}</span>
+    </div>
+    <details style="margin-top:12px">
+      <summary style="cursor:pointer;font-weight:600;color:var(--accent2)">📖 Configúralo una sola vez (~4 minutos)</summary>
+      <ol style="font-size:13px;color:var(--txt2);line-height:1.7;padding-left:20px;margin-top:10px">
+        <li>Entra a <code>script.google.com</code> con tu cuenta de Google → <b>Nuevo proyecto</b>.</li>
+        <li>Borra todo el contenido y <b>pega el código de abajo</b>. Cambia la línea de la <code>CLAVE</code> por una tuya (invéntala) y <b>guarda</b> (💾).</li>
+        <li>Arriba a la derecha: <b>Implementar → Nueva implementación</b> → engranaje ⚙️ → <b>Aplicación web</b>.</li>
+        <li>Configura: <b>Ejecutar como = Yo</b> · <b>Quién tiene acceso = Cualquiera</b> → <b>Implementar</b>. Autoriza con tu cuenta (te pedirá permiso para tu Drive; es tu propio conector).</li>
+        <li>Copia la <b>URL que termina en <code>/exec</code></b> y pégala arriba. Escribe la <b>misma clave secreta</b> y pulsa <b>Conectar</b>.</li>
+        <li>En tu <b>celular</b> y demás dispositivos: abre la app, pega la <b>misma URL y clave</b>, y <b>Conectar</b>. ¡Listo, se sincroniza solo! ☁️</li>
+      </ol>
+      <div style="margin:8px 0">
+        <button class="btn sm ghost" onclick="copyAppsScript()">📋 Copiar código del conector</button>
+      </div>
+      <textarea readonly rows="12" onclick="this.select()" style="font-family:monospace;font-size:11.5px;white-space:pre;overflow:auto">${esc(APPS_SCRIPT_CODE)}</textarea>
+    </details>
+  </div>`;
+}
+function vAjustes(c){
+  const size=(new Blob([JSON.stringify(S)]).size/1024).toFixed(1);
+  c.innerHTML=`
+    <div class="card" style="margin-bottom:18px">
+      <h2 style="font-size:16px;margin-bottom:14px">👤 Tu perfil</h2>
+      <label class="fld"><span>Nombre</span><input id="pN" value="${esc(S.profile.nombre)}" placeholder="Tu nombre" oninput="S.profile.nombre=this.value;save()"></label>
+      <label class="fld"><span>Grado / cargo</span><input id="pG" value="${esc(S.profile.grado)}" placeholder="Ej: Inspector de armamento" oninput="S.profile.grado=this.value;save()"></label>
+      <button class="btn sm" onclick="render();toast('Perfil guardado')">Guardar perfil</button>
+    </div>
+
+    ${driveCardHTML()}
+
+    <div class="card" style="margin-bottom:18px">
+      <h2 style="font-size:16px;margin-bottom:6px">💾 Respaldo manual (exportar / importar)</h2>
+      <p style="font-size:13px;color:var(--txt2);line-height:1.55;margin-bottom:14px">
+        Tus datos se guardan <b>automáticamente en este dispositivo</b>. Para usar tus datos en otro dispositivo
+        (teléfono, otro computador), <b>exporta un respaldo</b>, guárdalo en tu Google Drive, y luego
+        <b>impórtalo</b> en el otro dispositivo. Datos actuales: <b>${size} KB</b>.
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" onclick="exportData()">⬇️ Exportar respaldo</button>
+        <button class="btn ghost" onclick="document.getElementById('importFile').click()">⬆️ Importar respaldo</button>
+        <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(this)">
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:18px">
+      <h2 style="font-size:16px;margin-bottom:6px">📊 Tus datos</h2>
+      <div class="stats" style="margin:12px 0 0">
+        ${stat('a','✅',S.tareas.length,'Tareas')}
+        ${stat('t','🛡️',S.guardias.length,'Guardias')}
+        ${stat('go','🎓',S.ramos.length,'Ramos')}
+        ${stat('p','🇬🇧',S.ingles.sesiones.length,'Sesiones inglés')}
+        ${stat('r','🔫',S.inspecciones.length,'Inspecciones')}
+        ${stat('g','📝',S.notas.length,'Notas')}
+      </div>
+    </div>
+
+    <div class="card" style="border-color:var(--red)">
+      <h2 style="font-size:16px;margin-bottom:6px">⚠️ Zona de peligro</h2>
+      <p style="font-size:13px;color:var(--txt2);margin-bottom:12px">Esto borra <b>todos</b> tus datos de este dispositivo. Exporta un respaldo antes.</p>
+      <button class="btn danger sm" onclick="wipeData()">🗑️ Borrar todos los datos</button>
+    </div>
+
+    <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:24px">Bitácora · Organizador personal · 100% privado, funciona sin internet ⚓</p>`;
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`bitacora-respaldo-${hoyISO()}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('Respaldo descargado. Guárdalo en tu Drive 💾','⬇️');
+}
+function importData(input){
+  const f=input.files[0]; if(!f)return;
+  const rd=new FileReader();
+  rd.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.tareas&&!data.ramos&&!data.profile) throw 0;
+      if(!confirm('Esto reemplazará los datos actuales de este dispositivo por los del respaldo. ¿Continuar?')) return;
+      S=Object.assign(structuredClone(DEFAULT),data);
+      save(); applyTheme(); go('hoy'); toast('¡Respaldo importado con éxito!','⬆️');
+    }catch(err){ toast('Archivo no válido','⚠️'); }
+  };
+  rd.readAsText(f); input.value='';
+}
+function wipeData(){
+  if(!confirm('¿Seguro? Se borrarán TODOS los datos de este dispositivo.'))return;
+  if(!confirm('Última confirmación: esto no se puede deshacer. ¿Borrar todo?'))return;
+  localStorage.removeItem(LS_KEY); S=structuredClone(DEFAULT); save(); applyTheme(); go('hoy'); toast('Datos borrados','🗑️');
+}
+
+/* ============================================================
+   SINCRONIZACIÓN — vía Google Apps Script (tu propio conector)
+   Funciona desde archivo local (file://) y desde el celular, porque
+   solo hace peticiones HTTPS a un mini-servicio que corre DENTRO de
+   tu cuenta de Google. Seguridad: URL secreta + clave compartida; el
+   conector solo lee/escribe un único archivo JSON en TU Drive.
+   ============================================================ */
+const SYNC = { connected:false, syncing:false, lastSync:0, error:'', pushT:null };
+function syncUrl(){ return (localStorage.getItem('bitacora_sync_url')||'').trim(); }
+function syncSecret(){ return (localStorage.getItem('bitacora_sync_secret')||'').trim(); }
+function syncEnabled(){ return !!(syncUrl() && syncSecret()); }
+function isFileProtocol(){ return location.protocol==='file:'; }
+
+/* Código que el usuario pega en script.google.com (mostrado en Ajustes) */
+const APPS_SCRIPT_CODE =
+`/*** Bitácora — conector de sincronización (Google Apps Script) ***/
+// 1) Cambia la CLAVE por una tuya (la misma que pondrás en la app).
+// 2) Implementar > Nueva implementación > Aplicación web.
+//    Ejecutar como: Yo   ·   Quién tiene acceso: Cualquiera
+// 3) Copia la URL /exec y pégala en la app.
+const CLAVE = 'CAMBIA-ESTA-CLAVE';
+const ARCHIVO = 'bitacora-organizador.json';
+
+function doPost(e){
+  try{
+    const req = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    if(req.secret !== CLAVE) return _out({error:'clave incorrecta'});
+    if(req.action === 'load'){
+      const f = _find(false);
+      return _out({ok:true, data: f ? JSON.parse(f.getBlob().getDataAsString()) : null});
+    }
+    if(req.action === 'save'){
+      _find(true).setContent(JSON.stringify(req.data || {}));
+      return _out({ok:true});
+    }
+    return _out({error:'accion desconocida'});
+  }catch(err){ return _out({error:String(err)}); }
+}
+function doGet(){ return _out({ok:true, info:'Bitacora sync activo'}); }
+
+function _find(crear){
+  const it = DriveApp.getFilesByName(ARCHIVO);
+  if(it.hasNext()) return it.next();
+  return crear ? DriveApp.createFile(ARCHIVO, '{}', 'application/json') : null;
+}
+function _out(o){
+  return ContentService.createTextOutput(JSON.stringify(o))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+function copyAppsScript(){
+  navigator.clipboard.writeText(APPS_SCRIPT_CODE)
+    .then(()=>toast('Código copiado. Pégalo en script.google.com','📋'))
+    .catch(()=>toast('Selecciona el código y cópialo con Ctrl+C','📋'));
+}
+
+function updateSyncPill(){
+  const el=document.getElementById('syncPill'); if(!el) return;
+  if(!syncEnabled()){ el.classList.add('hidden'); return; }
+  el.classList.remove('hidden'); el.onclick=()=>go('ajustes'); el.title=SYNC.error||'';
+  if(SYNC.syncing){ el.className='sync-pill syncing'; el.innerHTML='Sincronizando…'; }
+  else if(SYNC.error){ el.className='sync-pill err'; el.innerHTML='⚠️ Revisar sync'; }
+  else if(SYNC.connected){ el.className='sync-pill ok'; el.innerHTML='☁️ Sincronizado'; }
+  else { el.className='sync-pill'; el.innerHTML='☁️ Conectar'; }
+}
+
+/* ---- Petición al conector (POST texto plano: evita preflight CORS) ---- */
+async function syncCall(payload){
+  const url=syncUrl(); if(!url) throw new Error('falta la URL');
+  const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(), 20000);
+  let r;
+  try{ r=await fetch(url,{ method:'POST', body:JSON.stringify(payload), signal:ctrl.signal, redirect:'follow' }); }
+  catch(e){ throw new Error('sin conexión con el conector'); }
+  finally{ clearTimeout(to); }
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  let j; try{ j=await r.json(); }catch(e){ throw new Error('respuesta inválida (revisa la URL /exec)'); }
+  if(j.error) throw new Error(j.error==='clave incorrecta' ? 'clave secreta incorrecta' : j.error);
+  return j;
+}
+
+/* ---- Lógica de sincronización (gana el más reciente) ---- */
+function adoptRemote(remote){
+  applyingRemote=true;
+  S=Object.assign(structuredClone(DEFAULT), remote);
+  save(false);              // persiste local sin cambiar la marca de tiempo ni re-subir
+  applyingRemote=false;
+  applyTheme(); render();
+  toast('Datos actualizados desde Google Drive','☁️');
+}
+async function doSync(){
+  if(!syncEnabled()) return;
+  SYNC.syncing=true; SYNC.error=''; updateSyncPill(); if(view==='ajustes') render();
+  try{
+    const res = await syncCall({action:'load', secret:syncSecret()});
+    const remote = res.data;
+    const localT = S.updatedAt||0, remoteT = (remote && remote.updatedAt)||0;
+    if(remote && remoteT>localT){ adoptRemote(remote); }
+    else { await syncCall({action:'save', secret:syncSecret(), data:S}); }
+    SYNC.connected=true; SYNC.lastSync=Date.now();
+  }catch(e){ SYNC.error = String(e.message||e); SYNC.connected=false; }
+  SYNC.syncing=false; updateSyncPill(); if(view==='ajustes') render();
+}
+function scheduleSyncPush(){
+  if(!SYNC.connected || applyingRemote || !syncEnabled()) return;
+  clearTimeout(SYNC.pushT);
+  SYNC.pushT=setTimeout(pushNow, 2500);
+  updateSyncPill();
+}
+async function pushNow(){
+  if(!syncEnabled()) return;
+  SYNC.syncing=true; SYNC.error=''; updateSyncPill();
+  try{ await syncCall({action:'save', secret:syncSecret(), data:S}); SYNC.connected=true; SYNC.lastSync=Date.now(); }
+  catch(e){ SYNC.error=String(e.message||e); }
+  SYNC.syncing=false; updateSyncPill(); if(view==='ajustes') render();
+}
+
+/* ---- Acciones de UI ---- */
+async function syncConnectClick(){
+  const url=(document.getElementById('syncUrl').value||'').trim();
+  const secret=(document.getElementById('syncSecret').value||'').trim();
+  if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(url)){ toast('Pega la URL del Web App (debe terminar en /exec)','⚠️'); return; }
+  if(!secret){ toast('Escribe tu clave secreta','⚠️'); return; }
+  localStorage.setItem('bitacora_sync_url', url);
+  localStorage.setItem('bitacora_sync_secret', secret);
+  SYNC.error=''; SYNC.syncing=true; updateSyncPill(); render();
+  await doSync();
+  if(!SYNC.error) toast('¡Sincronización conectada!','☁️');
+  render();
+}
+function syncDisconnect(){
+  localStorage.removeItem('bitacora_sync_url');
+  localStorage.removeItem('bitacora_sync_secret');
+  SYNC.connected=false; SYNC.error=''; SYNC.lastSync=0; clearTimeout(SYNC.pushT);
+  updateSyncPill(); render(); toast('Sincronización desconectada','🔌');
+}
+function syncBootstrap(){
+  updateSyncPill();
+  if(!syncEnabled()) return;
+  doSync();
+  // Re-sincroniza al volver a la app (cambio de pestaña / abrir en otro dispositivo)
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && syncEnabled() && !SYNC.syncing) doSync(); });
+  window.addEventListener('focus', ()=>{ if(syncEnabled() && !SYNC.syncing) doSync(); });
+}
+
+/* ---------- Escape HTML ---------- */
+function esc(s){ return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+/* ---------- Init ---------- */
+applyTheme();
+document.getElementById('viewSub').textContent = VIEWS.hoy.s();
+render();
+syncBootstrap();
+</script>
