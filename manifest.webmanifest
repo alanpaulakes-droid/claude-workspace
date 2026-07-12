@@ -1,6 +1,6 @@
 {
-  "name": "Bitácora · Organizador Personal",
-  "short_name": "Bitácora",
+  "name": "Órbita · Organizador Personal",
+  "short_name": "Órbita",
   "description": "Tu organizador: tareas, guardias, universidad, inglés e inspección de armamento.",
   "start_url": "ORGANIZADOR_PERSONAL.html",
   "scope": "./",

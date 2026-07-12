@@ -1,6 +1,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Bitácora · Organizador Personal</title>
+<title>Órbita · Organizador Personal</title>
 <meta name="theme-color" content="#0e1524">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Bitácora">
+<meta name="apple-mobile-web-app-title" content="Órbita">
 <style>
   :root{
     --bg:#0e1524; --bg2:#131c30; --panel:#18233b; --panel2:#1f2c48;
@@ -241,8 +241,8 @@
 <!-- ===== SIDEBAR ===== -->
 <aside class="sidebar" id="sidebar">
   <div class="brand">
-    <div class="logo">⚓</div>
-    <div><h1>Bitácora</h1><span id="brandSub">Organizador personal</span></div>
+    <div class="logo" style="font-weight:800;font-size:22px">Ó</div>
+    <div><h1>Órbita</h1><span id="brandSub">Organizador personal</span></div>
   </div>
   <nav class="nav" id="nav">
     <button data-view="hoy" class="active"><span class="ic">🏠</span> Hoy</button>
@@ -287,7 +287,7 @@
 
 <script>
 /* ============================================================
-   BITÁCORA — Organizador personal (100% local + respaldo)
+   ÓRBITA — Organizador personal (100% local + respaldo)
    ============================================================ */
 const LS_KEY = 'bitacora_v1';
 const DEFAULT = {
@@ -295,7 +295,15 @@ const DEFAULT = {
   settings:{ theme:'dark' },
   tareas:[], eventos:[], guardias:[], ramos:[], notas:[],
   ingles:{ sesiones:[], vocab:[] },
-  inspecciones:[]
+  inspecciones:[],
+  categorias:[
+    { id:'c1', nombre:'Trabajo',  color:'var(--accent)' },
+    { id:'c2', nombre:'Estudios', color:'var(--gold)' },
+    { id:'c3', nombre:'Personal', color:'var(--green)' },
+    { id:'c4', nombre:'Salud',    color:'var(--teal)' },
+    { id:'c5', nombre:'Hogar',    color:'var(--purple)' },
+    { id:'c6', nombre:'Finanzas', color:'var(--red)' }
+  ]
 };
 let S = load();
 let view = 'hoy';
@@ -437,7 +445,7 @@ function vHoy(c){
 
   let html = `
   <div class="card" style="background:linear-gradient(135deg,var(--accent),var(--purple));border:none;color:#fff;margin-bottom:22px">
-    <div style="font-size:24px;font-weight:800">${saludo}${nombre?', '+nombre:''} ⚓</div>
+    <div style="font-size:24px;font-weight:800">${saludo}${nombre?', '+nombre:''} 🪐</div>
     <div style="opacity:.9;margin-top:4px;font-size:14px">${fmtLargo(hoy)} · ${pend} tarea${pend!==1?'s':''} pendiente${pend!==1?'s':''}${tareasVenc.length?` · <b>${tareasVenc.length} vencida${tareasVenc.length!==1?'s':''}</b>`:''}</div>
   </div>`;
 
@@ -487,8 +495,71 @@ function stat(cls,ic,val,lbl){
    VISTA: TAREAS
    ============================================================ */
 let tareaFiltro='pend', tareaCat='todas';
-const CATS = ['Inspección','Guardia','Universidad','Inglés','Personal'];
-const CAT_COLOR = {'Inspección':'var(--red)','Guardia':'var(--teal)','Universidad':'var(--gold)','Inglés':'var(--purple)','Personal':'var(--green)'};
+/* ---- Categorías personalizables ---- */
+const CAT_PALETTE=['var(--accent)','var(--purple)','var(--teal)','var(--green)','var(--gold)','var(--red)','var(--accent2)'];
+function cats(){ return S.categorias||[]; }
+function catNames(){ return cats().map(c=>c.nombre); }
+function catColor(nombre){ const c=cats().find(x=>x.nombre===nombre); return c?c.color:'var(--muted)'; }
+function catOptions(sel){
+  const names=catNames().slice();
+  let html=`<option value="" ${!sel?'selected':''}>— Sin categoría —</option>`;
+  if(sel && !names.includes(sel)) names.unshift(sel);
+  return html + names.map(x=>`<option ${sel===x?'selected':''}>${esc(x)}</option>`).join('');
+}
+function categoriasCardHTML(){
+  const cs=cats();
+  return `<div class="card" style="margin-bottom:18px">
+    <h2 style="font-size:16px;margin-bottom:6px">🗂️ Categorías</h2>
+    <p style="font-size:13px;color:var(--txt2);line-height:1.55;margin-bottom:14px">
+      Organiza tus tareas y eventos por las áreas que tú quieras. Crea, renombra o elimina las que necesites.
+    </p>
+    <div>${cs.length? cs.map(c=>`
+      <div class="item" style="padding:11px 14px">
+        <span class="dot" style="background:${c.color};width:14px;height:14px"></span>
+        <div class="it-body"><div class="it-title" style="font-size:14px">${esc(c.nombre)}</div></div>
+        <div class="it-actions">
+          <button class="mini-btn" onclick="modalCategoria('${c.id}')">✏️</button>
+          <button class="mini-btn" onclick="delCategoria('${c.id}')">🗑️</button>
+        </div>
+      </div>`).join('') : '<div class="empty" style="padding:16px">Sin categorías todavía</div>'}
+    </div>
+    <button class="btn sm" style="margin-top:6px" onclick="modalCategoria()">＋ Nueva categoría</button>
+  </div>`;
+}
+function modalCategoria(id){
+  const c = id ? cats().find(x=>x.id===id) : { nombre:'', color:CAT_PALETTE[cats().length%CAT_PALETTE.length] };
+  openModal(id?'Editar categoría':'Nueva categoría', `
+    <label class="fld"><span>Nombre</span><input id="catN" value="${esc(c.nombre)}" placeholder="Ej: Trabajo, Familia, Proyecto X..."></label>
+    <label class="fld"><span>Color</span><div style="display:flex;gap:8px;flex-wrap:wrap">${CAT_PALETTE.map(col=>`<button type="button" onclick="document.getElementById('catColor').value='${col}';[...this.parentNode.children].forEach(b=>b.style.outline='');this.style.outline='2px solid #fff'" style="width:34px;height:34px;border-radius:8px;border:none;cursor:pointer;background:${col};outline:${c.color===col?'2px solid #fff':''}"></button>`).join('')}</div><input type="hidden" id="catColor" value="${c.color}"></label>
+  `, `<button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveCategoria('${id||''}')">Guardar</button>`);
+  setTimeout(()=>document.getElementById('catN').focus(),50);
+}
+function saveCategoria(id){
+  const nombre=document.getElementById('catN').value.trim();
+  const color=document.getElementById('catColor').value;
+  if(!nombre){ toast('Escribe un nombre','⚠️'); return; }
+  if(!S.categorias) S.categorias=[];
+  if(cats().some(x=>x.nombre===nombre && x.id!==id)){ toast('Ya existe una categoría con ese nombre','⚠️'); return; }
+  if(id){
+    const c=S.categorias.find(x=>x.id===id); const antiguo=c.nombre;
+    c.nombre=nombre; c.color=color;
+    if(antiguo!==nombre){
+      S.tareas.forEach(t=>{ if(t.cat===antiguo) t.cat=nombre; });
+      S.eventos.forEach(e=>{ if(e.cat===antiguo) e.cat=nombre; });
+    }
+  } else {
+    S.categorias.push({ id:uid(), nombre, color });
+  }
+  save(); closeModal(); render(); toast(id?'Categoría actualizada':'Categoría creada','🗂️');
+}
+function delCategoria(id){
+  const c=cats().find(x=>x.id===id); if(!c) return;
+  if(!confirm(`¿Eliminar la categoría "${c.nombre}"? Las tareas y eventos que la usen quedarán sin categoría.`)) return;
+  S.categorias=S.categorias.filter(x=>x.id!==id);
+  S.tareas.forEach(t=>{ if(t.cat===c.nombre) t.cat=''; });
+  S.eventos.forEach(e=>{ if(e.cat===c.nombre) e.cat=''; });
+  save(); render(); toast('Categoría eliminada','🗑️');
+}
 function vTareas(c, top){
   top.innerHTML = `<button class="btn" onclick="modalTarea()">＋ Nueva tarea</button>`;
   let list = S.tareas.slice();
@@ -503,7 +574,7 @@ function vTareas(c, top){
     ${filterBtn('tareaFiltro','pend','Pendientes')} ${filterBtn('tareaFiltro','hechas','Completadas')} ${filterBtn('tareaFiltro','todas','Todas')}
   </div><div class="filters">
     ${filterBtn('tareaCat','todas','Todas las áreas')}
-    ${CATS.map(cat=>filterBtn('tareaCat',cat,cat)).join('')}
+    ${catNames().map(cat=>filterBtn('tareaCat',cat,cat)).join('')}
   </div>`;
   if(!list.length){
     html += `<div class="card"><div class="empty"><span class="em-ic">🗂️</span>No hay tareas aquí. ¡Crea una con el botón de arriba!</div></div>`;
@@ -523,7 +594,7 @@ function taskItem(t){
     <div class="it-body">
       <div class="it-title">${esc(t.titulo)}</div>
       <div class="it-meta">
-        ${t.cat?`<span class="chip" style="background:${CAT_COLOR[t.cat]}22;color:${CAT_COLOR[t.cat]}">${t.cat}</span>`:''}
+        ${t.cat?`<span class="chip" style="background:${catColor(t.cat)}22;color:${catColor(t.cat)}">${esc(t.cat)}</span>`:''}
         <span class="dot bg-${t.pri}"></span><span class="pri-${t.pri}">${t.pri}</span>
         ${t.fecha?`<span style="color:${venc?'var(--red)':'var(--muted)'}">📅 ${relFecha(t.fecha)}</span>`:''}
       </div>
@@ -537,11 +608,11 @@ function taskItem(t){
 function toggleTarea(id){ const t=S.tareas.find(x=>x.id===id); t.done=!t.done; save(); render(); if(t.done) toast('¡Tarea completada!','🎉'); }
 function delTarea(id){ S.tareas=S.tareas.filter(x=>x.id!==id); save(); render(); toast('Tarea eliminada','🗑️'); }
 function modalTarea(id){
-  const t = id ? S.tareas.find(x=>x.id===id) : {titulo:'',cat:'Personal',pri:'media',fecha:'',notas:''};
+  const t = id ? S.tareas.find(x=>x.id===id) : {titulo:'',cat:(catNames()[0]||''),pri:'media',fecha:'',notas:''};
   openModal(id?'Editar tarea':'Nueva tarea', `
     <label class="fld"><span>¿Qué tienes que hacer?</span><input id="mT" value="${esc(t.titulo)}" placeholder="Ej: Estudiar cálculo, revisar armamento..."></label>
     <div class="row">
-      <label class="fld"><span>Área</span><select id="mC">${CATS.map(x=>`<option ${t.cat===x?'selected':''}>${x}</option>`).join('')}</select></label>
+      <label class="fld"><span>Área</span><select id="mC">${catOptions(t.cat)}</select></label>
       <label class="fld"><span>Prioridad</span><select id="mP">${['alta','media','baja'].map(x=>`<option ${t.pri===x?'selected':''}>${x}</option>`).join('')}</select></label>
     </div>
     <label class="fld"><span>Fecha límite (opcional)</span><input type="date" id="mF" value="${t.fecha||''}"></label>
@@ -601,14 +672,14 @@ function vAgenda(c, top){
 }
 function calMove(n){ calDate.setMonth(calDate.getMonth()+n); render(); }
 function modalEvento(id,fecha){
-  const e = id ? S.eventos.find(x=>x.id===id) : {titulo:'',fecha:fecha||hoyISO(),hora:'',cat:'Personal',notas:''};
+  const e = id ? S.eventos.find(x=>x.id===id) : {titulo:'',fecha:fecha||hoyISO(),hora:'',cat:(catNames()[0]||''),notas:''};
   openModal(id?'Editar evento':'Nuevo evento',`
     <label class="fld"><span>Título</span><input id="eT" value="${esc(e.titulo)}" placeholder="Ej: Sesión de inglés, reunión..."></label>
     <div class="row">
       <label class="fld"><span>Fecha</span><input type="date" id="eF" value="${e.fecha}"></label>
       <label class="fld"><span>Hora</span><input type="time" id="eH" value="${e.hora||''}"></label>
     </div>
-    <label class="fld"><span>Categoría</span><select id="eC">${CATS.map(x=>`<option ${e.cat===x?'selected':''}>${x}</option>`).join('')}</select></label>
+    <label class="fld"><span>Categoría</span><select id="eC">${catOptions(e.cat)}</select></label>
     <label class="fld"><span>Notas</span><textarea id="eN" rows="2">${esc(e.notas||'')}</textarea></label>
     ${id?`<button class="btn danger sm" onclick="delEvento('${id}')">🗑️ Eliminar evento</button>`:''}
   `,`<button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveEvento('${id||''}')">Guardar</button>`);
@@ -987,6 +1058,8 @@ function vAjustes(c){
       <button class="btn sm" onclick="render();toast('Perfil guardado')">Guardar perfil</button>
     </div>
 
+    ${categoriasCardHTML()}
+
     ${driveCardHTML()}
 
     <div class="card" style="margin-bottom:18px">
@@ -1021,7 +1094,7 @@ function vAjustes(c){
       <button class="btn danger sm" onclick="wipeData()">🗑️ Borrar todos los datos</button>
     </div>
 
-    <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:24px">Bitácora · Organizador personal · 100% privado, funciona sin internet ⚓</p>`;
+    <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:24px">Órbita · Organizador personal · 100% privado, funciona sin internet 🪐</p>`;
 }
 function exportData(){
   const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});

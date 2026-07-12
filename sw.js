@@ -1,5 +1,5 @@
 /* Bitácora — Service Worker (modo offline) */
-const CACHE = 'bitacora-v1';
+const CACHE = 'orbita-v2';
 const ASSETS = [
   'ORGANIZADOR_PERSONAL.html',
   'manifest.webmanifest',
