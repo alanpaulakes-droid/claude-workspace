@@ -227,36 +227,47 @@
   details ol{margin:4px 0 14px 18px;font-size:13px;color:var(--txt2);line-height:1.7}
   details ol li{margin-bottom:6px}
   details code{background:var(--bg);padding:1px 6px;border-radius:5px;font-size:12px;word-break:break-all}
+
+  /* ---- Íconos SVG ---- */
+  .ic-svg{flex-shrink:0;display:inline-block;vertical-align:middle}
+  .brand .logo{color:#fff}
+  .nav button svg{width:20px;height:20px}
+  .nav button span:not(.badge){flex:1}
+  .side-foot button svg{width:18px;height:18px}
+  .btn svg,.btn.sm svg{margin:0 -1px}
+  .stat .si svg{opacity:1}
+
+  /* ---- Barra de navegación inferior (estilo app en móvil) ---- */
+  .botnav{display:none}
   @media(max-width:860px){
     .sidebar{position:fixed;transform:translateX(-100%);box-shadow:var(--shadow)}
     .sidebar.open{transform:translateX(0)}
-    .menu-btn{display:block}
-    .content{padding:18px}
+    .menu-btn{display:none}
+    .content{padding:18px 18px 20px}
     .topbar{padding:12px 16px}
     .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;display:none}
     .scrim.open{display:block}
+    .main{padding-bottom:74px}
+    .botnav{position:fixed;left:0;right:0;bottom:0;z-index:46;display:flex;justify-content:space-around;
+      background:var(--bg2);border-top:1px solid var(--line);padding:7px 4px calc(7px + env(safe-area-inset-bottom))}
+    .botnav button{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+      background:none;border:none;color:var(--muted);font-family:inherit;font-size:10.5px;font-weight:600;
+      cursor:pointer;padding:3px 2px;border-radius:12px;transition:color .15s}
+    .botnav button svg{width:23px;height:23px}
+    .botnav button.active{color:var(--accent2)}
+    .botnav button .bdot{position:absolute;top:0;left:calc(50% + 7px);width:8px;height:8px;border-radius:50%;background:var(--red);border:2px solid var(--bg2)}
   }
 </style>
 
 <!-- ===== SIDEBAR ===== -->
 <aside class="sidebar" id="sidebar">
   <div class="brand">
-    <div class="logo" style="font-weight:800;font-size:22px">Ó</div>
+    <div class="logo" id="brandLogo"></div>
     <div><h1>Órbita</h1><span id="brandSub">Organizador personal</span></div>
   </div>
-  <nav class="nav" id="nav">
-    <button data-view="hoy" class="active"><span class="ic">🏠</span> Hoy</button>
-    <button data-view="tareas"><span class="ic">✅</span> Tareas <span class="badge hidden" id="badgeTareas"></span></button>
-    <button data-view="agenda"><span class="ic">📅</span> Agenda</button>
-    <button data-view="guardias"><span class="ic">🛡️</span> Guardias <span class="badge hidden" id="badgeGuardias"></span></button>
-    <button data-view="universidad"><span class="ic">🎓</span> Universidad</button>
-    <button data-view="ingles"><span class="ic">🇬🇧</span> Inglés</button>
-    <button data-view="inspeccion"><span class="ic">🔫</span> Inspección</button>
-    <button data-view="notas"><span class="ic">📝</span> Notas</button>
-    <button data-view="ajustes"><span class="ic">⚙️</span> Ajustes</button>
-  </nav>
+  <nav class="nav" id="nav"></nav>
   <div class="side-foot">
-    <button onclick="toggleTheme()"><span id="themeIc">🌙</span> <span id="themeLbl">Modo oscuro</span></button>
+    <button onclick="toggleTheme()"><span id="themeIc"></span> <span id="themeLbl">Modo oscuro</span></button>
   </div>
 </aside>
 <div class="scrim" id="scrim" onclick="closeSidebar()"></div>
@@ -274,6 +285,7 @@
   </div>
   <div class="content" id="content"></div>
 </main>
+<nav class="botnav" id="botnav"></nav>
 
 <!-- ===== MODAL ===== -->
 <div class="overlay" id="overlay">
@@ -335,6 +347,51 @@ function save(bump=true){
 }
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
 
+/* ---------- Íconos SVG minimalistas ---------- */
+const IC = {
+  home:'<path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V19a1 1 0 0 0 1 1H10v-5h4v5h3.5a1 1 0 0 0 1-1V9.5"/>',
+  tareas:'<path d="M9 6.5h11"/><path d="M9 12h11"/><path d="M9 17.5h11"/><path d="m3.3 6 1.1 1.1L6.7 4.8"/><path d="m3.3 11.5 1.1 1.1 2.3-2.3"/><path d="m3.3 17 1.1 1.1 2.3-2.3"/>',
+  agenda:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17"/><path d="M8 3.2v3.6"/><path d="M16 3.2v3.6"/>',
+  cap:'<path d="M12 4 2.5 8.3 12 12.6l9.5-4.3L12 4Z"/><path d="M6.2 10.4v4.1c0 1.4 2.6 2.9 5.8 2.9s5.8-1.5 5.8-2.9v-4.1"/><path d="M21.2 8.4v5.2"/>',
+  globe:'<circle cx="12" cy="12" r="8.4"/><path d="M3.6 12h16.8"/><path d="M12 3.6c2.3 2.4 3.4 5.3 3.4 8.4S14.3 18 12 20.4C9.7 18 8.6 15.1 8.6 12S9.7 6 12 3.6Z"/>',
+  inspeccion:'<path d="M12 3.2 5 6v5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6l-7-2.8Z"/><path d="m9 11.8 2 2 4-4.2"/>',
+  notas:'<path d="M6.5 3.5h7l4.5 4.5V19a1.5 1.5 0 0 1-1.5 1.5H6.5A1.5 1.5 0 0 1 5 19V5A1.5 1.5 0 0 1 6.5 3.5Z"/><path d="M13 3.7V8h4.3"/><path d="M8.5 12.5h7"/><path d="M8.5 16h5"/>',
+  ajustes:'<path d="M4 8h8"/><path d="M16 8h4"/><circle cx="14" cy="8" r="2.1"/><path d="M4 16h4"/><path d="M12 16h8"/><circle cx="9" cy="16" r="2.1"/>',
+  more:'<circle cx="5.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="18.5" cy="12" r="1.6" fill="currentColor" stroke="none"/>',
+  plus:'<path d="M12 5.5v13"/><path d="M5.5 12h13"/>',
+  alert:'<path d="M12 4 21 19.5H3L12 4Z"/><path d="M12 10.5v4"/><path d="M12 17.2h.01"/>',
+  book:'<path d="M6 4h13v14.5H6.5A1.5 1.5 0 0 1 5 17V5.5A1.5 1.5 0 0 1 6.5 4Z"/><path d="M5 17a1.5 1.5 0 0 1 1.5-1.5H19"/>',
+  clock:'<circle cx="12" cy="12" r="8.4"/><path d="M12 7.5V12l3 1.8"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/>',
+  moon:'<path d="M20.5 14.8A8.2 8.2 0 1 1 9.2 3.5a6.6 6.6 0 0 0 11.3 11.3Z"/>',
+  orbit:'<ellipse cx="12" cy="12" rx="9" ry="4.4" transform="rotate(-25 12 12)"/><circle cx="10.6" cy="12.4" r="2.7" fill="currentColor" stroke="none"/><circle cx="17.6" cy="8.4" r="1.5" fill="currentColor" stroke="none"/>',
+  event:'<circle cx="12" cy="12" r="8.4"/><path d="M12 7.5V12l3 1.8"/>',
+  check:'<circle cx="12" cy="12" r="8.4"/><path d="m8.2 12 2.6 2.6 5-5.4"/>'
+};
+function icon(n,s){ s=s||22; return `<svg class="ic-svg" viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${IC[n]||''}</svg>`; }
+
+/* ---------- Navegación (barra lateral + inferior) ---------- */
+const NAV = [
+  {v:'hoy',         ic:'home',       lbl:'Hoy'},
+  {v:'tareas',      ic:'tareas',     lbl:'Tareas', badge:'badgeTareas'},
+  {v:'agenda',      ic:'agenda',     lbl:'Agenda'},
+  {v:'universidad', ic:'cap',        lbl:'Universidad'},
+  {v:'ingles',      ic:'globe',      lbl:'Inglés'},
+  {v:'inspeccion',  ic:'inspeccion', lbl:'Inspección'},
+  {v:'notas',       ic:'notas',      lbl:'Notas'},
+  {v:'ajustes',     ic:'ajustes',    lbl:'Ajustes'}
+];
+const BOTNAV = ['hoy','tareas','agenda','universidad'];
+function buildChrome(){
+  const lg=document.getElementById('brandLogo'); if(lg) lg.innerHTML=icon('orbit',26);
+  const nav=document.getElementById('nav');
+  nav.innerHTML = NAV.map(n=>`<button data-view="${n.v}">${icon(n.ic,20)}<span>${n.lbl}</span>${n.badge?`<span class="badge hidden" id="${n.badge}"></span>`:''}</button>`).join('');
+  const bn=document.getElementById('botnav');
+  bn.innerHTML = BOTNAV.map(v=>{ const n=NAV.find(x=>x.v===v); return `<button data-view="${v}">${icon(n.ic,22)}<span>${n.lbl}</span>${v==='tareas'?'<span class="bdot hidden" id="botDotTareas"></span>':''}</button>`; }).join('')
+    + `<button onclick="openSidebar()">${icon('more',22)}<span>Más</span></button>`;
+  document.querySelectorAll('#nav button, #botnav button[data-view]').forEach(b=> b.onclick=()=>go(b.dataset.view));
+}
+
 /* ---------- Utilidades fecha ---------- */
 const MES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const MES_C = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
@@ -379,7 +436,7 @@ function closeSidebar(){ document.getElementById('sidebar').classList.remove('op
 function applyTheme(){
   document.documentElement.setAttribute('data-theme', S.settings.theme);
   const dark = S.settings.theme==='dark';
-  document.getElementById('themeIc').textContent = dark?'☀️':'🌙';
+  const _ti=document.getElementById('themeIc'); if(_ti) _ti.innerHTML = icon(dark?'sun':'moon',18);
   document.getElementById('themeLbl').textContent = dark?'Modo claro':'Modo oscuro';
 }
 function toggleTheme(){ S.settings.theme = S.settings.theme==='dark'?'light':'dark'; save(); applyTheme(); }
@@ -391,7 +448,6 @@ const VIEWS = {
   hoy:{t:'Hoy', s:()=>fmtLargo(hoyISO())},
   tareas:{t:'Tareas', s:()=>'Todo lo que tienes por hacer'},
   agenda:{t:'Agenda', s:()=>'Tu calendario mensual'},
-  guardias:{t:'Guardias', s:()=>'Turnos y servicios'},
   universidad:{t:'Universidad', s:()=>'Ingeniería Industrial'},
   ingles:{t:'Inglés', s:()=>'Sesiones y vocabulario'},
   inspeccion:{t:'Inspección de Armamento', s:()=>'Registros y checklists'},
@@ -400,12 +456,12 @@ const VIEWS = {
 };
 function go(v){
   view=v; closeSidebar();
-  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+  document.querySelectorAll('#nav button, #botnav button[data-view]').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
   document.getElementById('viewTitle').textContent = VIEWS[v].t;
   document.getElementById('viewSub').textContent = VIEWS[v].s();
   render();
 }
-document.querySelectorAll('#nav button').forEach(b=> b.onclick=()=>go(b.dataset.view));
+/* la navegación se construye y enlaza en buildChrome() */
 
 /* ============================================================
    RENDER PRINCIPAL
@@ -415,14 +471,13 @@ function render(){
   const c = document.getElementById('content');
   const top = document.getElementById('topActions');
   top.innerHTML='';
-  ({hoy:vHoy, tareas:vTareas, agenda:vAgenda, guardias:vGuardias, universidad:vUniversidad,
+  ({hoy:vHoy, tareas:vTareas, agenda:vAgenda, universidad:vUniversidad,
     ingles:vIngles, inspeccion:vInspeccion, notas:vNotas, ajustes:vAjustes})[view](c, top);
 }
 function updateBadges(){
   const tp = S.tareas.filter(t=>!t.done).length;
   setBadge('badgeTareas', tp);
-  const gf = S.guardias.filter(g=> diasHasta(g.fecha)>=0).length;
-  setBadge('badgeGuardias', gf);
+  const bd=document.getElementById('botDotTareas'); if(bd) bd.classList.toggle('hidden', tp===0);
 }
 function setBadge(id,n){ const el=document.getElementById(id); if(n>0){el.textContent=n;el.classList.remove('hidden');}else el.classList.add('hidden'); }
 
@@ -439,7 +494,6 @@ function vHoy(c){
   const tareasVenc = S.tareas.filter(t=>!t.done && t.fecha && diasHasta(t.fecha)<0);
   const proxTareas = S.tareas.filter(t=>!t.done).sort((a,b)=>(a.fecha||'9')<(b.fecha||'9')?-1:1).slice(0,5);
   const evHoy = S.eventos.filter(e=>e.fecha===hoy);
-  const guardiaProx = S.guardias.filter(g=>diasHasta(g.fecha)>=0).sort((a,b)=>a.fecha<b.fecha?-1:1)[0];
   const examProx = examenesTodos().filter(e=>diasHasta(e.fecha)>=0).sort((a,b)=>a.fecha<b.fecha?-1:1)[0];
   const pend = S.tareas.filter(t=>!t.done).length;
 
@@ -450,10 +504,10 @@ function vHoy(c){
   </div>`;
 
   html += `<div class="stats">
-    ${stat('a','📋', tareasHoy.length, 'Tareas para hoy')}
-    ${stat('r','⚠️', tareasVenc.length, 'Vencidas')}
-    ${stat('t','🛡️', guardiaProx?relFecha(guardiaProx.fecha):'—', 'Próxima guardia')}
-    ${stat('go','🎓', examProx?relFecha(examProx.fecha):'—', 'Próximo examen')}
+    ${stat('a','tareas', tareasHoy.length, 'Tareas para hoy')}
+    ${stat('r','alert', tareasVenc.length, 'Vencidas')}
+    ${stat('p','agenda', evHoy.length, 'Eventos hoy')}
+    ${stat('go','cap', examProx?relFecha(examProx.fecha):'—', 'Próximo examen')}
   </div>`;
 
   // Agenda de hoy
@@ -462,18 +516,16 @@ function vHoy(c){
     ...evHoy.map(e=>({tipo:'evento',...e})),
     ...tareasHoy.map(t=>({tipo:'tarea',...t}))
   ];
-  if(guardiaProx && guardiaProx.fecha===hoy) dayItems.unshift({tipo:'guardia',...guardiaProx});
   if(!dayItems.length){
-    html += `<div class="card"><div class="empty"><span class="em-ic">🌤️</span>Nada agendado para hoy. ¡Aprovecha para adelantar estudios!</div></div>`;
+    html += `<div class="card"><div class="empty"><span class="em-ic">✨</span>Nada agendado para hoy. Un buen momento para planificar.</div></div>`;
   } else {
     html += '<div>';
     dayItems.forEach(it=>{
-      const ic = it.tipo==='guardia'?'🛡️':it.tipo==='evento'?'📅':'✅';
-      const col = it.tipo==='guardia'?'var(--teal)':it.tipo==='evento'?'var(--purple)':'var(--accent)';
+      const col = it.tipo==='evento'?'var(--purple)':'var(--accent)';
       html += `<div class="item" style="border-left:4px solid ${col}">
-        <div style="font-size:20px">${ic}</div>
+        <div style="color:${col};display:flex;align-items:center">${icon(it.tipo==='evento'?'event':'check',22)}</div>
         <div class="it-body"><div class="it-title">${esc(it.titulo||it.tipo)}</div>
-        <div class="it-meta">${it.hora?'🕐 '+it.hora:''} ${it.cat?'· '+it.cat:''} ${it.tipo==='guardia'&&it.turno?'· '+esc(it.turno):''}</div></div>
+        <div class="it-meta">${[it.hora,it.cat].filter(Boolean).map(esc).join(' · ')}</div></div>
       </div>`;
     });
     html += '</div>';
@@ -488,7 +540,8 @@ function vHoy(c){
   c.innerHTML = html;
 }
 function stat(cls,ic,val,lbl){
-  return `<div class="stat ${cls}"><div class="si">${ic}</div><div class="sv">${val}</div><div class="sl">${lbl}</div></div>`;
+  const g = (typeof IC!=='undefined' && IC[ic]) ? icon(ic,20) : ic;
+  return `<div class="stat ${cls}"><div class="si">${g}</div><div class="sv">${val}</div><div class="sl">${lbl}</div></div>`;
 }
 
 /* ============================================================
@@ -641,9 +694,8 @@ function vAgenda(c, top){
   const marks={};
   const add=(iso,label,color)=>{ (marks[iso]=marks[iso]||[]).push({label,color}); };
   S.eventos.forEach(e=>add(e.fecha, e.titulo,'var(--purple)'));
-  S.guardias.forEach(g=>add(g.fecha,'🛡️ Guardia','var(--teal)'));
-  S.tareas.filter(t=>t.fecha&&!t.done).forEach(t=>add(t.fecha,'✅ '+t.titulo,'var(--accent)'));
-  examenesTodos().forEach(e=>add(e.fecha,'🎓 '+e.titulo,'var(--gold)'));
+  S.tareas.filter(t=>t.fecha&&!t.done).forEach(t=>add(t.fecha, t.titulo,'var(--accent)'));
+  examenesTodos().forEach(e=>add(e.fecha, e.titulo,'var(--gold)'));
 
   let cells='';
   for(let i=0;i<start;i++){ const d=prevDays-start+i+1; cells+=`<div class="cal-cell other"><div class="cn">${d}</div></div>`; }
@@ -667,7 +719,7 @@ function vAgenda(c, top){
     </div>
     <div class="cal-grid">${DOW.map(d=>`<div class="cal-dow">${d}</div>`).join('')}${cells}</div>
     <div style="margin-top:16px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)">
-      <span>🟣 Eventos</span><span>🔵 Tareas</span><span>🟢 Guardias</span><span>🟡 Exámenes</span>
+      <span>🟣 Eventos</span><span>🔵 Tareas</span><span>🟡 Exámenes</span>
     </div>`;
 }
 function calMove(n){ calDate.setMonth(calDate.getMonth()+n); render(); }
@@ -857,9 +909,9 @@ function vIngles(c, top){
   const prox=ses.filter(s=>diasHasta(s.fecha)>=0).sort((a,b)=>a.fecha<b.fecha?-1:1)[0];
   const total=ses.length;
   let html=`<div class="stats">
-    ${stat('p','🇬🇧',total,'Sesiones registradas')}
-    ${stat('a','🗓️',prox?relFecha(prox.fecha):'—','Próxima sesión')}
-    ${stat('t','📚',vocab.length,'Palabras guardadas')}
+    ${stat('p','globe',total,'Sesiones registradas')}
+    ${stat('a','clock',prox?relFecha(prox.fecha):'—','Próxima sesión')}
+    ${stat('t','book',vocab.length,'Palabras guardadas')}
   </div>`;
 
   html+=`<div class="tabs">
@@ -1079,12 +1131,11 @@ function vAjustes(c){
     <div class="card" style="margin-bottom:18px">
       <h2 style="font-size:16px;margin-bottom:6px">📊 Tus datos</h2>
       <div class="stats" style="margin:12px 0 0">
-        ${stat('a','✅',S.tareas.length,'Tareas')}
-        ${stat('t','🛡️',S.guardias.length,'Guardias')}
-        ${stat('go','🎓',S.ramos.length,'Ramos')}
-        ${stat('p','🇬🇧',S.ingles.sesiones.length,'Sesiones inglés')}
-        ${stat('r','🔫',S.inspecciones.length,'Inspecciones')}
-        ${stat('g','📝',S.notas.length,'Notas')}
+        ${stat('a','tareas',S.tareas.length,'Tareas')}
+        ${stat('go','cap',S.ramos.length,'Ramos')}
+        ${stat('p','globe',S.ingles.sesiones.length,'Sesiones inglés')}
+        ${stat('r','inspeccion',S.inspecciones.length,'Inspecciones')}
+        ${stat('g','notas',S.notas.length,'Notas')}
       </div>
     </div>
 
@@ -1272,9 +1323,9 @@ function syncBootstrap(){
 function esc(s){ return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
 /* ---------- Init ---------- */
+buildChrome();
 applyTheme();
-document.getElementById('viewSub').textContent = VIEWS.hoy.s();
-render();
+go('hoy');
 syncBootstrap();
 
 /* ---------- App instalable (PWA): registro del service worker ---------- */
