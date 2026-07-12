@@ -878,7 +878,15 @@ function delGuardia(id){ S.guardias=S.guardias.filter(x=>x.id!==id); save(); ren
 /* ============================================================
    VISTA: UNIVERSIDAD
    ============================================================ */
-function examenesTodos(){ const r=[]; S.ramos.forEach(ra=>(ra.examenes||[]).forEach(e=>r.push({...e,ramo:ra.nombre,ramoId:ra.id, titulo:e.titulo+' · '+ra.nombre}))); return r; }
+function examenesTodos(){ const r=[]; S.ramos.forEach(ra=>(ra.examenes||[]).forEach(e=>{ const f=e.fechaFin||e.fechaIni||e.fecha; r.push({...e, fecha:f, ramo:ra.nombre, ramoId:ra.id, titulo:e.titulo+' · '+ra.nombre}); })); return r; }
+function evalTieneNota(e){ return e && e.nota!=null && e.nota!=='' && !isNaN(parseFloat(e.nota)); }
+function promedioRamo(ra){
+  const con=(ra.examenes||[]).filter(evalTieneNota);
+  if(!con.length) return null;
+  const sp=con.reduce((a,e)=>a+(parseFloat(e.peso)||1),0);
+  const sn=con.reduce((a,e)=>a+parseFloat(e.nota)*(parseFloat(e.peso)||1),0);
+  return sp?sn/sp:null;
+}
 function vUniversidad(c, top){
   top.innerHTML = `<button class="btn" onclick="modalRamo()">＋ Ramo</button>`;
   if(!S.ramos.length){ c.innerHTML=`<div class="card"><div class="empty"><span class="em-ic">🎓</span>Agrega los ramos de tu carrera para llevar el control de evaluaciones, tareas y notas.</div></div>`; return; }
@@ -888,7 +896,7 @@ function vUniversidad(c, top){
     const tareas=(ra.tareas||[]);
     const tHechas=tareas.filter(t=>t.done).length;
     const prog = tareas.length? Math.round(tHechas/tareas.length*100):0;
-    const prom = ra.notas&&ra.notas.length ? (ra.notas.reduce((a,n)=>a+n.valor*(n.peso||1),0)/ra.notas.reduce((a,n)=>a+(n.peso||1),0)).toFixed(1) : '—';
+    const promN = promedioRamo(ra); const prom = promN!=null ? promN.toFixed(1) : '—';
     html += `<div class="card" style="margin-bottom:16px;border-left:4px solid ${ra.color||'var(--gold)'}">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
         <div><div style="font-size:17px;font-weight:700">${esc(ra.nombre)}</div>
@@ -896,7 +904,7 @@ function vUniversidad(c, top){
         <div style="text-align:right"><div style="font-size:22px;font-weight:800;color:${prom!=='—'&&prom<4?'var(--red)':'var(--green)'}">${prom}</div><div style="font-size:11px;color:var(--muted)">promedio</div></div>
       </div>
       <div class="progress"><i style="width:${prog}%"></i></div>
-      <div style="font-size:11.5px;color:var(--muted);margin-top:5px">${tHechas}/${tareas.length} tareas · ${ev.length} evaluaciones</div>
+      <div style="font-size:11.5px;color:var(--muted);margin-top:5px">${tHechas}/${tareas.length} tareas · ${ev.length} evaluaciones (${ev.filter(evalTieneNota).length} con nota)</div>
       <div style="display:flex;gap:8px;margin-top:13px;flex-wrap:wrap">
         <button class="btn sm ghost" onclick="modalRamoDetalle('${ra.id}')">📂 Abrir</button>
         <button class="btn sm ghost" onclick="modalRamo('${ra.id}')">✏️ Editar</button>
@@ -927,51 +935,102 @@ function delRamo(id){ if(!confirm('¿Eliminar este ramo y todos sus datos?'))ret
 
 function modalRamoDetalle(id){
   const r=S.ramos.find(x=>x.id===id);
-  const ev=(r.examenes||[]).slice().sort((a,b)=>a.fecha<b.fecha?-1:1);
+  const ev=(r.examenes||[]).slice().sort((a,b)=>{const fa=a.fechaIni||a.fecha||'9999',fb=b.fechaIni||b.fecha||'9999';return fa<fb?-1:1;});
   const tareas=(r.tareas||[]);
-  const notas=(r.notas||[]);
+  const promN=promedioRamo(r); const prom=promN!=null?promN.toFixed(1):'—';
   const body=`
     <div class="tabs">
-      <button class="tab active" onclick="rdTab(event,'ev')">📝 Evaluaciones</button>
-      <button class="tab" onclick="rdTab(event,'ta')">✅ Tareas</button>
-      <button class="tab" onclick="rdTab(event,'no')">📊 Notas</button>
+      <button class="tab active" onclick="rdTab(event,'ev')">Evaluaciones</button>
+      <button class="tab" onclick="rdTab(event,'ta')">Tareas</button>
     </div>
     <div id="rd-ev">
-      ${ev.length?ev.map(e=>`<div class="item"><div class="it-body"><div class="it-title">${esc(e.titulo)}</div><div class="it-meta">📅 ${fmtLargo(e.fecha)} · ${relFecha(e.fecha)}</div></div><button class="mini-btn" onclick="delSub('${id}','examenes','${e.id}')">🗑️</button></div>`).join(''):'<div class="empty" style="padding:20px">Sin evaluaciones</div>'}
-      <button class="btn sm ghost" style="width:100%;margin-top:8px" onclick="addSub('${id}','examenes')">＋ Agregar evaluación</button>
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;margin-bottom:12px">
+        <div style="font-size:13px;color:var(--txt2);font-weight:600">Promedio del ramo</div>
+        <div style="font-size:26px;font-weight:800;color:${promN!=null&&promN<4?'var(--red)':'var(--green)'}">${prom}</div>
+      </div>
+      ${ev.length?ev.map(e=>evalRow(id,e)).join(''):'<div class="empty" style="padding:20px">Aún no agregas evaluaciones</div>'}
+      <button class="btn sm" style="width:100%;margin-top:8px" onclick="modalEvaluacion('${id}')">${icon('plus',16)} Agregar evaluación</button>
     </div>
     <div id="rd-ta" class="hidden">
-      ${tareas.length?tareas.map(t=>`<div class="item ${t.done?'done':''}"><button class="check ${t.done?'on':''}" onclick="toggleSubTarea('${id}','${t.id}')">${t.done?'✓':''}</button><div class="it-body"><div class="it-title">${esc(t.titulo)}</div>${t.fecha?`<div class="it-meta">📅 ${relFecha(t.fecha)}</div>`:''}</div><button class="mini-btn" onclick="delSub('${id}','tareas','${t.id}')">🗑️</button></div>`).join(''):'<div class="empty" style="padding:20px">Sin tareas</div>'}
-      <button class="btn sm ghost" style="width:100%;margin-top:8px" onclick="addSub('${id}','tareas')">＋ Agregar tarea</button>
-    </div>
-    <div id="rd-no" class="hidden">
-      ${notas.length?notas.map(n=>`<div class="item"><div class="it-body"><div class="it-title">${esc(n.titulo)}</div><div class="it-meta">Peso: ${n.peso||1}</div></div><div style="font-size:20px;font-weight:800;color:${n.valor<4?'var(--red)':'var(--green)'};margin-right:8px">${n.valor}</div><button class="mini-btn" onclick="delSub('${id}','notas','${n.id}')">🗑️</button></div>`).join(''):'<div class="empty" style="padding:20px">Sin notas registradas</div>'}
-      <button class="btn sm ghost" style="width:100%;margin-top:8px" onclick="addSub('${id}','notas')">＋ Registrar nota</button>
+      ${tareas.length?tareas.map(t=>`<div class="item ${t.done?'done':''}"><button class="check ${t.done?'on':''}" onclick="toggleSubTarea('${id}','${t.id}')">${t.done?'✓':''}</button><div class="it-body"><div class="it-title">${esc(t.titulo)}</div>${t.fecha?`<div class="it-meta">${relFecha(t.fecha)}</div>`:''}</div><button class="mini-btn" onclick="delSub('${id}','tareas','${t.id}')">🗑️</button></div>`).join(''):'<div class="empty" style="padding:20px">Sin tareas</div>'}
+      <button class="btn sm" style="width:100%;margin-top:8px" onclick="addSub('${id}','tareas')">${icon('plus',16)} Agregar tarea</button>
     </div>`;
-  openModal(r.nombre, body, `<button class="btn" onclick="closeModal()">Cerrar</button>`);
+  openModal(r.nombre, body, `<button class="btn ghost" onclick="closeModal()">Cerrar</button>`);
+}
+function evalRow(ramoId,e){
+  const ini=e.fechaIni||e.fecha||''; const fin=e.fechaFin||e.fecha||ini;
+  const rango = (ini&&fin&&ini!==fin) ? `${fmtFecha(ini)} – ${fmtFecha(fin)}` : (fin?fmtLargo(fin):'sin fecha');
+  const rel = fin?relFecha(fin):'';
+  const tn = evalTieneNota(e); const nota = tn?parseFloat(e.nota):null;
+  return `<div class="item" onclick="modalEvaluacion('${ramoId}','${e.id}')" style="cursor:pointer">
+    <div class="it-body">
+      <div class="it-title">${esc(e.titulo)}</div>
+      <div class="it-meta">📅 Semana: ${rango}${rel?' · '+rel:''} · peso ${e.peso||1}</div>
+    </div>
+    ${tn
+      ? `<div style="font-size:20px;font-weight:800;color:${nota<4?'var(--red)':'var(--green)'};margin-right:6px">${nota}</div>`
+      : `<span class="chip" style="color:var(--gold);margin-right:6px">Pendiente</span>`}
+    <button class="mini-btn" onclick="event.stopPropagation();delSub('${ramoId}','examenes','${e.id}')">🗑️</button>
+  </div>`;
 }
 function rdTab(e,which){
   e.target.parentNode.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   e.target.classList.add('active');
-  ['ev','ta','no'].forEach(k=>document.getElementById('rd-'+k).classList.toggle('hidden',k!==which));
+  ['ev','ta'].forEach(k=>document.getElementById('rd-'+k).classList.toggle('hidden',k!==which));
+}
+/* ---- Evaluación: ventana con semana (desde–hasta) + calificación ---- */
+function modalEvaluacion(ramoId, evId){
+  const r=S.ramos.find(x=>x.id===ramoId);
+  const e = evId ? r.examenes.find(x=>x.id===evId) : {titulo:'',fechaIni:hoyISO(),fechaFin:'',nota:'',peso:1};
+  const ini=e.fechaIni||e.fecha||hoyISO();
+  const fin=e.fechaFin||e.fecha||'';
+  openModal(evId?'Editar evaluación':'Nueva evaluación', `
+    <label class="fld"><span>Nombre de la evaluación</span><input id="evT" value="${esc(e.titulo)}" placeholder="Ej: Prueba 1, Control 2, Examen final"></label>
+    <div class="row">
+      <label class="fld"><span>Disponible desde</span><input type="date" id="evIni" value="${ini}"></label>
+      <label class="fld"><span>Cierra (hasta)</span><input type="date" id="evFin" value="${fin}"></label>
+    </div>
+    <button class="btn sm ghost" style="margin:-6px 0 14px" onclick="evalSemana()">＋ Semana completa (7 días)</button>
+    <div class="row">
+      <label class="fld"><span>Calificación (opcional)</span><input type="number" inputmode="decimal" id="evNota" step="0.1" value="${e.nota??''}" placeholder="Ej: 5.5"></label>
+      <label class="fld"><span>Ponderación</span><input type="number" inputmode="decimal" id="evPeso" step="0.5" value="${e.peso??1}" placeholder="1"></label>
+    </div>
+    ${evId?`<button class="btn danger sm" onclick="delEvaluacion('${ramoId}','${evId}')">🗑️ Eliminar evaluación</button>`:''}
+  `, `<button class="btn ghost" onclick="modalRamoDetalle('${ramoId}')">Volver</button><button class="btn" onclick="saveEvaluacion('${ramoId}','${evId||''}')">Guardar</button>`);
+  setTimeout(()=>document.getElementById('evT').focus(),50);
+}
+function evalSemana(){
+  const ini=document.getElementById('evIni').value; if(!ini){toast('Elige primero la fecha de inicio','⚠️');return;}
+  const d=new Date(ini+'T00:00:00'); d.setDate(d.getDate()+6);
+  document.getElementById('evFin').value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function saveEvaluacion(ramoId,evId){
+  const r=S.ramos.find(x=>x.id===ramoId);
+  const titulo=document.getElementById('evT').value.trim(); if(!titulo){toast('Escribe el nombre','⚠️');return;}
+  let fechaIni=document.getElementById('evIni').value;
+  let fechaFin=document.getElementById('evFin').value || fechaIni;
+  if(!fechaIni) fechaIni=fechaFin;
+  if(fechaIni && fechaFin && fechaFin<fechaIni){ const t=fechaIni; fechaIni=fechaFin; fechaFin=t; }
+  const nr=document.getElementById('evNota').value.trim();
+  const nota = nr===''?null:parseFloat(nr);
+  const peso = parseFloat(document.getElementById('evPeso').value)||1;
+  const data={titulo,fechaIni,fechaFin,nota,peso};
+  if(evId){ const o=r.examenes.find(x=>x.id===evId); Object.assign(o,data); delete o.fecha; }
+  else r.examenes.push({id:uid(),...data});
+  save(); modalRamoDetalle(ramoId); render(); toast(evId?'Evaluación actualizada':'Evaluación agregada','🎓');
+}
+function delEvaluacion(ramoId,evId){
+  const r=S.ramos.find(x=>x.id===ramoId); r.examenes=r.examenes.filter(x=>x.id!==evId);
+  save(); modalRamoDetalle(ramoId); render(); toast('Evaluación eliminada','🗑️');
 }
 function addSub(ramoId,tipo){
   const r=S.ramos.find(x=>x.id===ramoId);
-  if(tipo==='examenes'){
-    const titulo=prompt('Nombre de la evaluación (ej: Prueba 1, Examen final):'); if(!titulo)return;
-    const fecha=prompt('Fecha (AAAA-MM-DD):',hoyISO()); if(!fecha)return;
-    r.examenes.push({id:uid(),titulo,fecha});
-  } else if(tipo==='tareas'){
+  if(tipo==='tareas'){
     const titulo=prompt('Tarea a realizar:'); if(!titulo)return;
     const fecha=prompt('Fecha límite (AAAA-MM-DD, opcional):','')||'';
     r.tareas.push({id:uid(),titulo,fecha,done:false});
-  } else {
-    const titulo=prompt('Nombre de la nota (ej: Prueba 1):'); if(!titulo)return;
-    const valor=parseFloat(prompt('Nota obtenida (ej: 5.5):')); if(isNaN(valor))return;
-    const peso=parseFloat(prompt('Peso/ponderación (ej: 1, 2):','1'))||1;
-    r.notas.push({id:uid(),titulo,valor,peso});
+    save(); modalRamoDetalle(ramoId); render(); toast('Tarea agregada');
   }
-  save(); modalRamoDetalle(ramoId); render(); toast('Agregado');
 }
 function delSub(ramoId,tipo,subId){ const r=S.ramos.find(x=>x.id===ramoId); r[tipo]=r[tipo].filter(x=>x.id!==subId); save(); modalRamoDetalle(ramoId); render(); }
 function toggleSubTarea(ramoId,subId){ const r=S.ramos.find(x=>x.id===ramoId); const t=r.tareas.find(x=>x.id===subId); t.done=!t.done; save(); modalRamoDetalle(ramoId); render(); }
