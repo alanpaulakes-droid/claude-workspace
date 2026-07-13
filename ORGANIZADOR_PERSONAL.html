@@ -496,8 +496,13 @@ function render(){
   const c = document.getElementById('content');
   const top = document.getElementById('topActions');
   top.innerHTML='';
-  ({hoy:vHoy, tareas:vTareas, agenda:vAgenda, proximo:vProximo, universidad:vUniversidad,
-    ingles:vIngles, inspeccion:vInspeccion, notas:vNotas, ajustes:vAjustes})[view](c, top);
+  try{
+    ({hoy:vHoy, tareas:vTareas, agenda:vAgenda, proximo:vProximo, universidad:vUniversidad,
+      ingles:vIngles, inspeccion:vInspeccion, notas:vNotas, ajustes:vAjustes})[view](c, top);
+  }catch(err){
+    console.error('Error al renderizar', view, err);
+    c.innerHTML=`<div class="card"><div class="empty"><span class="em-ic">⚠️</span>Ocurrió un problema al mostrar esta sección, pero tus datos están a salvo.<br><button class="btn sm" style="margin-top:12px" onclick="go('hoy')">Volver al inicio</button></div></div>`;
+  }
 }
 function updateBadges(){
   const tp = S.tareas.filter(t=>!t.done).length;
@@ -573,34 +578,35 @@ function stat(cls,ic,val,lbl){
    VISTA: PRÓXIMO — todo lo que viene (tareas + eventos + exámenes)
    ============================================================ */
 function proxRow(it){
-  return `<div class="item" style="border-left:4px solid ${it.color}">
+  const attrs = it.click ? `onclick="${it.click}" style="cursor:pointer;border-left:4px solid ${it.color}"` : `style="border-left:4px solid ${it.color}"`;
+  return `<div class="item" ${attrs}>
     <div style="color:${it.color};display:flex;align-items:center">${icon(it.ic,22)}</div>
     <div class="it-body"><div class="it-title">${esc(it.titulo)}</div>
-    <div class="it-meta">${[it.tipo,it.hora,it.cat].filter(Boolean).map(esc).join(' · ')}</div></div>
+    <div class="it-meta">${[it.tipo,it.rango,it.hora,it.cat].filter(Boolean).map(esc).join(' · ')}</div></div>
   </div>`;
 }
 function vProximo(c){
   const hoy=hoyISO();
   const items=[];
   S.tareas.filter(t=>!t.done && t.fecha && t.fecha>=hoy)
-    .forEach(t=>items.push({fecha:t.fecha,hora:'',tipo:'Tarea',ic:'check',titulo:t.titulo,cat:t.cat,color:'var(--accent)'}));
+    .forEach(t=>items.push({fecha:t.fecha,hora:'',tipo:'Tarea',ic:'check',titulo:t.titulo,cat:t.cat,color:'var(--accent)',click:`modalTarea('${t.id}')`}));
   S.eventos.filter(e=>e.fecha && e.fecha>=hoy)
-    .forEach(e=>items.push({fecha:e.fecha,hora:e.hora||'',tipo:'Evento',ic:'event',titulo:e.titulo,cat:e.cat,color:'var(--purple)'}));
+    .forEach(e=>items.push({fecha:e.fecha,hora:e.hora||'',tipo:'Evento',ic:'event',titulo:e.titulo,cat:e.cat,color:'var(--purple)',click:`modalEvento('${e.id}')`}));
   examenesTodos().filter(x=>x.fecha && x.fecha>=hoy)
-    .forEach(x=>items.push({fecha:x.fecha,hora:'',tipo:'Examen',ic:'cap',titulo:x.titulo,cat:'',color:'var(--gold)'}));
+    .forEach(x=>{ const ini=x.fechaIni||x.fecha, fin=x.fechaFin||x.fecha; const rango=(ini&&fin&&ini!==fin)?`Disponible ${fmtFecha(ini)} – ${fmtFecha(fin)}`:''; items.push({fecha:fin,hora:'',tipo:'Evaluación',ic:'cap',titulo:x.titulo,cat:'',rango,color:'var(--gold)',click:`modalEvaluacion('${x.ramoId}','${x.id}')`}); });
   const overdue=S.tareas.filter(t=>!t.done && t.fecha && t.fecha<hoy).sort((a,b)=>a.fecha<b.fecha?-1:1);
   items.sort((a,b)=> a.fecha!==b.fecha ? (a.fecha<b.fecha?-1:1) : ((a.hora||'99')<(b.hora||'99')?-1:1));
 
   let html=`<div class="stats">
     ${stat('a','tareas', items.filter(i=>i.tipo==='Tarea').length, 'Tareas por venir')}
     ${stat('p','agenda', items.filter(i=>i.tipo==='Evento').length, 'Eventos')}
-    ${stat('go','cap', items.filter(i=>i.tipo==='Examen').length, 'Exámenes')}
+    ${stat('go','cap', items.filter(i=>i.tipo==='Evaluación').length, 'Evaluaciones')}
     ${stat('r','alert', overdue.length, 'Atrasadas')}
   </div>`;
 
   if(overdue.length){
     html += `<div class="section-head"><h2 style="color:var(--red)">Atrasado</h2><span class="chip" style="color:var(--red)">${overdue.length}</span></div>`;
-    html += overdue.map(t=>proxRow({tipo:'Tarea',ic:'check',titulo:t.titulo,cat:t.cat,hora:'',color:'var(--red)'})).join('');
+    html += overdue.map(t=>proxRow({tipo:'Tarea',ic:'check',titulo:t.titulo,cat:t.cat,hora:'',rango:'venció '+relFecha(t.fecha),color:'var(--red)',click:`modalTarea('${t.id}')`})).join('');
   }
 
   if(!items.length && !overdue.length){
@@ -737,8 +743,8 @@ function taskItem(t){
 }
 function toggleTarea(id){ const t=S.tareas.find(x=>x.id===id); t.done=!t.done; save(); render(); if(t.done) toast('¡Tarea completada!','🎉'); }
 function delTarea(id){ S.tareas=S.tareas.filter(x=>x.id!==id); save(); render(); toast('Tarea eliminada','🗑️'); }
-function modalTarea(id){
-  const t = id ? S.tareas.find(x=>x.id===id) : {titulo:'',cat:(catNames()[0]||''),pri:'media',fecha:'',notas:''};
+function modalTarea(id, presetFecha){
+  const t = id ? S.tareas.find(x=>x.id===id) : {titulo:'',cat:(catNames()[0]||''),pri:'media',fecha:(presetFecha||''),notas:''};
   openModal(id?'Editar tarea':'Nueva tarea', `
     <label class="fld"><span>¿Qué tienes que hacer?</span><input id="mT" value="${esc(t.titulo)}" placeholder="Ej: Estudiar cálculo, revisar armamento..."></label>
     <div class="row">
@@ -783,7 +789,7 @@ function vAgenda(c, top){
     let inner=`<div class="cn">${d}</div>`;
     evs.forEach(e=> inner+=`<div class="cal-ev" style="background:${e.color}22;color:${e.color}">${esc(e.label)}</div>`);
     if((marks[iso]||[]).length>3) inner+=`<div style="font-size:10px;color:var(--muted)">+${marks[iso].length-3} más</div>`;
-    cells+=`<div class="cal-cell ${isToday?'today':''}" onclick="modalEvento(null,'${iso}')">${inner}</div>`;
+    cells+=`<div class="cal-cell ${isToday?'today':''}" onclick="modalDia('${iso}')">${inner}</div>`;
   }
   const nextFill=(7-((start+days)%7))%7;
   for(let i=1;i<=nextFill;i++) cells+=`<div class="cal-cell other"><div class="cn">${i}</div></div>`;
@@ -800,6 +806,26 @@ function vAgenda(c, top){
     </div>`;
 }
 function calMove(n){ calDate.setMonth(calDate.getMonth()+n); render(); }
+/* Ventana de día: muestra lo agendado y permite agregar evento o tarea */
+function modalDia(iso){
+  const eventos=S.eventos.filter(e=>e.fecha===iso);
+  const tareas=S.tareas.filter(t=>t.fecha===iso);
+  const examenes=examenesTodos().filter(x=>{ const ini=x.fechaIni||x.fecha, fin=x.fechaFin||x.fecha; return ini&&fin&&iso>=ini&&iso<=fin; });
+  const filas=[];
+  eventos.forEach(e=>filas.push({color:'var(--purple)',ic:'event',titulo:e.titulo,meta:['Evento',e.hora,e.cat].filter(Boolean).join(' · '),click:`modalEvento('${e.id}')`}));
+  tareas.forEach(t=>filas.push({color:t.done?'var(--muted)':'var(--accent)',ic:'check',titulo:t.titulo,meta:['Tarea',t.cat,t.done?'hecha':''].filter(Boolean).join(' · '),click:`modalTarea('${t.id}')`}));
+  examenes.forEach(x=>{ const ini=x.fechaIni||x.fecha, fin=x.fechaFin||x.fecha; const rango=(ini!==fin)?`Disponible ${fmtFecha(ini)}–${fmtFecha(fin)}`:''; filas.push({color:'var(--gold)',ic:'cap',titulo:x.titulo,meta:['Evaluación',rango].filter(Boolean).join(' · '),click:`modalEvaluacion('${x.ramoId}','${x.id}')`}); });
+  const body=`
+    ${filas.length? filas.map(f=>`<div class="item" onclick="${f.click}" style="cursor:pointer;border-left:4px solid ${f.color}">
+        <div style="color:${f.color};display:flex;align-items:center">${icon(f.ic,20)}</div>
+        <div class="it-body"><div class="it-title">${esc(f.titulo)}</div><div class="it-meta">${esc(f.meta)}</div></div>
+      </div>`).join('') : '<div class="empty" style="padding:22px"><span class="em-ic">🗓️</span>Nada agendado este día</div>'}
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn" style="flex:1" onclick="modalEvento(null,'${iso}')">${icon('plus',16)} Evento</button>
+      <button class="btn ghost" style="flex:1" onclick="modalTarea(null,'${iso}')">${icon('plus',16)} Tarea</button>
+    </div>`;
+  openModal(fmtLargo(iso), body, `<button class="btn ghost" onclick="closeModal()">Cerrar</button>`);
+}
 function modalEvento(id,fecha){
   const e = id ? S.eventos.find(x=>x.id===id) : {titulo:'',fecha:fecha||hoyISO(),hora:'',cat:(catNames()[0]||''),notas:''};
   openModal(id?'Editar evento':'Nuevo evento',`
