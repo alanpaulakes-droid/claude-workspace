@@ -492,6 +492,46 @@ body.has-bottomnav{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom
 /* install button */
 #v4-install{display:none}
 
+
+/* ====== INDUSHUB: barra superior + herramientas ====== */
+.ind-topbar{margin:-26px -18px 16px;padding:18px 18px 16px;background:linear-gradient(135deg,#0F2B48,#1b4a78);
+  border-radius:0 0 24px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 22px rgba(15,43,72,.28)}
+.ind-topbar .itb-brand b{display:block;color:var(--acento);font-weight:800;font-size:1.35rem;letter-spacing:.02em;line-height:1}
+.ind-topbar .itb-brand span{font-size:.64rem;letter-spacing:.16em;color:rgba(255,255,255,.72);font-weight:600}
+.ind-topbar .itb-right{display:flex;align-items:center;gap:9px}
+.ind-topbar .itb-av{width:42px;height:42px;border-radius:50%;background:var(--acento);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem}
+.ind-topbar .itb-bell{position:relative;width:42px;height:42px;border-radius:13px;background:rgba(255,255,255,.12);color:#fff;font-size:1.05rem;display:flex;align-items:center;justify-content:center}
+.ind-topbar .itb-bell i{position:absolute;top:5px;right:6px;background:var(--acento);color:#fff;font-size:.58rem;min-width:15px;height:15px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:800}
+.iconbtn.itb-theme{width:42px;height:42px;min-width:42px;background:rgba(255,255,255,.12);border:0;color:#fff;box-shadow:none}
+
+.toolgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.toolcard{background:var(--elev);border:1px solid var(--borde);border-radius:var(--r-lg);padding:14px;text-align:left;box-shadow:var(--sh1);display:flex;flex-direction:column;gap:3px;min-height:118px}
+.toolcard:active{transform:scale(.98)}
+.toolcard .tc-ico{font-size:1.7rem}
+.toolcard b{font-size:.9rem;color:var(--texto)}
+.toolcard small{color:var(--suave);font-size:.73rem;flex:1;line-height:1.35}
+.toolcard .tc-go{color:var(--acento);font-weight:700;font-size:.8rem}
+.tin{margin-bottom:12px}
+.tin label{display:block;font-size:.82rem;font-weight:700;color:var(--suave);margin-bottom:6px}
+.tin label span{font-weight:500;opacity:.8}
+.tin input,.prow input,.lrow2 input{width:100%;min-height:44px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--borde);background:var(--elev);color:var(--texto);font:inherit}
+.tin input:focus,.prow input:focus,.lrow2 input:focus{outline:none;border-color:var(--acento)}
+.tres{margin:6px 0 10px}
+.tr{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 13px;border-radius:12px;background:var(--bg);margin-bottom:8px;font-size:.9rem}
+.tr span{color:var(--suave)}
+.tr b{color:var(--texto);font-weight:800;text-align:right}
+.tr.warn{background:color-mix(in srgb,var(--err) 12%,var(--bg))}
+.tr.warn b{color:var(--err)}
+.tr.big{background:var(--acento2)}
+.tr.big span,.tr.big b{color:#fff}
+.tnote{font-size:.78rem;color:var(--suave);line-height:1.5;margin-top:6px}
+.prow{display:grid;grid-template-columns:1fr 92px 42px;gap:8px;margin-bottom:8px}
+.lrow2{display:grid;grid-template-columns:1fr 68px 68px 42px;gap:8px;margin-bottom:8px}
+.lhead{display:grid;grid-template-columns:1fr 68px 68px 42px;gap:8px;font-size:.66rem;color:var(--suave);font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;padding:0 2px}
+.pdel,.ldel{border-radius:10px;background:color-mix(in srgb,var(--err) 12%,var(--elev));color:var(--err);font-weight:800;min-height:44px}
+.parebox{background:var(--elev);border:1px solid var(--borde);border-radius:14px;padding:10px;margin:12px 0}
+.parebox svg{width:100%;height:auto;display:block}
+
 </style>
 </head>
 <body>
@@ -502,7 +542,7 @@ body.has-bottomnav{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom
     <button data-bnav="home"><span class="bi">🏠</span>Inicio</button>
     <button data-bnav="cursos"><span class="bi">📚</span>Cursos</button>
     <button data-bnav="review"><span class="bi">🧠</span>Repasar<span class="badge" id="bn-review-badge"></span></button>
-    <button data-bnav="focus"><span class="bi">🍅</span>Focus</button>
+    <button data-bnav="tools"><span class="bi">🧰</span>Herramientas</button>
     <button data-bnav="progress"><span class="bi">📊</span>Progreso</button>
   </div>
 </nav>
@@ -3836,7 +3876,7 @@ function renderDashboard(){
      '<div class="rc-plan"><span class="rc-chip">📖 teoría</span><span class="rc-chip">✏️ ejercicios</span>'+(rec.due?'<span class="rc-chip">🔁 '+rec.due+' de repaso</span>':'')+'</div><span class="rc-go">Comenzar ›</span></button>'+
    '<div class="sec-title">⚠️ Necesita repaso <button class="st-act" data-open="review">Repasar hoy ›</button></div><div class="needchips">'+chips+'</div>'+
    '<div class="sec-title" style="margin-top:14px">Accesos</div>'+
-   '<div class="chips"><button class="chip-sel" data-open="exam">🎓 Examen</button><button class="chip-sel" data-open="errors">❌ Mis errores</button><button class="chip-sel" data-open="favs">⭐ Favoritos</button><button class="chip-sel" data-open="progress">📊 Progreso</button></div>';
+   '<div class="chips"><button class="chip-sel" data-open="tools">🧰 Herramientas</button><button class="chip-sel" data-open="exam">🎓 Examen</button><button class="chip-sel" data-open="errors">❌ Mis errores</button><button class="chip-sel" data-open="favs">⭐ Favoritos</button><button class="chip-sel" data-open="progress">📊 Progreso</button></div>';
   // wire
   qs('#dash-reco',host).addEventListener('click',function(){
     if(rec.due){openReview();return;}
@@ -3856,11 +3896,161 @@ function openScreen(name){
   if(name==='exam')return openExamConfig();
   if(name==='favs')return openFavs();
   if(name==='progress')return openProgress();
+  if(name==='tools')return openTools();
+}
+
+/* =====================================================================
+   HERRAMIENTAS DE INGENIERÍA INDUSTRIAL (calculadoras funcionales)
+   ===================================================================== */
+function tVal(id){var e=qs('#'+id);var v=e?parseFloat(String(e.value).replace(',','.')):0;return isFinite(v)?v:0;}
+function tBind(root,fn){qsa('input',root).forEach(function(i){i.addEventListener('input',fn);});}
+function tMoney(n){if(!isFinite(n))return '∞';var neg=n<0;n=Math.round(Math.abs(n));return (neg?'-$':'$')+n.toLocaleString('es-CL');}
+function tNum(n,d){if(!isFinite(n))return '∞';return d?Number(n).toFixed(d):Math.round(n).toLocaleString('es-CL');}
+function tRow(l,v,warn){return '<div class="tr'+(warn?' warn':'')+'"><span>'+esc(l)+'</span><b>'+esc(v)+'</b></div>';}
+function tInput(id,label,val,unit){return '<div class="tin"><label>'+esc(label)+(unit?' <span>'+esc(unit)+'</span>':'')+'</label><input id="'+id+'" type="number" inputmode="decimal" value="'+val+'"></div>';}
+
+function openTools(){
+  var tools=[
+    {id:'costos',ico:'🧮',name:'Calculadora de Costos',desc:'Punto de equilibrio y margen'},
+    {id:'eoq',ico:'📦',name:'Inventario EOQ',desc:'Cantidad óptima de pedido'},
+    {id:'pareto',ico:'📊',name:'Diagrama de Pareto',desc:'Regla 80/20 con gráfico'},
+    {id:'layout',ico:'🏭',name:'Layout de Planta',desc:'Análisis carga-distancia'}
+  ];
+  var html='<p class="tnote" style="margin:0 0 12px">Calculadoras funcionales que operan sin conexión, con tus propios datos.</p><div class="toolgrid">'+
+    tools.map(function(t){return '<button class="toolcard" data-tool="'+t.id+'"><span class="tc-ico">'+t.ico+'</span><b>'+esc(t.name)+'</b><small>'+esc(t.desc)+'</small><span class="tc-go">Abrir ›</span></button>';}).join('')+'</div>';
+  openSheet('🧰 Herramientas',html,function(root){
+    qsa('[data-tool]',root).forEach(function(b){b.addEventListener('click',function(){var id=b.getAttribute('data-tool');
+      if(id==='costos')toolCostos();else if(id==='eoq')toolEOQ();else if(id==='pareto')toolPareto();else if(id==='layout')toolLayout();});});
+  });
+}
+
+/* — Calculadora de costos / punto de equilibrio — */
+function toolCostos(){
+  var html=tInput('c_cf','Costos fijos totales','1000000','$')+
+    tInput('c_cv','Costo variable unitario','3000','$/u')+
+    tInput('c_p','Precio de venta','5000','$/u')+
+    tInput('c_q','Cantidad a evaluar','800','u')+
+    '<div class="tres" id="c_res"></div>'+
+    '<p class="tnote">Punto de equilibrio = Costos fijos ÷ (Precio − Costo variable). El margen de contribución es lo que cada unidad aporta a cubrir los costos fijos.</p>';
+  openSheet('🧮 Calculadora de Costos',html,function(root){
+    function calc(){
+      var CF=tVal('c_cf'),CV=tVal('c_cv'),P=tVal('c_p'),Q=tVal('c_q');
+      var mc=P-CV, peu=mc>0?CF/mc:Infinity, pem=isFinite(peu)?peu*P:Infinity, util=mc*Q-CF;
+      qs('#c_res',root).innerHTML=
+        tRow('Margen de contribución',tMoney(mc)+' /u',mc<=0)+
+        tRow('Punto de equilibrio',isFinite(peu)?Math.ceil(peu).toLocaleString('es-CL')+' u':'no alcanzable',!isFinite(peu))+
+        tRow('Punto de equilibrio ($)',tMoney(pem))+
+        tRow('Utilidad con '+tNum(Q)+' u',tMoney(util),util<0);
+    }
+    tBind(root,calc);calc();
+  });
+}
+
+/* — Inventario EOQ — */
+function toolEOQ(){
+  var html=tInput('e_d','Demanda anual','12000','u/año')+
+    tInput('e_s','Costo de ordenar','25000','$/orden')+
+    tInput('e_h','Costo de mantener','1200','$/u·año')+
+    tInput('e_days','Días laborales/año','250','días')+
+    tInput('e_l','Tiempo de entrega','5','días')+
+    '<div class="tres" id="e_res"></div>'+
+    '<p class="tnote">EOQ = √(2·D·S ÷ H): la cantidad de pedido que minimiza el costo total de ordenar + mantener inventario.</p>';
+  openSheet('📦 Inventario EOQ',html,function(root){
+    function calc(){
+      var D=tVal('e_d'),S=tVal('e_s'),H=tVal('e_h'),days=tVal('e_days')||1,L=tVal('e_l');
+      var eoq=(D>0&&S>0&&H>0)?Math.sqrt(2*D*S/H):0;
+      var n=eoq>0?D/eoq:0, tc=eoq>0?Math.sqrt(2*D*S*H):0, cycle=n>0?days/n:0, dd=D/days, rop=dd*L;
+      qs('#e_res',root).innerHTML=
+        tRow('Cantidad óptima (EOQ)',eoq>0?Math.round(eoq).toLocaleString('es-CL')+' u':'—',eoq<=0)+
+        tRow('Órdenes por año',n>0?tNum(n,1):'—')+
+        tRow('Días entre órdenes',cycle>0?tNum(cycle,1)+' días':'—')+
+        tRow('Costo total anual (orden+mant.)',tMoney(tc))+
+        tRow('Punto de reorden',Math.round(rop).toLocaleString('es-CL')+' u');
+    }
+    tBind(root,calc);calc();
+  });
+}
+
+/* — Diagrama de Pareto — */
+function toolPareto(){
+  var data=[{c:'Rayas',v:45},{c:'Abolladuras',v:28},{c:'Manchas',v:16},{c:'Grietas',v:7},{c:'Otros',v:4}];
+  var html='<p class="tnote" style="margin:0 0 10px">Edita las categorías y sus frecuencias. Las barras se ordenan solas y la línea muestra el % acumulado.</p>'+
+    '<div id="pa_rows"></div><button class="ghost-go" id="pa_add">＋ Añadir categoría</button>'+
+    '<div class="parebox"><svg id="pa_svg" viewBox="0 0 320 210" preserveAspectRatio="xMidYMid meet"></svg></div><div id="pa_sum" class="tnote"></div>';
+  openSheet('📊 Diagrama de Pareto',html,function(root){
+    function rowsHTML(){return data.map(function(d,i){
+      return '<div class="prow"><input class="pc" data-i="'+i+'" value="'+esc(d.c)+'" placeholder="Categoría"><input class="pv" data-i="'+i+'" type="number" inputmode="decimal" value="'+d.v+'"><button class="pdel" data-i="'+i+'" aria-label="Eliminar">✕</button></div>';
+    }).join('');}
+    function draw(){
+      var sorted=data.slice().filter(function(d){return d.v>0;}).sort(function(a,b){return b.v-a.v;});
+      var total=sorted.reduce(function(s,d){return s+d.v;},0)||1;
+      var W=320,H=210,padL=8,padR=8,padB=40,padT=12,cw=(W-padL-padR)/Math.max(1,sorted.length),maxv=sorted.length?sorted[0].v:1;
+      var bars='',pts=[],labels='',cum=0;
+      sorted.forEach(function(d,i){
+        var h=(d.v/maxv)*(H-padB-padT),x=padL+i*cw,y=H-padB-h;
+        bars+='<rect x="'+(x+cw*0.14)+'" y="'+y+'" width="'+(cw*0.72)+'" height="'+Math.max(0,h)+'" rx="3" fill="var(--acento)"></rect>';
+        cum+=d.v;var cy=padT+(1-cum/total)*(H-padB-padT);pts.push((x+cw/2)+','+cy);
+        labels+='<text x="'+(x+cw/2)+'" y="'+(H-padB+11)+'" font-size="7" text-anchor="middle" fill="var(--suave)">'+esc(String(d.c).slice(0,8))+'</text>';
+        labels+='<text x="'+(x+cw/2)+'" y="'+(y-3)+'" font-size="7" text-anchor="middle" fill="var(--suave)">'+Math.round(cum/total*100)+'%</text>';
+      });
+      var line=pts.length?'<polyline points="'+pts.join(' ')+'" fill="none" stroke="var(--acento2)" stroke-width="2"/>'+pts.map(function(p){var xy=p.split(',');return '<circle cx="'+xy[0]+'" cy="'+xy[1]+'" r="2.6" fill="var(--acento2)"/>';}).join(''):'';
+      qs('#pa_svg',root).innerHTML=bars+line+labels;
+      var c2=0,vital=[];for(var i=0;i<sorted.length;i++){c2+=sorted[i].v;vital.push(sorted[i].c);if(c2/total>=0.8)break;}
+      qs('#pa_sum',root).innerHTML='<b>Regla 80/20:</b> '+(vital.length?esc(vital.join(', ')):'—')+' concentran ~'+Math.round(c2/total*100)+'% del total. Ataca esos primero. <span style="color:var(--acento)">■</span> frecuencia · <span style="color:var(--acento2)">●</span> % acumulado.';
+    }
+    function renderRows(){qs('#pa_rows',root).innerHTML=rowsHTML();
+      qsa('.pc',root).forEach(function(i){i.addEventListener('input',function(){data[+i.getAttribute('data-i')].c=i.value;draw();});});
+      qsa('.pv',root).forEach(function(i){i.addEventListener('input',function(){data[+i.getAttribute('data-i')].v=parseFloat(i.value)||0;draw();});});
+      qsa('.pdel',root).forEach(function(b){b.addEventListener('click',function(){data.splice(+b.getAttribute('data-i'),1);renderRows();draw();});});
+    }
+    qs('#pa_add',root).addEventListener('click',function(){data.push({c:'Nuevo',v:1});renderRows();draw();});
+    renderRows();draw();
+  });
+}
+
+/* — Layout de Planta (carga-distancia) — */
+function toolLayout(){
+  var data=[{a:'Recepción→Corte',f:120,d:15},{a:'Corte→Ensamble',f:200,d:8},{a:'Ensamble→Pintura',f:180,d:22},{a:'Pintura→Despacho',f:150,d:12}];
+  var html='<p class="tnote" style="margin:0 0 10px">Carga-distancia = Σ (flujo × distancia). Menor total = mejor distribución. El par con más carga-distancia es el candidato a acercar.</p>'+
+    '<div class="lhead"><span>Par de áreas</span><span>Flujo</span><span>Dist</span><span></span></div>'+
+    '<div id="la_rows"></div><button class="ghost-go" id="la_add">＋ Añadir par</button><div id="la_res" class="tres"></div>';
+  openSheet('🏭 Layout de Planta',html,function(root){
+    function rows(){return data.map(function(d,i){return '<div class="lrow2"><input class="la" data-i="'+i+'" value="'+esc(d.a)+'"><input class="lf" data-i="'+i+'" type="number" inputmode="decimal" value="'+d.f+'"><input class="ld" data-i="'+i+'" type="number" inputmode="decimal" value="'+d.d+'"><button class="ldel" data-i="'+i+'" aria-label="Eliminar">✕</button></div>';}).join('');}
+    function calc(){
+      var total=0,max=-1,maxi=-1;
+      data.forEach(function(d,i){var ld=(d.f||0)*(d.d||0);total+=ld;if(ld>max){max=ld;maxi=i;}});
+      var html2=data.map(function(d,i){var ld=(d.f||0)*(d.d||0);return tRow(d.a,tNum(ld)+(i===maxi&&total>0?' ⚠️':''),i===maxi&&total>0);}).join('');
+      html2+='<div class="tr big"><span>TOTAL carga-distancia</span><b>'+tNum(total)+'</b></div>';
+      if(maxi>=0&&total>0)html2+='<p class="tnote">Prioridad: acercar <b>'+esc(data[maxi].a)+'</b> (mayor carga-distancia).</p>';
+      qs('#la_res',root).innerHTML=html2;
+    }
+    function renderRows(){qs('#la_rows',root).innerHTML=rows();
+      qsa('.la',root).forEach(function(i){i.addEventListener('input',function(){data[+i.getAttribute('data-i')].a=i.value;calc();});});
+      qsa('.lf',root).forEach(function(i){i.addEventListener('input',function(){data[+i.getAttribute('data-i')].f=parseFloat(i.value)||0;calc();});});
+      qsa('.ld',root).forEach(function(i){i.addEventListener('input',function(){data[+i.getAttribute('data-i')].d=parseFloat(i.value)||0;calc();});});
+      qsa('.ldel',root).forEach(function(b){b.addEventListener('click',function(){data.splice(+b.getAttribute('data-i'),1);renderRows();calc();});});
+    }
+    qs('#la_add',root).addEventListener('click',function(){data.push({a:'Área A→B',f:0,d:0});renderRows();calc();});
+    renderRows();calc();
+  });
 }
 
 /* =====================================================================
    INYECCIONES EN EL DOM EXISTENTE
    ===================================================================== */
+/* barra superior azul oscuro estilo INDUSHUB (marca + avatar + campana) */
+(function injectHeader(){
+  var hero=qs('#view-home .hero');if(!hero)return;
+  var oldTop=qs('.hero-top',hero);
+  var bar=document.createElement('div');bar.className='ind-topbar';
+  bar.innerHTML='<div class="itb-brand"><b>INDUSHUB</b><span>INGENIERÍA INDUSTRIAL</span></div>'+
+    '<div class="itb-right"><button class="itb-bell" aria-label="Notificaciones">🔔<i>1</i></button><div class="itb-av">A</div></div>';
+  hero.insertBefore(bar,hero.firstChild);
+  var tb=qs('#theme-btn');
+  if(tb){tb.classList.add('itb-theme');var r=qs('.itb-right',bar);r.insertBefore(tb,r.firstChild);}
+  if(oldTop)oldTop.classList.add('v4-hidden');
+})();
+
 /* dashboard en el home (sobre las tarjetas, ocultando gstats duplicadas) */
 (function injectDash(){
   var hero=qs('#view-home .hero');if(!hero)return;
@@ -3945,7 +4135,7 @@ qsa('#bnav [data-bnav]').forEach(function(b){b.addEventListener('click',function
   qsa('#bnav [data-bnav]').forEach(function(x){x.classList.remove('on');});b.classList.add('on');
   if(t==='home'){show('home');window.scrollTo(0,0);}
   else if(t==='cursos'){show('home');var el=qs('#view-home .cards');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
-  else if(t==='focus'){var pp=qs('#pomo-panel');if(pp)pp.classList.add('show');}
+  else if(t==='tools'){openTools();}
   else if(t==='review'){openReview();}
   else if(t==='progress'){openProgress();}
 });});
