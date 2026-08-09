@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "INDUSHUB",
+    "slug": "indushub",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "indushub",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#0F2B48",
+      "resizeMode": "contain"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.indushub.app"
+    },
+    "android": {
+      "package": "com.indushub.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0F2B48"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
