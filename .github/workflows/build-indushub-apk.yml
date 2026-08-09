@@ -12,6 +12,9 @@ name: Build INDUSHUB APK
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-apk:
     name: Compilar APK (Gradle)
@@ -48,9 +51,23 @@ jobs:
         working-directory: indushub/android
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
+      - name: Renombrar el APK
+        run: cp indushub/android/app/build/outputs/apk/debug/app-debug.apk INDUSHUB.apk
+
       - name: Publicar el APK como artefacto descargable
         uses: actions/upload-artifact@v4
         with:
           name: INDUSHUB-apk
-          path: indushub/android/app/build/outputs/apk/debug/app-debug.apk
+          path: INDUSHUB.apk
           if-no-files-found: error
+
+      - name: Publicar Release con enlace directo al APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: indushub-app
+          name: INDUSHUB · App Android
+          body: |
+            APK instalable de INDUSHUB (Android).
+            Descarga **INDUSHUB.apk** aquí abajo, ábrelo e instálalo
+            (permite "instalar apps de orígenes desconocidos").
+          files: INDUSHUB.apk
