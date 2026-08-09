@@ -47,9 +47,18 @@ jobs:
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
           sdkmanager "ndk;26.1.10909125" "cmake;3.22.1" >/dev/null 2>&1 || true
 
+      - name: Ajustar memoria de Gradle (evita OutOfMemory)
+        working-directory: indushub/android
+        run: |
+          {
+            echo ""
+            echo "org.gradle.jvmargs=-Xmx5g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+            echo "android.enableJetifier=false"
+          } >> gradle.properties
+
       - name: Compilar APK (debug, instalable)
         working-directory: indushub/android
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: ./gradlew assembleDebug --no-daemon --stacktrace --max-workers=2
 
       - name: Renombrar el APK
         run: cp indushub/android/app/build/outputs/apk/debug/app-debug.apk INDUSHUB.apk
