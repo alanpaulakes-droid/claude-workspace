@@ -1,8 +1,9 @@
 {
+  "id": "portal-estudio-industrial",
   "name": "Portal de Estudio · Ingeniería Industrial",
   "short_name": "Portal 4.0",
   "description": "Sistema personal inteligente de aprendizaje: teoría, práctica, repaso espaciado, exámenes y progreso.",
-  "start_url": "PORTAL_ESTUDIO.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",

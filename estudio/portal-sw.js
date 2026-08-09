@@ -1,10 +1,12 @@
 /* Portal de Estudio 4.0 — Service Worker (modo offline)
+   Ubicado en /estudio/ → su scope es SOLO /estudio/, aislado de Órbita (raíz).
    El HTML es autocontenido (contenido + imágenes embebidas), así que
    cachear el propio archivo basta para funcionar sin conexión. */
-const CACHE = 'portal-v4-1';
+const CACHE = 'portal-estudio-v4-1';
 const ASSETS = [
-  'PORTAL_ESTUDIO.html',
-  'portal.webmanifest',
+  './',
+  'index.html',
+  'manifest.webmanifest',
   'icon-192.png',
   'icon-512.png',
   'icon-180.png'
@@ -34,11 +36,11 @@ self.addEventListener('fetch', e => {
   if (url.origin !== self.location.origin) return;   // no tocar recursos externos
 
   // App/HTML: red primero (para recibir actualizaciones), cae a caché sin conexión
-  if (req.mode === 'navigate' || url.pathname.endsWith('PORTAL_ESTUDIO.html')) {
+  if (req.mode === 'navigate' || url.pathname.endsWith('/estudio/') || url.pathname.endsWith('/estudio/index.html')) {
     e.respondWith(
       fetch(req)
         .then(res => { const c = res.clone(); caches.open(CACHE).then(x => x.put(req, c)); return res; })
-        .catch(() => caches.match(req).then(m => m || caches.match('PORTAL_ESTUDIO.html')))
+        .catch(() => caches.match(req).then(m => m || caches.match('index.html')))
     );
     return;
   }
