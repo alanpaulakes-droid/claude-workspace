@@ -24,3 +24,7 @@ yarn-debug.*
 yarn-error.*
 .DS_Store
 *.log
+
+# Carpetas nativas generadas por expo prebuild
+/android/
+/ios/

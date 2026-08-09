@@ -1,23 +1,21 @@
 name: Build INDUSHUB APK
 
-# Compila el APK de Android de INDUSHUB en la nube (EAS Build).
-# Se ejecuta manualmente desde la pestaña "Actions" de GitHub.
-# Requisitos (se configuran una sola vez):
-#   1. Cuenta gratuita en https://expo.dev
-#   2. Un token de acceso guardado como secreto del repo: EXPO_TOKEN
-#   3. En indushub/app.json: "owner" y "extra.eas.projectId" con tus datos
-#      (se obtienen al crear el proyecto en el panel de expo.dev)
+# Compila el APK de Android de INDUSHUB en las máquinas de GitHub (gratis).
+# NO requiere cuenta de Expo, ni token, ni configuración previa.
+# Cómo usarlo desde el celular:
+#   1. Ve a la pestaña "Actions" del repositorio en GitHub.
+#   2. Elige "Build INDUSHUB APK" y pulsa "Run workflow".
+#   3. Espera ~10-15 min. Al terminar, abre la ejecución y descarga el
+#      artefacto "INDUSHUB-apk" (un .zip con app-debug.apk dentro).
+#   4. Descomprime, abre el APK e instálalo (permite "orígenes desconocidos").
 
 on:
   workflow_dispatch:
 
 jobs:
   build-apk:
-    name: Compilar APK (EAS)
+    name: Compilar APK (Gradle)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: indushub
     steps:
       - name: Descargar el código
         uses: actions/checkout@v4
@@ -27,14 +25,32 @@ jobs:
         with:
           node-version: 20
 
-      - name: Configurar EAS
-        uses: expo/expo-github-action@v8
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
         with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          distribution: temurin
+          java-version: '17'
 
       - name: Instalar dependencias
+        working-directory: indushub
         run: npm install
 
-      - name: Compilar APK (perfil preview)
-        run: eas build --platform android --profile preview --non-interactive --wait
+      - name: Generar el proyecto Android (expo prebuild)
+        working-directory: indushub
+        run: npx expo prebuild --platform android --no-install
+
+      - name: Preparar SDK/NDK de Android
+        run: |
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager "ndk;26.1.10909125" "cmake;3.22.1" >/dev/null 2>&1 || true
+
+      - name: Compilar APK (debug, instalable)
+        working-directory: indushub/android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Publicar el APK como artefacto descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: INDUSHUB-apk
+          path: indushub/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

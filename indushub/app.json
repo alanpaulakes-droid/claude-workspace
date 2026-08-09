@@ -5,8 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "indushub",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "backgroundColor": "#0F2B48",
       "resizeMode": "contain"
