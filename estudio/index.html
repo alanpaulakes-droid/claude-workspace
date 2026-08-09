@@ -3,26 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#6366f1">
+<meta name="theme-color" content="#0F2B48">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Portal 4.0">
 <link rel="apple-touch-icon" href="portal-icon-180.png">
-<title>Portal de Estudio · Ingeniería Industrial</title>
+<title>INDUSHUB · Ingeniería Industrial</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0}
 :root{
-  --acento:#6366f1;--acento2:#ec4899;
-  --bg:#f4f5fb;--elev:#ffffff;--texto:#161824;--suave:#5d6273;
-  --borde:rgba(22,24,36,.10);--ok:#16a34a;--err:#ef4444;
+  --acento:#FF6B35;--acento2:#0F2B48;
+  --bg:#F4F6F9;--elev:#ffffff;--texto:#14273f;--suave:#6B7A90;
+  --borde:rgba(15,43,72,.10);--ok:#16a34a;--err:#ef4444;
   --r-md:14px;--r-lg:20px;--r-xl:26px;
   --sh1:0 1px 2px rgba(15,20,40,.06),0 2px 6px rgba(15,20,40,.08);
   --sh2:0 4px 10px rgba(15,20,40,.06),0 12px 28px rgba(15,20,40,.12);
   --t:200ms cubic-bezier(.4,0,.2,1);
 }
 html[data-theme="dark"]{
-  --bg:#0c0f1d;--elev:#161a2e;--texto:#eceef8;--suave:#9aa1b8;
+  --bg:#0A1524;--elev:#0F2436;--texto:#eaf0f8;--suave:#9fb0c4;
   --borde:rgba(255,255,255,.10);
   --sh1:0 1px 2px rgba(0,0,0,.4);--sh2:0 10px 30px rgba(0,0,0,.5);
 }
@@ -519,7 +519,7 @@ body.has-bottomnav{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom
 <section class="view on" id="view-home">
   <div class="hero">
     <div class="hero-top">
-      <div><h1>Portal de Estudio</h1><p class="sub">Ingeniería Industrial · 1er Trimestre</p></div>
+      <div><h1>INDUSHUB</h1><p class="sub">Ingeniería Industrial · Alan</p></div>
       <button class="iconbtn" id="theme-btn" aria-label="Cambiar tema">🌙</button>
     </div>
     <div class="gstats">
@@ -3405,7 +3405,7 @@ document.addEventListener('click',function(e){
     head.className='pomo-head '+mode;
     $('p-count').textContent=focusCount;$('p-done').textContent=doneCount;
     startB.textContent=running?'⏸ Pausar':'▶ Iniciar';
-    document.title=(running?fmt(remaining)+' · ':'')+'Portal de Estudio';
+    document.title=(running?fmt(remaining)+' · ':'')+'INDUSHUB';
   }
   function beep(){try{
     var ctx=new (window.AudioContext||window.webkitAudioContext)();
@@ -3829,7 +3829,7 @@ function renderDashboard(){
     return '<button class="needchip" data-gow="'+x.c+':'+x.w+'"><span class="dot '+lv+'"></span>'+esc(shortTitle(TITLE[x.c+':'+x.w]||x.w))+' <small>'+x.pct+'%</small></button>';}).join(''):
     '<button class="needchip" data-open="review"><span class="dot g"></span>Todo en orden — repasa cuando quieras</button>';
   host.innerHTML=''+
-   '<div class="dash-hi">'+saludo()+' <small>Tu sistema de estudio · Ingeniería Industrial</small></div>'+
+   '<div class="dash-hi">👋 ¡Hola, Alan! <small>'+saludo()+' · Tu progreso en INDUSHUB</small></div>'+
    '<div class="mastery-big"><div class="mb-top"><b>'+g+'%</b><span>dominio global</span></div><div class="bar"><i style="width:'+g+'%"></i></div></div>'+
    '<div class="dash-kpis"><div class="kpi"><b>🔥 '+streak+'</b><small>racha</small></div><div class="kpi"><b>🍅 '+pomoToday+'</b><small>hoy</small></div><div class="kpi"><b>🧠 '+tot.tot+'</b><small>preguntas</small></div><div class="kpi"><b>🎯 '+tot.acc+'%</b><small>aciertos</small></div></div>'+
    '<button class="reco" id="dash-reco"><span class="rc-lbl">🎯 Tu sesión recomendada</span><div class="rc-t">'+courseIco(t.c)+' '+esc(shortTitle(tn))+'</div><div class="rc-s">'+esc(courseName(t.c))+'</div>'+
@@ -3847,7 +3847,7 @@ function renderDashboard(){
   refreshBadges();
 }
 function shortTitle(t){return String(t).replace(/^Semana\s*\d+:\s*/,'').slice(0,60);}
-function saludo(){var h=new Date().getHours();return '👋 '+(h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches')+',';}
+function saludo(){var h=new Date().getHours();return (h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches');}
 
 /* ---------- enrutador de pantallas ---------- */
 function openScreen(name){
