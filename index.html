@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0c0f1d">
+<title>Mis apps</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0}
+  html,body{min-height:100%}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(60% 60% at 30% 10%,#1b2140,#0c0f1d);color:#eceef8;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:18px;padding:32px 20px;min-height:100dvh}
+  h1{font-size:1.35rem;font-weight:800;letter-spacing:-.02em;margin-bottom:2px;text-align:center}
+  p.sub{color:#9aa1b8;font-size:.9rem;margin-bottom:14px;text-align:center}
+  .apps{display:flex;flex-direction:column;gap:14px;width:100%;max-width:380px}
+  a.app{display:flex;align-items:center;gap:16px;text-decoration:none;color:inherit;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;
+    padding:16px 18px;transition:transform .15s ease,background .15s ease}
+  a.app:active{transform:scale(.98)}
+  a.app img{width:56px;height:56px;border-radius:15px;flex:none}
+  a.app b{display:block;font-size:1.05rem}
+  a.app small{color:#9aa1b8;font-size:.82rem}
+  a.app .go{margin-left:auto;color:#8b93ad;font-size:1.5rem}
+  footer{color:#69708a;font-size:.75rem;margin-top:10px;text-align:center}
+</style>
+</head>
+<body>
+  <div>
+    <h1>Mis apps</h1>
+    <p class="sub">Ingeniería Industrial</p>
+  </div>
+  <div class="apps">
+    <a class="app" href="estudio/">
+      <img src="estudio/portal-icon-192.png" alt="Portal de Estudio">
+      <span><b>Portal de Estudio</b><small>Aprender, practicar, repasar y medir tu dominio</small></span>
+      <span class="go">›</span>
+    </a>
+    <a class="app" href="orbita/ORGANIZADOR_PERSONAL.html">
+      <img src="orbita/icon-192.png" alt="Órbita">
+      <span><b>Órbita</b><small>Organizador personal: tareas, agenda y rutina</small></span>
+      <span class="go">›</span>
+    </a>
+  </div>
+  <footer>Cada app se instala por separado desde su propia pantalla.</footer>
+</body>
+</html>
