@@ -1,0 +1,40 @@
+name: Build INDUSHUB APK
+
+# Compila el APK de Android de INDUSHUB en la nube (EAS Build).
+# Se ejecuta manualmente desde la pestaña "Actions" de GitHub.
+# Requisitos (se configuran una sola vez):
+#   1. Cuenta gratuita en https://expo.dev
+#   2. Un token de acceso guardado como secreto del repo: EXPO_TOKEN
+#   3. En indushub/app.json: "owner" y "extra.eas.projectId" con tus datos
+#      (se obtienen al crear el proyecto en el panel de expo.dev)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    name: Compilar APK (EAS)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indushub
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configurar EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Compilar APK (perfil preview)
+        run: eas build --platform android --profile preview --non-interactive --wait
