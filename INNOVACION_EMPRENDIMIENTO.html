@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Innovación y Emprendimiento — Ingeniería Industrial</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #1a56db;
+    --primary-dark: #1341a8;
+    --primary-light: #e8f0fe;
+    --accent: #0e9f6e;
+    --danger: #e02424;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --sidebar-w: 260px;
+  }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gray-50); color: var(--gray-900); display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: var(--sidebar-w); min-width: var(--sidebar-w);
+    background: #fff; border-right: 1px solid var(--gray-200);
+    position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto;
+    display: flex; flex-direction: column; z-index: 100;
+  }
+  .sidebar-header {
+    background: var(--primary); color: #fff; padding: 20px 16px;
+  }
+  .sidebar-header h1 { font-size: 0.95rem; font-weight: 700; line-height: 1.4; }
+  .sidebar-header p { font-size: 0.75rem; opacity: .8; margin-top: 4px; }
+  #sidebar nav { padding: 12px 0; }
+  #sidebar nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; text-decoration: none; color: var(--gray-700);
+    font-size: 0.875rem; font-weight: 500; transition: background .15s;
+    border-left: 3px solid transparent;
+  }
+  #sidebar nav a:hover { background: var(--primary-light); color: var(--primary); }
+  #sidebar nav a.active { background: var(--primary-light); color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
+  .nav-badge { background: var(--primary); color: #fff; border-radius: 10px; font-size: 0.7rem; padding: 1px 7px; margin-left: auto; }
+
+  /* MAIN */
+  main { margin-left: var(--sidebar-w); flex: 1; padding: 32px 40px; max-width: 960px; }
+  .page-header { margin-bottom: 32px; }
+  .page-header h2 { font-size: 1.75rem; font-weight: 800; color: var(--primary-dark); }
+  .page-header p { color: var(--gray-600); margin-top: 6px; font-size: 0.95rem; }
+
+  /* WEEK SECTIONS */
+  .week-section { margin-bottom: 60px; scroll-margin-top: 24px; }
+  .week-title {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 1.35rem; font-weight: 800; color: var(--primary-dark);
+    border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; margin-bottom: 20px;
+  }
+  .week-chip {
+    background: var(--primary); color: #fff;
+    border-radius: 6px; padding: 3px 10px; font-size: 0.8rem; font-weight: 700;
+  }
+
+  /* CARDS */
+  .card {
+    background: #fff; border: 1px solid var(--gray-200); border-radius: 10px;
+    padding: 22px 24px; margin-bottom: 18px; box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  }
+  .card-title {
+    font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .card-title.resumen  { color: var(--primary); }
+  .card-title.reflexion { color: #7c3aed; }
+  .card-title.retro    { color: var(--accent); }
+  .card p { color: var(--gray-600); line-height: 1.7; font-size: 0.92rem; }
+  .card ul { margin: 8px 0 0 18px; color: var(--gray-600); line-height: 1.8; font-size: 0.92rem; }
+
+  /* QUIZ */
+  .quiz-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 10px; padding: 22px 24px; margin-bottom: 18px; }
+  .quiz-header { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #b45309; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .quiz-score { margin-left: auto; font-size: 0.85rem; color: var(--gray-600); font-weight: 600; }
+  .question-block { margin-bottom: 22px; }
+  .question-text { font-size: 0.92rem; font-weight: 600; color: var(--gray-900); margin-bottom: 10px; }
+  .question-num { color: var(--primary); margin-right: 4px; }
+  .options { display: flex; flex-direction: column; gap: 7px; }
+  .opt-btn {
+    text-align: left; background: var(--gray-50); border: 1.5px solid var(--gray-200);
+    border-radius: 7px; padding: 9px 14px; font-size: 0.88rem; color: var(--gray-700);
+    cursor: pointer; transition: all .15s; width: 100%;
+  }
+  .opt-btn:hover:not(:disabled) { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+  .opt-btn.correct { background: #ecfdf5; border-color: var(--accent); color: #065f46; font-weight: 600; }
+  .opt-btn.wrong   { background: #fef2f2; border-color: var(--danger); color: #991b1b; }
+  .opt-btn:disabled { cursor: default; }
+  .feedback {
+    margin-top: 8px; padding: 9px 13px; border-radius: 6px; font-size: 0.84rem; line-height: 1.5;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok  { background: #ecfdf5; color: #065f46; border-left: 3px solid var(--accent); }
+  .feedback.err { background: #fef2f2; color: #991b1b; border-left: 3px solid var(--danger); }
+  .reset-btn {
+    margin-top: 8px; padding: 8px 18px; background: var(--primary); color: #fff;
+    border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    transition: background .15s;
+  }
+  .reset-btn:hover { background: var(--primary-dark); }
+
+  /* ICON HELPERS */
+  .ico { font-size: 1rem; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); transition: transform .3s; }
+    #sidebar.open { transform: translateX(0); }
+    main { margin-left: 0; padding: 20px 16px; }
+    .hamburger { display: flex; }
+  }
+  .hamburger {
+    display: none; position: fixed; top: 12px; left: 12px; z-index: 200;
+    background: var(--primary); border: none; border-radius: 8px;
+    padding: 8px 10px; cursor: pointer; flex-direction: column; gap: 4px;
+  }
+  .hamburger span { width: 22px; height: 2px; background: #fff; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')" aria-label="Menú">
+  <span></span><span></span><span></span>
+</button>
+
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <h1>Innovación y Emprendimiento</h1>
+    <p>Ingeniería Industrial · 1er Trimestre</p>
+  </div>
+  <nav>
+    <a href="#s01" onclick="setActive(this)">📘 Semana 1 — CEPs <span class="nav-badge">5Q</span></a>
+    <a href="#s02" onclick="setActive(this)">📘 Semana 2 — Networking & VUCA/BANI <span class="nav-badge">5Q</span></a>
+    <a href="#s04" onclick="setActive(this)">📘 Semana 4 — Tipos de Innovación <span class="nav-badge">5Q</span></a>
+    <a href="#s05" onclick="setActive(this)">📘 Semana 5 — Investigación del Usuario <span class="nav-badge">5Q</span></a>
+    <a href="#s06" onclick="setActive(this)">📘 Semana 6 — Creatividad <span class="nav-badge">5Q</span></a>
+    <a href="#s07" onclick="setActive(this)">📘 Semana 7 — Evaluación de Ideas <span class="nav-badge">5Q</span></a>
+    <a href="#s08" onclick="setActive(this)">📘 Semana 8 — Prototipado <span class="nav-badge">5Q</span></a>
+    <a href="#s09" onclick="setActive(this)">📘 Semana 9 — Entrevistas <span class="nav-badge">5Q</span></a>
+    <a href="#s10" onclick="setActive(this)">📘 Semana 10 — Propuesta de Valor <span class="nav-badge">5Q</span></a>
+    <a href="#s11" onclick="setActive(this)">📘 Semana 11 — Comunicación de Valor <span class="nav-badge">5Q</span></a>
+  </nav>
+</aside>
+
+<main>
+  <div class="page-header">
+    <h2>Innovación y Emprendimiento</h2>
+    <p>Resúmenes, reflexiones, retroalimentación y quizzes interactivos por semana · AACD103</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SEMANA 1 ═══ -->
+  <section class="week-section" id="s01">
+    <h3 class="week-title"><span class="week-chip">S01</span>Competencias Emprendedoras Personales (CEPs)</h3>
+
+    <div class="card">
+      <div class="card-title resumen">📋 Resumen</div>
+      <ul>
+        <li><strong>Origen de las CEPs:</strong> Investigación financiada por USAID en los 80' (India, Malawi, Ecuador) identificó rasgos asociados al éxito emprendedor, agrupados en tres categorías.</li>
+        <li><strong>Grupo 1 – Realización:</strong> búsqueda de oportunidades, persistencia, compromiso con el trabajo, exigencia de calidad/eficiencia y asumir riesgos calculados.</li>
+        <li><strong>Grupo 2 – Planificación:</strong> establecimiento de metas, planificación sistemática, control y búsqueda de información.</li>
+        <li><strong>Grupo 3 – Poder:</strong> persuasión, creación de redes (networking) y autoconfianza.</li>
+        <li><strong>Base teórica:</strong> McClelland vincula la "necesidad generalizada del éxito" con el crecimiento económico; Hagen ve al empresario como un resolvedor creativo motivado por el "deber de lograrlo".</li>
+        <li><strong>Conclusión clave:</strong> "los empresarios se hacen, no nacen" — las CEPs son habilidades desarrollables.</li>
+        <li>El cuestionario de 55 ítems permite autoevaluar las CEPs en escala 1–5 para identificar fortalezas y áreas de mejora.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title reflexion">💡 Reflexión</div>
+      <p>Para el futuro ingeniero industrial, las CEPs representan mucho más que un listado de virtudes: constituyen el andamiaje actitudinal que diferencia a quien detecta y ejecuta oportunidades de quien simplemente las deja pasar. En un entorno fabril o de servicios en constante cambio, la persistencia ante obstáculos, la capacidad de planificar con visión de largo plazo y la habilidad de influir en otros son tan determinantes como el dominio técnico. Reconocer las propias brechas a través de la autoevaluación es el primer paso para construir un perfil profesional verdaderamente competitivo y resiliente.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title retro">🔄 Retroalimentación</div>
+      <p>Refuerza el hábito de buscar activamente oportunidades en tu entorno cotidiano antes de que sean evidentes para todos. Practica la planificación dividiendo cualquier proyecto en hitos medibles y buscando retroalimentación temprana de personas con más experiencia. Trabaja especialmente la <em>autoconfianza</em> y la <em>persuasión</em>: expón tus ideas en voz alta, justifícalas con datos y aprende a escuchar objeciones sin abandonar tu posición cuando tienes razones sólidas. Realiza el cuestionario de CEPs periódicamente para monitorear tu evolución.</p>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-header">🧩 Quiz Interactivo <span class="quiz-score" id="score-s01"></span></div>
+      <div id="quiz-s01">
+
+        <div class="question-block" data-q="0">
+          <p class="question-text"><span class="question-num">1.</span> ¿Cuál de los tres grupos de rasgos CEPs está relacionado con la <em>persuasión y la autoconfianza</em>?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',0)">Grupo de Realización</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',0)">Grupo de Planificación</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s01',0)">Grupo del Poder</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',0)">Grupo de Innovación</button>
+          </div>
+          <div class="feedback" id="fb-s01-0"></div>
+        </div>
+
+        <div class="question-block" data-q="1">
+          <p class="question-text"><span class="question-num">2.</span> Según la investigación USAID de los años 80, ¿en qué países se realizaron las entrevistas a empresarios?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',1)">México, Nigeria y Filipinas</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s01',1)">India, Malawi y Ecuador</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',1)">Brasil, Kenia y Tailandia</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',1)">Chile, Ghana y Vietnam</button>
+          </div>
+          <div class="feedback" id="fb-s01-1"></div>
+        </div>
+
+        <div class="question-block" data-q="2">
+          <p class="question-text"><span class="question-num">3.</span> ¿Cuál es la conclusión principal sobre si los empresarios nacen o se hacen?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',2)">Los empresarios nacen con habilidades innatas que no pueden desarrollarse.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s01',2)">Los empresarios se hacen; las CEPs son habilidades desarrollables.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',2)">Solo la genética determina el éxito emprendedor.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',2)">El contexto económico es el único factor relevante.</button>
+          </div>
+          <div class="feedback" id="fb-s01-2"></div>
+        </div>
+
+        <div class="question-block" data-q="3">
+          <p class="question-text"><span class="question-num">4.</span> El cuestionario CEPs utilizado en esta semana consta de cuántas declaraciones:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',3)">30 declaraciones</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',3)">40 declaraciones</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s01',3)">55 declaraciones</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',3)">70 declaraciones</button>
+          </div>
+          <div class="feedback" id="fb-s01-3"></div>
+        </div>
+
+        <div class="question-block" data-q="4">
+          <p class="question-text"><span class="question-num">5.</span> Según McClelland, la "necesidad generalizada del éxito" se define como:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',4)">El deseo de acumular poder político sobre otros.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s01',4)">El deseo de hacer algo por el hecho en sí, no para obtener poder, amor o lucro.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',4)">La necesidad de reconocimiento social y fama.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s01',4)">El instinto de supervivencia ante situaciones adversas.</button>
+          </div>
+          <div class="feedback" id="fb-s01-4"></div>
+        </div>
+
+        <button class="reset-btn" onclick="resetQuiz('s01')">🔁 Reiniciar quiz</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SEMANA 2 ═══ -->
+  <section class="week-section" id="s02">
+    <h3 class="week-title"><span class="week-chip">S02</span>Networking, VUCA y BANI</h3>
+
+    <div class="card">
+      <div class="card-title resumen">📋 Resumen</div>
+      <ul>
+        <li><strong>Networking:</strong> estrategia para fortalecer contactos y generar relaciones duraderas. Aporta tres ventajas únicas: acceso a información privada, acceso a habilidades diversas y poder (Uzzi y Dunlop).</li>
+        <li><strong>Trampas del networking:</strong> principio de <em>autosemejanza</em> (tendemos a conectar con iguales, creando "cámaras de eco") y principio de <em>proximidad</em> (privilegiamos a quienes vemos más, limitando la diversidad de la red).</li>
+        <li><strong>Tipos de networking:</strong> operacional (relaciones cotidianas), personal (desarrollo profesional propio) y estratégico (alianzas para objetivos de largo plazo).</li>
+        <li><strong>Entorno VUCA:</strong> Volátil, Incierto (Uncertain), Complejo, Ambiguo. Describe el mundo de negocios post Guerra Fría.</li>
+        <li><strong>Entorno BANI:</strong> Frágil (Brittle), Ansioso, No lineal, Incomprensible. Evolución del VUCA para describir la incertidumbre radical actual.</li>
+        <li>Cuestionario CEPs resuelto refuerza el perfil emprendedor con ejemplos concretos de cada competencia.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title reflexion">💡 Reflexión</div>
+      <p>El ingeniero industrial del siglo XXI opera en entornos BANI donde las certezas son escasas y las disrupciones son permanentes. Comprender el networking no como un simple intercambio de tarjetas, sino como la construcción deliberada de puentes entre grupos diversos, es una ventaja competitiva esencial. La habilidad de conectar con personas de disciplinas, culturas y niveles jerárquicos distintos amplía el acceso a información, ideas y recursos que ningún individuo podría generar solo. En un mundo frágil y ansioso, las redes de confianza bien cultivadas actúan como amortiguadores ante la incertidumbre.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title retro">🔄 Retroalimentación</div>
+      <p>Practica salir intencionalmente de tu "cámara de eco": asiste a eventos interdisciplinarios, únete a comunidades donde seas el menos experto de la sala y cultiva relaciones con personas de áreas que no son tu especialidad. Para gestionar entornos VUCA/BANI, desarrolla tolerancia a la ambigüedad: ante un problema sin respuesta clara, propón hipótesis, experimenta en pequeño y aprende rápido. Ejercita también la escucha activa en conversaciones de networking, ya que el valor de una red se construye dando antes de pedir.</p>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-header">🧩 Quiz Interactivo <span class="quiz-score" id="score-s02"></span></div>
+      <div id="quiz-s02">
+
+        <div class="question-block" data-q="0">
+          <p class="question-text"><span class="question-num">1.</span> ¿Cuál de las siguientes NO es una de las tres ventajas únicas del networking según Uzzi y Dunlop?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',0)">Acceso a información privada</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',0)">Acceso a conjuntos de habilidades diversas</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',0)">Poder</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s02',0)">Acceso a financiamiento garantizado</button>
+          </div>
+          <div class="feedback" id="fb-s02-0"></div>
+        </div>
+
+        <div class="question-block" data-q="1">
+          <p class="question-text"><span class="question-num">2.</span> El principio de <em>autosemejanza</em> en el networking implica que:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s02',1)">Tendemos a conectar con personas parecidas a nosotros, creando cámaras de eco.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',1)">Buscamos siempre a las personas más distintas para enriquecer la red.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',1)">La red crece automáticamente sin esfuerzo.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',1)">Solo los líderes pueden construir redes efectivas.</button>
+          </div>
+          <div class="feedback" id="fb-s02-1"></div>
+        </div>
+
+        <div class="question-block" data-q="2">
+          <p class="question-text"><span class="question-num">3.</span> Las siglas BANI corresponden a:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',2)">Básico, Asertivo, Novedoso, Integrado</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s02',2)">Frágil (Brittle), Ansioso, No lineal, Incomprensible</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',2)">Brillante, Ágil, Nítido, Innovador</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',2)">Bloqueado, Ambiguo, Negativo, Inestable</button>
+          </div>
+          <div class="feedback" id="fb-s02-2"></div>
+        </div>
+
+        <div class="question-block" data-q="3">
+          <p class="question-text"><span class="question-num">4.</span> El networking <em>estratégico</em> se enfoca en:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',3)">Las relaciones con personas que vemos a diario en el trabajo.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',3)">El desarrollo de habilidades personales exclusivamente.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s02',3)">Construir alianzas orientadas a objetivos de largo plazo y metas estratégicas.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',3)">Aumentar el número de seguidores en redes sociales.</button>
+          </div>
+          <div class="feedback" id="fb-s02-3"></div>
+        </div>
+
+        <div class="question-block" data-q="4">
+          <p class="question-text"><span class="question-num">5.</span> ¿Cuál de las siguientes describe mejor un entorno VUCA?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',4)">Estable, predecible, simple y claro.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s02',4)">Volátil, incierto, complejo y ambiguo.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',4)">Veloz, uniforme, competitivo y analítico.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s02',4)">Virtual, único, centralizado y automatizado.</button>
+          </div>
+          <div class="feedback" id="fb-s02-4"></div>
+        </div>
+
+        <button class="reset-btn" onclick="resetQuiz('s02')">🔁 Reiniciar quiz</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SEMANA 4 ═══ -->
+  <section class="week-section" id="s04">
+    <h3 class="week-title"><span class="week-chip">S04</span>Tipos de Innovación y Detección de Oportunidades</h3>
+
+    <div class="card">
+      <div class="card-title resumen">📋 Resumen</div>
+      <ul>
+        <li><strong>Manual de Oslo (1992):</strong> guía de referencia internacional para medir la innovación. Distingue innovación <em>incremental</em> (mejoras graduales) y <em>disruptiva</em> (transforma o crea industrias).</li>
+        <li><strong>4 tipos según Oslo:</strong> de Producto, de Proceso, Organizativa y de Marketing.</li>
+        <li><strong>10 Tipos de Doblin (Deloitte):</strong> Modelo de Ganancias, Estructura, Proceso, Redes, Desempeño del Producto, Sistema de Producto, Servicio, Canal, Marca y Compromiso con el Cliente. Agrupados en Configuración, Oferta y Experiencia.</li>
+        <li><strong>Innovación disruptiva (Christensen):</strong> las empresas entrantes atacan segmentos menos rentables desatendidos por incumbentes, luego avanzan hacia arriba del mercado desplazando a los líderes.</li>
+        <li><strong>Triángulo de la Oportunidad:</strong> toda oportunidad requiere (1) necesidad insatisfecha, (2) propuesta de solución y (3) lógica de negocios.</li>
+        <li><strong>Stakeholders:</strong> concepto de Freeman (1984). La empresa existe dentro de una red de relaciones (internos y externos) que deben ser considerados en el diseño de soluciones.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title reflexion">💡 Reflexión</div>
+      <p>La ingeniería industrial forma profesionales cuya misión histórica ha sido optimizar procesos, pero el marco de los 10 tipos de Doblin revela que la innovación más potente rara vez proviene del producto en sí: emerge de combinaciones creativas entre modelo de negocio, redes, experiencia del cliente y canales. Un ingeniero que comprende esto puede contribuir a transformar industrias completas, no solo mejorar una línea de producción. La lección del caso Kodak es especialmente significativa: no basta con inventar la tecnología disruptiva; hay que atreverse a canibalizar el propio negocio antes de que lo haga un competidor.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title retro">🔄 Retroalimentación</div>
+      <p>Ejercita la identificación de oportunidades en tu vida diaria: cada vez que experimentes una frustración o ineficiencia, pregúntate si se cumple el Triángulo de la Oportunidad. Practica también analizar empresas conocidas aplicando los 10 tipos de Doblin para identificar qué dimensiones de innovación explotan y cuáles ignoran. Profundiza en la lectura de casos de innovación disruptiva (Kodak, Netflix, Blockbuster) para desarrollar el ojo crítico que distingue una simple idea de una verdadera oportunidad de negocio con lógica viable.</p>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-header">🧩 Quiz Interactivo <span class="quiz-score" id="score-s04"></span></div>
+      <div id="quiz-s04">
+
+        <div class="question-block" data-q="0">
+          <p class="question-text"><span class="question-num">1.</span> Según el Manual de Oslo, ¿qué tipo de innovación revoluciona el mercado creando nuevas industrias o perfiles de consumidores?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',0)">Innovación incremental</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s04',0)">Innovación disruptiva</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',0)">Innovación de proceso</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',0)">Innovación organizativa</button>
+          </div>
+          <div class="feedback" id="fb-s04-0"></div>
+        </div>
+
+        <div class="question-block" data-q="1">
+          <p class="question-text"><span class="question-num">2.</span> En el modelo de Doblin (10 tipos), ¿cuántas categorías agrupan los 10 tipos de innovación?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',1)">2 (Interna y Externa)</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s04',1)">3 (Configuración, Oferta y Experiencia)</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',1)">4 (Producto, Proceso, Organización, Marketing)</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',1)">5 (Técnica, Comercial, Social, Digital, Ambiental)</button>
+          </div>
+          <div class="feedback" id="fb-s04-1"></div>
+        </div>
+
+        <div class="question-block" data-q="2">
+          <p class="question-text"><span class="question-num">3.</span> El "Triángulo de la Oportunidad" establece que una oportunidad real requiere tres elementos. ¿Cuál de estos NO forma parte del triángulo?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',2)">Una necesidad insatisfecha</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',2)">Una propuesta de solución</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',2)">Una lógica de negocios</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s04',2)">Un prototipo físico terminado</button>
+          </div>
+          <div class="feedback" id="fb-s04-2"></div>
+        </div>
+
+        <div class="question-block" data-q="3">
+          <p class="question-text"><span class="question-num">4.</span> En el modelo de innovación disruptiva de Christensen, ¿desde dónde atacan inicialmente las empresas entrantes?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',3)">Desde el segmento más rentable del mercado.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s04',3)">Desde segmentos menos rentables, desatendidos por los incumbentes.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',3)">Siempre desde mercados internacionales.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',3)">Desde la cima del mercado hacia abajo.</button>
+          </div>
+          <div class="feedback" id="fb-s04-3"></div>
+        </div>
+
+        <div class="question-block" data-q="4">
+          <p class="question-text"><span class="question-num">5.</span> ¿Qué hizo Kodak con la tecnología de cámara digital que desarrolló internamente en 1975?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',4)">La lanzó masivamente al mercado de inmediato.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',4)">La vendió a un competidor asiático.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s04',4)">Invirtió en ella pero no logró adaptarse a la transición al móvil y redes sociales.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s04',4)">La patentó y bloqueó su desarrollo por décadas.</button>
+          </div>
+          <div class="feedback" id="fb-s04-4"></div>
+        </div>
+
+        <button class="reset-btn" onclick="resetQuiz('s04')">🔁 Reiniciar quiz</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SEMANA 5 ═══ -->
+  <section class="week-section" id="s05">
+    <h3 class="week-title"><span class="week-chip">S05</span>Investigación del Usuario y Caso Kodak</h3>
+
+    <div class="card">
+      <div class="card-title resumen">📋 Resumen</div>
+      <ul>
+        <li><strong>Propósito de la investigación de usuarios:</strong> recopilar información real para diseñar soluciones que generen valor en la experiencia del usuario. La emoción domina sobre la razón en la toma de decisiones (Bachrach).</li>
+        <li><strong>Metodología UX Designar:</strong> cinco etapas — empatizar, analizar, diseñar, prototipar y testear. Proceso iterativo y continuo, no lineal.</li>
+        <li><strong>Tres dimensiones de empatía:</strong> Observación (comportamiento en contexto), Interacción (entrevistas) y Sumersión (experimentar lo que vive el usuario).</li>
+        <li><strong>Herramientas clave:</strong> Mapa de Empatía (qué dice/hace/piensa/siente el usuario), instrumento de recolección con formato de consulta, muestra, preguntas, métricas y criterios de validación.</li>
+        <li><strong>Caso Kodak (Anthony, HBR 2016):</strong> Kodak inventó la cámara digital en 1975 pero no adoptó el modelo de compartir fotos en redes sociales; vendió Ofoto para imprimir fotos en vez de usarla como red social. Lección: anticipar el cambio no es suficiente; hay que actuar sobre él con el modelo correcto.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title reflexion">💡 Reflexión</div>
+      <p>La investigación del usuario es el antídoto contra el mayor error del ingeniero: diseñar desde los supuestos propios en vez de desde las necesidades reales. El caso Kodak ilustra que incluso gigantes con visión tecnológica pueden fracasar si no logran salir de su modelo mental vigente para abrazar el comportamiento emergente de los usuarios. Para el ingeniero industrial, desarrollar empatía genuina con los usuarios finales de los procesos y productos que diseña no es una habilidad "blanda" opcional, sino una competencia técnica fundamental que reduce costos de rediseño y aumenta la tasa de adopción.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title retro">🔄 Retroalimentación</div>
+      <p>Practica la aplicación del Mapa de Empatía en situaciones reales: elige un servicio o proceso que conoces y mapea qué dice, hace, piensa y siente el usuario. Profundiza en las técnicas de entrevista empática: aprende a hacer preguntas abiertas que no sugieran la respuesta. Revisa el caso Kodak críticamente y pregúntate: ¿qué decisiones específicas hubieran cambiado el resultado? Este tipo de análisis post-mortem fortalece el juicio estratégico que todo ingeniero-emprendedor necesita.</p>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-header">🧩 Quiz Interactivo <span class="quiz-score" id="score-s05"></span></div>
+      <div id="quiz-s05">
+
+        <div class="question-block" data-q="0">
+          <p class="question-text"><span class="question-num">1.</span> Según Bachrach (2012), ¿qué tiene mayor dominio sobre las decisiones del ser humano?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',0)">La lógica y el análisis racional</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s05',0)">La emoción</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',0)">La experiencia técnica</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',0)">La presión social del entorno</button>
+          </div>
+          <div class="feedback" id="fb-s05-0"></div>
+        </div>
+
+        <div class="question-block" data-q="1">
+          <p class="question-text"><span class="question-num">2.</span> ¿Cuáles son las tres dimensiones de la empatía en la metodología UX?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',1)">Encuestar, Analizar, Concluir</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s05',1)">Observación, Interacción y Sumersión</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',1)">Diseñar, Prototipar, Testear</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',1)">Escuchar, Preguntar, Registrar</button>
+          </div>
+          <div class="feedback" id="fb-s05-1"></div>
+        </div>
+
+        <div class="question-block" data-q="2">
+          <p class="question-text"><span class="question-num">3.</span> ¿En qué año desarrolló Kodak el primer prototipo de cámara digital?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',2)">1985</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',2)">1990</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s05',2)">1975</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',2)">2001</button>
+          </div>
+          <div class="feedback" id="fb-s05-2"></div>
+        </div>
+
+        <div class="question-block" data-q="3">
+          <p class="question-text"><span class="question-num">4.</span> ¿Qué hizo Kodak con la plataforma para compartir imágenes "Ofoto" que adquirió en 2001?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',3)">La convirtió en la primera red social de fotos del mundo.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s05',3)">La usó para que más gente imprimiera fotos digitales, perdiendo el potencial de red social.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',3)">La vendió a Facebook antes de que esta existiera.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',3)">La cerró por no ser rentable en los primeros dos años.</button>
+          </div>
+          <div class="feedback" id="fb-s05-3"></div>
+        </div>
+
+        <div class="question-block" data-q="4">
+          <p class="question-text"><span class="question-num">5.</span> La metodología UX Designar consta de cuántas etapas principales:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',4)">3 etapas</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',4)">4 etapas</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s05',4)">5 etapas (empatizar, analizar, diseñar, prototipar, testear)</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s05',4)">7 etapas</button>
+          </div>
+          <div class="feedback" id="fb-s05-4"></div>
+        </div>
+
+        <button class="reset-btn" onclick="resetQuiz('s05')">🔁 Reiniciar quiz</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SEMANA 6 ═══ -->
+  <section class="week-section" id="s06">
+    <h3 class="week-title"><span class="week-chip">S06</span>Creatividad, Pensamiento Lateral e Innovación Inversa</h3>
+
+    <div class="card">
+      <div class="card-title resumen">📋 Resumen</div>
+      <ul>
+        <li><strong>Creatividad en entornos VUCA/BANI:</strong> habilidad fundamental que va más allá del arte; es un recurso de adaptación, resiliencia e innovación organizacional.</li>
+        <li><strong>Pensamiento lateral (Edward de Bono):</strong> forma de resolver problemas conectando información nueva con ideas viejas para obtener soluciones no obvias. Acuñado en 1967 en "New Think". Incluido en el Oxford English Dictionary.</li>
+        <li><strong>4 lentes de la innovación (Rowan Gibson):</strong> mirar desafíos desde perspectivas distintas para generar ideas disruptivas: cuestionando ortodoxias, aprovechando tendencias, detectando insatisfacciones y combinando capacidades.</li>
+        <li><strong>Innovación inversa (Winter & Govindarajan, HBR):</strong> diseñar en mercados emergentes y exportar a países desarrollados. Ej.: silla de ruedas LFC del MIT, 80% más rápida y 40% más eficiente a $250 USD, adaptada luego al mercado occidental como GRIT Freedom Chair ($3.295).</li>
+        <li>El WEF identifica la creatividad y el pensamiento crítico entre las habilidades más demandadas para el futuro del trabajo.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title reflexion">💡 Reflexión</div>
+      <p>La ingeniería industrial requiere tanto rigor analítico como creatividad disruptiva. El pensamiento lateral de De Bono proporciona al ingeniero un método concreto para escapar de los patrones de solución dominantes y explorar alternativas no convencionales. La innovación inversa, por su parte, desafía la creencia de que la tecnología de punta siempre nace en economías avanzadas: a veces, las restricciones de recursos en mercados emergentes fuerzan soluciones más elegantes y accesibles que superan en rendimiento a sus equivalentes de alto costo. Estas perspectivas deben integrarse al enfoque de un ingeniero con vocación innovadora.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title retro">🔄 Retroalimentación</div>
+      <p>Practica el pensamiento lateral ante situaciones cotidianas: ante un problema, lista primero las soluciones obvias y luego fuerza al menos tres soluciones contraintuitivas. Experimenta con las "4 lentes de Gibson" aplicándolas a productos o servicios de tu entorno: ¿qué ortodoxias se podrían desafiar?, ¿qué tendencias ignoradas podrían explotarse? Explora casos de innovación inversa en Chile o Latinoamérica para identificar oportunidades similares. Leer casos de innovadores que operaron con recursos limitados fortalece la creatividad aplicada a la ingeniería.</p>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-header">🧩 Quiz Interactivo <span class="quiz-score" id="score-s06"></span></div>
+      <div id="quiz-s06">
+
+        <div class="question-block" data-q="0">
+          <p class="question-text"><span class="question-num">1.</span> ¿Quién acuñó el concepto de "pensamiento lateral" y en qué año?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',0)">Rowan Gibson, 1998</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',0)">Tim Brown, 2008</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s06',0)">Edward de Bono, 1967</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',0)">Clayton Christensen, 1995</button>
+          </div>
+          <div class="feedback" id="fb-s06-0"></div>
+        </div>
+
+        <div class="question-block" data-q="1">
+          <p class="question-text"><span class="question-num">2.</span> La innovación inversa consiste en:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',1)">Adaptar productos de países emergentes para venderlos solo localmente.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s06',1)">Diseñar productos en mercados emergentes y exportarlos con ajustes a países desarrollados.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',1)">Copiar innovaciones de países desarrollados y fabricarlas más barato en emergentes.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',1)">Invertir fondos de innovación en sentido contrario al flujo habitual.</button>
+          </div>
+          <div class="feedback" id="fb-s06-1"></div>
+        </div>
+
+        <div class="question-block" data-q="2">
+          <p class="question-text"><span class="question-num">2.</span> Según el WEF, la creatividad y el pensamiento crítico se ubican entre:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',2)">Las habilidades menos relevantes para el futuro laboral.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s06',2)">Las habilidades más demandadas para el futuro del trabajo.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',2)">Habilidades propias exclusivamente de artistas y diseñadores.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',2)">Competencias que las máquinas ya pueden reemplazar por completo.</button>
+          </div>
+          <div class="feedback" id="fb-s06-2"></div>
+        </div>
+
+        <div class="question-block" data-q="3">
+          <p class="question-text"><span class="question-num">4.</span> La silla de ruedas LFC desarrollada en el MIT para mercados emergentes es:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',3)">Un 20% más rápida que una silla convencional a un precio de $2.000 USD.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s06',3)">Un 80% más rápida y 40% más eficiente, con precio cercano a $250 USD.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',3)">Igual en rendimiento a una silla convencional pero más liviana.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',3)">Solo apta para terrenos pavimentados en zonas urbanas.</button>
+          </div>
+          <div class="feedback" id="fb-s06-3"></div>
+        </div>
+
+        <div class="question-block" data-q="4">
+          <p class="question-text"><span class="question-num">5.</span> El pensamiento lateral se diferencia del pensamiento vertical en que:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',4)">Es más rígido y sigue siempre la misma secuencia lógica.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s06',4)">Evita soluciones obvias y fomenta enfoques novedosos conectando ideas de formas inesperadas.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',4)">Se aplica exclusivamente en empresas tecnológicas.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s06',4)">Requiere un equipo de al menos 10 personas para funcionar correctamente.</button>
+          </div>
+          <div class="feedback" id="fb-s06-4"></div>
+        </div>
+
+        <button class="reset-btn" onclick="resetQuiz('s06')">🔁 Reiniciar quiz</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SEMANA 7 ═══ -->
+  <section class="week-section" id="s07">
+    <h3 class="week-title"><span class="week-chip">S07</span>Técnicas y Herramientas para la Evaluación de Ideas</h3>
+
+    <div class="card">
+      <div class="card-title resumen">📋 Resumen</div>
+      <ul>
+        <li><strong>Propósito:</strong> después de generar ideas (pensamiento divergente), la etapa de evaluación usa pensamiento convergente para seleccionar las más valiosas e implementables.</li>
+        <li><strong>Regla del 10%:</strong> solo ~10% de los proyectos de innovación sobrevive; se deben generar al menos 10 veces más ideas de las que se quiere obtener finalmente.</li>
+        <li><strong>Proceso de evaluación:</strong> (1) Organizar ideas — hacerlas precisas y únicas; (2) Establecer criterios de evaluación alineados al foco creativo; (3) Aplicar técnicas sucesivamente; (4) Ordenar y priorizar resultados.</li>
+        <li><strong>Técnica "Mis preferidas":</strong> evaluación subjetiva experta, rápida y directa.</li>
+        <li><strong>Criterios comunes:</strong> originalidad, compatibilidad con el foco creativo, utilidad para el usuario, riesgo de implementación, riesgo de copia.</li>
+        <li>La calidad del input (ideas precisas y únicas) determina la calidad de la evaluación.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title reflexion">💡 Reflexión</div>
+      <p>En ingeniería industrial la toma de decisiones bajo incertidumbre es cotidiana. La habilidad de evaluar ideas de manera estructurada y con criterios explícitos reduce el sesgo hacia las ideas más llamativas o de quienes tienen más autoridad, permitiendo que las mejores propuestas emerjan independientemente de su origen. Esta disciplina metodológica en la evaluación de ideas es un complemento esencial al entusiasmo creativo: sin ella, los recursos se dispersan en múltiples iniciativas que no convergen en valor real para el usuario ni para la organización.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title retro">🔄 Retroalimentación</div>
+      <p>Practica la definición de criterios de evaluación antes de juzgar cualquier idea: ¿qué hace que una solución sea buena para este problema específico? Experimenta con la técnica "Mis preferidas" en grupos: evalúa independientemente y luego compara resultados con compañeros para entender cómo los sesgos personales influyen. Trabaja en hacer tus ideas más precisas: una idea que todos interpretan de forma distinta no puede ser evaluada correctamente. La precisión y la unicidad de las ideas son prerequisitos de una buena evaluación.</p>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-header">🧩 Quiz Interactivo <span class="quiz-score" id="score-s07"></span></div>
+      <div id="quiz-s07">
+
+        <div class="question-block" data-q="0">
+          <p class="question-text"><span class="question-num">1.</span> ¿Qué tipo de pensamiento caracteriza la etapa de evaluación de ideas?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',0)">Pensamiento divergente</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s07',0)">Pensamiento convergente</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',0)">Pensamiento lateral</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',0)">Pensamiento sistémico</button>
+          </div>
+          <div class="feedback" id="fb-s07-0"></div>
+        </div>
+
+        <div class="question-block" data-q="1">
+          <p class="question-text"><span class="question-num">2.</span> Según la "regla del 10%", si esperamos obtener 3 ideas innovadoras finales, ¿cuántas ideas debemos generar mínimamente antes de evaluar?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',1)">5 ideas</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',1)">15 ideas</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s07',1)">30 ideas</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',1)">100 ideas</button>
+          </div>
+          <div class="feedback" id="fb-s07-1"></div>
+        </div>
+
+        <div class="question-block" data-q="2">
+          <p class="question-text"><span class="question-num">3.</span> ¿Cuál es el primer paso del proceso de evaluación de ideas?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',2)">Aplicar las técnicas de evaluación directamente</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s07',2)">Organizar el conjunto inicial de ideas, fusionando similares y precisando ambiguas</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',2)">Seleccionar la idea favorita del equipo</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',2)">Presentar las ideas a los stakeholders</button>
+          </div>
+          <div class="feedback" id="fb-s07-2"></div>
+        </div>
+
+        <div class="question-block" data-q="3">
+          <p class="question-text"><span class="question-num">4.</span> ¿Por qué es importante definir los criterios de evaluación ANTES de valorar las ideas?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',3)">Para ahorrar tiempo en las reuniones de trabajo.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s07',3)">Para alinear al equipo y reducir sesgos, asegurando que todos evalúen desde los mismos parámetros.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',3)">Porque el reglamento de la empresa así lo exige.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',3)">Para que las ideas sean más creativas desde el inicio.</button>
+          </div>
+          <div class="feedback" id="fb-s07-3"></div>
+        </div>
+
+        <div class="question-block" data-q="4">
+          <p class="question-text"><span class="question-num">5.</span> Una idea se considera "única" en el contexto de la evaluación cuando:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',4)">Nadie más en el mundo la haya pensado antes.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s07',4)">No está duplicada en el conjunto a evaluar; ideas similares han sido fusionadas.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',4)">Fue generada por una sola persona sin colaboración.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s07',4)">Es completamente diferente a todas las ideas anteriores del equipo.</button>
+          </div>
+          <div class="feedback" id="fb-s07-4"></div>
+        </div>
+
+        <button class="reset-btn" onclick="resetQuiz('s07')">🔁 Reiniciar quiz</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SEMANA 8 ═══ -->
+  <section class="week-section" id="s08">
+    <h3 class="week-title"><span class="week-chip">S08</span>Técnicas de Prototipado y Validación</h3>
+
+    <div class="card">
+      <div class="card-title resumen">📋 Resumen</div>
+      <ul>
+        <li><strong>Propósito del prototipo:</strong> determinar si la propuesta de solución se basa en supuestos correctos y si el modelo de negocio es viable. Son herramientas de aprendizaje, no de demostración.</li>
+        <li><strong>3 objetivos (IDEO):</strong> Explorar (probar variables clave), Entender (necesidades del usuario) y Comunicar (hipótesis a los actores involucrados).</li>
+        <li><strong>4 propósitos (Ulrich & Eppinger):</strong> aprendizaje, comunicación, integración y alcance de hitos.</li>
+        <li><strong>3 tipos de prototipos (Tim Brown, 2008):</strong> de Inspiración (etapas tempranas, medios simples), de Evolución (mejorar prototipos anteriores) y de Validación (probar hipótesis finales).</li>
+        <li><strong>Proceso iterativo:</strong> inicia desde etapas tempranas y continúa hasta el lanzamiento. Un prototipo descartado no es fallido si generó aprendizaje.</li>
+        <li>Los prototipos son más eficaces cuando los desarrollan equipos interdisciplinarios.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title reflexion">💡 Reflexión</div>
+      <p>El prototipado es el puente entre la idea abstracta y la solución tangible que enfrenta la realidad. Para el ingeniero industrial, acostumbrado a trabajar con especificaciones precisas antes de producir, aprender a prototipar de manera rápida y barata —incluso con materiales de oficina— representa un cambio cultural fundamental. Este enfoque reduce drásticamente el costo del fracaso: es mucho más barato descubrir que un supuesto es incorrecto con un prototipo de cartulina que con una línea de producción instalada. La iteración continua y el aprendizaje acelerado son hoy tan valiosos como la precisión técnica.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title retro">🔄 Retroalimentación</div>
+      <p>Practica prototipar antes de estar "listo": toma cualquier idea de proyecto y construye en menos de 30 minutos la representación más simple posible que comunique la esencia de la solución. Muéstrala a alguien ajeno al equipo y observa sus reacciones sin explicar nada. Este ejercicio entrena la capacidad de externalizar ideas rápidamente. Aprende a distinguir qué hipótesis estás validando con cada prototipo: un prototipo sin hipótesis clara no genera aprendizaje útil. Documenta los aprendizajes de cada iteración.</p>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-header">🧩 Quiz Interactivo <span class="quiz-score" id="score-s08"></span></div>
+      <div id="quiz-s08">
+
+        <div class="question-block" data-q="0">
+          <p class="question-text"><span class="question-num">1.</span> Según IDEO, ¿cuál de los siguientes NO es un objetivo del prototipado?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',0)">Explorar variables clave del problema</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',0)">Entender las necesidades del usuario</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',0)">Comunicar hipótesis a los actores involucrados</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s08',0)">Demostrar que el producto está terminado y listo para producción</button>
+          </div>
+          <div class="feedback" id="fb-s08-0"></div>
+        </div>
+
+        <div class="question-block" data-q="1">
+          <p class="question-text"><span class="question-num">2.</span> ¿Cuál es el tipo de prototipo que se desarrolla en las etapas más tempranas, con medios simples y baratos?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s08',1)">Prototipo de inspiración</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',1)">Prototipo de validación</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',1)">Prototipo de producción</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',1)">Prototipo de integración</button>
+          </div>
+          <div class="feedback" id="fb-s08-1"></div>
+        </div>
+
+        <div class="question-block" data-q="2">
+          <p class="question-text"><span class="question-num">3.</span> Un prototipo que fue descartado ¿puede considerarse exitoso?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',2)">No, si fue descartado definitivamente es un fracaso.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s08',2)">Sí, si generó aprendizaje relevante sobre el problema o la solución.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',2)">Solo si el equipo usó materiales costosos.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',2)">Depende exclusivamente de la opinión del cliente.</button>
+          </div>
+          <div class="feedback" id="fb-s08-2"></div>
+        </div>
+
+        <div class="question-block" data-q="3">
+          <p class="question-text"><span class="question-num">4.</span> ¿Por qué los prototipos son más eficaces cuando el equipo es interdisciplinario?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',3)">Porque se reducen los costos de materiales al dividirlos entre más personas.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s08',3)">Porque integra distintas perspectivas de expertos de diversas disciplinas, enriqueciendo las soluciones.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',3)">Porque los equipos grandes siempre producen mejores resultados.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',3)">Porque el cliente prefiere ver equipos numerosos.</button>
+          </div>
+          <div class="feedback" id="fb-s08-3"></div>
+        </div>
+
+        <div class="question-block" data-q="4">
+          <p class="question-text"><span class="question-num">5.</span> El prototipo de <em>validación</em> se utiliza:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',4)">Al comienzo del proyecto para explorar el espacio del problema.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',4)">Para mejorar prototipos anteriores de manera iterativa.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s08',4)">Cuando la solución está cercana a su versión final, para validar hipótesis mediante un proceso estructurado.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s08',4)">Exclusivamente con materiales de oficina reciclados.</button>
+          </div>
+          <div class="feedback" id="fb-s08-4"></div>
+        </div>
+
+        <button class="reset-btn" onclick="resetQuiz('s08')">🔁 Reiniciar quiz</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SEMANA 9 ═══ -->
+  <section class="week-section" id="s09">
+    <h3 class="week-title"><span class="week-chip">S09</span>Entrevistas en Contexto de Emprendimiento</h3>
+
+    <div class="card">
+      <div class="card-title resumen">📋 Resumen</div>
+      <ul>
+        <li><strong>Definición:</strong> herramienta cualitativa de diálogo estructurado o semiestructurado para obtener información detallada sobre perspectivas, comportamientos y necesidades.</li>
+        <li><strong>4 usos clave en emprendimiento:</strong> (1) identificar problemas y oportunidades, (2) validar hipótesis de valor y crecimiento, (3) obtener insights para el diseño y (4) conocer barreras de adopción.</li>
+        <li><strong>Problemas explícitos vs. latentes:</strong> los explícitos son reconocidos por el usuario; los latentes son necesidades que aún no ha verbalizado pero que afectan sus actividades.</li>
+        <li><strong>Tipos de hipótesis a validar:</strong> de problema ("¿este problema existe?"), de solución ("¿mi solución lo resuelve?") y de mercado ("¿este segmento es el correcto?").</li>
+        <li><strong>Tipos de entrevistas:</strong> exploratorias (descubrimiento abierto), de validación (probar hipótesis), de usabilidad (testeo de producto) y de seguimiento (evolución del usuario).</li>
+        <li>La validación temprana reduce riesgos, ahorra recursos y aumenta la probabilidad de éxito del emprendimiento.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title reflexion">💡 Reflexión</div>
+      <p>Las entrevistas son la herramienta que convierte el emprendimiento en una disciplina basada en evidencia en lugar de intuición. Para el ingeniero industrial, acostumbrado a medir parámetros físicos con instrumentos precisos, la entrevista es su equivalente en el mundo del comportamiento humano: un instrumento de medición que, bien diseñado y ejecutado, entrega datos invaluables sobre la viabilidad de una solución antes de invertir en su desarrollo. Aprender a distinguir lo que el usuario dice de lo que realmente necesita —los problemas latentes— es una habilidad que separa a los emprendedores exitosos de los que construyen soluciones para problemas que nadie tiene.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title retro">🔄 Retroalimentación</div>
+      <p>Practica entrevistar a alguien sobre un problema cotidiano que ambos conozcan, y registra qué preguntas generaron respuestas ricas versus respuestas de sí/no. Evita preguntas que confirmen lo que ya crees: en vez de "¿usarías una app para X?", pregunta "¿cuéntame la última vez que tuviste el problema X". Profundiza en la escucha activa: permite silencios, no interrumpas y haz seguimiento con "¿por qué?" o "¿puedes contarme más?". Estos micro-hábitos de entrevista mejoran sustancialmente la calidad de los datos que recopilas.</p>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-header">🧩 Quiz Interactivo <span class="quiz-score" id="score-s09"></span></div>
+      <div id="quiz-s09">
+
+        <div class="question-block" data-q="0">
+          <p class="question-text"><span class="question-num">1.</span> ¿Cuál es la diferencia principal entre un problema explícito y uno latente?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',0)">El explícito es más grave que el latente.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s09',0)">El explícito es reconocido y verbalizado por el usuario; el latente no ha sido identificado aún por él pero lo afecta.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',0)">El latente se puede resolver con tecnología; el explícito no.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',0)">No hay diferencia real entre ambos tipos de problemas.</button>
+          </div>
+          <div class="feedback" id="fb-s09-0"></div>
+        </div>
+
+        <div class="question-block" data-q="1">
+          <p class="question-text"><span class="question-num">2.</span> Las entrevistas de tipo <em>exploratorio</em> se utilizan principalmente para:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',1)">Validar que el prototipo funciona correctamente con usuarios reales.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s09',1)">Descubrir de manera abierta el panorama de problemas y necesidades sin hipótesis previas.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',1)">Comprobar si el segmento de mercado es exactamente el esperado.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',1)">Hacer seguimiento a clientes que ya compraron el producto.</button>
+          </div>
+          <div class="feedback" id="fb-s09-1"></div>
+        </div>
+
+        <div class="question-block" data-q="2">
+          <p class="question-text"><span class="question-num">3.</span> Validar la hipótesis de mercado significa:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',2)">Confirmar que el producto tiene buenas características técnicas.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',2)">Probar que la solución resuelve el problema identificado.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s09',2)">Verificar si el segmento de clientes objetivo es el más relevante para la solución.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',2)">Calcular el precio de venta óptimo del producto.</button>
+          </div>
+          <div class="feedback" id="fb-s09-2"></div>
+        </div>
+
+        <div class="question-block" data-q="3">
+          <p class="question-text"><span class="question-num">4.</span> ¿En qué se diferencia la entrevista de una encuesta como herramienta de investigación?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',3)">La encuesta siempre genera datos más ricos y detallados.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s09',3)">La entrevista permite exploración profunda y flexible, descubriendo matices y perspectivas únicas que la encuesta no capta.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',3)">La encuesta es cualitativa mientras la entrevista es cuantitativa.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',3)">No hay diferencia metodológica relevante entre ambas.</button>
+          </div>
+          <div class="feedback" id="fb-s09-3"></div>
+        </div>
+
+        <div class="question-block" data-q="4">
+          <p class="question-text"><span class="question-num">5.</span> ¿Por qué la validación temprana de hipótesis es especialmente valiosa en emprendimiento?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',4)">Porque garantiza el éxito del negocio en el largo plazo.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s09',4)">Porque reduce riesgos, ahorra recursos y aumenta las probabilidades de éxito al alinearse con el mercado antes de invertir en desarrollo.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',4)">Porque el inversionista la exige como requisito formal.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s09',4)">Porque los problemas latentes desaparecen al ser identificados.</button>
+          </div>
+          <div class="feedback" id="fb-s09-4"></div>
+        </div>
+
+        <button class="reset-btn" onclick="resetQuiz('s09')">🔁 Reiniciar quiz</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SEMANA 10 ══ -->
+  <section class="week-section" id="s10">
+    <h3 class="week-title"><span class="week-chip">S10</span>Lienzo de Propuesta de Valor</h3>
+
+    <div class="card">
+      <div class="card-title resumen">📋 Resumen</div>
+      <ul>
+        <li><strong>Valor:</strong> utilidad que ofrece un bien o servicio como resultado de un proceso de diseño, transformación y/o mejora.</li>
+        <li><strong>Propuesta de valor (PV):</strong> razón por la cual el cliente prefiere nuestra solución sobre otras. Es distinta del problema y de la solución en sí; la solución es el vehículo para entregar la PV.</li>
+        <li><strong>Lienzo de PV (Osterwalder):</strong> dos bloques: <em>Segmento de Cliente</em> (círculo derecho) con Trabajos, Dolores y Ganancias; y <em>Mapa de Valor</em> (cuadrado izquierdo) con Productos/Servicios, Aliviadores de Dolores y Creadores de Ganancias.</li>
+        <li><strong>Tipos de trabajos del cliente:</strong> funcionales (cumplir una meta), sociales (obtener reconocimiento) y emocionales (alcanzar estados emocionales deseados).</li>
+        <li><strong>Encaje:</strong> cuando los aliviadores de dolores y los creadores de ganancias coinciden con los dolores y ganancias del cliente.</li>
+        <li>La PV es el eje central del Business Model Canvas; todo el modelo de negocio se articula alrededor de ella.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title reflexion">💡 Reflexión</div>
+      <p>El Lienzo de Propuesta de Valor obliga a salir del pensamiento centrado en el producto para entrar en el pensamiento centrado en el cliente. Para un ingeniero industrial, esto implica una inversión radical de perspectiva: en lugar de preguntar "¿qué podemos fabricar?", la pregunta es "¿qué dolor específico tiene este cliente y cómo podemos aliviarlo de una manera que nadie más lo hace?". Esta distinción entre propuesta de valor, solución y problema es la base conceptual sobre la que se construyen modelos de negocio verdaderamente diferenciados y sostenibles en mercados competitivos.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title retro">🔄 Retroalimentación</div>
+      <p>Practica rellenar el Lienzo de Propuesta de Valor con un producto o servicio que conoces bien: empieza siempre por el Segmento de Cliente (derecha) antes de diseñar el Mapa de Valor (izquierda). Analiza los ejemplos de slogans del material (Uber, Slack, Evernote) y clasifica cuáles son PV genuinas y cuáles son solo slogans aspiracionales. Esto entrena el ojo para distinguir propuestas de valor concretas y creíbles. Recuerda: la PV debe responder "qué es, por qué es bueno y cómo me beneficia" en pocas palabras.</p>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-header">🧩 Quiz Interactivo <span class="quiz-score" id="score-s10"></span></div>
+      <div id="quiz-s10">
+
+        <div class="question-block" data-q="0">
+          <p class="question-text"><span class="question-num">1.</span> En el Lienzo de Propuesta de Valor, ¿qué representa el bloque circular de la derecha?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',0)">El Mapa de Valor (lo que la empresa ofrece)</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s10',0)">El Segmento de Cliente (trabajos, dolores y ganancias del cliente)</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',0)">El modelo de ingresos del negocio</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',0)">El análisis de la competencia</button>
+          </div>
+          <div class="feedback" id="fb-s10-0"></div>
+        </div>
+
+        <div class="question-block" data-q="1">
+          <p class="question-text"><span class="question-num">2.</span> ¿Cuál es la diferencia entre la Propuesta de Valor y la solución (producto/servicio)?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',1)">Son exactamente lo mismo, solo cambia el nombre según el contexto.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s10',1)">La solución es el vehículo para entregar la PV; la PV es el beneficio real que el cliente recibe y valora.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',1)">La PV incluye el precio mientras la solución es solo el diseño.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',1)">La solución es estratégica y la PV es táctica.</button>
+          </div>
+          <div class="feedback" id="fb-s10-1"></div>
+        </div>
+
+        <div class="question-block" data-q="2">
+          <p class="question-text"><span class="question-num">3.</span> Las "tareas sociales" del cliente en el Lienzo de PV son aquellas en las que el cliente busca:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',2)">Cumplir una meta funcional concreta en su trabajo.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s10',2)">Obtener reconocimiento en su entorno social o lograr un mayor estatus.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',2)">Alcanzar estados emocionales como calma o confianza.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',2)">Reducir costos operativos en su empresa.</button>
+          </div>
+          <div class="feedback" id="fb-s10-2"></div>
+        </div>
+
+        <div class="question-block" data-q="3">
+          <p class="question-text"><span class="question-num">4.</span> Según el material de la semana, el slogan de Evernote "Recuérdalo todo" se clasifica como:</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s10',3)">Ambiguo: apela a la emoción pero no es claro ni creíble como propuesta de valor.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',3)">Una propuesta de valor perfecta, clara y diferenciada.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',3)">Un slogan de alta calidad que comunica el mecanismo del producto.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',3)">Una propuesta de valor técnica de ingeniería.</button>
+          </div>
+          <div class="feedback" id="fb-s10-3"></div>
+        </div>
+
+        <div class="question-block" data-q="4">
+          <p class="question-text"><span class="question-num">5.</span> ¿Qué se entiende por "encaje" en el Lienzo de Propuesta de Valor?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',4)">Cuando la empresa logra registrar la marca comercialmente.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s10',4)">Cuando los aliviadores de dolores y creadores de ganancias coinciden exactamente con los dolores y ganancias del cliente.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',4)">Cuando el precio del producto es accesible para el segmento objetivo.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s10',4)">Cuando el equipo de trabajo está alineado con los objetivos estratégicos.</button>
+          </div>
+          <div class="feedback" id="fb-s10-4"></div>
+        </div>
+
+        <button class="reset-btn" onclick="resetQuiz('s10')">🔁 Reiniciar quiz</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SEMANA 11 ══ -->
+  <section class="week-section" id="s11">
+    <h3 class="week-title"><span class="week-chip">S11</span>Comunicación de Valor y Pitch</h3>
+
+    <div class="card">
+      <div class="card-title resumen">📋 Resumen</div>
+      <ul>
+        <li><strong>Comunicación como habilidad estratégica:</strong> el 85% del éxito laboral proviene de habilidades sociales; solo el 15% de habilidades técnicas (Harvard, Carnegie, Stanford).</li>
+        <li><strong>Pitch / Elevator Pitch:</strong> presentación breve de una idea o proyecto en tiempo y espacio limitados. Origen en Hollywood: guionistas tenían 30-45 segundos en un ascensor para "lanzar" su idea.</li>
+        <li><strong>Método NABC:</strong> Necesidad (el problema a resolver) → Aproximación (cómo se resuelve) → Beneficios por unidad de costo (valor diferencial) → Competencia (qué existe ya y qué se hace mejor).</li>
+        <li><strong>Power Pitch Method:</strong> complementa el NABC con narrativa emocional y estructura dramática para conectar con la audiencia.</li>
+        <li><strong>Claves de la comunicación efectiva en liderazgo:</strong> inteligencia emocional, comunicación bidireccional, consistencia, flexibilidad en canales y transparencia estratégica.</li>
+        <li>Todo cliente se captura a través de lo que uno narra: sin un relato que "enganche", no se avanza en el proyecto, no se vende ni se consiguen aliados.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title reflexion">💡 Reflexión</div>
+      <p>La comunicación de valor cierra el ciclo completo del proceso de innovación: de nada sirve detectar una oportunidad, investigar al usuario, generar ideas creativas, evaluarlas rigurosamente y prototipar soluciones si no somos capaces de transmitir ese valor de manera que inspire confianza, despierte interés y motive a otros a actuar. El ingeniero industrial que domine el Pitch y el NABC podrá conseguir financiamiento, socios, clientes y talento para sus proyectos, multiplicando el impacto de su trabajo técnico. La comunicación no es el complemento de la ingeniería: es su amplificador.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title retro">🔄 Retroalimentación</div>
+      <p>Practica estructurar un Pitch de 60 segundos para un proyecto o idea que tengas, usando el método NABC como esqueleto. Grábate y revisa: ¿queda claro el problema desde la perspectiva del cliente? ¿El beneficio está expresado en términos de valor para el usuario o solo en términos de características del producto? Ejercita también la comunicación en distintos formatos: un correo, una conversación informal y una presentación formal sobre el mismo tema requieren narrativas distintas. La adaptabilidad del mensaje al interlocutor es una habilidad que se desarrolla con práctica deliberada.</p>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-header">🧩 Quiz Interactivo <span class="quiz-score" id="score-s11"></span></div>
+      <div id="quiz-s11">
+
+        <div class="question-block" data-q="0">
+          <p class="question-text"><span class="question-num">1.</span> Según investigaciones de Harvard, Carnegie y Stanford, ¿qué porcentaje del éxito laboral proviene de habilidades sociales?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',0)">15%</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',0)">50%</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s11',0)">85%</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',0)">100%</button>
+          </div>
+          <div class="feedback" id="fb-s11-0"></div>
+        </div>
+
+        <div class="question-block" data-q="1">
+          <p class="question-text"><span class="question-num">2.</span> ¿Cuál es el origen del concepto "Elevator Pitch"?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',1)">Una campaña publicitaria de una empresa de tecnología en Silicon Valley.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s11',1)">Los guionistas de Hollywood que tenían 30-45 segundos en un ascensor para presentar sus ideas a ejecutivos.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',1)">Un método desarrollado en universidades japonesas para presentaciones académicas.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',1)">Una técnica de ventas de seguros de vida en los años 50.</button>
+          </div>
+          <div class="feedback" id="fb-s11-1"></div>
+        </div>
+
+        <div class="question-block" data-q="2">
+          <p class="question-text"><span class="question-num">3.</span> En el método NABC, ¿qué representa la letra "A"?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',2)">Audiencia objetivo del pitch</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s11',2)">Aproximación o propuesta (cómo se da respuesta al problema o necesidad)</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',2)">Análisis de la competencia</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',2)">Atributos del producto</button>
+          </div>
+          <div class="feedback" id="fb-s11-2"></div>
+        </div>
+
+        <div class="question-block" data-q="3">
+          <p class="question-text"><span class="question-num">4.</span> Según Paul Watzlawick, ¿qué implica la afirmación "todo comportamiento es comunicación"?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',3)">Que solo los actos verbales cuentan como comunicación real.</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s11',3)">Que cada acción, gesto o incluso el silencio transmite un mensaje, de manera implícita o explícita.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',3)">Que la comunicación es exclusiva del ámbito empresarial.</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',3)">Que los comportamientos no verbales son irrelevantes en negociaciones.</button>
+          </div>
+          <div class="feedback" id="fb-s11-3"></div>
+        </div>
+
+        <div class="question-block" data-q="4">
+          <p class="question-text"><span class="question-num">5.</span> ¿Cuál de los siguientes es el factor MÁS crítico del método NABC según el apunte?</p>
+          <div class="options">
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',4)">El análisis de la Competencia</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',4)">Los Beneficios para el usuario</button>
+            <button class="opt-btn" data-correct="true"  onclick="answer(this,'s11',4)">El planteamiento de la Necesidad, porque requiere entendimiento profundo del problema y del mercado</button>
+            <button class="opt-btn" data-correct="false" onclick="answer(this,'s11',4)">La Aproximación tecnológica al problema</button>
+          </div>
+          <div class="feedback" id="fb-s11-4"></div>
+        </div>
+
+        <button class="reset-btn" onclick="resetQuiz('s11')">🔁 Reiniciar quiz</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────
+const state = {};
+const explanations = {
+  's01': [
+    { ok: "Correcto. El Grupo del Poder agrupa persuasión, creación de redes y autoconfianza.", err: "Incorrecto. La persuasión y la autoconfianza pertenecen al Grupo del Poder, no al de Realización ni al de Planificación." },
+    { ok: "Correcto. La investigación USAID se realizó en India (Asia), Malawi (África) y Ecuador (América Latina).", err: "Incorrecto. Los tres países del estudio fueron India, Malawi y Ecuador, seleccionados para representar tres continentes diferentes." },
+    { ok: "Correcto. La conclusión es que 'los empresarios se hacen, no nacen'; las CEPs son habilidades que se pueden desarrollar.", err: "Incorrecto. El estudio concluye que las CEPs son desarrollables: los empresarios se hacen, no nacen." },
+    { ok: "Correcto. El cuestionario CEPs consta de 55 declaraciones breves.", err: "Incorrecto. El cuestionario tiene 55 declaraciones, no 30 ni 40 ni 70." },
+    { ok: "Correcto. McClelland define el éxito como hacer algo por el hecho en sí, sin buscar poder, amor ni lucro.", err: "Incorrecto. McClelland define la necesidad de éxito como el deseo de hacer algo por el hecho en sí, independiente de recompensas externas." }
+  ],
+  's02': [
+    { ok: "Correcto. Las tres ventajas son: información privada, habilidades diversas y poder. El financiamiento garantizado no figura entre ellas.", err: "Incorrecto. Las ventajas según Uzzi y Dunlop son: acceso a información privada, acceso a habilidades diversas y poder. No mencionan financiamiento garantizado." },
+    { ok: "Correcto. El principio de autosemejanza hace que conectemos con personas similares a nosotros, creando cámaras de eco que limitan la diversidad de la red.", err: "Incorrecto. El principio de autosemejanza nos lleva a conectar con personas similares, no con las más distintas, generando cámaras de eco." },
+    { ok: "Correcto. BANI = Brittle (Frágil), Ansioso, No lineal, Incomprensible.", err: "Incorrecto. BANI corresponde a Frágil (Brittle), Ansioso, No lineal e Incomprensible." },
+    { ok: "Correcto. El networking estratégico construye alianzas orientadas a objetivos de largo plazo.", err: "Incorrecto. El networking estratégico se orienta a metas de largo plazo. Las relaciones cotidianas corresponden al networking operacional." },
+    { ok: "Correcto. VUCA = Volátil, Incierto (Uncertain), Complejo y Ambiguo.", err: "Incorrecto. VUCA significa Volátil, Incierto, Complejo y Ambiguo; describe entornos de alta incertidumbre, no estabilidad." }
+  ],
+  's04': [
+    { ok: "Correcto. La innovación disruptiva mueve o revoluciona mercados, creando nuevas industrias o perfiles de consumidores.", err: "Incorrecto. La innovación disruptiva es la que transforma o crea industrias. La incremental mejora gradualmente lo existente." },
+    { ok: "Correcto. Doblin organiza los 10 tipos en 3 categorías: Configuración (cómo se organiza la empresa), Oferta (qué entrega) y Experiencia (cómo interactúa con el cliente).", err: "Incorrecto. Doblin agrupa los 10 tipos en 3 categorías: Configuración, Oferta y Experiencia." },
+    { ok: "Correcto. El Triángulo de la Oportunidad requiere necesidad insatisfecha + propuesta de solución + lógica de negocios. El prototipo físico no es un requisito para definir la oportunidad.", err: "Incorrecto. El Triángulo exige necesidad, propuesta de solución y lógica de negocios. No se necesita un prototipo terminado para tener una oportunidad." },
+    { ok: "Correcto. Las empresas disruptoras atacan primero segmentos menos rentables que los incumbentes desprecian por su baja rentabilidad.", err: "Incorrecto. Las empresas disruptivas empiezan por los segmentos menos rentables, desatendidos por los incumbentes que se concentran en los más lucrativos." },
+    { ok: "Correcto. Kodak inventó la cámara digital, invirtió en ella, pero no pudo adaptarse a la transición hacia compartir fotos en redes sociales y smartphones.", err: "Incorrecto. Kodak inventó la cámara digital y hasta compró Ofoto, pero usó esa plataforma para imprimir fotos en vez de crear una red social, perdiendo la oportunidad disruptiva." }
+  ],
+  's05': [
+    { ok: "Correcto. Bachrach (2012) señala que la emoción tiene mayor dominio que la razón en las decisiones humanas.", err: "Incorrecto. Bachrach establece que la emoción domina sobre la razón en las decisiones; por eso el diseño debe apelar a las emociones del usuario." },
+    { ok: "Correcto. Las tres dimensiones de empatía son Observación (comportamiento en contexto), Interacción (entrevistas) y Sumersión (vivir la experiencia del usuario).", err: "Incorrecto. Las tres dimensiones son Observación, Interacción y Sumersión, según la metodología UX presentada en el apunte." },
+    { ok: "Correcto. El primer prototipo de cámara digital fue desarrollado por Steve Sasson en Kodak en 1975.", err: "Incorrecto. El prototipo fue creado en 1975, no en los 80 ni en los 90." },
+    { ok: "Correcto. Kodak usó Ofoto para que la gente imprimiera más fotos digitales, en lugar de desarrollarla como red social para compartir, perdiendo la oportunidad que aprovechó Facebook.", err: "Incorrecto. Kodak compró Ofoto en 2001 pero la usó para incentivar la impresión de fotos, desperdiciando su potencial como red social." },
+    { ok: "Correcto. La metodología UX Designar tiene 5 etapas: empatizar, analizar, diseñar, prototipar y testear.", err: "Incorrecto. Son 5 etapas: empatizar, analizar, diseñar, prototipar y testear." }
+  ],
+  's06': [
+    { ok: "Correcto. Edward de Bono acuñó el término 'pensamiento lateral' en su libro 'New Think' de 1967.", err: "Incorrecto. El pensamiento lateral fue creado por Edward de Bono en 1967, no por Gibson ni por Christensen." },
+    { ok: "Correcto. La innovación inversa diseña soluciones en mercados emergentes y luego las adapta para exportarlas a países desarrollados.", err: "Incorrecto. La innovación inversa va desde mercados emergentes hacia países desarrollados, no al revés." },
+    { ok: "Correcto. El WEF identifica la creatividad y el pensamiento crítico entre las habilidades más demandadas para el futuro del trabajo.", err: "Incorrecto. El WEF las ubica entre las más demandadas, no entre las menos relevantes." },
+    { ok: "Correcto. La silla LFC del MIT es 80% más rápida, 40% más eficiente y cuesta aproximadamente $250 USD.", err: "Incorrecto. La LFC es 80% más rápida y 40% más eficiente, con un precio cercano a $250 USD, no $2.000." },
+    { ok: "Correcto. El pensamiento lateral evita soluciones obvias y fomenta enfoques novedosos conectando información de maneras inesperadas.", err: "Incorrecto. El pensamiento lateral es lo opuesto a rígido: fomenta enfoques novedosos y evita las soluciones obvias." }
+  ],
+  's07': [
+    { ok: "Correcto. La evaluación de ideas usa pensamiento convergente para encontrar valor entre las opciones disponibles.", err: "Incorrecto. La evaluación usa pensamiento convergente (seleccionar y filtrar), mientras la generación de ideas usa pensamiento divergente." },
+    { ok: "Correcto. Si solo sobrevive el 10% y queremos 3 ideas, debemos generar al menos 30 (3 × 10 = 30).", err: "Incorrecto. Por la regla del 10%, necesitas generar 10 veces la cantidad esperada: para 3 ideas finales, mínimo 30 ideas iniciales." },
+    { ok: "Correcto. El primer paso es organizar el conjunto de ideas, hacerlas precisas y únicas, fusionando similares y descartando ambiguas.", err: "Incorrecto. Antes de evaluar hay que organizar las ideas: hacerlas precisas, únicas y comprensibles para todos los evaluadores." },
+    { ok: "Correcto. Definir criterios antes alinea al equipo en torno a los mismos parámetros y reduce los sesgos personales.", err: "Incorrecto. El objetivo principal no es ahorrar tiempo sino alinear al equipo y reducir sesgos, asegurando evaluaciones comparables." },
+    { ok: "Correcto. Una idea es 'única' en el conjunto cuando no está duplicada; las ideas repetidas o muy similares han sido fusionadas previamente.", err: "Incorrecto. 'Única' en este contexto significa no duplicada dentro del conjunto a evaluar, no que sea inédita en el mundo." }
+  ],
+  's08': [
+    { ok: "Correcto. IDEO señala que los objetivos son explorar, entender y comunicar. Demostrar que el producto está terminado no es un objetivo del prototipo.", err: "Incorrecto. Los objetivos de IDEO son explorar, entender y comunicar. Los prototipos son herramientas de aprendizaje, no de demostración de producto terminado." },
+    { ok: "Correcto. Los prototipos de inspiración se desarrollan en etapas tempranas con medios simples y baratos para explorar el problema.", err: "Incorrecto. Los prototipos de inspiración son los de etapas tempranas. Los de validación corresponden a etapas avanzadas." },
+    { ok: "Correcto. Un prototipo descartado es exitoso si generó aprendizaje útil sobre el problema o la solución.", err: "Incorrecto. El objetivo de un prototipo es aprender. Si generó aprendizaje, no es fallido aunque haya sido descartado." },
+    { ok: "Correcto. Los equipos interdisciplinarios integran perspectivas de distintas disciplinas, enriqueciendo el proceso de prototipado.", err: "Incorrecto. El valor de la interdisciplinariedad está en la diversidad de perspectivas, no en la reducción de costos ni en el tamaño del equipo." },
+    { ok: "Correcto. Los prototipos de validación se usan cuando la solución está cercana a su versión final para validar hipótesis de manera estructurada.", err: "Incorrecto. Los prototipos de validación son para etapas avanzadas. Los de inspiración son para etapas tempranas." }
+  ],
+  's09': [
+    { ok: "Correcto. El problema explícito es reconocido y verbalizado por el usuario; el latente lo afecta pero no ha sido identificado por él aún.", err: "Incorrecto. La distinción es sobre el nivel de consciencia del usuario, no sobre la gravedad. El latente no ha sido verbalizado aún." },
+    { ok: "Correcto. Las entrevistas exploratorias buscan descubrir el panorama de problemas de manera abierta, sin hipótesis previas.", err: "Incorrecto. Las exploratorias son de descubrimiento abierto. Las de validación prueban hipótesis específicas." },
+    { ok: "Correcto. La hipótesis de mercado verifica si el segmento objetivo es el más relevante para la solución propuesta.", err: "Incorrecto. La hipótesis de mercado verifica el segmento, no las características del producto ni el precio." },
+    { ok: "Correcto. Las entrevistas permiten exploración profunda y flexible, capturando matices que una encuesta no puede obtener.", err: "Incorrecto. La entrevista es cualitativa y permite profundidad. La encuesta es más cuantitativa y estructurada." },
+    { ok: "Correcto. La validación temprana reduce riesgos, ahorra recursos y aumenta probabilidades de éxito al alinearse con el mercado real antes de desarrollar.", err: "Incorrecto. La validación temprana no garantiza el éxito pero sí reduce riesgos y ahorra recursos al descubrir antes si los supuestos son correctos." }
+  ],
+  's10': [
+    { ok: "Correcto. El círculo derecho representa el Segmento de Cliente con sus trabajos, dolores y ganancias.", err: "Incorrecto. El círculo derecho es el Segmento de Cliente. El cuadrado izquierdo es el Mapa de Valor." },
+    { ok: "Correcto. La PV es el beneficio real para el cliente; la solución (producto/servicio) es solo el vehículo para entregarla.", err: "Incorrecto. Son distintos: la solución es el vehículo y la PV es el valor que ese vehículo entrega al cliente." },
+    { ok: "Correcto. Las tareas sociales buscan reconocimiento o estatus en el entorno del cliente.", err: "Incorrecto. Las tareas sociales buscan reconocimiento o estatus. Las funcionales buscan cumplir metas concretas y las emocionales buscan estados emocionales." },
+    { ok: "Correcto. 'Recuérdalo todo' apela a la emoción de no olvidar nada pero no es clara ni creíble; el material la clasifica como ambigua.", err: "Incorrecto. El material clasifica este slogan como ambiguo: apela a la emoción pero no explica qué hace el producto ni cómo lo hace." },
+    { ok: "Correcto. El encaje ocurre cuando los aliviadores de dolores y creadores de ganancias del Mapa de Valor coinciden con los dolores y ganancias del cliente.", err: "Incorrecto. El encaje es la correspondencia entre lo que la empresa ofrece (Mapa de Valor) y lo que el cliente necesita (Segmento de Cliente)." }
+  ],
+  's11': [
+    { ok: "Correcto. El 85% del éxito laboral proviene de habilidades sociales y solo el 15% de habilidades técnicas.", err: "Incorrecto. Según estas investigaciones, el 85% del éxito proviene de habilidades sociales, no el 15%." },
+    { ok: "Correcto. El Elevator Pitch nació en Hollywood: guionistas presentaban sus ideas a ejecutivos en los 30-45 segundos que duraba un viaje en ascensor.", err: "Incorrecto. El origen está en Hollywood, donde los guionistas tenían solo el tiempo de un viaje en ascensor para 'lanzar' su idea a un ejecutivo." },
+    { ok: "Correcto. En NABC, A = Aproximación: cómo se da respuesta al problema o necesidad y cómo se crea el beneficio para el cliente.", err: "Incorrecto. La A del NABC es Aproximación (cómo se resuelve el problema), no Audiencia ni Análisis." },
+    { ok: "Correcto. Para Watzlawick, toda conducta —incluyendo el silencio— transmite un mensaje de manera implícita o explícita.", err: "Incorrecto. La afirmación de Watzlawick implica que toda conducta, incluso el silencio y los gestos, comunica algo." },
+    { ok: "Correcto. El planteamiento de la Necesidad es el componente más crítico del NABC; exige un entendimiento profundo del problema y del mercado.", err: "Incorrecto. El apunte señala explícitamente que 'el planteamiento de la Necesidad es el factor más crítico' del método NABC." }
+  ]
+};
+
+function answer(btn, week, qIdx) {
+  const block = btn.closest('.question-block');
+  if (block.dataset.answered) return;
+  block.dataset.answered = '1';
+
+  const isCorrect = btn.dataset.correct === 'true';
+  const allBtns = block.querySelectorAll('.opt-btn');
+  allBtns.forEach(b => {
+    b.disabled = true;
+    if (b.dataset.correct === 'true') b.classList.add('correct');
+  });
+  if (!isCorrect) btn.classList.add('wrong');
+
+  const fb = document.getElementById(`fb-${week}-${qIdx}`);
+  const exp = explanations[week][qIdx];
+  fb.textContent = isCorrect ? exp.ok : exp.err;
+  fb.className = `feedback show ${isCorrect ? 'ok' : 'err'}`;
+
+  if (!state[week]) state[week] = { correct: 0, answered: 0 };
+  state[week].answered++;
+  if (isCorrect) state[week].correct++;
+  updateScore(week);
+}
+
+function updateScore(week) {
+  const el = document.getElementById(`score-${week}`);
+  if (!el) return;
+  const s = state[week] || { correct: 0, answered: 0 };
+  el.textContent = s.answered > 0 ? `${s.correct}/${s.answered} correctas` : '';
+}
+
+function resetQuiz(week) {
+  state[week] = { correct: 0, answered: 0 };
+  const quiz = document.getElementById(`quiz-${week}`);
+  quiz.querySelectorAll('.question-block').forEach(block => {
+    delete block.dataset.answered;
+    block.querySelectorAll('.opt-btn').forEach(b => {
+      b.disabled = false;
+      b.classList.remove('correct', 'wrong');
+    });
+    block.querySelectorAll('.feedback').forEach(f => {
+      f.className = 'feedback';
+      f.textContent = '';
+    });
+  });
+  updateScore(week);
+}
+
+function setActive(link) {
+  document.querySelectorAll('#sidebar nav a').forEach(a => a.classList.remove('active'));
+  link.classList.add('active');
+}
+
+// Mark active on scroll
+const sections = document.querySelectorAll('.week-section');
+const navLinks = document.querySelectorAll('#sidebar nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 80) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+}, { passive: true });
+</script>
+</body>
+</html>

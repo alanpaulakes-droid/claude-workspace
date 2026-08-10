@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análisis Descriptivo de Procesos - AIIN001</title>
+<style>
+  :root {
+    --verde: #2e7d32;
+    --verde-claro: #43a047;
+    --verde-muy-claro: #e8f5e9;
+    --verde-medio: #c8e6c9;
+    --blanco: #ffffff;
+    --gris: #f5f5f5;
+    --gris-texto: #424242;
+    --sidebar-w: 260px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: var(--gris-texto); background: var(--gris); display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: var(--sidebar-w); background: var(--verde); color: #fff;
+    position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto;
+    z-index: 100; transition: transform .3s;
+  }
+  #sidebar h2 { padding: 20px 16px 10px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,.2); }
+  #sidebar .curso { padding: 10px 16px 16px; font-size: .75rem; opacity: .8; border-bottom: 1px solid rgba(255,255,255,.2); }
+  #sidebar nav a {
+    display: block; padding: 11px 16px; color: rgba(255,255,255,.9);
+    text-decoration: none; font-size: .88rem; border-left: 3px solid transparent;
+    transition: background .2s, border-color .2s;
+  }
+  #sidebar nav a:hover, #sidebar nav a.active {
+    background: rgba(255,255,255,.15); border-left-color: #a5d6a7;
+  }
+
+  /* MAIN */
+  #main { margin-left: var(--sidebar-w); padding: 32px 40px; flex: 1; max-width: calc(100vw - var(--sidebar-w)); }
+  header { background: var(--verde); color: #fff; border-radius: 10px; padding: 28px 32px; margin-bottom: 32px; }
+  header h1 { font-size: 1.6rem; }
+  header p { margin-top: 6px; opacity: .85; font-size: .95rem; }
+
+  /* SEMANA SECTION */
+  .semana { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.07); margin-bottom: 40px; overflow: hidden; }
+  .semana-header { background: var(--verde-claro); color: #fff; padding: 18px 24px; display: flex; align-items: center; gap: 14px; }
+  .semana-header .badge { background: rgba(255,255,255,.25); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
+  .semana-header h2 { font-size: 1.15rem; }
+  .semana-body { padding: 24px; }
+
+  /* CARDS */
+  .card { border-radius: 8px; padding: 18px 20px; margin-bottom: 18px; }
+  .card-resumen { background: var(--verde-muy-claro); border-left: 4px solid var(--verde); }
+  .card-reflexion { background: #fff8e1; border-left: 4px solid #f9a825; }
+  .card-retro { background: #e3f2fd; border-left: 4px solid #1565c0; }
+  .card h3 { font-size: .95rem; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+  .card-resumen h3 { color: var(--verde); }
+  .card-reflexion h3 { color: #f57f17; }
+  .card-retro h3 { color: #1565c0; }
+  .card p, .card ul { font-size: .92rem; line-height: 1.7; }
+  .card ul { padding-left: 18px; }
+  .card ul li { margin-bottom: 4px; }
+
+  /* QUIZ */
+  .quiz-section { margin-top: 20px; }
+  .quiz-section h3 { color: var(--verde); font-size: 1rem; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--verde-medio); }
+  .quiz-q { background: var(--gris); border-radius: 8px; padding: 16px 18px; margin-bottom: 14px; }
+  .quiz-q p { font-size: .93rem; font-weight: 600; margin-bottom: 10px; }
+  .opciones { display: flex; flex-direction: column; gap: 7px; }
+  .opcion {
+    display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; border-radius: 6px;
+    cursor: pointer; border: 2px solid #ddd; background: #fff; transition: border-color .2s, background .2s;
+    font-size: .88rem;
+  }
+  .opcion:hover { border-color: var(--verde-claro); background: var(--verde-muy-claro); }
+  .opcion input[type=radio] { margin-top: 2px; accent-color: var(--verde); flex-shrink: 0; }
+  .opcion.correcta { background: #e8f5e9; border-color: #2e7d32; }
+  .opcion.incorrecta { background: #ffebee; border-color: #c62828; }
+  .feedback { display: none; margin-top: 10px; padding: 10px 14px; border-radius: 6px; font-size: .87rem; line-height: 1.5; }
+  .feedback.show { display: block; }
+  .feedback.ok { background: #e8f5e9; color: #1b5e20; border-left: 3px solid #2e7d32; }
+  .feedback.fail { background: #ffebee; color: #b71c1c; border-left: 3px solid #c62828; }
+
+  /* HAMBURGER */
+  #menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 200; background: var(--verde); color: #fff; border: none; border-radius: 6px; padding: 8px 11px; cursor: pointer; font-size: 1.2rem; }
+
+  @media(max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; padding: 70px 16px 24px; max-width: 100vw; }
+    #menu-toggle { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<button id="menu-toggle" onclick="toggleSidebar()">&#9776;</button>
+
+<nav id="sidebar">
+  <h2>AIIN001</h2>
+  <div class="curso">Análisis Descriptivo de Procesos<br>Ingeniería Industrial · 1er Trimestre</div>
+  <nav>
+    <a href="#s00" onclick="setActive(this)">S0 · Presentación del curso</a>
+    <a href="#s01" onclick="setActive(this)">S1 · Introducción a la gestión</a>
+    <a href="#s02" onclick="setActive(this)">S2 · Ciclo de vida y diseño</a>
+    <a href="#s03" onclick="setActive(this)">S3 · Gestión y modelado BPM</a>
+    <a href="#s04" onclick="setActive(this)">S4 · Modelamiento estadístico</a>
+    <a href="#s05" onclick="setActive(this)">S5 · Simulación de procesos</a>
+    <a href="#s06" onclick="setActive(this)">S6 · Análisis y descubrimiento</a>
+    <a href="#s08" onclick="setActive(this)">S8 · Digitalización PYMES</a>
+    <a href="#s09" onclick="setActive(this)">S9 · R-Project y Python</a>
+    <a href="#s10" onclick="setActive(this)">S10 · Análisis descriptivo</a>
+    <a href="#s12" onclick="setActive(this)">S12 · Visualización de datos</a>
+  </nav>
+</nav>
+
+<main id="main">
+  <header>
+    <h1>Análisis Descriptivo de Procesos</h1>
+    <p>AIIN001 · Facultad de Ingeniería · Universidad Andrés Bello · 1er Trimestre</p>
+  </header>
+
+  <!-- ===== S0 ===== -->
+  <section class="semana" id="s00">
+    <div class="semana-header">
+      <div class="badge">S0</div>
+      <h2>Semana 0 · Presentación del curso, condiciones y estilo APA/Vancouver</h2>
+    </div>
+    <div class="semana-body">
+      <div class="card card-resumen">
+        <h3>Resumen</h3>
+        <ul>
+          <li>El curso AIIN001 pertenece a la Unidad I (Gestión Empresarial), Unidad II (Procesos de Negocio) y Unidad III (Análisis Cualitativo y Cuantitativo).</li>
+          <li>Escala de evaluación: 1.0 a 7.0; nota mínima de aprobación 4.0.</li>
+          <li>Evaluaciones sumativas ponderadas: Semana 3 (20%), Semana 5 (30%), Semana 9 (20%), Semana 11 (30%) y Semana 13 (30%).</li>
+          <li>Eximición del examen para estudiantes con nota de presentación ≥ 5.0.</li>
+          <li>Estilo APA 7.ª edición: sistema autor-fecha; citas cortas (menos de 40 palabras) entre comillas; citas largas (40+ palabras) en bloque con sangría.</li>
+          <li>Estilo Vancouver: sistema numérico secuencial por orden de aparición; citas cortas y largas con número entre paréntesis o corchetes.</li>
+          <li>Integridad académica: plagio implica nota mínima automáticamente.</li>
+        </ul>
+      </div>
+      <div class="card card-reflexion">
+        <h3>Reflexión</h3>
+        <p>Comprender las reglas del curso desde el inicio es fundamental para el éxito académico. La combinación de evaluaciones sumativas escalonadas y el uso obligatorio de estilos de citación como APA y Vancouver prepara al futuro ingeniero industrial para comunicar con rigor científico, una habilidad indispensable al redactar informes técnicos, propuestas de mejora o reportes de gestión en el mundo profesional.</p>
+      </div>
+      <div class="card card-retro">
+        <h3>Retroalimentación</h3>
+        <p>El estudiante debe practicar la construcción de citas y referencias en formato APA desde el primer trabajo entregado; los errores en citación suelen acumularse y afectan la credibilidad de los informes. Se recomienda revisar el manual de bibliotecas UNAB y realizar al menos un ejercicio práctico de referenciación mixta (libro, artículo web y video) antes de la primera entrega sumativa.</p>
+      </div>
+
+      <div class="quiz-section">
+        <h3>Quiz interactivo · 5 preguntas</h3>
+
+        <div class="quiz-q">
+          <p>1. ¿Cuál es la nota mínima de aprobación en el curso AIIN001?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s0_1" value="a"> a) 3.5</label>
+            <label class="opcion"><input type="radio" name="q_s0_1" value="b"> b) 4.0</label>
+            <label class="opcion"><input type="radio" name="q_s0_1" value="c"> c) 5.0</label>
+            <label class="opcion"><input type="radio" name="q_s0_1" value="d"> d) 4.5</label>
+          </div>
+          <div class="feedback" id="fb_s0_1_ok" data-type="ok">✔ Correcto. La escala es 1.0 a 7.0 y la nota mínima para aprobar es 4.0.</div>
+          <div class="feedback" id="fb_s0_1_fail" data-type="fail">✘ Incorrecto. La nota mínima de aprobación es 4.0 en una escala de 1.0 a 7.0.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>2. ¿A partir de qué nota de presentación el estudiante queda eximido del examen final?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s0_2" value="a"> a) 4.0</label>
+            <label class="opcion"><input type="radio" name="q_s0_2" value="b"> b) 4.5</label>
+            <label class="opcion"><input type="radio" name="q_s0_2" value="c"> c) 5.0</label>
+            <label class="opcion"><input type="radio" name="q_s0_2" value="d"> d) 6.0</label>
+          </div>
+          <div class="feedback" id="fb_s0_2_ok" data-type="ok">✔ Correcto. Nota de presentación ≥ 5.0 exime al estudiante del examen final.</div>
+          <div class="feedback" id="fb_s0_2_fail" data-type="fail">✘ Incorrecto. La eximición se obtiene con nota de presentación igual o superior a 5.0.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>3. En el estilo APA, una cita directa de 45 palabras debe presentarse como:</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s0_3" value="a"> a) Entrecomillada dentro del texto</label>
+            <label class="opcion"><input type="radio" name="q_s0_3" value="b"> b) En bloque independiente con sangría de 1,27 cm</label>
+            <label class="opcion"><input type="radio" name="q_s0_3" value="c"> c) En nota al pie de página</label>
+            <label class="opcion"><input type="radio" name="q_s0_3" value="d"> d) Sin comillas y con número entre corchetes</label>
+          </div>
+          <div class="feedback" id="fb_s0_3_ok" data-type="ok">✔ Correcto. Las citas de 40 o más palabras se presentan en bloque independiente con sangría de 1,27 cm, sin comillas.</div>
+          <div class="feedback" id="fb_s0_3_fail" data-type="fail">✘ Incorrecto. APA indica que citas de 40 o más palabras van en bloque independiente con sangría de 1,27 cm y sin comillas.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>4. El estilo Vancouver utiliza un sistema de citación basado en:</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s0_4" value="a"> a) Apellido del autor y año</label>
+            <label class="opcion"><input type="radio" name="q_s0_4" value="b"> b) Numeración secuencial por orden de aparición</label>
+            <label class="opcion"><input type="radio" name="q_s0_4" value="c"> c) Notas al pie numeradas por capítulo</label>
+            <label class="opcion"><input type="radio" name="q_s0_4" value="d"> d) Código de color por tipo de fuente</label>
+          </div>
+          <div class="feedback" id="fb_s0_4_ok" data-type="ok">✔ Correcto. Vancouver asigna números arábigos consecutivos según el orden de aparición de cada referencia en el texto.</div>
+          <div class="feedback" id="fb_s0_4_fail" data-type="fail">✘ Incorrecto. Vancouver usa numeración secuencial (1, 2, 3…) por orden de aparición, no el sistema autor-fecha de APA.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>5. ¿Qué ponderación tiene la evaluación sumativa de la Semana 5 sobre la nota de presentación?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s0_5" value="a"> a) 14%</label>
+            <label class="opcion"><input type="radio" name="q_s0_5" value="b"> b) 20%</label>
+            <label class="opcion"><input type="radio" name="q_s0_5" value="c"> c) 21%</label>
+            <label class="opcion"><input type="radio" name="q_s0_5" value="d"> d) 30%</label>
+          </div>
+          <div class="feedback" id="fb_s0_5_ok" data-type="ok">✔ Correcto. El Taller 1 de la Semana 5 tiene un 30% sobre la asignatura, equivalente al 21% del canvas (nota de presentación).</div>
+          <div class="feedback" id="fb_s0_5_fail" data-type="fail">✘ Incorrecto. La Semana 5 tiene 30% de ponderación en la asignatura, que equivale al 21% del canvas de la nota de presentación.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S1 ===== -->
+  <section class="semana" id="s01">
+    <div class="semana-header">
+      <div class="badge">S1</div>
+      <h2>Semana 1 · Introducción a la gestión de procesos y la empresa</h2>
+    </div>
+    <div class="semana-body">
+      <div class="card card-resumen">
+        <h3>Resumen</h3>
+        <ul>
+          <li>Una organización es un sistema coordinado con misión, visión y objetivos estratégicos.</li>
+          <li>La planificación estratégica define dirección, acciones y métricas KPI para medir el avance.</li>
+          <li>Estructuras organizacionales: funcional, divisional, matricial, entre otras; cada una con ventajas y limitaciones según el tamaño y giro de la empresa.</li>
+          <li>Áreas funcionales principales: producción, finanzas, marketing, recursos humanos y tecnología.</li>
+          <li>Gestión empresarial incluye técnicas (FODA, Balanced Scorecard) y modelos (TQM, Lean, Six Sigma).</li>
+          <li>El ciclo administrativo: Planificar → Organizar → Dirigir → Controlar.</li>
+          <li>El sistema productivo transforma insumos en productos/servicios mediante procesos controlados.</li>
+          <li>Herramientas genéricas de calidad: BPMN, Brainstorming, Pareto, Ishikawa, Histograma, Dispersión.</li>
+        </ul>
+      </div>
+      <div class="card card-reflexion">
+        <h3>Reflexión</h3>
+        <p>Entender la empresa como un sistema integrado es el punto de partida de cualquier mejora de procesos. El futuro ingeniero industrial debe ser capaz de leer la estructura organizacional y vincularla con el sistema productivo; sin esa visión sistémica, cualquier intervención técnica corre el riesgo de optimizar una parte mientras deteriora el todo. La planificación estratégica y los KPI son el lenguaje con que los ingenieros justifican sus decisiones ante la dirección.</p>
+      </div>
+      <div class="card card-retro">
+        <h3>Retroalimentación</h3>
+        <p>Se recomienda al estudiante construir por su cuenta al menos un organigrama real (de una empresa conocida) e identificar sus áreas funcionales. Además, debe practicar la formulación de KPI concretos usando la estructura "objeto + condición deseada + elementos descriptivos", ya que este formato es exigido en las evaluaciones sumativas del curso.</p>
+      </div>
+
+      <div class="quiz-section">
+        <h3>Quiz interactivo · 5 preguntas</h3>
+
+        <div class="quiz-q">
+          <p>1. ¿Qué representa la sigla KPI en el contexto de la gestión empresarial?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s1_1" value="a"> a) Key Process Improvement</label>
+            <label class="opcion"><input type="radio" name="q_s1_1" value="b"> b) Key Performance Indicator</label>
+            <label class="opcion"><input type="radio" name="q_s1_1" value="c"> c) Knowledge Process Integration</label>
+            <label class="opcion"><input type="radio" name="q_s1_1" value="d"> d) Key Production Index</label>
+          </div>
+          <div class="feedback" id="fb_s1_1_ok" data-type="ok">✔ Correcto. KPI significa Key Performance Indicator (Indicador Clave de Desempeño).</div>
+          <div class="feedback" id="fb_s1_1_fail" data-type="fail">✘ Incorrecto. KPI significa Key Performance Indicator: indicadores que miden el avance hacia los objetivos estratégicos.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>2. El ciclo administrativo clásico sigue el orden:</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s1_2" value="a"> a) Organizar → Planificar → Controlar → Dirigir</label>
+            <label class="opcion"><input type="radio" name="q_s1_2" value="b"> b) Planificar → Organizar → Dirigir → Controlar</label>
+            <label class="opcion"><input type="radio" name="q_s1_2" value="c"> c) Dirigir → Planificar → Organizar → Controlar</label>
+            <label class="opcion"><input type="radio" name="q_s1_2" value="d"> d) Controlar → Organizar → Dirigir → Planificar</label>
+          </div>
+          <div class="feedback" id="fb_s1_2_ok" data-type="ok">✔ Correcto. El ciclo administrativo es: Planificar → Organizar → Dirigir → Controlar.</div>
+          <div class="feedback" id="fb_s1_2_fail" data-type="fail">✘ Incorrecto. El orden correcto es Planificar → Organizar → Dirigir → Controlar.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>3. ¿Cuál herramienta de calidad permite visualizar que el 80% de los problemas provienen del 20% de las causas?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s1_3" value="a"> a) Diagrama de Ishikawa</label>
+            <label class="opcion"><input type="radio" name="q_s1_3" value="b"> b) Histograma</label>
+            <label class="opcion"><input type="radio" name="q_s1_3" value="c"> c) Diagrama de Pareto</label>
+            <label class="opcion"><input type="radio" name="q_s1_3" value="d"> d) Brainstorming</label>
+          </div>
+          <div class="feedback" id="fb_s1_3_ok" data-type="ok">✔ Correcto. El Diagrama de Pareto ilustra la regla 80/20 para priorizar causas de problemas.</div>
+          <div class="feedback" id="fb_s1_3_fail" data-type="fail">✘ Incorrecto. La herramienta es el Diagrama de Pareto, que aplica la regla 80/20.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>4. ¿Qué tipo de estructura organizacional combina la dimensión funcional y la divisional simultáneamente?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s1_4" value="a"> a) Estructura lineal</label>
+            <label class="opcion"><input type="radio" name="q_s1_4" value="b"> b) Estructura matricial</label>
+            <label class="opcion"><input type="radio" name="q_s1_4" value="c"> c) Estructura funcional pura</label>
+            <label class="opcion"><input type="radio" name="q_s1_4" value="d"> d) Estructura informal</label>
+          </div>
+          <div class="feedback" id="fb_s1_4_ok" data-type="ok">✔ Correcto. La estructura matricial combina organización por funciones y por proyectos/divisiones.</div>
+          <div class="feedback" id="fb_s1_4_fail" data-type="fail">✘ Incorrecto. La estructura matricial es la que integra las dimensiones funcional y divisional al mismo tiempo.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>5. Un sistema productivo transforma insumos en productos mediante:</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s1_5" value="a"> a) Solo maquinaria automatizada</label>
+            <label class="opcion"><input type="radio" name="q_s1_5" value="b"> b) Procesos controlados con criterios de calidad</label>
+            <label class="opcion"><input type="radio" name="q_s1_5" value="c"> c) Decisiones exclusivamente financieras</label>
+            <label class="opcion"><input type="radio" name="q_s1_5" value="d"> d) Normas legales únicamente</label>
+          </div>
+          <div class="feedback" id="fb_s1_5_ok" data-type="ok">✔ Correcto. El sistema productivo requiere procesos controlados que garanticen la calidad del output.</div>
+          <div class="feedback" id="fb_s1_5_fail" data-type="fail">✘ Incorrecto. El sistema productivo transforma insumos mediante procesos controlados con criterios de calidad definidos.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S2 ===== -->
+  <section class="semana" id="s02">
+    <div class="semana-header">
+      <div class="badge">S2</div>
+      <h2>Semana 2 · Ciclo de vida de los procesos y diseño de procesos</h2>
+    </div>
+    <div class="semana-body">
+      <div class="card card-resumen">
+        <h3>Resumen</h3>
+        <ul>
+          <li>Un proceso de negocio es un conjunto de actividades interrelacionadas que produce un bien o servicio con características definidas.</li>
+          <li>Cuatro elementos de un proceso: entradas, salidas, secuencia de actividades y sistema de control.</li>
+          <li>Categorías: estratégicos, operativos, de apoyo, y de seguimiento/evaluación.</li>
+          <li>Jerarquía: Macroproceso → Proceso → Subproceso → Actividad/Tarea.</li>
+          <li>El mapa de procesos representa gráficamente la organización según misión y visión.</li>
+          <li>El ciclo de vida del proceso: Identificación → Descubrimiento → Análisis → Rediseño → Implementación → Monitoreo.</li>
+          <li>Diseño de procesos: definir metas, KPI, reglas de negocio, notación BPMN y fuentes de datos.</li>
+          <li>Ciclo de Deming (PDCA): Planificar → Hacer → Verificar → Actuar, para mejora continua.</li>
+          <li>Herramientas de mejora: Brainstorming, Pareto, Ishikawa, Los 5 ¿Por qué?, Modelos de referencia.</li>
+        </ul>
+      </div>
+      <div class="card card-reflexion">
+        <h3>Reflexión</h3>
+        <p>El ciclo de vida de los procesos revela que la mejora no es un evento único sino un circuito continuo. Para el ingeniero industrial, dominar este ciclo significa poder intervenir en cualquier etapa —desde el levantamiento hasta el monitoreo— con un enfoque estructurado. El ciclo PDCA de Deming conecta directamente esta lógica con la cultura de calidad total que las organizaciones modernas exigen.</p>
+      </div>
+      <div class="card card-retro">
+        <h3>Retroalimentación</h3>
+        <p>El estudiante debe ejercitar la clasificación de procesos reales en las cuatro categorías (estratégicos, operativos, de apoyo, seguimiento) y construir un mapa de procesos sencillo de una empresa conocida. Es especialmente importante comprender la jerarquía de procesos, ya que en evaluaciones se solicita descomponer un macroproceso hasta el nivel de tarea.</p>
+      </div>
+
+      <div class="quiz-section">
+        <h3>Quiz interactivo · 5 preguntas</h3>
+
+        <div class="quiz-q">
+          <p>1. ¿Cuál de los siguientes es un ejemplo de proceso OPERATIVO?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s2_1" value="a"> a) Planificación estratégica</label>
+            <label class="opcion"><input type="radio" name="q_s2_1" value="b"> b) Atención de mesa de ayuda</label>
+            <label class="opcion"><input type="radio" name="q_s2_1" value="c"> c) Elaboración del producto o entrega del servicio</label>
+            <label class="opcion"><input type="radio" name="q_s2_1" value="d"> d) Monitoreo de niveles de servicio</label>
+          </div>
+          <div class="feedback" id="fb_s2_1_ok" data-type="ok">✔ Correcto. Los procesos operativos generan y entregan valor directamente al cliente (elaboración del producto o servicio).</div>
+          <div class="feedback" id="fb_s2_1_fail" data-type="fail">✘ Incorrecto. La elaboración del producto es un proceso operativo porque entrega valor directo al cliente.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>2. En el ciclo PDCA, la letra "C" corresponde a:</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s2_2" value="a"> a) Controlar</label>
+            <label class="opcion"><input type="radio" name="q_s2_2" value="b"> b) Verificar (Check)</label>
+            <label class="opcion"><input type="radio" name="q_s2_2" value="c"> c) Corregir</label>
+            <label class="opcion"><input type="radio" name="q_s2_2" value="d"> d) Comunicar</label>
+          </div>
+          <div class="feedback" id="fb_s2_2_ok" data-type="ok">✔ Correcto. C = Check (Verificar): se recopilan datos y se comparan con los objetivos iniciales.</div>
+          <div class="feedback" id="fb_s2_2_fail" data-type="fail">✘ Incorrecto. La C de PDCA significa Check (Verificar), que implica comparar resultados con objetivos y documentar conclusiones.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>3. ¿Qué jerarquía sigue la descomposición correcta de un proceso?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s2_3" value="a"> a) Tarea → Subproceso → Proceso → Macroproceso</label>
+            <label class="opcion"><input type="radio" name="q_s2_3" value="b"> b) Macroproceso → Proceso → Subproceso → Actividad</label>
+            <label class="opcion"><input type="radio" name="q_s2_3" value="c"> c) Proceso → Macroproceso → Actividad → Subproceso</label>
+            <label class="opcion"><input type="radio" name="q_s2_3" value="d"> d) Actividad → Proceso → Macroproceso → Subproceso</label>
+          </div>
+          <div class="feedback" id="fb_s2_3_ok" data-type="ok">✔ Correcto. La jerarquía va de mayor a menor: Macroproceso → Proceso → Subproceso → Actividad/Tarea.</div>
+          <div class="feedback" id="fb_s2_3_fail" data-type="fail">✘ Incorrecto. La jerarquía correcta es Macroproceso → Proceso → Subproceso → Actividad/Tarea (de lo general a lo específico).</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>4. ¿Cuál es el propósito principal del mapa de procesos?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s2_4" value="a"> a) Calcular el costo de producción</label>
+            <label class="opcion"><input type="radio" name="q_s2_4" value="b"> b) Representar gráficamente la organización según su misión y objetivos</label>
+            <label class="opcion"><input type="radio" name="q_s2_4" value="c"> c) Registrar los salarios del personal</label>
+            <label class="opcion"><input type="radio" name="q_s2_4" value="d"> d) Definir el organigrama funcional</label>
+          </div>
+          <div class="feedback" id="fb_s2_4_ok" data-type="ok">✔ Correcto. El mapa de procesos ilustra cómo funciona la empresa en función de sus objetivos y estrategia.</div>
+          <div class="feedback" id="fb_s2_4_fail" data-type="fail">✘ Incorrecto. El mapa de procesos representa gráficamente la organización mostrando la interrelación de sus procesos conforme a la misión y visión.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>5. ¿Qué etapa del ciclo de vida del proceso corresponde al "proceso AS-IS"?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s2_5" value="a"> a) Rediseño del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s2_5" value="b"> b) Implementación del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s2_5" value="c"> c) Descubrimiento del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s2_5" value="d"> d) Monitoreo y control</label>
+          </div>
+          <div class="feedback" id="fb_s2_5_ok" data-type="ok">✔ Correcto. El descubrimiento (levantamiento) genera el modelo AS-IS: el proceso tal como funciona actualmente.</div>
+          <div class="feedback" id="fb_s2_5_fail" data-type="fail">✘ Incorrecto. El AS-IS corresponde al descubrimiento del proceso, donde se documenta cómo opera el proceso en la actualidad.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S3 ===== -->
+  <section class="semana" id="s03">
+    <div class="semana-header">
+      <div class="badge">S3</div>
+      <h2>Semana 3 · Gestión BPM, análisis y diagnóstico de procesos</h2>
+    </div>
+    <div class="semana-body">
+      <div class="card card-resumen">
+        <h3>Resumen</h3>
+        <ul>
+          <li>BPM (Business Process Management): disciplina que integra estrategia, personas, tecnología y procesos para mejorar continuamente el desempeño organizacional.</li>
+          <li>Objetivos del BPM: eficiencia, eficacia, agilidad y control de procesos.</li>
+          <li>Análisis y diagnóstico de procesos: responde al para qué, qué, quién, cómo y cuándo de cada proceso.</li>
+          <li>Etapas: levantamiento → documentación y caracterización → validación → análisis y diagnóstico.</li>
+          <li>Diseño de proceso: transformar visión y recursos en un modelo comprensible y medible.</li>
+          <li>Herramientas de diagnóstico incluyen diagramas BPMN 2.0, fichas de proceso y matrices.</li>
+          <li>Factores críticos: subprocesos que deben ejecutarse con precisión para que el proceso no falle.</li>
+          <li>Pasos de caracterización: nombrar, determinar responsables, establecer objetivo, diagramar actividades, determinar factores críticos, definir lógica de negocio y visión del destinatario.</li>
+        </ul>
+      </div>
+      <div class="card card-reflexion">
+        <h3>Reflexión</h3>
+        <p>El BPM no es solo una herramienta tecnológica sino una filosofía de gestión que pone los procesos en el centro de la estrategia. Para el ingeniero industrial, comprender el "para qué" antes de diagramar el "cómo" evita caer en el error de documentar procesos sin ningún impacto real. Identificar factores críticos tempranamente es la diferencia entre una intervención que transforma y una que solo genera documentación sin valor.</p>
+      </div>
+      <div class="card card-retro">
+        <h3>Retroalimentación</h3>
+        <p>El estudiante debe ejercitarse en redactar fichas de procesos completas (nombre, objetivo, responsable, actores, entradas, salidas, factores críticos) y en distinguir claramente entre responsable y actor dentro de un proceso. También es recomendable practicar la secuencia levantamiento → validación, ya que la validación con los ejecutores reales suele revelar información no capturada en la primera instancia.</p>
+      </div>
+
+      <div class="quiz-section">
+        <h3>Quiz interactivo · 5 preguntas</h3>
+
+        <div class="quiz-q">
+          <p>1. ¿Qué sigla corresponde a Business Process Management?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s3_1" value="a"> a) BPR</label>
+            <label class="opcion"><input type="radio" name="q_s3_1" value="b"> b) BPM</label>
+            <label class="opcion"><input type="radio" name="q_s3_1" value="c"> c) BMI</label>
+            <label class="opcion"><input type="radio" name="q_s3_1" value="d"> d) PBM</label>
+          </div>
+          <div class="feedback" id="fb_s3_1_ok" data-type="ok">✔ Correcto. BPM = Business Process Management.</div>
+          <div class="feedback" id="fb_s3_1_fail" data-type="fail">✘ Incorrecto. La sigla correcta es BPM (Business Process Management).</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>2. En la caracterización de un proceso, ¿quién tiene la responsabilidad principal por el éxito o fracaso del proceso?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s3_2" value="a"> a) Los actores operacionales</label>
+            <label class="opcion"><input type="radio" name="q_s3_2" value="b"> b) El responsable del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s3_2" value="c"> c) El cliente del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s3_2" value="d"> d) El área de TI</label>
+          </div>
+          <div class="feedback" id="fb_s3_2_ok" data-type="ok">✔ Correcto. El responsable del proceso es quien asume la responsabilidad máxima por el éxito o fracaso del mismo.</div>
+          <div class="feedback" id="fb_s3_2_fail" data-type="fail">✘ Incorrecto. El responsable del proceso (no los actores) tiene a cargo el éxito o fracaso y contribuye a su mejora continua.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>3. ¿Cuál es la primera etapa en el análisis y diagnóstico de procesos?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s3_3" value="a"> a) Validación</label>
+            <label class="opcion"><input type="radio" name="q_s3_3" value="b"> b) Análisis y diagnóstico</label>
+            <label class="opcion"><input type="radio" name="q_s3_3" value="c"> c) Levantamiento de procesos</label>
+            <label class="opcion"><input type="radio" name="q_s3_3" value="d"> d) Documentación y caracterización</label>
+          </div>
+          <div class="feedback" id="fb_s3_3_ok" data-type="ok">✔ Correcto. El levantamiento es la primera etapa: obtener información sobre cómo operan los procesos actualmente.</div>
+          <div class="feedback" id="fb_s3_3_fail" data-type="fail">✘ Incorrecto. La primera etapa es el levantamiento de procesos, donde se recaba información sobre la situación actual.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>4. ¿Qué se entiende por "factores críticos" en un proceso?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s3_4" value="a"> a) Actividades que se realizan con mayor frecuencia</label>
+            <label class="opcion"><input type="radio" name="q_s3_4" value="b"> b) Subprocesos que deben ejecutarse con precisión para no comprometer el objetivo del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s3_4" value="c"> c) Indicadores financieros del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s3_4" value="d"> d) Los pasos que pueden omitirse sin afectar el resultado</label>
+          </div>
+          <div class="feedback" id="fb_s3_4_ok" data-type="ok">✔ Correcto. Los factores críticos son puntos del proceso donde se requieren resultados favorables para cumplir el objetivo; si fallan, el proceso falla.</div>
+          <div class="feedback" id="fb_s3_4_fail" data-type="fail">✘ Incorrecto. Los factores críticos son los subprocesos o actividades que deben ejecutarse con precisión porque su falla compromete todo el proceso.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>5. El análisis de un proceso responde a cinco preguntas clave. ¿Cuáles son?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s3_5" value="a"> a) Qué, quién, cómo, cuánto, dónde</label>
+            <label class="opcion"><input type="radio" name="q_s3_5" value="b"> b) Para qué, qué, quién, cómo, cuándo</label>
+            <label class="opcion"><input type="radio" name="q_s3_5" value="c"> c) Por qué, para qué, quién, cuánto, dónde</label>
+            <label class="opcion"><input type="radio" name="q_s3_5" value="d"> d) Qué, cuándo, dónde, cuánto, cómo</label>
+          </div>
+          <div class="feedback" id="fb_s3_5_ok" data-type="ok">✔ Correcto. El análisis responde: para qué (motivación), qué (actividades), quién (participantes), cómo (forma) y cuándo (temporalidad).</div>
+          <div class="feedback" id="fb_s3_5_fail" data-type="fail">✘ Incorrecto. Las cinco preguntas del análisis son: para qué, qué, quién, cómo y cuándo.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S4 ===== -->
+  <section class="semana" id="s04">
+    <div class="semana-header">
+      <div class="badge">S4</div>
+      <h2>Semana 4 · Modelamiento de procesos y fuentes estadísticas</h2>
+    </div>
+    <div class="semana-body">
+      <div class="card card-resumen">
+        <h3>Resumen</h3>
+        <ul>
+          <li>BPMN (Business Process Model and Notation) 2.X: estándar para representar procesos de forma comprensible para todos los usuarios de la organización.</li>
+          <li>Pasos del modelamiento BPMN: nombrar el proceso, determinar responsables/actores, establecer objetivo, diagramar actividades, determinar factores críticos, detallar lógica de negocio, definir visión del destinatario.</li>
+          <li>Elementos BPMN: eventos (inicio/fin), actividades (tareas), compuertas (decisiones), flujos de secuencia y pools/lanes (carriles por rol).</li>
+          <li>Fuentes de información estadística: bases de datos internas, reportes, encuestas, fuentes abiertas.</li>
+          <li>Data Warehouse: repositorio centralizado de datos para análisis y toma de decisiones.</li>
+          <li>Importancia de los datos: permiten medir desempeño, identificar tendencias y apoyar decisiones estratégicas.</li>
+          <li>Presentación de datos: tablas, gráficos de barras, líneas, dispersión, histogramas y dashboards.</li>
+        </ul>
+      </div>
+      <div class="card card-reflexion">
+        <h3>Reflexión</h3>
+        <p>El modelamiento BPMN convierte procesos implícitos —que solo existen en la cabeza de las personas— en modelos explícitos y compartibles. Para el ingeniero industrial, dominar BPMN es tan importante como saber leer planos para un arquitecto: es el lenguaje universal de los procesos. Además, la capacidad de conectar ese modelo con fuentes de datos reales (Data Warehouse, bases de datos transaccionales) permite pasar del diagnóstico a la toma de decisiones basada en evidencia.</p>
+      </div>
+      <div class="card card-retro">
+        <h3>Retroalimentación</h3>
+        <p>Se recomienda practicar el modelado BPMN en herramientas como Bizagi Modeler o Camunda (ambas gratuitas) dibujando procesos cotidianos (ej.: proceso de compra en supermercado, proceso de admisión universitaria). Prestar especial atención al uso correcto de compuertas exclusivas (XOR) y paralelas (AND), ya que son los errores más frecuentes en los modelos de estudiantes.</p>
+      </div>
+
+      <div class="quiz-section">
+        <h3>Quiz interactivo · 5 preguntas</h3>
+
+        <div class="quiz-q">
+          <p>1. ¿Qué elemento BPMN se utiliza para representar una decisión (bifurcación) en un proceso?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s4_1" value="a"> a) Evento</label>
+            <label class="opcion"><input type="radio" name="q_s4_1" value="b"> b) Tarea (Task)</label>
+            <label class="opcion"><input type="radio" name="q_s4_1" value="c"> c) Pasarela (Gateway)</label>
+            <label class="opcion"><input type="radio" name="q_s4_1" value="d"> d) Pool</label>
+          </div>
+          <div class="feedback" id="fb_s4_1_ok" data-type="ok">✔ Correcto. La pasarela (Gateway) modela puntos de decisión o bifurcación en el flujo del proceso.</div>
+          <div class="feedback" id="fb_s4_1_fail" data-type="fail">✘ Incorrecto. El elemento correcto es la Pasarela (Gateway), representada como un rombo en BPMN.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>2. ¿Qué forma gráfica representa una tarea o actividad en BPMN?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s4_2" value="a"> a) Círculo</label>
+            <label class="opcion"><input type="radio" name="q_s4_2" value="b"> b) Rombo</label>
+            <label class="opcion"><input type="radio" name="q_s4_2" value="c"> c) Rectángulo con bordes redondeados</label>
+            <label class="opcion"><input type="radio" name="q_s4_2" value="d"> d) Triángulo</label>
+          </div>
+          <div class="feedback" id="fb_s4_2_ok" data-type="ok">✔ Correcto. Las tareas/actividades en BPMN se representan como rectángulos con bordes redondeados.</div>
+          <div class="feedback" id="fb_s4_2_fail" data-type="fail">✘ Incorrecto. En BPMN las actividades se representan como rectángulos con bordes redondeados.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>3. ¿Qué es un Data Warehouse?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s4_3" value="a"> a) Un software para dibujar diagramas de procesos</label>
+            <label class="opcion"><input type="radio" name="q_s4_3" value="b"> b) Un repositorio centralizado de datos orientado al análisis y la toma de decisiones</label>
+            <label class="opcion"><input type="radio" name="q_s4_3" value="c"> c) Una hoja de cálculo compartida en la nube</label>
+            <label class="opcion"><input type="radio" name="q_s4_3" value="d"> d) Un sistema de gestión de inventarios</label>
+          </div>
+          <div class="feedback" id="fb_s4_3_ok" data-type="ok">✔ Correcto. El Data Warehouse centraliza datos de distintas fuentes para facilitar el análisis estratégico.</div>
+          <div class="feedback" id="fb_s4_3_fail" data-type="fail">✘ Incorrecto. Un Data Warehouse es un repositorio centralizado de datos diseñado para el análisis y la toma de decisiones.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>4. ¿Qué representa un "carril" (lane) o swimlane en un diagrama BPMN?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s4_4" value="a"> a) Un flujo de datos entre sistemas</label>
+            <label class="opcion"><input type="radio" name="q_s4_4" value="b"> b) Un rol o responsable dentro del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s4_4" value="c"> c) Una decisión exclusiva</label>
+            <label class="opcion"><input type="radio" name="q_s4_4" value="d"> d) El inicio del proceso</label>
+          </div>
+          <div class="feedback" id="fb_s4_4_ok" data-type="ok">✔ Correcto. Los carriles (lanes) dividen el proceso según los roles o departamentos responsables de cada tarea.</div>
+          <div class="feedback" id="fb_s4_4_fail" data-type="fail">✘ Incorrecto. Un lane (carril) en BPMN identifica un rol o responsable dentro del proceso.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>5. ¿Qué tipo de pasarela BPMN permite que varias tareas se ejecuten en paralelo?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s4_5" value="a"> a) Pasarela exclusiva (XOR)</label>
+            <label class="opcion"><input type="radio" name="q_s4_5" value="b"> b) Pasarela paralela (AND)</label>
+            <label class="opcion"><input type="radio" name="q_s4_5" value="c"> c) Pasarela inclusiva (OR)</label>
+            <label class="opcion"><input type="radio" name="q_s4_5" value="d"> d) Pasarela de evento</label>
+          </div>
+          <div class="feedback" id="fb_s4_5_ok" data-type="ok">✔ Correcto. La pasarela paralela (AND) activa todos sus flujos salientes simultáneamente.</div>
+          <div class="feedback" id="fb_s4_5_fail" data-type="fail">✘ Incorrecto. La pasarela paralela (AND) permite que múltiples actividades se ejecuten al mismo tiempo.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S5 ===== -->
+  <section class="semana" id="s05">
+    <div class="semana-header">
+      <div class="badge">S5</div>
+      <h2>Semana 5 · Modelamiento y simulación de procesos</h2>
+    </div>
+    <div class="semana-body">
+      <div class="card card-resumen">
+        <h3>Resumen</h3>
+        <ul>
+          <li>Modelación Visual Participativa (MVP): comunicación mediante modelos simples, visuales e intuitivos construidos con la participación de los involucrados.</li>
+          <li>MVP se usa para elaborar procedimientos, apoyar inducción/entrenamiento, auditorías, análisis de costos y cargas de trabajo.</li>
+          <li>Flujograma de Información (FI): representación visual simple de actividades e interacciones, orientado a que se entienda "a la primera".</li>
+          <li>BPMN: lenguaje estándar de notación para modelar procesos con comprensión universal.</li>
+          <li>Simulación de procesos: prueba virtual del comportamiento del proceso ante distintos escenarios sin interrumpir la operación real.</li>
+          <li>Heurísticas de simulación permiten probar rediseños y estimar tiempos, costos y recursos antes de implementar cambios.</li>
+          <li>Ciclo de Vida (Dumas et al.): Identificación → Descubrimiento (AS-IS) → Análisis → Rediseño (TO-BE) → Implementación → Monitoreo y control.</li>
+        </ul>
+      </div>
+      <div class="card card-reflexion">
+        <h3>Reflexión</h3>
+        <p>La simulación de procesos es la herramienta que separa la ingeniería de procesos moderna de la gestión empírica. Poder probar un rediseño virtualmente antes de invertir recursos reales reduce el riesgo de implementación y aumenta la probabilidad de éxito. Para el futuro ingeniero industrial, combinar el modelado BPMN con la simulación representa una ventaja competitiva real en el mercado laboral.</p>
+      </div>
+      <div class="card card-retro">
+        <h3>Retroalimentación</h3>
+        <p>El estudiante debe distinguir con claridad el modelo AS-IS (proceso actual) del modelo TO-BE (proceso mejorado propuesto), ya que esta distinción es central en las evaluaciones. Se recomienda revisar el ciclo de vida de Dumas et al. y asociar cada fase con acciones concretas: por ejemplo, AS-IS = levantamiento + documentación; TO-BE = rediseño con herramientas de mejora.</p>
+      </div>
+
+      <div class="quiz-section">
+        <h3>Quiz interactivo · 5 preguntas</h3>
+
+        <div class="quiz-q">
+          <p>1. ¿Qué significa el modelo "AS-IS" en el ciclo de vida de un proceso?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s5_1" value="a"> a) El proceso mejorado que se desea implementar</label>
+            <label class="opcion"><input type="radio" name="q_s5_1" value="b"> b) El proceso tal como funciona actualmente</label>
+            <label class="opcion"><input type="radio" name="q_s5_1" value="c"> c) El proceso simulado en ambiente de prueba</label>
+            <label class="opcion"><input type="radio" name="q_s5_1" value="d"> d) El proceso documentado hace más de 5 años</label>
+          </div>
+          <div class="feedback" id="fb_s5_1_ok" data-type="ok">✔ Correcto. AS-IS describe el estado actual del proceso, antes de cualquier mejora.</div>
+          <div class="feedback" id="fb_s5_1_fail" data-type="fail">✘ Incorrecto. AS-IS representa el proceso tal como funciona hoy; TO-BE es el proceso mejorado propuesto.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>2. ¿Cuál es el principal objetivo de la Modelación Visual Participativa (MVP)?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s5_2" value="a"> a) Generar informes financieros automatizados</label>
+            <label class="opcion"><input type="radio" name="q_s5_2" value="b"> b) Comunicar procesos mediante modelos visuales construidos con todos los involucrados</label>
+            <label class="opcion"><input type="radio" name="q_s5_2" value="c"> c) Reemplazar el mapa de procesos de la organización</label>
+            <label class="opcion"><input type="radio" name="q_s5_2" value="d"> d) Calcular el retorno de inversión de un proyecto</label>
+          </div>
+          <div class="feedback" id="fb_s5_2_ok" data-type="ok">✔ Correcto. La MVP promueve la creación participativa de modelos visuales simples que generan comprensión compartida del proceso.</div>
+          <div class="feedback" id="fb_s5_2_fail" data-type="fail">✘ Incorrecto. La MVP busca comunicar procesos mediante modelos simples y visuales construidos con la participación de todos los involucrados.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>3. ¿Para qué sirve la simulación de procesos?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s5_3" value="a"> a) Para reemplazar al equipo de trabajo en la toma de decisiones</label>
+            <label class="opcion"><input type="radio" name="q_s5_3" value="b"> b) Para probar virtualmente el comportamiento del proceso sin interrumpir la operación real</label>
+            <label class="opcion"><input type="radio" name="q_s5_3" value="c"> c) Para eliminar la necesidad de indicadores KPI</label>
+            <label class="opcion"><input type="radio" name="q_s5_3" value="d"> d) Para generar organigramas automáticamente</label>
+          </div>
+          <div class="feedback" id="fb_s5_3_ok" data-type="ok">✔ Correcto. La simulación permite probar rediseños virtualmente, estimando tiempos y recursos sin riesgo operacional.</div>
+          <div class="feedback" id="fb_s5_3_fail" data-type="fail">✘ Incorrecto. La simulación prueba el comportamiento del proceso en un ambiente virtual antes de implementar cambios reales.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>4. En el ciclo de vida propuesto por Dumas et al., ¿qué fase sigue al análisis del proceso?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s5_4" value="a"> a) Identificación</label>
+            <label class="opcion"><input type="radio" name="q_s5_4" value="b"> b) Implementación</label>
+            <label class="opcion"><input type="radio" name="q_s5_4" value="c"> c) Rediseño</label>
+            <label class="opcion"><input type="radio" name="q_s5_4" value="d"> d) Monitoreo</label>
+          </div>
+          <div class="feedback" id="fb_s5_4_ok" data-type="ok">✔ Correcto. Después del análisis (AS-IS + debilidades) viene el rediseño (propuesta TO-BE).</div>
+          <div class="feedback" id="fb_s5_4_fail" data-type="fail">✘ Incorrecto. El orden es: Descubrimiento → Análisis → Rediseño → Implementación → Monitoreo.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>5. El Flujograma de Información (FI) tiene como propósito principal:</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s5_5" value="a"> a) Detallar cada tarea con instrucciones paso a paso</label>
+            <label class="opcion"><input type="radio" name="q_s5_5" value="b"> b) Representar visualmente las actividades del proceso para que se entienda "a la primera"</label>
+            <label class="opcion"><input type="radio" name="q_s5_5" value="c"> c) Calcular el costo de cada actividad del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s5_5" value="d"> d) Definir los KPI del proceso</label>
+          </div>
+          <div class="feedback" id="fb_s5_5_ok" data-type="ok">✔ Correcto. El FI es una representación simple de actividades e interacciones diseñada para comprenderse de inmediato.</div>
+          <div class="feedback" id="fb_s5_5_fail" data-type="fail">✘ Incorrecto. El Flujograma de Información busca que la representación del proceso se entienda "a la primera" de forma visual y simple.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S6 ===== -->
+  <section class="semana" id="s06">
+    <div class="semana-header">
+      <div class="badge">S6</div>
+      <h2>Semana 6 · Herramientas de descubrimiento y análisis de proceso</h2>
+    </div>
+    <div class="semana-body">
+      <div class="card card-resumen">
+        <h3>Resumen</h3>
+        <ul>
+          <li>Herramientas de descubrimiento: Matriz de Descubrimiento, SIPOC y Matriz RECI.</li>
+          <li>Matriz de Descubrimiento: captura nombre del proceso, inicio/término, áreas involucradas, volumen/periodicidad, ejecutores, proveedores, clientes y entidades.</li>
+          <li>SIPOC: Suppliers → Inputs → Process → Outputs → Customers. Visualiza las 4 a 6 etapas principales del proceso con sus proveedores y clientes.</li>
+          <li>Matriz RECI: Responsable, Ejecutor, Consultado, Informado — asigna roles a cada actividad.</li>
+          <li>Análisis de proceso: entrevistas, análisis de documentación y observaciones directas.</li>
+          <li>Entrevistas: contacto directo para levantar información; requieren planificación previa y mitigar recelos del entrevistado.</li>
+          <li>Análisis de documentación: detecta demoras, cuellos de botella e inconsistencias entre lo documentado y lo real.</li>
+          <li>Observaciones directas: proporcionan visión objetiva e independiente del proceso en operación.</li>
+        </ul>
+      </div>
+      <div class="card card-reflexion">
+        <h3>Reflexión</h3>
+        <p>El levantamiento de información es el paso donde más se pierde calidad en la gestión de procesos: datos imprecisos generan diagnósticos erróneos y rediseños fallidos. Las herramientas SIPOC y Matriz RECI obligan al ingeniero a pensar en el proceso de forma sistémica —proveedores, entradas, salidas, clientes— y a clarificar responsabilidades antes de cualquier intervención, lo que reduce conflictos y resistencia al cambio.</p>
+      </div>
+      <div class="card card-retro">
+        <h3>Retroalimentación</h3>
+        <p>El estudiante debe practicar la construcción de un SIPOC completo para un proceso sencillo (ej.: proceso de solicitud de vacaciones, proceso de compra de materiales). Es importante no confundir "Outputs" con "Outcomes": las salidas son los productos inmediatos del proceso, mientras que los outcomes son los resultados en el cliente. También se recomienda construir al menos una Matriz RECI diferenciando claramente los roles de Responsable y Ejecutor.</p>
+      </div>
+
+      <div class="quiz-section">
+        <h3>Quiz interactivo · 5 preguntas</h3>
+
+        <div class="quiz-q">
+          <p>1. En el acrónimo SIPOC, ¿qué representa la letra "I"?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s6_1" value="a"> a) Indicadores</label>
+            <label class="opcion"><input type="radio" name="q_s6_1" value="b"> b) Inputs (Entradas)</label>
+            <label class="opcion"><input type="radio" name="q_s6_1" value="c"> c) Integración</label>
+            <label class="opcion"><input type="radio" name="q_s6_1" value="d"> d) Información</label>
+          </div>
+          <div class="feedback" id="fb_s6_1_ok" data-type="ok">✔ Correcto. I = Inputs (Entradas): los recursos o datos creados fuera del proceso y utilizados dentro de él.</div>
+          <div class="feedback" id="fb_s6_1_fail" data-type="fail">✘ Incorrecto. En SIPOC la I corresponde a Inputs (Entradas): elementos creados fuera del proceso y utilizados por los ejecutores.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>2. ¿Cuántas grandes etapas se representan típicamente en la columna "P" (Proceso) de un SIPOC?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s6_2" value="a"> a) 1 a 2</label>
+            <label class="opcion"><input type="radio" name="q_s6_2" value="b"> b) 4 a 6</label>
+            <label class="opcion"><input type="radio" name="q_s6_2" value="c"> c) 10 a 15</label>
+            <label class="opcion"><input type="radio" name="q_s6_2" value="d"> d) Todas las tareas detalladas</label>
+          </div>
+          <div class="feedback" id="fb_s6_2_ok" data-type="ok">✔ Correcto. El SIPOC muestra entre 4 y 6 grandes etapas del proceso, no el detalle completo de todas las tareas.</div>
+          <div class="feedback" id="fb_s6_2_fail" data-type="fail">✘ Incorrecto. El proceso en SIPOC se descompone en 4 a 6 grandes etapas, no en el detalle completo de tareas.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>3. En la Matriz RECI, ¿qué rol tiene la autoridad máxima sobre una actividad?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s6_3" value="a"> a) Ejecutor</label>
+            <label class="opcion"><input type="radio" name="q_s6_3" value="b"> b) Consultado</label>
+            <label class="opcion"><input type="radio" name="q_s6_3" value="c"> c) Responsable</label>
+            <label class="opcion"><input type="radio" name="q_s6_3" value="d"> d) Informado</label>
+          </div>
+          <div class="feedback" id="fb_s6_3_ok" data-type="ok">✔ Correcto. En la Matriz RECI el Responsable es quien tiene la autoridad máxima sobre la actividad.</div>
+          <div class="feedback" id="fb_s6_3_fail" data-type="fail">✘ Incorrecto. El Responsable es quien tiene la autoridad máxima; el Ejecutor es quien realiza la tarea operativamente.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>4. ¿Cuál es una ventaja del análisis de documentación en el levantamiento de procesos?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s6_4" value="a"> a) Permite observar directamente el comportamiento del personal</label>
+            <label class="opcion"><input type="radio" name="q_s6_4" value="b"> b) Permite detectar demoras, cuellos de botella e inconsistencias en los registros existentes</label>
+            <label class="opcion"><input type="radio" name="q_s6_4" value="c"> c) Reemplaza la necesidad de entrevistas</label>
+            <label class="opcion"><input type="radio" name="q_s6_4" value="d"> d) Es la única fuente confiable de información</label>
+          </div>
+          <div class="feedback" id="fb_s6_4_ok" data-type="ok">✔ Correcto. El análisis documental permite detectar demoras (comparando fechas), cuellos de botella e inconsistencias entre lo documentado y la realidad.</div>
+          <div class="feedback" id="fb_s6_4_fail" data-type="fail">✘ Incorrecto. El análisis de documentación ayuda a detectar demoras, cuellos de botella e inconsistencias, pero debe complementarse con entrevistas y observaciones.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>5. ¿Para qué sirve la Matriz de Descubrimiento de procesos?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s6_5" value="a"> a) Para modelar el proceso en notación BPMN</label>
+            <label class="opcion"><input type="radio" name="q_s6_5" value="b"> b) Para calcular los costos de cada actividad del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s6_5" value="c"> c) Para capturar de forma estructurada la información básica del proceso (nombre, inicio, término, actores, volumen)</label>
+            <label class="opcion"><input type="radio" name="q_s6_5" value="d"> d) Para definir las métricas financieras del proceso</label>
+          </div>
+          <div class="feedback" id="fb_s6_5_ok" data-type="ok">✔ Correcto. La Matriz de Descubrimiento estructura la información básica del proceso antes de pasar al modelado detallado.</div>
+          <div class="feedback" id="fb_s6_5_fail" data-type="fail">✘ Incorrecto. La Matriz de Descubrimiento captura de forma organizada el nombre, inicio/término, áreas, ejecutores, proveedores y clientes del proceso.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S8 ===== -->
+  <section class="semana" id="s08">
+    <div class="semana-header">
+      <div class="badge">S8</div>
+      <h2>Semana 8 · Digitalización y optimización de procesos en PYMES</h2>
+    </div>
+    <div class="semana-body">
+      <div class="card card-resumen">
+        <h3>Resumen</h3>
+        <ul>
+          <li>La pandemia aceleró la digitalización de las pymes chilenas: el 88% reportó avances significativos (estudio Microsoft Chile / Edelman, 2021).</li>
+          <li>Las microempresas priorizaron reconectar con clientes (68%); las medianas priorizaron optimización de procesos operacionales (78%).</li>
+          <li>Iniciativas clave: teletrabajo, almacenamiento en la nube, videoconferencias, automatización de procesos (35%) y reinvención de objetivos de negocio (41%).</li>
+          <li>Barreras persistentes: falta de capital para invertir en tecnología (51%) y necesidad de reentrenar al talento humano (44%).</li>
+          <li>El 61% de las pymes capacitó a empleados en nuevas tecnologías; el 80% considera esa capacitación esencial para la reactivación.</li>
+          <li>Herramientas avanzadas como Big Data e IA aún tienen penetración limitada (35%), pero existe creciente interés.</li>
+          <li>La digitalización es el principal motor de competitividad y resiliencia en el mercado post-pandemia.</li>
+        </ul>
+      </div>
+      <div class="card card-reflexion">
+        <h3>Reflexión</h3>
+        <p>Este caso real demuestra que la optimización de procesos y la digitalización no son conceptos abstractos: son respuestas concretas a crisis reales. El ingeniero industrial del siglo XXI debe entender que la tecnología (automatización, nube, IA) es un habilitador de procesos más eficientes, pero que sin rediseño previo del proceso, la tecnología solo automatiza la ineficiencia. La capacitación del talento humano es tan crítica como la inversión tecnológica.</p>
+      </div>
+      <div class="card card-retro">
+        <h3>Retroalimentación</h3>
+        <p>El estudiante debe ser capaz de relacionar los conceptos de BPM y ciclo de vida del proceso con casos reales como este. Se recomienda identificar en el caso cuáles procesos fueron "operativos" (atención a clientes) y cuáles de "apoyo" (TI, contabilidad) y analizar cómo la digitalización impactó a cada categoría de forma diferente.</p>
+      </div>
+
+      <div class="quiz-section">
+        <h3>Quiz interactivo · 5 preguntas</h3>
+
+        <div class="quiz-q">
+          <p>1. Según el estudio Microsoft Chile/Edelman (2021), ¿qué porcentaje de pymes afirmó que la pandemia aceleró su digitalización?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s8_1" value="a"> a) 61%</label>
+            <label class="opcion"><input type="radio" name="q_s8_1" value="b"> b) 78%</label>
+            <label class="opcion"><input type="radio" name="q_s8_1" value="c"> c) 88%</label>
+            <label class="opcion"><input type="radio" name="q_s8_1" value="d"> d) 71%</label>
+          </div>
+          <div class="feedback" id="fb_s8_1_ok" data-type="ok">✔ Correcto. El 88% de las pymes chilenas declaró que la pandemia aceleró su proceso de digitalización.</div>
+          <div class="feedback" id="fb_s8_1_fail" data-type="fail">✘ Incorrecto. El dato correcto es 88% de las pymes que afirmaron que la pandemia aceleró su digitalización.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>2. ¿Cuál fue la principal prioridad de las empresas medianas chilenas durante la pandemia?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s8_2" value="a"> a) Reinventar la forma de conectar con los clientes</label>
+            <label class="opcion"><input type="radio" name="q_s8_2" value="b"> b) Optimizar sus procesos operacionales</label>
+            <label class="opcion"><input type="radio" name="q_s8_2" value="c"> c) Reducir su planta de personal</label>
+            <label class="opcion"><input type="radio" name="q_s8_2" value="d"> d) Invertir en marketing digital exclusivamente</label>
+          </div>
+          <div class="feedback" id="fb_s8_2_ok" data-type="ok">✔ Correcto. Las empresas medianas priorizaron la optimización de procesos operacionales con un 78% de adopción.</div>
+          <div class="feedback" id="fb_s8_2_fail" data-type="fail">✘ Incorrecto. Las medianas empresas priorizaron la optimización de procesos operacionales (78%); las microempresas se enfocaron en reconectar con clientes.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>3. ¿Cuál es la principal barrera que enfrentan las pymes para adoptar tecnología?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s8_3" value="a"> a) Exceso de personal capacitado</label>
+            <label class="opcion"><input type="radio" name="q_s8_3" value="b"> b) Falta de capacidad para invertir en tecnología (51%)</label>
+            <label class="opcion"><input type="radio" name="q_s8_3" value="c"> c) Regulaciones gubernamentales muy estrictas</label>
+            <label class="opcion"><input type="radio" name="q_s8_3" value="d"> d) Escasez de proveedores tecnológicos</label>
+          </div>
+          <div class="feedback" id="fb_s8_3_ok" data-type="ok">✔ Correcto. La principal barrera es la falta de capacidad de inversión en tecnología (51% de las pymes).</div>
+          <div class="feedback" id="fb_s8_3_fail" data-type="fail">✘ Incorrecto. La principal barrera es la falta de capacidad financiera para invertir en tecnología (51%).</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>4. ¿Qué porcentaje de pymes planeaba continuar invirtiendo en tecnología en el corto y mediano plazo?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s8_4" value="a"> a) 35%</label>
+            <label class="opcion"><input type="radio" name="q_s8_4" value="b"> b) 61%</label>
+            <label class="opcion"><input type="radio" name="q_s8_4" value="c"> c) 71%</label>
+            <label class="opcion"><input type="radio" name="q_s8_4" value="d"> d) 88%</label>
+          </div>
+          <div class="feedback" id="fb_s8_4_ok" data-type="ok">✔ Correcto. El 71% de las pymes planeaba continuar invirtiendo en tecnología en el corto y mediano plazo.</div>
+          <div class="feedback" id="fb_s8_4_fail" data-type="fail">✘ Incorrecto. El 71% de las pymes proyectaba continuar invirtiendo en tecnología para consolidar su competitividad.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>5. Según el caso, ¿qué representa la digitalización para las pymes chilenas post-pandemia?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s8_5" value="a"> a) Solo un mecanismo temporal de supervivencia</label>
+            <label class="opcion"><input type="radio" name="q_s8_5" value="b"> b) El principal motor de competitividad y crecimiento futuro</label>
+            <label class="opcion"><input type="radio" name="q_s8_5" value="c"> c) Un gasto innecesario en períodos de crisis</label>
+            <label class="opcion"><input type="radio" name="q_s8_5" value="d"> d) Una exigencia exclusiva de empresas grandes</label>
+          </div>
+          <div class="feedback" id="fb_s8_5_ok" data-type="ok">✔ Correcto. La digitalización es el principal motor de competitividad y crecimiento, no solo un mecanismo de supervivencia.</div>
+          <div class="feedback" id="fb_s8_5_fail" data-type="fail">✘ Incorrecto. El estudio concluye que la digitalización es el principal motor de competitividad y crecimiento futuro de las pymes.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S9 ===== -->
+  <section class="semana" id="s09">
+    <div class="semana-header">
+      <div class="badge">S9</div>
+      <h2>Semana 9 · R-Project, Python y visualización de información</h2>
+    </div>
+    <div class="semana-body">
+      <div class="card card-resumen">
+        <h3>Resumen</h3>
+        <ul>
+          <li>R y Python: lenguajes interpretados orientados a objetos, con sintaxis simple, muy usados en analítica de datos, estadística y machine learning.</li>
+          <li>Ambos pueden conectarse a bases de datos, leer múltiples formatos (Excel, CSV, JSON) y generar gráficas de alta calidad.</li>
+          <li>Principales librerías Python: Pandas (manipulación de datos), NumPy (cálculo numérico), Matplotlib/Seaborn (visualización), Scikit-learn (ML).</li>
+          <li>Principales librerías R: ggplot2 (visualización), dplyr (manipulación), tidyr (ordenamiento), caret (ML).</li>
+          <li>Flujo típico de análisis: cargar datos → explorar → limpiar/transformar → graficar → modelar → interpretar.</li>
+          <li>Taller 2 (Semana 9): análisis de base de datos de órdenes de compra en Python/Jupyter Notebook; incluye estadísticas descriptivas y gráficos de línea, dispersión y barras.</li>
+          <li>Visualización de datos: presentar información en formato gráfico para detectar patrones, tendencias y correlaciones.</li>
+        </ul>
+      </div>
+      <div class="card card-reflexion">
+        <h3>Reflexión</h3>
+        <p>Python y R son las herramientas que transforman al ingeniero de procesos en un profesional basado en datos. La capacidad de cargar un CSV de órdenes de compra, calcular estadísticas descriptivas y generar visualizaciones en minutos es hoy una competencia mínima esperada en roles de ingeniería industrial, logística y operaciones. El análisis sin visualización es incompleto: los datos deben contarse en imágenes para que la organización pueda actuar sobre ellos.</p>
+      </div>
+      <div class="card card-retro">
+        <h3>Retroalimentación</h3>
+        <p>El estudiante debe instalar Anaconda/Jupyter Notebook y practicar las operaciones básicas de Pandas: cargar CSV, mostrar tipos de datos, calcular media/máximo/correlación y graficar con Matplotlib. Los errores más comunes son no convertir columnas al tipo correcto antes de operar (ej.: ValorTotal como texto en lugar de numérico) y no etiquetar los ejes de los gráficos, lo que resta puntos en la evaluación.</p>
+      </div>
+
+      <div class="quiz-section">
+        <h3>Quiz interactivo · 5 preguntas</h3>
+
+        <div class="quiz-q">
+          <p>1. ¿Qué librería de Python se usa principalmente para manipulación y análisis de datos tabulares?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s9_1" value="a"> a) NumPy</label>
+            <label class="opcion"><input type="radio" name="q_s9_1" value="b"> b) Matplotlib</label>
+            <label class="opcion"><input type="radio" name="q_s9_1" value="c"> c) Pandas</label>
+            <label class="opcion"><input type="radio" name="q_s9_1" value="d"> d) Scikit-learn</label>
+          </div>
+          <div class="feedback" id="fb_s9_1_ok" data-type="ok">✔ Correcto. Pandas es la librería estándar de Python para manipular datos tabulares (DataFrames).</div>
+          <div class="feedback" id="fb_s9_1_fail" data-type="fail">✘ Incorrecto. Pandas es la librería principal para datos tabulares; NumPy es para cálculo numérico; Matplotlib para gráficos.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>2. En el Taller 2, ¿qué tipo de gráfico se usa para mostrar la relación entre Cantidad y ValorUnitario?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s9_2" value="a"> a) Gráfico de barras</label>
+            <label class="opcion"><input type="radio" name="q_s9_2" value="b"> b) Gráfico de línea</label>
+            <label class="opcion"><input type="radio" name="q_s9_2" value="c"> c) Gráfico de dispersión (puntos)</label>
+            <label class="opcion"><input type="radio" name="q_s9_2" value="d"> d) Histograma</label>
+          </div>
+          <div class="feedback" id="fb_s9_2_ok" data-type="ok">✔ Correcto. El gráfico de dispersión (scatter plot) muestra la relación entre dos variables numéricas continuas.</div>
+          <div class="feedback" id="fb_s9_2_fail" data-type="fail">✘ Incorrecto. Para la relación entre Cantidad y ValorUnitario se usa gráfico de dispersión (puntos/scatter plot).</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>3. ¿Cuál es la función de la librería ggplot2 en R?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s9_3" value="a"> a) Manipulación y filtrado de datos</label>
+            <label class="opcion"><input type="radio" name="q_s9_3" value="b"> b) Creación de modelos de machine learning</label>
+            <label class="opcion"><input type="radio" name="q_s9_3" value="c"> c) Visualización de datos mediante gráficos</label>
+            <label class="opcion"><input type="radio" name="q_s9_3" value="d"> d) Conexión a bases de datos SQL</label>
+          </div>
+          <div class="feedback" id="fb_s9_3_ok" data-type="ok">✔ Correcto. ggplot2 es la librería de R para crear visualizaciones de datos de alta calidad.</div>
+          <div class="feedback" id="fb_s9_3_fail" data-type="fail">✘ Incorrecto. ggplot2 es la librería principal de R para visualización de datos; dplyr se usa para manipulación.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>4. ¿Qué ventaja ofrece Python sobre herramientas como Excel para el análisis de procesos?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s9_4" value="a"> a) No requiere aprender ningún lenguaje</label>
+            <label class="opcion"><input type="radio" name="q_s9_4" value="b"> b) Permite automatizar análisis, procesar grandes volúmenes de datos y aplicar modelos estadísticos/ML</label>
+            <label class="opcion"><input type="radio" name="q_s9_4" value="c"> c) Solo funciona en computadores con Windows</label>
+            <label class="opcion"><input type="radio" name="q_s9_4" value="d"> d) Es exclusivo para análisis financieros</label>
+          </div>
+          <div class="feedback" id="fb_s9_4_ok" data-type="ok">✔ Correcto. Python automatiza análisis repetitivos, maneja grandes volúmenes de datos y aplica modelos estadísticos y de ML, superando las limitaciones de Excel.</div>
+          <div class="feedback" id="fb_s9_4_fail" data-type="fail">✘ Incorrecto. Python supera a Excel porque automatiza análisis, procesa grandes volúmenes de datos y permite aplicar modelos estadísticos y de aprendizaje de máquina.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>5. ¿Por qué es importante visualizar datos en el análisis descriptivo de procesos?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s9_5" value="a"> a) Porque los gráficos reemplazan la necesidad de indicadores KPI</label>
+            <label class="opcion"><input type="radio" name="q_s9_5" value="b"> b) Porque permite detectar patrones, tendencias y correlaciones que serían difíciles de ver en tablas</label>
+            <label class="opcion"><input type="radio" name="q_s9_5" value="c"> c) Porque es un requisito legal en Chile</label>
+            <label class="opcion"><input type="radio" name="q_s9_5" value="d"> d) Porque elimina la subjetividad en la toma de decisiones</label>
+          </div>
+          <div class="feedback" id="fb_s9_5_ok" data-type="ok">✔ Correcto. La visualización facilita detectar patrones y correlaciones que en hojas de cálculo o tablas pasarían desapercibidos.</div>
+          <div class="feedback" id="fb_s9_5_fail" data-type="fail">✘ Incorrecto. La visualización es clave porque el cerebro humano procesa imágenes más fácilmente que tablas, permitiendo detectar patrones y tendencias ocultas.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S10 ===== -->
+  <section class="semana" id="s10">
+    <div class="semana-header">
+      <div class="badge">S10</div>
+      <h2>Semana 10 · Análisis descriptivo de procesos e indicadores</h2>
+    </div>
+    <div class="semana-body">
+      <div class="card card-resumen">
+        <h3>Resumen</h3>
+        <ul>
+          <li>Análisis descriptivo de procesos: metodología para recolectar, ordenar y visualizar datos, extrayendo características representativas y describiendo tendencias/patrones.</li>
+          <li>Pasos para el análisis de indicadores: (a) establecer directrices estratégicas, (b) determinar áreas que requieren medición, (c) establecer nombre y fórmula del indicador, (d) especificar atributos, (e) aplicar criterios técnicos de validación, (f) establecer metas.</li>
+          <li>Estructura del indicador: objeto a cuantificar + condición deseada + elementos descriptivos.</li>
+          <li>Criterios técnicos para validar indicadores: vinculados a la misión, miden resultados intermedios y finales, datos válidos y confiables, dirigidos a prioridades, útiles para todos los interesados.</li>
+          <li>Sistemas de procesamiento: OLTP (transaccional) y OLAP (analítico); Data Warehouse como integrador.</li>
+          <li>Big Data: grandes volúmenes de datos con velocidad y variedad que requieren herramientas especializadas.</li>
+          <li>Los indicadores deben relacionarse con las metas estratégicas y ser específicos, medibles, alcanzables, relevantes y con tiempo definido (SMART).</li>
+        </ul>
+      </div>
+      <div class="card card-reflexion">
+        <h3>Reflexión</h3>
+        <p>Un indicador mal definido puede llevar a decisiones correctas para el KPI pero incorrectas para la organización. El ingeniero industrial debe aprender a diseñar indicadores que realmente midan lo que importa, no solo lo que es fácil de medir. El paso de "determinar si todas las áreas realmente requieren medición" es crucial: medir todo sin criterio genera ruido, no información, y sobrecarga los sistemas de gestión.</p>
+      </div>
+      <div class="card card-retro">
+        <h3>Retroalimentación</h3>
+        <p>El estudiante debe practicar la redacción de indicadores completos con todos sus atributos: nombre, fórmula, variables, unidad de medida y meta. Un error frecuente es definir indicadores sin fórmula clara o sin especificar la fuente de datos. También se recomienda verificar que cada indicador propuesto cumpla con los cinco criterios técnicos de validación antes de presentarlo en evaluaciones.</p>
+      </div>
+
+      <div class="quiz-section">
+        <h3>Quiz interactivo · 5 preguntas</h3>
+
+        <div class="quiz-q">
+          <p>1. ¿Cuál es el primer paso para el análisis de indicadores según el apunte docente?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s10_1" value="a"> a) Establecer el nombre y fórmula del indicador</label>
+            <label class="opcion"><input type="radio" name="q_s10_1" value="b"> b) Establecer las directrices del direccionamiento estratégico</label>
+            <label class="opcion"><input type="radio" name="q_s10_1" value="c"> c) Especificar los atributos del indicador</label>
+            <label class="opcion"><input type="radio" name="q_s10_1" value="d"> d) Establecer claramente las metas</label>
+          </div>
+          <div class="feedback" id="fb_s10_1_ok" data-type="ok">✔ Correcto. El primer paso es establecer las directrices estratégicas (misión, visión, objetivos) como referente para la medición.</div>
+          <div class="feedback" id="fb_s10_1_fail" data-type="fail">✘ Incorrecto. El primer paso es establecer las directrices del direccionamiento estratégico (misión, visión, objetivos) antes de crear indicadores.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>2. ¿Qué tres elementos componen la estructura de un indicador?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s10_2" value="a"> a) Nombre, fórmula y meta</label>
+            <label class="opcion"><input type="radio" name="q_s10_2" value="b"> b) Objeto a cuantificar, condición deseada y elementos descriptivos</label>
+            <label class="opcion"><input type="radio" name="q_s10_2" value="c"> c) Proceso, responsable e indicador</label>
+            <label class="opcion"><input type="radio" name="q_s10_2" value="d"> d) Entrada, transformación y salida</label>
+          </div>
+          <div class="feedback" id="fb_s10_2_ok" data-type="ok">✔ Correcto. Un indicador se estructura como: objeto a cuantificar + condición deseada + elementos descriptivos.</div>
+          <div class="feedback" id="fb_s10_2_fail" data-type="fail">✘ Incorrecto. La estructura correcta es: objeto a cuantificar + condición deseada + elementos descriptivos del indicador.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>3. ¿Cuál de los siguientes NO es un criterio técnico para validar un indicador?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s10_3" value="a"> a) Estar vinculado a la misión organizacional</label>
+            <label class="opcion"><input type="radio" name="q_s10_3" value="b"> b) Que los datos sean válidos y confiables</label>
+            <label class="opcion"><input type="radio" name="q_s10_3" value="c"> c) Ser fácil de calcular manualmente sin ningún sistema</label>
+            <label class="opcion"><input type="radio" name="q_s10_3" value="d"> d) Medir resultados intermedios y finales</label>
+          </div>
+          <div class="feedback" id="fb_s10_3_ok" data-type="ok">✔ Correcto. La facilidad de cálculo manual no es un criterio de validación; lo importante es que los datos sean válidos y confiables, no el método de cálculo.</div>
+          <div class="feedback" id="fb_s10_3_fail" data-type="fail">✘ Incorrecto. "Ser fácil de calcular manualmente" no es un criterio de validación; los criterios son: vinculación a la misión, datos válidos, medir resultados, dirigido a prioridades y útil para los interesados.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>4. ¿Qué significa que el análisis descriptivo de procesos "describe tendencias y patrones"?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s10_4" value="a"> a) Predice el futuro con certeza absoluta</label>
+            <label class="opcion"><input type="radio" name="q_s10_4" value="b"> b) Identifica comportamientos recurrentes en los datos históricos del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s10_4" value="c"> c) Asigna causas a los problemas del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s10_4" value="d"> d) Optimiza automáticamente el proceso sin intervención humana</label>
+          </div>
+          <div class="feedback" id="fb_s10_4_ok" data-type="ok">✔ Correcto. El análisis descriptivo identifica comportamientos recurrentes en datos históricos; no predice ni causa, describe.</div>
+          <div class="feedback" id="fb_s10_4_fail" data-type="fail">✘ Incorrecto. Describir tendencias y patrones significa identificar comportamientos recurrentes en los datos históricos; el análisis descriptivo no predice ni asigna causas.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>5. ¿Qué característica fundamental debe tener la redacción de un indicador?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s10_5" value="a"> a) Ser lo más extenso posible para cubrir todos los aspectos</label>
+            <label class="opcion"><input type="radio" name="q_s10_5" value="b"> b) Ser claro, preciso y autoexplicativo para que cualquier persona entienda qué mide</label>
+            <label class="opcion"><input type="radio" name="q_s10_5" value="c"> c) Incluir terminología técnica avanzada</label>
+            <label class="opcion"><input type="radio" name="q_s10_5" value="d"> d) Ser redactado exclusivamente por el área financiera</label>
+          </div>
+          <div class="feedback" id="fb_s10_5_ok" data-type="ok">✔ Correcto. Un buen indicador debe ser claro, preciso y autoexplicativo para que cualquier persona comprenda qué mide.</div>
+          <div class="feedback" id="fb_s10_5_fail" data-type="fail">✘ Incorrecto. El indicador debe ser claro, preciso y autoexplicativo para que todos los interesados entiendan qué se está midiendo.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S12 ===== -->
+  <section class="semana" id="s12">
+    <div class="semana-header">
+      <div class="badge">S12</div>
+      <h2>Semana 12 · Visualización de datos y ejercicios de modelado BPMN/SIPOC</h2>
+    </div>
+    <div class="semana-body">
+      <div class="card card-resumen">
+        <h3>Resumen</h3>
+        <ul>
+          <li>Análisis descriptivo y visualización: recolectar, ordenar y graficar datos para extraer características representativas y apoyar decisiones.</li>
+          <li>Medidas estadísticas: tendencia central (media, mediana, moda), dispersión (varianza, desviación estándar) y distribución (cuartiles, percentiles).</li>
+          <li>Visualización de datos: presentación en formato gráfico/pictórico que facilita la detección de patrones, tendencias y correlaciones.</li>
+          <li>Preparación para visualizar: comprender los datos, definir qué comunicar, conocer la audiencia y elegir el gráfico adecuado.</li>
+          <li>R-Project y Python permiten profundizar en visualizaciones interactivas y procesar datos complejos.</li>
+          <li>Ejercicios BPMN: modelado de proceso de Revisión Técnica (planta de revisión vehicular) con carriles por roles, compuertas de decisión y paralelismo.</li>
+          <li>Ejercicios SIPOC: identificación de proveedores, entradas, proceso (4-6 etapas), salidas y clientes.</li>
+          <li>Los 5 porqués y BPMN se usan combinados para identificar causa raíz y modelar el proceso de solución.</li>
+        </ul>
+      </div>
+      <div class="card card-reflexion">
+        <h3>Reflexión</h3>
+        <p>La semana 12 integra todos los bloques del curso: desde la estructura organizacional y el mapa de procesos, pasando por el modelado BPMN y el análisis SIPOC, hasta la visualización estadística con herramientas digitales. Para el estudiante, es el momento de comprobar que los conceptos no son compartimentos separados sino partes de un mismo sistema de gestión. La capacidad de "contar la historia de los datos" con un gráfico bien diseñado es la competencia diferenciadora del ingeniero industrial contemporáneo.</p>
+      </div>
+      <div class="card card-retro">
+        <h3>Retroalimentación</h3>
+        <p>El estudiante debe repasar los elementos BPMN (eventos, tareas, compuertas XOR/AND, lanes) y practicar con el caso de la Planta de Revisión Técnica. Es especialmente importante identificar correctamente el uso de compuertas paralelas (revisión de gases, luces y amortiguación en paralelo) versus secuenciales (frenos seguido de dirección). También se recomienda repasar las medidas de tendencia central y dispersión, ya que son preguntadas en la evaluación sumativa de la Semana 13.</p>
+      </div>
+
+      <div class="quiz-section">
+        <h3>Quiz interactivo · 5 preguntas</h3>
+
+        <div class="quiz-q">
+          <p>1. En el caso de la Planta de Revisión Técnica, ¿cómo se modelan las revisiones de gases, luces y amortiguación?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s12_1" value="a"> a) En secuencia estricta usando flujo secuencial</label>
+            <label class="opcion"><input type="radio" name="q_s12_1" value="b"> b) En paralelo usando una pasarela paralela (AND)</label>
+            <label class="opcion"><input type="radio" name="q_s12_1" value="c"> c) Mediante una pasarela exclusiva (XOR)</label>
+            <label class="opcion"><input type="radio" name="q_s12_1" value="d"> d) Como un subproceso oculto</label>
+          </div>
+          <div class="feedback" id="fb_s12_1_ok" data-type="ok">✔ Correcto. Las revisiones de gases, luces y amortiguación se realizan sin orden entre ellas, por lo que se modelan en paralelo con pasarela AND.</div>
+          <div class="feedback" id="fb_s12_1_fail" data-type="fail">✘ Incorrecto. Como las tres revisiones se pueden hacer sin ningún orden entre ellas, se modelan en paralelo con una pasarela AND (paralela).</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>2. ¿Qué miden las "medidas de dispersión" en estadística descriptiva?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s12_2" value="a"> a) El valor central de un conjunto de datos</label>
+            <label class="opcion"><input type="radio" name="q_s12_2" value="b"> b) La variabilidad o spread de los datos respecto a la media</label>
+            <label class="opcion"><input type="radio" name="q_s12_2" value="c"> c) La frecuencia de aparición de cada valor</label>
+            <label class="opcion"><input type="radio" name="q_s12_2" value="d"> d) La correlación entre dos variables</label>
+          </div>
+          <div class="feedback" id="fb_s12_2_ok" data-type="ok">✔ Correcto. Las medidas de dispersión (varianza, desviación estándar) indican cuánto se alejan los datos de la media.</div>
+          <div class="feedback" id="fb_s12_2_fail" data-type="fail">✘ Incorrecto. Las medidas de dispersión miden la variabilidad de los datos; las de tendencia central miden el valor representativo (media, mediana, moda).</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>3. ¿Por qué el cerebro humano procesa mejor gráficos que tablas de datos?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s12_3" value="a"> a) Porque los gráficos son más fáciles de fabricar</label>
+            <label class="opcion"><input type="radio" name="q_s12_3" value="b"> b) Porque el sistema visual del cerebro procesa información pictórica con mayor rapidez y eficiencia</label>
+            <label class="opcion"><input type="radio" name="q_s12_3" value="c"> c) Porque las tablas son ilegales en algunos países</label>
+            <label class="opcion"><input type="radio" name="q_s12_3" value="d"> d) Porque los colores del gráfico activan la memoria de largo plazo</label>
+          </div>
+          <div class="feedback" id="fb_s12_3_ok" data-type="ok">✔ Correcto. El cerebro procesa información visual con mayor rapidez, lo que facilita identificar patrones y tendencias que en tablas serían difíciles de detectar.</div>
+          <div class="feedback" id="fb_s12_3_fail" data-type="fail">✘ Incorrecto. El cerebro humano procesa la información pictórica más rápido que el texto o las tablas, por lo que los gráficos facilitan la comprensión de grandes volúmenes de datos.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>4. En SIPOC, ¿cuáles son los "Clientes" (Customers)?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s12_4" value="a"> a) Los que proveen las entradas al proceso</label>
+            <label class="opcion"><input type="radio" name="q_s12_4" value="b"> b) Los que participan en la ejecución del proceso</label>
+            <label class="opcion"><input type="radio" name="q_s12_4" value="c"> c) Los que reciben las salidas generadas por el proceso</label>
+            <label class="opcion"><input type="radio" name="q_s12_4" value="d"> d) Los que financian el proceso</label>
+          </div>
+          <div class="feedback" id="fb_s12_4_ok" data-type="ok">✔ Correcto. En SIPOC los Customers (Clientes) son quienes reciben las salidas (outputs) del proceso.</div>
+          <div class="feedback" id="fb_s12_4_fail" data-type="fail">✘ Incorrecto. Los Clientes en SIPOC son quienes reciben las salidas del proceso; los Proveedores son quienes entregan las entradas.</div>
+        </div>
+
+        <div class="quiz-q">
+          <p>5. Al preparar una visualización de datos, ¿cuál es el primer paso recomendado?</p>
+          <div class="opciones">
+            <label class="opcion"><input type="radio" name="q_s12_5" value="a"> a) Elegir los colores del gráfico</label>
+            <label class="opcion"><input type="radio" name="q_s12_5" value="b"> b) Publicar los datos en redes sociales</label>
+            <label class="opcion"><input type="radio" name="q_s12_5" value="c"> c) Comprender los datos que se intenta visualizar, incluyendo tamaño y cardinalidad</label>
+            <label class="opcion"><input type="radio" name="q_s12_5" value="d"> d) Descargar la plantilla de gráfico más popular</label>
+          </div>
+          <div class="feedback" id="fb_s12_5_ok" data-type="ok">✔ Correcto. El primer paso es comprender los datos: su tamaño, tipo y cardinalidad, antes de elegir el tipo de gráfico.</div>
+          <div class="feedback" id="fb_s12_5_fail" data-type="fail">✘ Incorrecto. El primer paso es comprender los datos (tamaño, cardinalidad, tipo); luego definir qué comunicar, conocer la audiencia y elegir el visual adecuado.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function setActive(el) {
+  document.querySelectorAll('#sidebar nav a').forEach(a => a.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+// Correct answers map
+const answers = {
+  q_s0_1:'b', q_s0_2:'c', q_s0_3:'b', q_s0_4:'b', q_s0_5:'c',
+  q_s1_1:'b', q_s1_2:'b', q_s1_3:'c', q_s1_4:'b', q_s1_5:'b',
+  q_s2_1:'c', q_s2_2:'b', q_s2_3:'b', q_s2_4:'b', q_s2_5:'c',
+  q_s3_1:'b', q_s3_2:'b', q_s3_3:'c', q_s3_4:'b', q_s3_5:'b',
+  q_s4_1:'c', q_s4_2:'c', q_s4_3:'b', q_s4_4:'b', q_s4_5:'b',
+  q_s5_1:'b', q_s5_2:'b', q_s5_3:'b', q_s5_4:'c', q_s5_5:'b',
+  q_s6_1:'b', q_s6_2:'b', q_s6_3:'c', q_s6_4:'b', q_s6_5:'c',
+  q_s8_1:'c', q_s8_2:'b', q_s8_3:'b', q_s8_4:'c', q_s8_5:'b',
+  q_s9_1:'c', q_s9_2:'c', q_s9_3:'c', q_s9_4:'b', q_s9_5:'b',
+  q_s10_1:'b', q_s10_2:'b', q_s10_3:'c', q_s10_4:'b', q_s10_5:'b',
+  q_s12_1:'b', q_s12_2:'b', q_s12_3:'b', q_s12_4:'c', q_s12_5:'c'
+};
+
+document.addEventListener('change', function(e) {
+  if (e.target.type !== 'radio') return;
+  const name = e.target.name;
+  const val = e.target.value;
+  const correct = answers[name];
+
+  // Disable all options in this question
+  document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+    inp.disabled = true;
+    const label = inp.parentElement;
+    if (inp.value === correct) label.classList.add('correcta');
+    else if (inp.value === val && val !== correct) label.classList.add('incorrecta');
+  });
+
+  // Show feedback
+  const okId = `fb_${name.replace('q_','')}_ok`;
+  const failId = `fb_${name.replace('q_','')}_fail`;
+  // fix id: q_s0_1 -> fb_s0_1_ok
+  const prefix = name.replace(/^q_/, '');
+  const okEl = document.getElementById('fb_' + prefix + '_ok');
+  const failEl = document.getElementById('fb_' + prefix + '_fail');
+  if (val === correct) {
+    if (okEl) { okEl.classList.add('show'); }
+  } else {
+    if (failEl) { failEl.classList.add('show'); }
+    if (okEl) { okEl.classList.add('show'); } // also show correct answer
+  }
+});
+
+// Highlight sidebar on scroll
+const sections = document.querySelectorAll('section.semana');
+const navLinks = document.querySelectorAll('#sidebar nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 80) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+</body>
+</html>
