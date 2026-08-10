@@ -515,6 +515,7 @@ body.has-bottomnav{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom
 .tin label{display:block;font-size:.82rem;font-weight:700;color:var(--suave);margin-bottom:6px}
 .tin label span{font-weight:500;opacity:.8}
 .tin input,.prow input,.lrow2 input{width:100%;min-height:44px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--borde);background:var(--elev);color:var(--texto);font:inherit}
+.tin select{width:100%;min-height:44px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--borde);background:var(--elev);color:var(--texto);font:inherit}
 .tin input:focus,.prow input:focus,.lrow2 input:focus{outline:none;border-color:var(--acento)}
 .tres{margin:6px 0 10px}
 .tr{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 13px;border-radius:12px;background:var(--bg);margin-bottom:8px;font-size:.9rem}
@@ -3903,7 +3904,9 @@ function openScreen(name){
    HERRAMIENTAS DE INGENIERÍA INDUSTRIAL (calculadoras funcionales)
    ===================================================================== */
 function tVal(id){var e=qs('#'+id);var v=e?parseFloat(String(e.value).replace(',','.')):0;return isFinite(v)?v:0;}
-function tBind(root,fn){qsa('input',root).forEach(function(i){i.addEventListener('input',fn);});}
+function tBind(root,fn){qsa('input,select',root).forEach(function(i){i.addEventListener('input',fn);i.addEventListener('change',fn);});}
+function tSelect(id,label,opts){return '<div class="tin"><label>'+esc(label)+'</label><select id="'+id+'">'+opts.map(function(o){return '<option value="'+o.v+'">'+esc(o.l)+'</option>';}).join('')+'</select></div>';}
+function tText(id,label,val,ph){return '<div class="tin"><label>'+esc(label)+'</label><input id="'+id+'" type="text" value="'+esc(val)+'" placeholder="'+esc(ph||'')+'"></div>';}
 function tMoney(n){if(!isFinite(n))return '∞';var neg=n<0;n=Math.round(Math.abs(n));return (neg?'-$':'$')+n.toLocaleString('es-CL');}
 function tNum(n,d){if(!isFinite(n))return '∞';return d?Number(n).toFixed(d):Math.round(n).toLocaleString('es-CL');}
 function tRow(l,v,warn){return '<div class="tr'+(warn?' warn':'')+'"><span>'+esc(l)+'</span><b>'+esc(v)+'</b></div>';}
@@ -3913,14 +3916,22 @@ function openTools(){
   var tools=[
     {id:'costos',ico:'🧮',name:'Calculadora de Costos',desc:'Punto de equilibrio y margen'},
     {id:'eoq',ico:'📦',name:'Inventario EOQ',desc:'Cantidad óptima de pedido'},
+    {id:'rop',ico:'🚚',name:'Punto de Reorden',desc:'Stock de seguridad y reorden'},
     {id:'pareto',ico:'📊',name:'Diagrama de Pareto',desc:'Regla 80/20 con gráfico'},
+    {id:'oee',ico:'⚙️',name:'OEE',desc:'Eficiencia global del equipo'},
+    {id:'tstd',ico:'⏱️',name:'Tiempo Estándar',desc:'Estudio de tiempos'},
+    {id:'prod',ico:'📈',name:'Productividad',desc:'Salida ÷ entrada'},
+    {id:'balanceo',ico:'🔗',name:'Balanceo de Línea',desc:'Takt y estaciones'},
+    {id:'muestra',ico:'🎯',name:'Tamaño de Muestra',desc:'Estadística / calidad'},
+    {id:'forecast',ico:'📉',name:'Pronóstico',desc:'Regresión y prom. móvil'},
+    {id:'aprend',ico:'🧠',name:'Curva de Aprendizaje',desc:'Tiempo por repetición'},
     {id:'layout',ico:'🏭',name:'Layout de Planta',desc:'Análisis carga-distancia'}
   ];
-  var html='<p class="tnote" style="margin:0 0 12px">Calculadoras funcionales que operan sin conexión, con tus propios datos.</p><div class="toolgrid">'+
+  var map={costos:toolCostos,eoq:toolEOQ,rop:toolROP,pareto:toolPareto,oee:toolOEE,tstd:toolTiempo,prod:toolProd,balanceo:toolBalanceo,muestra:toolMuestra,forecast:toolForecast,aprend:toolAprend,layout:toolLayout};
+  var html='<p class="tnote" style="margin:0 0 12px">'+tools.length+' calculadoras de ingeniería industrial. Funcionan sin conexión, con tus propios datos.</p><div class="toolgrid">'+
     tools.map(function(t){return '<button class="toolcard" data-tool="'+t.id+'"><span class="tc-ico">'+t.ico+'</span><b>'+esc(t.name)+'</b><small>'+esc(t.desc)+'</small><span class="tc-go">Abrir ›</span></button>';}).join('')+'</div>';
   openSheet('🧰 Herramientas',html,function(root){
-    qsa('[data-tool]',root).forEach(function(b){b.addEventListener('click',function(){var id=b.getAttribute('data-tool');
-      if(id==='costos')toolCostos();else if(id==='eoq')toolEOQ();else if(id==='pareto')toolPareto();else if(id==='layout')toolLayout();});});
+    qsa('[data-tool]',root).forEach(function(b){b.addEventListener('click',function(){var f=map[b.getAttribute('data-tool')];if(f)f();});});
   });
 }
 
@@ -4032,6 +4043,184 @@ function toolLayout(){
     }
     qs('#la_add',root).addEventListener('click',function(){data.push({a:'Área A→B',f:0,d:0});renderRows();calc();});
     renderRows();calc();
+  });
+}
+
+/* — Tiempo estándar (estudio de tiempos) — */
+function toolTiempo(){
+  var html=tInput('t_to','Tiempo observado (promedio)','5','min')+
+    tInput('t_v','Factor de valoración','100','%')+
+    tInput('t_s','Suplementos','12','%')+
+    '<div class="tres" id="t_res"></div>'+
+    '<p class="tnote">Tiempo normal = Observado × (Valoración÷100). Tiempo estándar = Normal × (1 + Suplementos÷100).</p>';
+  openSheet('⏱️ Tiempo Estándar',html,function(root){
+    function calc(){
+      var to=tVal('t_to'),v=tVal('t_v'),s=tVal('t_s');
+      var tn=to*(v/100),ts=tn*(1+s/100),uh=ts>0?60/ts:0;
+      qs('#t_res',root).innerHTML=
+        tRow('Tiempo normal (TN)',tNum(tn,2)+' min')+
+        tRow('Tiempo estándar (TS)',tNum(ts,2)+' min')+
+        tRow('Producción estándar',tNum(uh,1)+' u/hora');
+    }
+    tBind(root,calc);calc();
+  });
+}
+
+/* — OEE — */
+function toolOEE(){
+  var html=tInput('o_plan','Tiempo planificado','480','min')+
+    tInput('o_paros','Paradas no planificadas','40','min')+
+    tInput('o_ciclo','Tiempo de ciclo ideal','0.5','min/u')+
+    tInput('o_tot','Producción total','800','u')+
+    tInput('o_ok','Producción buena','760','u')+
+    '<div class="tres" id="o_res"></div>'+
+    '<p class="tnote">OEE = Disponibilidad × Rendimiento × Calidad. Referencia de clase mundial: ≥ 85%.</p>';
+  openSheet('⚙️ OEE (Eficiencia global)',html,function(root){
+    function pct(x){return isFinite(x)?(x*100).toFixed(1)+'%':'—';}
+    function calc(){
+      var plan=tVal('o_plan'),paros=tVal('o_paros'),ciclo=tVal('o_ciclo'),tot=tVal('o_tot'),ok=tVal('o_ok');
+      var oper=plan-paros,D=plan>0?oper/plan:0,P=oper>0?Math.min((ciclo*tot)/oper,1.5):0,Q=tot>0?ok/tot:0,OEE=D*P*Q;
+      var v=OEE>=0.85?'🟢 Clase mundial':OEE>=0.6?'🟡 Aceptable':'🔴 A mejorar';
+      qs('#o_res',root).innerHTML=
+        tRow('Disponibilidad',pct(D))+tRow('Rendimiento',pct(P))+tRow('Calidad',pct(Q))+
+        '<div class="tr big"><span>OEE · '+v+'</span><b>'+pct(OEE)+'</b></div>';
+    }
+    tBind(root,calc);calc();
+  });
+}
+
+/* — Productividad — */
+function toolProd(){
+  var html=tInput('p_out','Producción (salida)','1000','u')+
+    tInput('p_in','Recurso empleado (entrada)','160','h-H')+
+    tInput('p_base','Productividad base (opcional)','0','u/h')+
+    '<div class="tres" id="p_res"></div>'+
+    '<p class="tnote">Productividad = Salida ÷ Entrada. Si ingresas una base, se calcula la variación %.</p>';
+  openSheet('📈 Productividad',html,function(root){
+    function calc(){
+      var out=tVal('p_out'),inp=tVal('p_in'),base=tVal('p_base');
+      var prod=inp>0?out/inp:0,varp=base>0?((prod-base)/base*100):NaN;
+      var h=tRow('Productividad',tNum(prod,2)+' u por entrada');
+      if(base>0)h+=tRow('Variación vs base',(isFinite(varp)?(varp>=0?'+':'')+tNum(varp,1)+'%':'—'),varp<0);
+      qs('#p_res',root).innerHTML=h;
+    }
+    tBind(root,calc);calc();
+  });
+}
+
+/* — Balanceo de línea — */
+function toolBalanceo(){
+  var html=tInput('b_disp','Tiempo disponible/día','480','min')+
+    tInput('b_dem','Demanda diaria','400','u')+
+    tInput('b_sum','Tiempo total de tareas','2.4','min/u')+
+    tInput('b_est','Estaciones reales (opcional)','0','')+
+    '<div class="tres" id="b_res"></div>'+
+    '<p class="tnote">Takt = Disponible ÷ Demanda. Estaciones mínimas = Tiempo total ÷ Takt. Eficiencia = Tiempo total ÷ (Estaciones × Takt).</p>';
+  openSheet('🔗 Balanceo de Línea',html,function(root){
+    function calc(){
+      var disp=tVal('b_disp'),dem=tVal('b_dem'),sum=tVal('b_sum'),est=tVal('b_est');
+      var takt=dem>0?disp/dem:0,nmin=takt>0?Math.ceil(sum/takt):0,used=est>0?est:nmin,efic=(used>0&&takt>0)?sum/(used*takt):0;
+      qs('#b_res',root).innerHTML=
+        tRow('Takt time',tNum(takt,2)+' min/u')+
+        tRow('Estaciones mínimas',nmin>0?nmin:'—')+
+        tRow('Eficiencia de línea',(efic*100).toFixed(1)+'%',efic<0.7);
+    }
+    tBind(root,calc);calc();
+  });
+}
+
+/* — Tamaño de muestra — */
+function toolMuestra(){
+  var html=tSelect('m_z','Nivel de confianza',[{v:1.96,l:'95%'},{v:1.645,l:'90%'},{v:2.575,l:'99%'}])+
+    tInput('m_e','Margen de error','5','%')+
+    tInput('m_p','Proporción esperada','50','%')+
+    tInput('m_N','Población (0 = infinita)','0','')+
+    '<div class="tres" id="m_res"></div>'+
+    '<p class="tnote">n = Z²·p·(1−p) ÷ e². Con población finita se aplica corrección. Usa p = 50% si no la conoces (caso más conservador).</p>';
+  openSheet('🎯 Tamaño de Muestra',html,function(root){
+    function calc(){
+      var Z=tVal('m_z'),e=tVal('m_e')/100,p=tVal('m_p')/100,N=tVal('m_N');
+      var n0=(e>0)?(Z*Z*p*(1-p))/(e*e):0,n=(N>0)?n0/(1+(n0-1)/N):n0;
+      qs('#m_res',root).innerHTML=
+        tRow('Muestra (población infinita)',n0>0?Math.ceil(n0).toLocaleString('es-CL'):'—')+
+        (N>0?tRow('Muestra ajustada (N='+tNum(N)+')',Math.ceil(n).toLocaleString('es-CL')):'');
+    }
+    tBind(root,calc);calc();
+  });
+}
+
+/* — Punto de reorden / stock de seguridad — */
+function toolROP(){
+  var html=tInput('r_d','Demanda diaria','50','u/día')+
+    tInput('r_l','Tiempo de entrega','6','días')+
+    tInput('r_sd','Desv. estándar demanda diaria','8','u')+
+    tSelect('r_z','Nivel de servicio',[{v:1.28,l:'90%'},{v:1.645,l:'95%'},{v:2.05,l:'98%'},{v:2.33,l:'99%'}])+
+    '<div class="tres" id="r_res"></div>'+
+    '<p class="tnote">Stock de seguridad = Z·σ·√L. Punto de reorden = (demanda diaria × lead time) + stock de seguridad.</p>';
+  openSheet('🚚 Punto de Reorden',html,function(root){
+    function calc(){
+      var d=tVal('r_d'),L=tVal('r_l'),sd=tVal('r_sd'),Z=tVal('r_z');
+      var dl=d*L,ss=Z*sd*Math.sqrt(L),rop=dl+ss;
+      qs('#r_res',root).innerHTML=
+        tRow('Demanda en lead time',Math.round(dl).toLocaleString('es-CL')+' u')+
+        tRow('Stock de seguridad',Math.ceil(ss).toLocaleString('es-CL')+' u')+
+        tRow('Punto de reorden',Math.ceil(rop).toLocaleString('es-CL')+' u');
+    }
+    tBind(root,calc);calc();
+  });
+}
+
+/* — Curva de aprendizaje — */
+function toolAprend(){
+  var html=tInput('a_t1','Tiempo de la 1ª unidad','100','min')+
+    tInput('a_r','Tasa de aprendizaje','80','%')+
+    tInput('a_n','Unidad n a estimar','10','')+
+    '<div class="tres" id="a_res"></div>'+
+    '<p class="tnote">Tn = T1 × n^b, con b = log(tasa) ÷ log(2). Con 80%, al duplicar la producción el tiempo baja al 80%.</p>';
+  openSheet('🧠 Curva de Aprendizaje',html,function(root){
+    function calc(){
+      var t1=tVal('a_t1'),r=tVal('a_r')/100,n=Math.max(1,tVal('a_n'));
+      var b=(r>0)?Math.log(r)/Math.log(2):0,tn=t1*Math.pow(n,b);
+      qs('#a_res',root).innerHTML=
+        tRow('Exponente b',tNum(b,3))+
+        tRow('Tiempo unidad '+tNum(n),tNum(tn,2)+' min')+
+        tRow('% respecto a la 1ª',(t1>0?(tn/t1*100).toFixed(1):'—')+'%');
+    }
+    tBind(root,calc);calc();
+  });
+}
+
+/* — Pronóstico (promedio móvil + regresión lineal) — */
+function toolForecast(){
+  var html=tText('f_s','Serie de datos (por período)','12, 15, 14, 18, 20, 22','ej: 10, 12, 15…')+
+    tInput('f_k','Períodos del promedio móvil','3','')+
+    '<div class="tres" id="f_res"></div>'+
+    '<div class="parebox"><svg id="f_svg" viewBox="0 0 320 170" preserveAspectRatio="xMidYMid meet"></svg></div>'+
+    '<p class="tnote">Promedio móvil = media de los últimos k valores. Regresión lineal = tendencia y = a + b·x, proyectada al próximo período.</p>';
+  openSheet('📉 Pronóstico de demanda',html,function(root){
+    function calc(){
+      var raw=(qs('#f_s',root).value||'').split(/[,;\s]+/).map(parseFloat).filter(function(x){return isFinite(x);});
+      var k=Math.max(1,Math.round(tVal('f_k'))),n=raw.length;
+      if(n<2){qs('#f_res',root).innerHTML=tRow('Datos','Ingresa al menos 2 valores',true);qs('#f_svg',root).innerHTML='';return;}
+      var ma=raw.slice(Math.max(0,n-k)).reduce(function(s,x){return s+x;},0)/Math.min(k,n);
+      var sx=0,sy=0,sxy=0,sxx=0;for(var i=0;i<n;i++){var x=i+1;sx+=x;sy+=raw[i];sxy+=x*raw[i];sxx+=x*x;}
+      var b=(n*sxy-sx*sy)/(n*sxx-sx*sx),a=(sy-b*sx)/n,next=a+b*(n+1);
+      qs('#f_res',root).innerHTML=
+        tRow('Promedio móvil ('+k+')',tNum(ma,2))+
+        tRow('Tendencia (pendiente b)',tNum(b,3))+
+        tRow('Pronóstico regresión (t+1)',tNum(next,2))+
+        tRow('Pronóstico prom. móvil (t+1)',tNum(ma,2));
+      var W=320,H=170,padL=10,padR=10,padB=16,padT=12,all=raw.concat([next]);
+      var mn=Math.min.apply(null,all),mx=Math.max.apply(null,all),rng=(mx-mn)||1,stepx=(W-padL-padR)/Math.max(1,all.length-1);
+      function X(i){return padL+i*stepx;}function Y(v){return padT+(1-(v-mn)/rng)*(H-padB-padT);}
+      var dpts=raw.map(function(v,i){return X(i)+','+Y(v);}).join(' ');
+      var regpts=[];for(var i=0;i<n+1;i++){regpts.push(X(i)+','+Y(a+b*(i+1)));}
+      qs('#f_svg',root).innerHTML='<polyline points="'+dpts+'" fill="none" stroke="var(--acento)" stroke-width="2"/>'+
+        raw.map(function(v,i){return '<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="2.6" fill="var(--acento)"/>';}).join('')+
+        '<polyline points="'+regpts.join(' ')+'" fill="none" stroke="var(--acento2)" stroke-width="1.6" stroke-dasharray="4 3"/>'+
+        '<circle cx="'+X(n)+'" cy="'+Y(next)+'" r="3.4" fill="var(--acento2)"/>';
+    }
+    tBind(root,calc);calc();
   });
 }
 
