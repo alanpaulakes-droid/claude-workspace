@@ -533,6 +533,23 @@ body.has-bottomnav{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom
 .parebox{background:var(--elev);border:1px solid var(--borde);border-radius:14px;padding:10px;margin:12px 0}
 .parebox svg{width:100%;height:auto;display:block}
 
+
+/* Guía de estudio: glosario + flashcards */
+.gl-item{background:var(--elev);border:1px solid var(--borde);border-radius:12px;padding:11px 13px;margin-bottom:8px}
+.gl-item .gl-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.gl-item .gl-h b{color:var(--texto)}
+.gl-item .gl-h span{font-size:.66rem;color:var(--suave);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.gl-item p{color:var(--suave);font-size:.86rem;margin-top:3px;line-height:1.45}
+.fc-wrap{display:flex;flex-direction:column;gap:12px}
+.fc-prog{text-align:center;color:var(--suave);font-size:.82rem;font-weight:700}
+.fc-card{min-height:220px;border-radius:20px;border:1.5px solid var(--borde);background:linear-gradient(135deg,var(--elev),var(--bg));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:26px;box-shadow:var(--sh1);text-align:center;transition:border-color var(--t),transform var(--t)}
+.fc-card:active{transform:scale(.99)}
+.fc-card.flipped{border-color:var(--acento)}
+.fc-card .fc-side{font-size:.64rem;letter-spacing:.16em;color:var(--acento);font-weight:800;text-transform:uppercase}
+.fc-card .fc-txt{font-size:1.02rem;color:var(--texto);line-height:1.5}
+.fc-card .fc-term{font-size:1.5rem;font-weight:800}
+.fc-ctrls{display:flex;gap:10px}
+
 </style>
 </head>
 <body>
@@ -3877,7 +3894,7 @@ function renderDashboard(){
      '<div class="rc-plan"><span class="rc-chip">📖 teoría</span><span class="rc-chip">✏️ ejercicios</span>'+(rec.due?'<span class="rc-chip">🔁 '+rec.due+' de repaso</span>':'')+'</div><span class="rc-go">Comenzar ›</span></button>'+
    '<div class="sec-title">⚠️ Necesita repaso <button class="st-act" data-open="review">Repasar hoy ›</button></div><div class="needchips">'+chips+'</div>'+
    '<div class="sec-title" style="margin-top:14px">Accesos</div>'+
-   '<div class="chips"><button class="chip-sel" data-open="ramos">📁 Mis ramos</button><button class="chip-sel" data-open="tools">🧰 Herramientas</button><button class="chip-sel" data-open="exam">🎓 Examen</button><button class="chip-sel" data-open="errors">❌ Mis errores</button><button class="chip-sel" data-open="favs">⭐ Favoritos</button><button class="chip-sel" data-open="progress">📊 Progreso</button></div>';
+   '<div class="chips"><button class="chip-sel" data-open="guia">📚 Guía</button><button class="chip-sel" data-open="ramos">📁 Mis ramos</button><button class="chip-sel" data-open="tools">🧰 Herramientas</button><button class="chip-sel" data-open="exam">🎓 Examen</button><button class="chip-sel" data-open="errors">❌ Mis errores</button><button class="chip-sel" data-open="favs">⭐ Favoritos</button><button class="chip-sel" data-open="progress">📊 Progreso</button><button class="chip-sel" data-open="datos">⚙️ Datos</button></div>';
   // wire
   qs('#dash-reco',host).addEventListener('click',function(){
     if(rec.due){openReview();return;}
@@ -3899,6 +3916,8 @@ function openScreen(name){
   if(name==='progress')return openProgress();
   if(name==='tools')return openTools();
   if(name==='ramos')return openRamos();
+  if(name==='guia')return openGuia();
+  if(name==='datos')return openDatos();
 }
 
 /* =====================================================================
@@ -4375,6 +4394,100 @@ document.addEventListener('click',function(e){
 });
 
 /* =====================================================================
+   GUÍA DE ESTUDIO: glosario global + flashcards (desde el contenido real)
+   ===================================================================== */
+var GLOSS=[];
+function buildGloss(){
+  GLOSS=[];
+  qsa('details.week[data-key]').forEach(function(week){
+    var c=week.getAttribute('data-key').split(':')[0];
+    qsa('.glo-item',week).forEach(function(it){
+      var dt=qs('dt',it),dd=qs('dd',it);
+      if(dt&&dd&&dt.textContent.trim())GLOSS.push({t:dt.textContent.trim(),d:dd.textContent.trim(),c:c});
+    });
+  });
+}
+function openGuia(){
+  var opts=[
+    {id:'gloss',ico:'🔑',name:'Glosario',desc:GLOSS.length+' términos'},
+    {id:'flash',ico:'🃏',name:'Flashcards',desc:'Memoriza definiciones'},
+    {id:'exam',ico:'🎓',name:'Exámenes de práctica',desc:'Configura y rinde'},
+    {id:'review',ico:'🧠',name:'Repasar hoy',desc:'Repetición espaciada'}
+  ];
+  var html='<p class="tnote" style="margin:0 0 12px">Todo tu material para estudiar, generado desde el contenido del portal.</p><div class="toolgrid">'+
+    opts.map(function(o){return '<button class="toolcard" data-guia="'+o.id+'"><span class="tc-ico">'+o.ico+'</span><b>'+esc(o.name)+'</b><small>'+esc(o.desc)+'</small><span class="tc-go">Abrir ›</span></button>';}).join('')+'</div>';
+  openSheet('📚 Guía de Estudio',html,function(root){
+    qsa('[data-guia]',root).forEach(function(b){b.addEventListener('click',function(){var id=b.getAttribute('data-guia');
+      if(id==='gloss')openGloss();else if(id==='flash')openFlash();else if(id==='exam')openExamConfig();else if(id==='review')openReview();});});
+  });
+}
+function fold(s){return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+function openGloss(){
+  if(!GLOSS.length){openSheet('🔑 Glosario',emptyState('🔑','Sin términos','Aún no hay glosario disponible.'));return;}
+  var html='<input id="gl_q" placeholder="Buscar término…" style="width:100%;min-height:46px;padding:11px 14px;border-radius:12px;border:1.5px solid var(--borde);background:var(--elev);color:var(--texto);font:inherit;margin-bottom:12px"><div id="gl_list"></div>';
+  openSheet('🔑 Glosario · '+GLOSS.length,html,function(root){
+    function render(q){
+      var nq=fold(q||'');
+      var items=GLOSS.filter(function(g){return !nq||fold(g.t+' '+g.d).indexOf(nq)>-1;}).slice(0,400);
+      qs('#gl_list',root).innerHTML=items.length?items.map(function(g){return '<div class="gl-item"><div class="gl-h"><b>'+esc(g.t)+'</b><span>'+esc(courseName(g.c))+'</span></div><p>'+esc(g.d)+'</p></div>';}).join(''):'<p class="tnote">Sin resultados.</p>';
+    }
+    qs('#gl_q',root).addEventListener('input',function(){render(this.value);});render('');
+  });
+}
+function openFlash(){
+  if(!GLOSS.length){openSheet('🃏 Flashcards',emptyState('🃏','Sin tarjetas','No hay términos para practicar.'));return;}
+  var courses=Object.keys(META).filter(function(c){return GLOSS.some(function(g){return g.c===c;});});
+  var chips='<button class="chip-sel on" data-fc="all">Todas</button>'+courses.map(function(c){return '<button class="chip-sel" data-fc="'+c+'">'+courseIco(c)+' '+esc(courseName(c))+'</button>';}).join('');
+  openSheet('🃏 Flashcards','<div class="cfg-block"><div class="cfg-lbl">Materia</div><div class="chips" id="fc_courses">'+chips+'</div></div><button class="big-go" id="fc_start">Empezar</button>',function(root){
+    var sel='all';
+    qsa('#fc_courses .chip-sel',root).forEach(function(b){b.addEventListener('click',function(){qsa('#fc_courses .chip-sel',root).forEach(function(x){x.classList.remove('on');});b.classList.add('on');sel=b.getAttribute('data-fc');});});
+    qs('#fc_start',root).addEventListener('click',function(){runFlash(sel);});
+  });
+}
+function runFlash(course){
+  var pool=shuffleA(GLOSS.filter(function(g){return course==='all'||g.c===course;}));
+  if(!pool.length){toastFn('Sin tarjetas para esa materia.','azul');return;}
+  var i=0,flip=false;
+  openSheet('🃏 Flashcards','<div class="fc-wrap"><div class="fc-prog" id="fc_prog"></div><button class="fc-card" id="fc_card"></button><div class="fc-ctrls"><button class="ghost-go" id="fc_prev">‹ Anterior</button><button class="ghost-go" id="fc_next">Siguiente ›</button></div><p class="tnote" style="text-align:center">Toca la tarjeta para girar</p></div>',function(root){
+    function draw(){var g=pool[i];qs('#fc_prog',root).textContent=(i+1)+' / '+pool.length+' · '+courseName(g.c);
+      qs('#fc_card',root).innerHTML=flip?'<span class="fc-side">DEFINICIÓN</span><span class="fc-txt">'+esc(g.d)+'</span>':'<span class="fc-side">TÉRMINO</span><span class="fc-txt fc-term">'+esc(g.t)+'</span>';
+      qs('#fc_card',root).classList.toggle('flipped',flip);}
+    qs('#fc_card',root).addEventListener('click',function(){flip=!flip;draw();});
+    qs('#fc_next',root).addEventListener('click',function(){i=(i+1)%pool.length;flip=false;draw();});
+    qs('#fc_prev',root).addEventListener('click',function(){i=(i-1+pool.length)%pool.length;flip=false;draw();});
+    draw();
+  });
+}
+
+/* =====================================================================
+   DATOS Y RESPALDO: exportar / importar todo el progreso
+   ===================================================================== */
+function openDatos(){
+  var html='<p class="tnote" style="margin:0 0 12px">Respalda todo tu progreso, apuntes, ramos y configuración en un archivo, o restáuralo en otro teléfono.</p>'+
+    '<button class="big-go" id="dt_export">⬇️ Exportar respaldo (.json)</button>'+
+    '<button class="ghost-go" id="dt_imp_btn" style="margin-top:10px">⬆️ Importar respaldo</button>'+
+    '<input type="file" id="dt_imp" accept="application/json,.json" style="display:none">'+
+    '<div class="sec-title">Almacenamiento</div><div class="tr" id="dt_info"></div>';
+  openSheet('⚙️ Datos y respaldo',html,function(root){
+    var keys=Object.keys(localStorage).filter(function(k){return k.indexOf('portal:')===0;});
+    var bytes=keys.reduce(function(s,k){return s+(localStorage.getItem(k)||'').length;},0);
+    qs('#dt_info',root).innerHTML='<span>'+keys.length+' registros guardados</span><b>'+Math.max(1,Math.round(bytes/1024))+' KB</b>';
+    qs('#dt_export',root).addEventListener('click',function(){
+      var data={};keys.forEach(function(k){data[k]=localStorage.getItem(k);});
+      var blob=new Blob([JSON.stringify({app:'INDUSHUB',ver:1,date:Date.now(),data:data})],{type:'application/json'});
+      var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='indushub-respaldo-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1000);
+      toastFn('Respaldo descargado ✅','azul');
+    });
+    qs('#dt_imp_btn',root).addEventListener('click',function(){qs('#dt_imp',root).click();});
+    qs('#dt_imp',root).addEventListener('change',function(e){
+      var f=e.target.files&&e.target.files[0];if(!f)return;var rd=new FileReader();
+      rd.onload=function(){try{var o=JSON.parse(rd.result);var d=o.data||o;var n=0;Object.keys(d).forEach(function(k){if(k.indexOf('portal:')===0){localStorage.setItem(k,d[k]);n++;}});toastFn('Restaurados '+n+' registros. Recargando…','azul');setTimeout(function(){location.reload();},1000);}catch(err){toastFn('Archivo de respaldo inválido','rojo');}};
+      rd.readAsText(f);
+    });
+  });
+}
+
+/* =====================================================================
    INYECCIONES EN EL DOM EXISTENTE
    ===================================================================== */
 /* barra superior azul oscuro estilo INDUSHUB (marca + avatar + campana) */
@@ -4551,6 +4664,7 @@ window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();def
    ===================================================================== */
 buildRegistry();
 registerGenerated();
+buildGloss();
 initFavStates();
 updateAllMasters();
 renderDashboard();

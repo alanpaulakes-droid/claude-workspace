@@ -2,7 +2,7 @@
    Ubicado en /estudio/ → su scope es SOLO /estudio/, aislado de Órbita (raíz).
    El HTML es autocontenido (contenido + imágenes embebidas), así que
    cachear el propio archivo basta para funcionar sin conexión. */
-const CACHE = 'portal-estudio-v4-2';
+const CACHE = 'portal-estudio-v4-3';
 const ASSETS = [
   './',
   'index.html',
