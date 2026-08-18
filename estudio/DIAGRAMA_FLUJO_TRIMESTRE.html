@@ -1,0 +1,274 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa del Trimestre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#eef1f6; --panel:#ffffff; --ink:#12172a; --ink-soft:#48506a;
+    --ink-faint:#7a8199;
+    --line:#d3d9e6; --line-soft:#e3e8f1;
+    --accent:#1f6feb;
+    /* vías por ramo */
+    --c-proc:#0e8ab8; --c-proc-bg:#e2f4fb;
+    --c-inno:#c9700a; --c-inno-bg:#fbeedd;
+    --c-prog:#1f9e57; --c-prog-bg:#e2f5ec;
+    --c-topi:#7a53d6; --c-topi-bg:#efe9fc;
+    --shadow:0 1px 2px rgba(18,23,42,.05),0 8px 24px rgba(18,23,42,.06);
+  }
+  :root:not([data-theme="light"]){}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0b0e18; --panel:#141a2b; --ink:#eef1fa; --ink-soft:#aab2cc;
+      --ink-faint:#7c85a3;
+      --line:#28304a; --line-soft:#20273c;
+      --accent:#4d8dff;
+      --c-proc:#3bc0ea; --c-proc-bg:#0f2c39;
+      --c-inno:#f0a94a; --c-inno-bg:#39280f;
+      --c-prog:#42cc80; --c-prog-bg:#0f3122;
+      --c-topi:#a78bf0; --c-topi-bg:#241a3d;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0b0e18; --panel:#141a2b; --ink:#eef1fa; --ink-soft:#aab2cc; --ink-faint:#7c85a3;
+    --line:#28304a; --line-soft:#20273c;
+    --accent:#4d8dff;
+    --c-proc:#3bc0ea; --c-proc-bg:#0f2c39;
+    --c-inno:#f0a94a; --c-inno-bg:#39280f;
+    --c-prog:#42cc80; --c-prog-bg:#0f3122;
+    --c-topi:#a78bf0; --c-topi-bg:#241a3d;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    line-height:1.5; letter-spacing:-.005em;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1240px; margin:0 auto; padding:40px 22px 72px}
+
+  /* ---------- Encabezado ---------- */
+  header.hero{margin-bottom:34px}
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace; font-size:.72rem; font-weight:600;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--accent);
+    display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  }
+  .eyebrow::after{content:""; flex:1; height:1px; background:var(--line)}
+  h1{
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:800;
+    font-size:clamp(2.1rem,5.5vw,3.5rem); line-height:1.02; letter-spacing:-.03em;
+    margin:0 0 12px; text-wrap:balance;
+  }
+  .lede{font-size:1.06rem; color:var(--ink-soft); max-width:60ch; margin:0}
+  .stats{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px}
+  .stat{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:10px 15px; display:flex; align-items:baseline; gap:9px; box-shadow:var(--shadow);
+  }
+  .stat b{font-family:"Bricolage Grotesque",sans-serif; font-size:1.35rem; font-weight:800; line-height:1}
+  .stat span{font-size:.82rem; color:var(--ink-soft)}
+
+  /* ---------- Rejilla de vías ---------- */
+  .board{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:20px;
+    align-items:start;
+  }
+  @media(max-width:1080px){ .board{grid-template-columns:repeat(2,1fr)} }
+  @media(max-width:620px){ .board{grid-template-columns:1fr} }
+
+  .track{ --c:var(--accent); --cbg:var(--panel); }
+  .track.proc{--c:var(--c-proc); --cbg:var(--c-proc-bg)}
+  .track.inno{--c:var(--c-inno); --cbg:var(--c-inno-bg)}
+  .track.prog{--c:var(--c-prog); --cbg:var(--c-prog-bg)}
+  .track.topi{--c:var(--c-topi); --cbg:var(--c-topi-bg)}
+
+  .track-head{
+    position:sticky; top:0; z-index:2; background:var(--bg);
+    padding:6px 0 12px;
+  }
+  .track-head .code{
+    font-family:"IBM Plex Mono",monospace; font-size:.7rem; font-weight:600;
+    letter-spacing:.1em; color:var(--c); text-transform:uppercase;
+  }
+  .track-head .name{
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:700; font-size:1.12rem;
+    line-height:1.12; margin:3px 0 0; letter-spacing:-.02em; text-wrap:balance;
+  }
+  .track-head .bar{height:4px; border-radius:99px; background:var(--c); margin-top:10px; opacity:.9}
+  .track-head .count{
+    font-family:"IBM Plex Mono",monospace; font-size:.68rem; color:var(--ink-faint);
+    margin-top:7px;
+  }
+
+  /* ---------- Flujo de nodos ---------- */
+  .flow{position:relative; margin-top:6px; padding-left:26px}
+  .flow::before{
+    content:""; position:absolute; left:9px; top:8px; bottom:22px; width:2px;
+    background:linear-gradient(var(--c),color-mix(in srgb,var(--c) 25%,transparent));
+    border-radius:2px;
+  }
+  .node{position:relative; margin-bottom:12px}
+  .node::before{
+    content:""; position:absolute; left:-21px; top:14px; width:12px; height:12px;
+    border-radius:50%; background:var(--panel); border:2.5px solid var(--c);
+    box-shadow:0 0 0 3px var(--bg);
+  }
+  .node .card{
+    background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--c);
+    border-radius:11px; padding:12px 14px; box-shadow:var(--shadow);
+    transition:transform .14s ease, box-shadow .14s ease;
+  }
+  .node .card:hover{transform:translateY(-2px); box-shadow:0 6px 18px rgba(18,23,42,.12)}
+  .wk{
+    display:inline-flex; align-items:center; font-family:"IBM Plex Mono",monospace;
+    font-size:.66rem; font-weight:600; letter-spacing:.05em; color:var(--c);
+    background:var(--cbg); padding:2px 7px; border-radius:6px; margin-bottom:7px;
+  }
+  .node h3{
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:700; font-size:.94rem;
+    line-height:1.2; margin:0 0 7px; letter-spacing:-.01em; color:var(--ink);
+  }
+  .node ul{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:4px}
+  .node li{
+    position:relative; padding-left:13px; font-size:.815rem; color:var(--ink-soft); line-height:1.42;
+  }
+  .node li::before{
+    content:""; position:absolute; left:0; top:8px; width:5px; height:5px;
+    border-radius:50%; background:var(--c); opacity:.7;
+  }
+  .finish{
+    margin-left:5px; margin-top:2px; font-family:"IBM Plex Mono",monospace;
+    font-size:.66rem; color:var(--ink-faint); display:flex; align-items:center; gap:7px;
+  }
+  .finish::before{content:"▾"; color:var(--c)}
+
+  footer{
+    margin-top:44px; padding-top:20px; border-top:1px solid var(--line);
+    font-size:.8rem; color:var(--ink-faint); display:flex; flex-wrap:wrap;
+    gap:6px 18px; align-items:center;
+  }
+  footer .legend{display:flex; flex-wrap:wrap; gap:14px}
+  footer .lg{display:flex; align-items:center; gap:6px}
+  footer .dot{width:9px; height:9px; border-radius:50%}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">Portal de Estudio · Ingeniería Industrial</div>
+    <h1>Mapa del trimestre</h1>
+    <p class="lede">Todo lo que se ha visto, ramo por ramo y semana por semana, con la idea principal de cada materia. Cada vía fluye de arriba hacia abajo siguiendo el avance del curso.</p>
+    <div class="stats">
+      <div class="stat"><b>4</b><span>ramos</span></div>
+      <div class="stat"><b>38</b><span>materias</span></div>
+      <div class="stat"><b>13</b><span>semanas</span></div>
+      <div class="stat"><b>1</b><span>trimestre</span></div>
+    </div>
+  </header>
+
+  <main class="board" id="board"></main>
+
+  <footer>
+    <div class="legend">
+      <span class="lg"><span class="dot" style="background:var(--c-proc)"></span>Análisis de Procesos</span>
+      <span class="lg"><span class="dot" style="background:var(--c-inno)"></span>Innovación</span>
+      <span class="lg"><span class="dot" style="background:var(--c-prog)"></span>Programación</span>
+      <span class="lg"><span class="dot" style="background:var(--c-topi)"></span>Tópicos de Ingeniería</span>
+    </div>
+    <span style="margin-left:auto">Resumen general para repaso · las ideas principales condensan el contenido de cada semana.</span>
+  </footer>
+</div>
+
+<script>
+const RAMOS = [
+  {
+    cls:"proc", code:"AIIN001", name:"Análisis Descriptivo de Procesos",
+    weeks:[
+      {w:"Semana 0", t:"Presentación y estilo APA/Vancouver", i:["Escala 1.0–7.0, aprobación con 4.0","Evaluaciones sumativas ponderadas por semana","Citación en formato APA / Vancouver"]},
+      {w:"Semana 1", t:"Gestión de procesos y la empresa", i:["Organización como sistema: misión, visión, objetivos","Planificación estratégica e indicadores KPI","Estructuras y áreas funcionales"]},
+      {w:"Semana 2", t:"Ciclo de vida y diseño de procesos", i:["Proceso = entradas, salidas, secuencia y control","Jerarquía: Macroproceso → Proceso → Tarea","Mapa de procesos de la organización"]},
+      {w:"Semana 3", t:"Gestión BPM, análisis y diagnóstico", i:["BPM integra estrategia, personas, tecnología y procesos","Eficiencia, eficacia, agilidad y control","Levantamiento → documentación → validación"]},
+      {w:"Semana 4", t:"Modelamiento y fuentes estadísticas", i:["Notación estándar BPMN 2.x","Eventos, actividades y compuertas","Pasos para diagramar un proceso"]},
+      {w:"Semana 5", t:"Modelamiento y simulación", i:["Modelación Visual Participativa (MVP)","Flujograma de información (FI)","Simulación de procesos"]},
+      {w:"Semana 6", t:"Descubrimiento y análisis de procesos", i:["Matriz de Descubrimiento","SIPOC: Suppliers–Inputs–Process–Outputs–Customers","Matriz RECI de responsabilidades"]},
+      {w:"Semana 8", t:"Digitalización en PYMES", i:["La pandemia aceleró la digitalización","Nube, teletrabajo y automatización","Optimización de procesos operacionales"]},
+      {w:"Semana 9", t:"R-Project, Python y visualización", i:["Lenguajes para analítica de datos","Pandas, NumPy, Matplotlib/Seaborn, Scikit-learn","Conexión a datos y gráficas"]},
+      {w:"Semana 10", t:"Análisis descriptivo e indicadores", i:["Recolectar, ordenar y visualizar datos","Construcción de indicadores paso a paso","Tendencias y patrones"]},
+      {w:"Semana 12", t:"Visualización y modelado BPMN/SIPOC", i:["Tendencia central, dispersión y distribución","Visualización para detectar patrones","Ejercicios de modelado BPMN / SIPOC"]},
+    ]
+  },
+  {
+    cls:"inno", code:"AACD103", name:"Innovación y Emprendimiento",
+    weeks:[
+      {w:"Semana 1", t:"Competencias Emprendedoras (CEPs)", i:["Estudio USAID sobre rasgos del éxito","3 grupos: realización, planificación y poder","Riesgos calculados y persistencia"]},
+      {w:"Semana 2", t:"Networking, VUCA y BANI", i:["Redes: información, habilidades y poder","Trampas: autosemejanza y proximidad","Entornos VUCA / BANI"]},
+      {w:"Semana 4", t:"Tipos de innovación y oportunidades", i:["Manual de Oslo: incremental vs. disruptiva","4 tipos Oslo · 10 tipos Doblin","Detección de oportunidades"]},
+      {w:"Semana 5", t:"Investigación del usuario · Caso Kodak", i:["Metodología UX: empatizar → testear (iterativa)","La emoción domina sobre la razón","Dimensiones de la empatía"]},
+      {w:"Semana 6", t:"Creatividad e innovación inversa", i:["Pensamiento lateral (Edward de Bono)","4 lentes de la innovación (Gibb)","Creatividad como adaptación"]},
+      {w:"Semana 7", t:"Evaluación de ideas", i:["Divergente → convergente","Regla del 10%: generar muchas más ideas","Organizar, criterios y seleccionar"]},
+      {w:"Semana 8", t:"Prototipado y validación", i:["Prototipo = aprender, no demostrar","IDEO: explorar, entender, comunicar","Validar supuestos del modelo de negocio"]},
+      {w:"Semana 9", t:"Entrevistas en emprendimiento", i:["Herramienta cualitativa estructurada","Problemas explícitos vs. latentes","Validar hipótesis de valor y crecimiento"]},
+      {w:"Semana 10", t:"Lienzo de Propuesta de Valor", i:["Modelo de Osterwalder","Cliente: trabajos, dolores y ganancias","Mapa de valor de la solución"]},
+      {w:"Semana 11", t:"Comunicación de Valor y Pitch", i:["85% del éxito = habilidades sociales","Elevator pitch: idea en poco tiempo","Método NABC"]},
+    ]
+  },
+  {
+    cls:"prog", code:"Intro", name:"Introducción a la Programación",
+    weeks:[
+      {w:"Semana 0", t:"Integridad Académica y Vancouver", i:["Honestidad y ética académica (ICAI)","Estilo Vancouver: citación numérica-secuencial"]},
+      {w:"Semana 1", t:"Fundamentos de algoritmia", i:["Algoritmo: preciso, definido y finito","Pseudocódigo como paso intermedio","Arquitectura y tipos de lenguajes"]},
+      {w:"Semana 3", t:"Algoritmos con condicionales", i:["Pseudocódigo y diagramas de flujo","Toma de decisiones: múltiples caminos","Diseño según la entrada del usuario"]},
+      {w:"Semana 5", t:"Bifurcación en Python", i:["Sentencias de control del flujo","if / elif / else","Indentación obligatoria (4 espacios)"]},
+      {w:"Semana 6", t:"Repetición en Python", i:["Ciclo while (mientras la condición sea verdadera)","Ciclo for con range()","Concepto de iteración"]},
+      {w:"Semana 8", t:"Listas, strings y funciones", i:["Listas: ordenadas, heterogéneas y mutables","Operaciones e índices","Manejo de strings"]},
+      {w:"Semana 10", t:"Modularidad y programación modular", i:["Función con def nombre(parámetros)","Modularizar el programa en partes","Reutilización de código"]},
+    ]
+  },
+  {
+    cls:"topi", code:"ATDF101", name:"Tópicos de Ingeniería",
+    weeks:[
+      {w:"Semana 0", t:"Estilo APA: citas y referencias", i:["APA 7.ª edición","Cita directa vs. indirecta","Formato narrativo y parentético"]},
+      {w:"Semana 1", t:"Aspectos introductorios a la ingeniería", i:["El ingeniero transforma la naturaleza","Creatividad, análisis, ética y práctica","Mejor solución bajo restricciones"]},
+      {w:"Semana 4", t:"Tipos de personalidad · MBTI", i:["4 dimensiones: E/I, S/N, T/F, J/P","16 tipos de personalidad","Fuente de energía, percepción y decisión"]},
+      {w:"Semana 6", t:"Mapa de Empatía y CJM", i:["6 dimensiones del usuario","Customer Journey Map por etapas y canales","Comprender la experiencia del cliente"]},
+      {w:"Semana 7", t:"Método Scoring · factores ponderados", i:["Método cuantitativo multicriterio","7 pasos: meta → alternativas → score","Elegir la mejor alternativa ponderada"]},
+      {w:"Semana 8", t:"Ideación y revisión de propuestas", i:["4 pasos de la ideación","Brainstorming y benchmarking","Selección por pensamiento convergente"]},
+      {w:"Semana 9", t:"Guía para desarrollar el prototipo", i:["Investigar → conceptualizar → compartir → desechar","Retroalimentación temprana y de bajo costo","Tipos de prototipo"]},
+      {w:"Semana 10", t:"Lienzo MVP", i:["Versión básica que valida hipótesis","Canvas MVP de 6 elementos","'No pierdas tiempo ni dinero'"]},
+      {w:"Semana 11", t:"Proyecto Final · Informe escrito", i:["Integra el Design Thinking completo","Estructura del informe (portada → conclusión)","Vinculación con un ODS"]},
+      {w:"Semana 13", t:"Examen · Presentación oral", i:["Sumativa 7 · pondera 30%","Estructura de la presentación","Design Thinking + Lienzo MVP"]},
+    ]
+  },
+];
+
+const board = document.getElementById("board");
+RAMOS.forEach(r=>{
+  const track = document.createElement("section");
+  track.className = "track "+r.cls;
+  let nodes = r.weeks.map(w=>`
+    <div class="node">
+      <div class="card">
+        <span class="wk">${w.w}</span>
+        <h3>${w.t}</h3>
+        <ul>${w.i.map(x=>`<li>${x}</li>`).join("")}</ul>
+      </div>
+    </div>`).join("");
+  track.innerHTML = `
+    <div class="track-head">
+      <div class="code">${r.code}</div>
+      <p class="name">${r.name}</p>
+      <div class="bar"></div>
+      <div class="count">${r.weeks.length} materias</div>
+    </div>
+    <div class="flow">
+      ${nodes}
+      <div class="finish">cierre del ramo</div>
+    </div>`;
+  board.appendChild(track);
+});
+</script>
