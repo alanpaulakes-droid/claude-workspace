@@ -171,6 +171,129 @@ export const analisisDescriptivoProcesos = {
         },
       ],
     },
+
+    // ===================== SESIÓN 2 =====================
+    {
+      id: 's02-ciclo-vida',
+      titulo: 'Ciclo de vida de los procesos',
+      resumen: 'Qué es un proceso de negocio, sus categorías y jerarquía, el mapa de procesos y su ciclo de vida.',
+      contenido: [
+        { tipo: 'p', texto: 'Esta sesión conecta las directrices estratégicas con lo operacional: qué es un proceso de negocio, cómo se clasifican, cómo se ordenan jerárquicamente, cómo se representan en un mapa de procesos y qué etapas componen su ciclo de vida.' },
+
+        { tipo: 'h', texto: '¿Qué es un proceso de negocio?' },
+        { tipo: 'p', texto: 'Es un conjunto de actividades interrelacionadas y realizadas en una secuencia específica para producir un producto o servicio de características definidas. Utiliza insumos que agregan valor para satisfacer al usuario, y suele involucrar distintas áreas y perfiles trabajando de forma colaborativa. Ejemplos: solicitar un crédito, comprar en una web o preparar un almuerzo.' },
+        { tipo: 'p', texto: 'Todo proceso se describe con cuatro elementos: entradas, salidas, secuencia de actividades y sistema de control.' },
+        { tipo: 'img', src: 'img/adp/s02/fig01-elementos.png', alt: 'Elementos de un proceso: entradas, salidas, secuencia y control', pie: 'Figura 1. Elementos de un proceso: entradas, salidas, secuencia de actividades y sistema de control.' },
+
+        { tipo: 'h', texto: 'Categorías de los procesos de negocio' },
+        { tipo: 'ul', items: [
+          'Estratégicos: miden, monitorean y coordinan; buscan eficiencia y eficacia; no entregan valor directo al usuario (ej. planificación estratégica).',
+          'Operativos: ligados al giro y a la cadena de valor; generan y entregan el valor al usuario (ej. atención comercial, elaboración del producto).',
+          'De apoyo: dan soporte a los operativos y son necesarios para el servicio, pero no generan valor directo (ej. mesa de ayuda, contabilidad, mantención).',
+          'De seguimiento y evaluación: continuos y periódicos; evalúan el cumplimiento de la operación (ej. monitoreo de niveles de servicio, indicadores).',
+        ] },
+
+        { tipo: 'h', texto: 'Jerarquía de procesos' },
+        { tipo: 'p', texto: 'Los procesos se ordenan en niveles, de lo más general a lo más concreto: macroprocesos → procesos → subprocesos → actividades → tareas.' },
+        { tipo: 'img', src: 'img/adp/s02/fig02-jerarquia.png', alt: 'Pirámide de niveles de la jerarquía de procesos', pie: 'Figura 2. Niveles de la jerarquía de procesos.' },
+        { tipo: 'img', src: 'img/adp/s02/fig03-jerarquia-compras.png', alt: 'Ejemplo de jerarquía en un proceso de compras', pie: 'Figura 3. Ejemplo de jerarquía aplicado a la gestión de compras.' },
+
+        { tipo: 'h', texto: 'Mapa de procesos' },
+        { tipo: 'p', texto: 'Es la representación gráfica de la organización clasificada según su misión y visión; describe cómo funciona la empresa, desde la necesidad del cliente hasta su satisfacción, agrupando los procesos estratégicos, operativos, de apoyo y de evaluación.' },
+        { tipo: 'img', src: 'img/adp/s02/fig04-mapa-procesos.png', alt: 'Estructura general de un mapa de procesos', pie: 'Figura 4. Estructura general de un mapa de procesos.' },
+        { tipo: 'p', texto: 'Ventajas: potencia a toda la organización (identifica brechas), aumenta la visibilidad y el control, favorece el cumplimiento y alineamiento con la estrategia, y mejora la comunicación entre áreas.' },
+
+        { tipo: 'h', texto: 'Ciclo de vida de los procesos' },
+        { tipo: 'p', texto: 'La gestión de procesos cumple un ciclo continuo de cinco etapas:' },
+        { tipo: 'ul', items: [
+          'Modelar: generar los modelos en notación BPMN y el mapa de procesos.',
+          'Simular: analizar brechas, cuellos de botella, uso de recursos y costos para validar el diseño.',
+          'Implementar: llevar el proceso a la práctica con tecnologías, reglas de negocio y servicios web.',
+          'Monitorear: seguir el comportamiento con KPIs sobre datos reales.',
+          'Optimizar: reducir o eliminar falencias y materializar la mejora continua.',
+        ] },
+        { tipo: 'img', src: 'img/adp/s02/fig05-ciclo-vida.png', alt: 'Ciclo de vida de los procesos', pie: 'Figura 5. Ciclo de vida de los procesos: modelar, simular, implementar, monitorear y optimizar.' },
+
+        { tipo: 'h', texto: 'Diseño e introducción a la mejora de procesos' },
+        { tipo: 'p', texto: 'La mejora se apoya en el ciclo PDCA (Planificar, Hacer, Verificar, Actuar) y en un conjunto de herramientas: tormenta de ideas (brainstorming), diagrama de Pareto (80/20), diagrama de causa-efecto (Ishikawa), los 5 porqués y los modelos de referencia (buenas prácticas para comparar y estandarizar).' },
+        { tipo: 'nota', texto: 'Los 5 porqués: preguntar "¿por qué?" sucesivamente (unas cinco veces) para explorar las relaciones causa-efecto y llegar a la causa raíz de un problema.' },
+        { tipo: 'img', src: 'img/adp/s02/fig06-infografia-mejora.png', alt: 'Infografía: diseño e introducción a la mejora de procesos', pie: 'Figura 6. Infografía: el ciclo PDCA y las herramientas para la mejora de procesos.' },
+      ],
+      quiz: [
+        {
+          id: 'q1',
+          pregunta: '¿Cuáles son los cuatro elementos que describen un proceso?',
+          opciones: [
+            'Misión, visión, valores y objetivos',
+            'Entradas, salidas, secuencia de actividades y sistema de control',
+            'Planear, hacer, verificar y actuar',
+            'Personas, máquinas, métodos y materiales',
+          ],
+          correcta: 1,
+          explicacion: 'Un proceso se describe por sus entradas, salidas, secuencia de actividades y sistema de control.',
+        },
+        {
+          id: 'q2',
+          pregunta: '¿Qué caracteriza a los procesos operativos?',
+          opciones: [
+            'No entregan valor directo al usuario',
+            'Están ligados al giro y a la cadena de valor, generando el valor al usuario',
+            'Solo dan soporte a otros procesos',
+            'Se limitan a monitorear indicadores',
+          ],
+          correcta: 1,
+          explicacion: 'Los procesos operativos se relacionan con la cadena de valor y entregan el producto o servicio al usuario.',
+        },
+        {
+          id: 'q3',
+          pregunta: 'Ordena la jerarquía de procesos de mayor a menor nivel:',
+          opciones: [
+            'Tareas → actividades → subprocesos → procesos → macroprocesos',
+            'Macroprocesos → procesos → subprocesos → actividades → tareas',
+            'Procesos → macroprocesos → tareas → actividades → subprocesos',
+            'Actividades → tareas → procesos → subprocesos → macroprocesos',
+          ],
+          correcta: 1,
+          explicacion: 'De lo más general a lo más concreto: macroprocesos, procesos, subprocesos, actividades y tareas.',
+        },
+        {
+          id: 'q4',
+          pregunta: '¿Qué es un mapa de procesos?',
+          opciones: [
+            'Un organigrama de cargos',
+            'La representación gráfica de la organización según su misión y visión, mostrando sus procesos',
+            'Un cronograma de tareas',
+            'Un estado financiero',
+          ],
+          correcta: 1,
+          explicacion: 'El mapa de procesos representa gráficamente cómo funciona la empresa, agrupando sus procesos desde la necesidad hasta la satisfacción del cliente.',
+        },
+        {
+          id: 'q5',
+          pregunta: '¿Cuál es el orden correcto del ciclo de vida de los procesos?',
+          opciones: [
+            'Implementar → modelar → optimizar → simular → monitorear',
+            'Modelar → simular → implementar → monitorear → optimizar',
+            'Simular → modelar → monitorear → implementar → optimizar',
+            'Monitorear → optimizar → modelar → simular → implementar',
+          ],
+          correcta: 1,
+          explicacion: 'El ciclo es: modelar, simular, implementar, monitorear y optimizar.',
+        },
+        {
+          id: 'q6',
+          pregunta: 'La técnica de "los 5 porqués" sirve para…',
+          opciones: [
+            'Priorizar causas con la regla 80/20',
+            'Llegar a la causa raíz preguntando "¿por qué?" sucesivamente',
+            'Representar el proceso con carriles',
+            'Medir la satisfacción del cliente',
+          ],
+          correcta: 1,
+          explicacion: 'Los 5 porqués exploran la relación causa-efecto preguntando "¿por qué?" varias veces hasta la causa raíz.',
+        },
+      ],
+    },
   ],
   flashcards: [
     { id: 'f1', frente: 'Misión', reverso: 'Declaración que define el propósito o razón de ser de una organización.', tema: 's01-introduccion' },
@@ -183,5 +306,13 @@ export const analisisDescriptivoProcesos = {
     { id: 'f8', frente: 'Diagrama de Ishikawa', reverso: 'Herramienta causa-efecto para identificar las causas potenciales de un problema.', tema: 's01-introduccion' },
     { id: 'f9', frente: 'BPMN', reverso: 'Estándar de notación de procesos, entendible por todos, con eventos, actividades, decisiones, flujos y carriles.', tema: 's01-introduccion' },
     { id: 'f10', frente: 'Sistema productivo', reverso: 'Conjunto que transforma insumos (entradas) en bienes o servicios (salidas) con valor agregado.', tema: 's01-introduccion' },
+    { id: 's2f1', frente: 'Proceso de negocio', reverso: 'Conjunto de actividades interrelacionadas en secuencia que producen un producto o servicio con valor.', tema: 's02-ciclo-vida' },
+    { id: 's2f2', frente: 'Elementos de un proceso', reverso: 'Entradas, salidas, secuencia de actividades y sistema de control.', tema: 's02-ciclo-vida' },
+    { id: 's2f3', frente: 'Procesos estratégicos vs. operativos', reverso: 'Los estratégicos coordinan y no dan valor directo; los operativos generan y entregan el valor al usuario.', tema: 's02-ciclo-vida' },
+    { id: 's2f4', frente: 'Jerarquía de procesos', reverso: 'Macroprocesos → procesos → subprocesos → actividades → tareas.', tema: 's02-ciclo-vida' },
+    { id: 's2f5', frente: 'Mapa de procesos', reverso: 'Representación gráfica de la organización según misión y visión, mostrando sus procesos.', tema: 's02-ciclo-vida' },
+    { id: 's2f6', frente: 'Ciclo de vida de los procesos', reverso: 'Modelar, simular, implementar, monitorear y optimizar.', tema: 's02-ciclo-vida' },
+    { id: 's2f7', frente: 'Los 5 porqués', reverso: 'Preguntar "¿por qué?" sucesivamente para llegar a la causa raíz de un problema.', tema: 's02-ciclo-vida' },
+    { id: 's2f8', frente: 'Modelos de referencia', reverso: 'Marco de buenas prácticas para comparar y mejorar procesos hacia un estándar.', tema: 's02-ciclo-vida' },
   ],
 }
