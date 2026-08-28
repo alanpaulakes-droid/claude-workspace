@@ -1,6 +1,7 @@
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { getCourse, getTopic } from '../data/courses.js'
 import { useProgress } from '../context/ProgressContext.jsx'
+import Icon from '../components/Icon.jsx'
 
 function ContentBlock({ block }) {
   switch (block.tipo) {
@@ -21,7 +22,12 @@ function ContentBlock({ block }) {
         </ol>
       )
     case 'nota':
-      return <div className="lesson-note">💡 {block.texto}</div>
+      return (
+        <div className="lesson-note">
+          <Icon name="Lightbulb" size={18} className="lesson-note-icon" />
+          <span>{block.texto}</span>
+        </div>
+      )
     case 'code':
       return <pre className="lesson-code"><code>{block.texto}</code></pre>
     default:
@@ -66,12 +72,14 @@ export default function LessonPage() {
           className={`btn ${complete ? 'btn-ghost' : 'btn-accent'}`}
           onClick={() => toggleTopicComplete(courseId, topicId)}
         >
-          {complete ? '✓ Completado — desmarcar' : 'Marcar como completado'}
+          <Icon name="Check" size={17} strokeWidth={2.6} />
+          {complete ? 'Completado — desmarcar' : 'Marcar como completado'}
         </button>
 
         {hasQuiz && (
           <Link to={`/curso/${courseId}/tema/${topicId}/quiz`} className="btn btn-primary">
-            {score ? `Repetir quiz (${score.correct}/${score.total})` : 'Hacer el quiz →'}
+            {score ? `Repetir quiz (${score.correct}/${score.total})` : 'Hacer el quiz'}
+            <Icon name="ArrowRight" size={17} />
           </Link>
         )}
       </div>
@@ -79,11 +87,11 @@ export default function LessonPage() {
       <div className="lesson-nav">
         {next ? (
           <Link to={`/curso/${courseId}/tema/${next.id}`} className="btn btn-ghost">
-            Siguiente tema: {next.titulo} →
+            Siguiente tema: {next.titulo} <Icon name="ArrowRight" size={16} />
           </Link>
         ) : (
           <Link to={`/curso/${courseId}`} className="btn btn-ghost">
-            ← Volver al temario
+            <Icon name="ArrowLeft" size={16} /> Volver al temario
           </Link>
         )}
       </div>

@@ -3,6 +3,7 @@ import { useParams, Link, Navigate } from 'react-router-dom'
 import { getCourse } from '../data/courses.js'
 import { useProgress } from '../context/ProgressContext.jsx'
 import { sortByDue, isDue } from '../lib/srs.js'
+import Icon from '../components/Icon.jsx'
 
 export default function FlashcardsPage() {
   const { courseId } = useParams()
@@ -59,11 +60,13 @@ export default function FlashcardsPage() {
 
       {done ? (
         <div className="fc-done">
-          <div className="fc-done-emoji" aria-hidden="true">🎉</div>
+          <div className="fc-done-icon" aria-hidden="true"><Icon name="Trophy" size={34} /></div>
           <h2>Sesión completada</h2>
-          <p>{reviewed.correct} acertadas · {reviewed.wrong} para reforzar.</p>
+          <p className="lead">{reviewed.correct} acertadas · {reviewed.wrong} para reforzar.</p>
           <div className="fc-done-actions">
-            <Link to={`/curso/${courseId}`} className="btn btn-accent">← Volver al temario</Link>
+            <Link to={`/curso/${courseId}`} className="btn btn-accent">
+              <Icon name="ArrowLeft" size={16} /> Volver al temario
+            </Link>
           </div>
         </div>
       ) : (
@@ -96,10 +99,10 @@ export default function FlashcardsPage() {
               <p className="fc-grade-q">¿Cómo te fue?</p>
               <div className="fc-grade-btns">
                 <button type="button" className="btn btn-wrong" onClick={() => answer(false)}>
-                  ✗ Falta repasar
+                  <Icon name="X" size={17} strokeWidth={2.6} /> Falta repasar
                 </button>
                 <button type="button" className="btn btn-right" onClick={() => answer(true)}>
-                  ✓ Lo sabía
+                  <Icon name="Check" size={17} strokeWidth={2.6} /> Lo sabía
                 </button>
               </div>
             </div>

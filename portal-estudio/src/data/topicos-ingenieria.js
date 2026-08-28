@@ -6,6 +6,7 @@ export const topicosIngenieria = {
   "titulo": "Tópicos de Ingeniería",
   "descripcion": "ATDF101 · Ingeniería Industrial. Design Thinking, proyecto ingenieril y ODS.",
   "color": "#e65c00",
+  "icon": "Compass",
   "emoji": "🛠️",
   "temas": [
     {

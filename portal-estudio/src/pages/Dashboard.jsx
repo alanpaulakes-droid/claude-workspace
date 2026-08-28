@@ -1,6 +1,7 @@
 import { courses } from '../data/courses.js'
 import { useProgress } from '../context/ProgressContext.jsx'
 import CourseCard from '../components/CourseCard.jsx'
+import Icon from '../components/Icon.jsx'
 
 export default function Dashboard() {
   const { courseProgress } = useProgress()
@@ -16,27 +17,33 @@ export default function Dashboard() {
   )
   const globalPercent = totals.total ? Math.round((totals.done / totals.total) * 100) : 0
 
+  const stats = [
+    { icon: 'Layers', num: courses.length, label: 'Materias' },
+    { icon: 'Check', num: `${totals.done}/${totals.total}`, label: 'Temas completados' },
+    { icon: 'Target', num: `${globalPercent}%`, label: 'Progreso global' },
+  ]
+
   return (
     <div className="page">
       <section className="hero">
+        <span className="hero-eyebrow">
+          <Icon name="Sparkles" size={14} /> Tu portal de estudio
+        </span>
         <h1>Aprende, practica y repasa</h1>
         <p className="lead">
-          Un portal con temario estructurado, apuntes, quizzes y flashcards de repaso
-          espaciado. Elige una materia para empezar.
+          Temario estructurado, apuntes, quizzes y flashcards de repaso espaciado.
+          Elige una materia para empezar.
         </p>
         <div className="stats-row">
-          <div className="stat">
-            <span className="stat-num">{courses.length}</span>
-            <span className="stat-label">Materias</span>
-          </div>
-          <div className="stat">
-            <span className="stat-num">{totals.done}/{totals.total}</span>
-            <span className="stat-label">Temas completados</span>
-          </div>
-          <div className="stat">
-            <span className="stat-num">{globalPercent}%</span>
-            <span className="stat-label">Progreso global</span>
-          </div>
+          {stats.map((s) => (
+            <div className="stat" key={s.label}>
+              <span className="stat-icon"><Icon name={s.icon} size={18} /></span>
+              <div>
+                <span className="stat-num">{s.num}</span>
+                <span className="stat-label">{s.label}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

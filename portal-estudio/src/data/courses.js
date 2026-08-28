@@ -33,7 +33,7 @@ export const courses = [
     titulo: 'Cómo estudiar mejor',
     descripcion: 'Técnicas de aprendizaje basadas en evidencia para entender y retener.',
     color: '#6366f1',
-    emoji: '🧠',
+    icon: 'Brain',
     temas: [
       {
         id: 'recuerdo-activo',

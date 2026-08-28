@@ -2,6 +2,7 @@ import { useParams, Link, Navigate } from 'react-router-dom'
 import { getCourse } from '../data/courses.js'
 import { useProgress } from '../context/ProgressContext.jsx'
 import ProgressBar from '../components/ProgressBar.jsx'
+import Icon from '../components/Icon.jsx'
 
 export default function CoursePage() {
   const { courseId } = useParams()
@@ -16,7 +17,9 @@ export default function CoursePage() {
   return (
     <div className="page" style={{ '--accent': course.color }}>
       <div className="course-header">
-        <span className="course-emoji-lg" aria-hidden="true">{course.emoji}</span>
+        <span className="icon-badge icon-badge-lg" aria-hidden="true">
+          <Icon name={course.icon} size={30} strokeWidth={2.1} />
+        </span>
         <div className="course-header-text">
           <h1>{course.titulo}</h1>
           <p className="lead">{course.descripcion}</p>
@@ -24,13 +27,16 @@ export default function CoursePage() {
       </div>
 
       <div className="course-progress-box">
+        <div className="course-meta-row">
+          <span className="course-meta">{done}/{total} temas completados</span>
+          <span className="course-meta course-percent">{percent}%</span>
+        </div>
         <ProgressBar percent={percent} color={course.color} />
-        <span className="course-meta">{done}/{total} temas · {percent}%</span>
       </div>
 
       {hasCards && (
         <Link to={`/curso/${course.id}/flashcards`} className="btn btn-accent flashcards-cta">
-          🎴 Repasar con flashcards ({course.flashcards.length})
+          <Icon name="Layers" size={18} /> Repasar con flashcards ({course.flashcards.length})
         </Link>
       )}
 
@@ -42,17 +48,21 @@ export default function CoursePage() {
           return (
             <li key={tema.id} className={`topic-item ${complete ? 'is-complete' : ''}`}>
               <Link to={`/curso/${course.id}/tema/${tema.id}`} className="topic-link">
-                <span className="topic-index">{complete ? '✓' : i + 1}</span>
+                <span className="topic-index">
+                  {complete ? <Icon name="Check" size={17} strokeWidth={2.6} /> : i + 1}
+                </span>
                 <span className="topic-body">
                   <span className="topic-title">{tema.titulo}</span>
                   <span className="topic-summary">{tema.resumen}</span>
                   {score && (
                     <span className="topic-score">
-                      Quiz: {score.correct}/{score.total}
+                      <Icon name="Trophy" size={13} /> Quiz: {score.correct}/{score.total}
                     </span>
                   )}
                 </span>
-                <span className="topic-go" aria-hidden="true">›</span>
+                <span className="topic-go" aria-hidden="true">
+                  <Icon name="ChevronRight" size={20} />
+                </span>
               </Link>
             </li>
           )
