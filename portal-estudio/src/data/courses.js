@@ -24,7 +24,10 @@
  * Los `id` deben ser únicos y estables (se usan para guardar el progreso).
  */
 
+import { analisisDescriptivoProcesos } from './adp.js'
+
 export const courses = [
+  analisisDescriptivoProcesos,
 
   {
     id: 'metodo-estudio',
