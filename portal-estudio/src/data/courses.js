@@ -23,7 +23,11 @@
  * Los `id` deben ser únicos y estables (se usan para guardar el progreso).
  */
 
+import { topicosIngenieria } from './topicos-ingenieria.js'
+
 export const courses = [
+  topicosIngenieria,
+
   {
     id: 'metodo-estudio',
     titulo: 'Cómo estudiar mejor',
@@ -111,82 +115,6 @@ export const courses = [
     ],
   },
 
-  {
-    id: 'fundamentos-programacion',
-    titulo: 'Fundamentos de programación',
-    descripcion: 'Conceptos base para empezar a programar en cualquier lenguaje.',
-    color: '#10b981',
-    emoji: '💻',
-    temas: [
-      {
-        id: 'variables',
-        titulo: 'Variables y tipos',
-        resumen: 'Guardar datos con un nombre y conocer sus tipos básicos.',
-        contenido: [
-          { tipo: 'p', texto: 'Una variable es un nombre que apunta a un valor guardado en memoria. Te permite reutilizar y modificar datos sin repetirlos.' },
-          { tipo: 'h', texto: 'Tipos básicos' },
-          { tipo: 'ul', items: [
-            'Número: 42, 3.14',
-            'Texto (string): "hola"',
-            'Booleano: verdadero / falso',
-            'Nulo/indefinido: ausencia de valor',
-          ] },
-          { tipo: 'code', texto: 'let edad = 25\nlet nombre = "Ana"\nlet activo = true' },
-          { tipo: 'nota', texto: 'Usa nombres descriptivos: `totalVentas` dice mucho más que `x`.' },
-        ],
-        quiz: [
-          {
-            id: 'q1',
-            pregunta: '¿Qué es una variable?',
-            opciones: [
-              'Un tipo de bucle',
-              'Un nombre que apunta a un valor en memoria',
-              'Un error del programa',
-              'Una función sin nombre',
-            ],
-            correcta: 1,
-            explicacion: 'Una variable asocia un nombre a un valor almacenado, para leerlo o cambiarlo después.',
-          },
-          {
-            id: 'q2',
-            pregunta: '¿Cuál es un valor de tipo booleano?',
-            opciones: ['"hola"', '42', 'true', '3.14'],
-            correcta: 2,
-            explicacion: 'Los booleanos solo pueden ser verdadero (true) o falso (false).',
-          },
-        ],
-      },
-      {
-        id: 'condicionales',
-        titulo: 'Condicionales',
-        resumen: 'Tomar decisiones en el código con if / else.',
-        contenido: [
-          { tipo: 'p', texto: 'Los condicionales permiten que el programa ejecute distintas instrucciones según se cumpla o no una condición.' },
-          { tipo: 'code', texto: 'if (edad >= 18) {\n  mostrar("Mayor de edad")\n} else {\n  mostrar("Menor de edad")\n}' },
-          { tipo: 'p', texto: 'La condición se evalúa a verdadero o falso. Si es verdadera se ejecuta el primer bloque; si no, el bloque else.' },
-        ],
-        quiz: [
-          {
-            id: 'q1',
-            pregunta: 'En un if/else, el bloque else se ejecuta cuando…',
-            opciones: [
-              'La condición es verdadera',
-              'La condición es falsa',
-              'Siempre, pase lo que pase',
-              'Hay un error',
-            ],
-            correcta: 1,
-            explicacion: 'El bloque else corre solo cuando la condición del if resulta falsa.',
-          },
-        ],
-      },
-    ],
-    flashcards: [
-      { id: 'f1', frente: 'Variable', reverso: 'Nombre que apunta a un valor guardado en memoria.', tema: 'variables' },
-      { id: 'f2', frente: 'Booleano', reverso: 'Tipo de dato que solo puede ser verdadero o falso.', tema: 'variables' },
-      { id: 'f3', frente: '¿Para qué sirve un condicional?', reverso: 'Ejecutar instrucciones distintas según se cumpla una condición.', tema: 'condicionales' },
-    ],
-  },
 ]
 
 // Helpers de búsqueda -------------------------------------------------------
