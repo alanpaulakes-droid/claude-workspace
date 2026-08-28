@@ -15,6 +15,7 @@
  *    { tipo: 'ul',   items: [..] }           -> lista con viñetas
  *    { tipo: 'ol',   items: [..] }           -> lista numerada
  *    { tipo: 'nota', texto }                 -> caja destacada / idea clave
+ *    { tipo: 'img',  src, alt, pie? }        -> imagen o diagrama con pie opcional
  *    { tipo: 'code', texto }                 -> bloque monoespaciado
  *
  *  pregunta de quiz:
@@ -23,16 +24,13 @@
  * Los `id` deben ser únicos y estables (se usan para guardar el progreso).
  */
 
-import { topicosIngenieria } from './topicos-ingenieria.js'
-
 export const courses = [
-  topicosIngenieria,
 
   {
     id: 'metodo-estudio',
     titulo: 'Cómo estudiar mejor',
     descripcion: 'Técnicas de aprendizaje basadas en evidencia para entender y retener.',
-    color: '#6366f1',
+    color: '#0f766e',
     icon: 'Brain',
     temas: [
       {

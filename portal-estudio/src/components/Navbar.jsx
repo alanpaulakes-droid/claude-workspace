@@ -7,8 +7,8 @@ function Logo() {
       <svg viewBox="0 0 32 32" width="26" height="26" fill="none">
         <defs>
           <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#7c83ff" />
-            <stop offset="1" stopColor="#4f46e5" />
+            <stop offset="0" stopColor="#2dd4bf" />
+            <stop offset="1" stopColor="#0f766e" />
           </linearGradient>
         </defs>
         <rect x="2" y="2" width="28" height="28" rx="9" fill="url(#lg)" />

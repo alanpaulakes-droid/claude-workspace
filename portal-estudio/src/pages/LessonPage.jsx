@@ -28,6 +28,13 @@ function ContentBlock({ block }) {
           <span>{block.texto}</span>
         </div>
       )
+    case 'img':
+      return (
+        <figure className="lesson-figure">
+          <img src={block.src} alt={block.alt || ''} loading="lazy" />
+          {block.pie && <figcaption className="lesson-figcaption">{block.pie}</figcaption>}
+        </figure>
+      )
     case 'code':
       return <pre className="lesson-code"><code>{block.texto}</code></pre>
     default:
