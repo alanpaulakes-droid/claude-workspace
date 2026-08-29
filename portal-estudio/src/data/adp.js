@@ -543,6 +543,132 @@ export const analisisDescriptivoProcesos = {
         },
       ],
     },
+
+    // ===================== SESIÓN 5 =====================
+    {
+      id: 's05-simulacion',
+      titulo: 'Modelamiento y simulación de procesos',
+      resumen: 'Ciclo de vida del proceso, modelación visual participativa, BPMN a fondo y simulación con Bizagi.',
+      contenido: [
+        { tipo: 'p', texto: 'Esta sesión profundiza en cómo modelar procesos (MVP, flujogramas y BPMN) y cómo simularlos para evaluar escenarios y decidir mejoras.' },
+
+        { tipo: 'h', texto: 'Ciclo de vida de un proceso (Dumas et al., 2018)' },
+        { tipo: 'p', texto: 'Fases: identificación del proceso, descubrimiento (levantamiento del "AS-IS"), análisis (fortalezas, debilidades y oportunidades), rediseño (proceso "TO-BE" mejorado), implementación y monitoreo y control. Es muy similar al ciclo PDCA de Deming.' },
+        { tipo: 'img', src: 'img/adp/s05/fig01-ciclo-vida-dumas.png', alt: 'Ciclo de vida de un proceso según Dumas et al.', pie: 'Figura 1. Ciclo de vida de un proceso: del modelo "as is" al "to be" (Dumas et al., 2018).' },
+
+        { tipo: 'h', texto: 'Modelación visual participativa (MVP)' },
+        { tipo: 'p', texto: 'La MVP es una forma de comunicación mediante modelos simples, visuales e intuitivos, lograda con la participación de todos los involucrados en el proceso. Promueve la toma de conciencia de "cómo hacemos lo que hacemos" para efectuar mejoras. Se usa para elaborar procedimientos, apoyar la inducción/entrenamiento, reforzar el monitoreo y analizar costos, riesgos, auditorías y cargas de trabajo.' },
+        { tipo: 'img', src: 'img/adp/s05/fig02-mvp.png', alt: 'Ejemplo de modelación visual participativa', pie: 'Figura 2. Modelación visual participativa: del mapa de procesos al flujograma y la lista de tareas (Bravo, 2015).' },
+
+        { tipo: 'h', texto: 'Flujograma de información (FI)' },
+        { tipo: 'p', texto: 'El FI representa visualmente las actividades e interacciones de un proceso simple (o una etapa de uno complejo). Su objetivo es apreciar la transversalidad del flujo, donde nada está aislado, y que se entienda "a la primera" mediante una secuencia temporal de actividades. No muestra el detalle de cada actividad (para eso está la lista de tareas).' },
+        { tipo: 'img', src: 'img/adp/s05/fig03-flujograma.png', alt: 'Simbología del flujograma de información', pie: 'Figura 3. Simbología usada en los flujogramas de información (Bravo, 2015).' },
+
+        { tipo: 'h', texto: 'Notación BPMN en detalle' },
+        { tipo: 'p', texto: 'BPMN es el estándar internacional más difundido para definir, modelar y compartir procesos de negocio. Todo proceso vive dentro de un pool (contenedor) y puede tener lanes (actores/roles). Sus elementos:' },
+        { tipo: 'ul', items: [
+          'Actividades: el trabajo realizado; pueden ser simples (indivisibles) o compuestas (subdivisibles).',
+          'Eventos: de inicio, intermedios o de fin; todo proceso tiene al menos apertura y cierre.',
+          'Compuertas: controlan divergencia (una entrada, varias salidas) y convergencia (varias entradas, una salida).',
+          'Conectores: indican secuencia, asociación o intercomunicación.',
+          'Artefactos: información adicional (anotaciones, objetos de datos, agrupaciones).',
+        ] },
+        { tipo: 'img', src: 'img/adp/s05/fig04-actividades-bpmn.png', alt: 'Tipos de actividades en BPMN', pie: 'Figura 4. Tipos de actividades en BPMN: abstracta, manual, de usuario, automática, regla de negocio, recepción y envío.' },
+        { tipo: 'img', src: 'img/adp/s05/fig05-bpmn-ejemplo.png', alt: 'Ejemplo de diagrama de proceso en BPMN', pie: 'Figura 5. Ejemplo de diagrama de proceso modelado con BPMN.' },
+
+        { tipo: 'h', texto: 'Simulación de procesos' },
+        { tipo: 'p', texto: 'La simulación es una técnica numérica que usa herramientas estadísticas y sistémicas para generar un modelo que represente la realidad y permita evaluar escenarios en la toma de decisiones. Sirve para analizar comportamientos que no son visibles a primera vista y optimizar el rendimiento actual; el modelo debe validarse contra la situación real.' },
+        { tipo: 'p', texto: 'Etapas de la simulación:' },
+        { tipo: 'ol', items: [
+          'Formulación del problema (objetivos claros).',
+          'Diseño del modelo conceptual (p. ej. con BPMN).',
+          'Recolección de datos (cantidad y calidad).',
+          'Construcción del modelo (con software, p. ej. Bizagi).',
+          'Verificación y validación (que siga el modelo conceptual y represente el mundo real).',
+          'Análisis (experimentar y hacer análisis de sensibilidad).',
+          'Interpretación de resultados y documentación.',
+        ] },
+
+        { tipo: 'h', texto: 'Simulación con Bizagi (BPSim)' },
+        { tipo: 'p', texto: 'Bizagi se basa en el estándar BPSim (business process simulation), que ejecuta simulaciones a partir de modelos BPMN. Se trabaja por niveles incrementales sobre un modelo validado:' },
+        { tipo: 'ul', items: [
+          'Validación del proceso: revisar compuertas, mensajes y lógicas de decisión, y que cada instancia termine.',
+          'Análisis de tiempo: intervalos de llegada, número de llegadas y tiempo de procesamiento por actividad.',
+          'Análisis de recursos: personas, equipos o espacio, con disponibilidad y costo.',
+          'Análisis de calendarios: disponibilidad de cada recurso en el tiempo.',
+        ] },
+        { tipo: 'nota', texto: 'Bizagi permite análisis de sensibilidad con escenarios "what if" para decidir cambios sobre una variable específica antes de aplicarlos en la realidad.' },
+      ],
+      quiz: [
+        {
+          id: 'q1',
+          pregunta: 'En el ciclo de vida de un proceso, el modelo "AS-IS" corresponde a…',
+          opciones: [
+            'El proceso mejorado que se desea implementar',
+            'El proceso tal como funciona actualmente',
+            'El presupuesto del proyecto',
+            'El organigrama de la empresa',
+          ],
+          correcta: 1,
+          explicacion: 'El "AS-IS" es el proceso tal como es hoy; el "TO-BE" es el proceso rediseñado o mejorado.',
+        },
+        {
+          id: 'q2',
+          pregunta: '¿Qué es la modelación visual participativa (MVP)?',
+          opciones: [
+            'Un software de contabilidad',
+            'Comunicación mediante modelos simples y visuales con participación de los involucrados',
+            'Una base de datos',
+            'Un tipo de compuerta BPMN',
+          ],
+          correcta: 1,
+          explicacion: 'La MVP usa modelos simples e intuitivos construidos con la participación de todos los involucrados.',
+        },
+        {
+          id: 'q3',
+          pregunta: 'El propósito principal de un flujograma de información es que…',
+          opciones: [
+            'Muestre el detalle de cada tarea',
+            'Se entienda "a la primera" la transversalidad del flujo',
+            'Calcule costos financieros',
+            'Reemplace al mapa de procesos',
+          ],
+          correcta: 1,
+          explicacion: 'El FI busca comprensión inmediata del flujo; el detalle de cada actividad va en la lista de tareas.',
+        },
+        {
+          id: 'q4',
+          pregunta: '¿Qué es la simulación de procesos?',
+          opciones: [
+            'Ejecutar el proceso real sin cambios',
+            'Una técnica numérica que modela la realidad para evaluar escenarios y decidir',
+            'Un tipo de gráfico',
+            'Una fuente de información terciaria',
+          ],
+          correcta: 1,
+          explicacion: 'La simulación genera un modelo representativo de la realidad para evaluar escenarios en la toma de decisiones.',
+        },
+        {
+          id: 'q5',
+          pregunta: '¿Cuál es la primera etapa de un estudio de simulación?',
+          opciones: [
+            'Construcción del modelo',
+            'Formulación del problema',
+            'Interpretación de resultados',
+            'Análisis de sensibilidad',
+          ],
+          correcta: 1,
+          explicacion: 'Primero se formula el problema (objetivos claros); recién después se diseña, construye y valida el modelo.',
+        },
+        {
+          id: 'q6',
+          pregunta: 'Bizagi ejecuta simulaciones a partir de modelos BPMN usando el estándar…',
+          opciones: ['SQL', 'BPSim (business process simulation)', 'ETL', 'PCF'],
+          correcta: 1,
+          explicacion: 'Bizagi se basa en BPSim para simular a partir de los modelos de proceso en notación BPMN.',
+        },
+      ],
+    },
   ],
   flashcards: [
     { id: 'f1', frente: 'Misión', reverso: 'Declaración que define el propósito o razón de ser de una organización.', tema: 's01-introduccion' },
@@ -580,5 +706,13 @@ export const analisisDescriptivoProcesos = {
     { id: 's4f6', frente: 'Datamart', reverso: 'Fragmento del DW con modelo estrella o snowflake para un propósito específico.', tema: 's04-modelamiento' },
     { id: 's4f7', frente: 'Pool vs. Lane (BPMN)', reverso: 'Pool: contenedor del proceso. Lane: actor o rol dentro del proceso.', tema: 's04-modelamiento' },
     { id: 's4f8', frente: 'Compuerta de convergencia / divergencia', reverso: 'Convergencia: varias entradas, una salida. Divergencia: una entrada, varias salidas.', tema: 's04-modelamiento' },
+    { id: 's5f1', frente: 'Modelo AS-IS vs TO-BE', reverso: 'AS-IS: el proceso tal como es hoy. TO-BE: el proceso rediseñado/mejorado.', tema: 's05-simulacion' },
+    { id: 's5f2', frente: 'Fases del ciclo de vida (Dumas)', reverso: 'Identificación, descubrimiento, análisis, rediseño, implementación y monitoreo.', tema: 's05-simulacion' },
+    { id: 's5f3', frente: 'MVP', reverso: 'Modelación visual participativa: modelos simples y visuales hechos con los involucrados.', tema: 's05-simulacion' },
+    { id: 's5f4', frente: 'Flujograma de información', reverso: 'Representación visual de un proceso que se entiende "a la primera" por su secuencia temporal.', tema: 's05-simulacion' },
+    { id: 's5f5', frente: 'Simulación de procesos', reverso: 'Técnica numérica que modela la realidad para evaluar escenarios y tomar decisiones.', tema: 's05-simulacion' },
+    { id: 's5f6', frente: 'Etapas de simulación', reverso: 'Formular, diseñar modelo conceptual, recolectar datos, construir, verificar/validar, analizar, interpretar y documentar.', tema: 's05-simulacion' },
+    { id: 's5f7', frente: 'BPSim', reverso: 'Estándar de simulación de procesos que Bizagi usa para simular a partir de modelos BPMN.', tema: 's05-simulacion' },
+    { id: 's5f8', frente: 'Actividad simple vs compuesta', reverso: 'Simple: indivisible. Compuesta: se subdivide en grupos de actividades.', tema: 's05-simulacion' },
   ],
 }
