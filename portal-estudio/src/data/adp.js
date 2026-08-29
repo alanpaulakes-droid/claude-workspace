@@ -294,6 +294,145 @@ export const analisisDescriptivoProcesos = {
         },
       ],
     },
+
+    // ===================== SESIÓN 3 =====================
+    {
+      id: 's03-bpm-diseno',
+      titulo: 'BPM, diseño y análisis de procesos',
+      resumen: 'La disciplina BPM, el diseño y la mejora de procesos, y el análisis y diagnóstico.',
+      contenido: [
+        { tipo: 'p', texto: 'Esta sesión introduce el BPM (Business Process Management) como disciplina de gestión, el diseño y la mejora continua de los procesos, y las etapas del análisis y diagnóstico, además de los conceptos clave del área.' },
+
+        { tipo: 'h', texto: '¿Qué es el BPM?' },
+        { tipo: 'p', texto: 'BPM (Business Process Management, "gestión de procesos de negocio") es una disciplina de gestión compuesta de metodologías, herramientas y tecnologías que busca mejorar los procesos de negocio y administrar todos los recursos de la organización para alcanzar sus objetivos. Bajo este enfoque, la organización se concibe como un universo de procesos interrelacionados, rompiendo con la visión tradicional basada solo en áreas funcionales y departamentos.' },
+        { tipo: 'p', texto: 'El BPM articula tres dimensiones (negocio, procesos y gestión):' },
+        { tipo: 'ul', items: [
+          'Negocio: grupo de personas, recursos, sistemas y actividades con un fin común; posee una propuesta de valor, se relaciona con clientes y un entorno, y declara su estrategia.',
+          'Procesos: conjuntos de actividades en secuencia lógica, con inicio y fin, que articulan recursos y producen un servicio o producto.',
+          'Gestión: acción de administrar los recursos para alcanzar un propósito, alineando todo a la estrategia.',
+        ] },
+
+        { tipo: 'h', texto: 'Objetivos del BPM' },
+        { tipo: 'p', texto: 'Busca la mejora continua a través de procesos alineados con la estrategia. Como la estrategia y los procesos son dinámicos, exige agilidad para responder al entorno (usuarios, leyes, normativas). Debe promover excelencia, eficacia, eficiencia, alineación estratégica, integración, agilidad, escalabilidad y sustentabilidad.' },
+
+        { tipo: 'h', texto: '¿Por qué implementar BPM?' },
+        { tipo: 'p', texto: 'Porque permite operar de manera conjunta sobre tres pilares —los procesos, las personas y la tecnología de la información— alineados por la estrategia. Su correcta implementación hace que cada persona comprenda lo que hace y cómo aporta valor.' },
+        { tipo: 'img', src: 'img/adp/s03/fig03-bpm-triangulo.png', alt: 'Triángulo del BPM: procesos, personas y tecnología alrededor de la estrategia', pie: 'Figura 1. El BPM opera sobre procesos, personas y tecnología, articulados por la estrategia.' },
+
+        { tipo: 'h', texto: 'Diseño de procesos' },
+        { tipo: 'p', texto: 'El diseño de procesos es el acto de transformar la visión, los objetivos y los recursos de la organización en un medio comprensible y medible para lograr sus metas. Se apoya en el análisis de procesos, en buenas prácticas de organizaciones similares y en modelos de referencia.' },
+        { tipo: 'p', texto: 'Para especificar un diseño de proceso hay que definir: metas y objetivos, métricas e indicadores (KPI), reglas de negocio, el modelo en notación BPMN, plataformas y tecnologías, fuentes de datos, controles operativos y financieros, e integración con otros procesos.' },
+
+        { tipo: 'h', texto: 'Mejora continua de los procesos' },
+        { tipo: 'p', texto: 'La mejora busca descubrir los problemas más relevantes y resolverlos, permitiendo: eliminar errores o duplicidades, minimizar tiempos y demoras, eliminar cuellos de botella, maximizar el uso de activos, optimizar recursos, promover el entendimiento y generar ventajas competitivas. El ciclo de Deming (PDCA) y las herramientas de calidad (brainstorming, Pareto, Ishikawa, 5 porqués, modelos de referencia) son sus instrumentos.' },
+        { tipo: 'h', texto: 'Modelos de referencia' },
+        { tipo: 'p', texto: 'Un modelo de referencia es un marco para estructurar y descomponer los procesos, que permite compararse con estándares e incorporar buenas prácticas. Un ejemplo es el Process Classification Framework (PCF), que ordena los procesos en operativos (1–5) y de administración/soporte (6–12).' },
+        { tipo: 'img', src: 'img/adp/s03/fig02-pcf.png', alt: 'Modelo de referencia de procesos PCF', pie: 'Figura 2. Ejemplo de modelo de referencia (PCF): procesos de operación y de administración y soporte.' },
+
+        { tipo: 'h', texto: 'Análisis y diagnóstico de procesos' },
+        { tipo: 'p', texto: 'El análisis y diagnóstico sirve para conocer en detalle cada proceso: su motivación (el "para qué"), qué se realiza (el "qué"), quiénes participan (el "quién"), cómo se desarrolla (el "cómo") y cuándo ocurren las tareas (el "cuándo"). Se recomienda ir de lo general a lo específico para definir bien el alcance.' },
+        { tipo: 'p', texto: 'Las etapas para especificar y analizar los procesos son: levantamiento, documentación y caracterización, validación, análisis y diagnóstico. Para identificar las actividades críticas se siguen cinco pasos: (1) nombrar y describir el proceso, (2) determinar responsables y actores, (3) establecer el objetivo o finalidad, (4) identificar y diagramar las actividades (BPMN) y (5) determinar los factores/procesos críticos.' },
+        { tipo: 'img', src: 'img/adp/s03/fig01-analisis-diagnostico.png', alt: 'Infografía de definiciones y alcances del análisis y diagnóstico', pie: 'Figura 3. Definiciones y alcances del análisis y diagnóstico, y los pasos para identificar actividades críticas.' },
+
+        { tipo: 'h', texto: 'Conceptos clave del diseño de procesos' },
+        { tipo: 'ul', items: [
+          'Cadena de valor: actividades principales con impacto directo en la estrategia y en la entrega del producto/servicio.',
+          'Propuesta de valor: atributos por los que el cliente valora un producto o servicio.',
+          'Levantamiento de procesos: obtener la información de cómo operan hoy los procesos y tareas.',
+          'Diagnóstico de procesos: detectar los focos de error para formular una propuesta de mejora.',
+          'Actividades críticas: aquellas cuyos resultados impactan directamente el objetivo de la organización.',
+          'Reglas de negocio: atienden una necesidad del negocio; controlan o influyen en su comportamiento.',
+          'Análisis de distribución / de tiempos / calidad y costos: variables de eficiencia (frecuencias, operaciones por unidad de tiempo, costo de la mala calidad).',
+        ] },
+        { tipo: 'nota', texto: 'BPMN es el acrónimo de Business Process Model and Notation: el lenguaje estándar de modelado de procesos.' },
+      ],
+      quiz: [
+        {
+          id: 'q1',
+          pregunta: '¿Qué significa BPM?',
+          opciones: [
+            'Business Process Metrics',
+            'Business Process Management (gestión de procesos de negocio)',
+            'Best Practice Model',
+            'Business Plan Manager',
+          ],
+          correcta: 1,
+          explicacion: 'BPM es Business Process Management: la disciplina de gestión de procesos de negocio.',
+        },
+        {
+          id: 'q2',
+          pregunta: 'Bajo el enfoque BPM, la organización se concibe como…',
+          opciones: [
+            'Un conjunto de áreas funcionales independientes',
+            'Un universo de procesos interrelacionados',
+            'Una jerarquía de cargos',
+            'Un balance financiero',
+          ],
+          correcta: 1,
+          explicacion: 'El BPM ve la organización como un sistema de procesos interrelacionados, rompiendo con la visión por departamentos aislados.',
+        },
+        {
+          id: 'q3',
+          pregunta: 'BPM permite operar de manera conjunta sobre tres pilares. ¿Cuáles?',
+          opciones: [
+            'Finanzas, marketing y ventas',
+            'Procesos, personas y tecnología de la información',
+            'Misión, visión y valores',
+            'Entradas, salidas y control',
+          ],
+          correcta: 1,
+          explicacion: 'El BPM articula procesos, personas y tecnología, alineados por la estrategia.',
+        },
+        {
+          id: 'q4',
+          pregunta: 'El diseño de procesos consiste en…',
+          opciones: [
+            'Contratar personal',
+            'Transformar la visión, objetivos y recursos en un medio comprensible y medible para lograr las metas',
+            'Calcular los impuestos',
+            'Solo dibujar un organigrama',
+          ],
+          correcta: 1,
+          explicacion: 'Diseñar un proceso es trasladar visión, objetivos y recursos a algo comprensible y medible que permita concretarlos.',
+        },
+        {
+          id: 'q5',
+          pregunta: '¿Cuáles son las etapas del análisis y diagnóstico de procesos?',
+          opciones: [
+            'Planear, hacer, verificar y actuar',
+            'Levantamiento, documentación y caracterización, validación, análisis y diagnóstico',
+            'Modelar, simular, implementar y monitorear',
+            'Entradas, salidas, secuencia y control',
+          ],
+          correcta: 1,
+          explicacion: 'Son: levantamiento, documentación y caracterización, validación, y análisis y diagnóstico.',
+        },
+        {
+          id: 'q6',
+          pregunta: 'El análisis de un proceso busca responder varias preguntas. ¿Cuál NO es una de ellas?',
+          opciones: [
+            'El "para qué" (motivación)',
+            'El "quién" (participantes)',
+            'El "cuánto cuesta la acción de la competencia"',
+            'El "cómo" (forma en que se desarrolla)',
+          ],
+          correcta: 2,
+          explicacion: 'El análisis indaga el para qué, qué, quién, cómo y cuándo del propio proceso; no el costo de la competencia.',
+        },
+        {
+          id: 'q7',
+          pregunta: 'Un modelo de referencia como el PCF sirve para…',
+          opciones: [
+            'Medir la satisfacción del cliente',
+            'Estructurar y comparar los procesos con un estándar de buenas prácticas',
+            'Registrar la contabilidad',
+            'Reemplazar la estrategia',
+          ],
+          correcta: 1,
+          explicacion: 'Los modelos de referencia (p. ej. PCF) ofrecen un marco para estructurar procesos y compararse con estándares.',
+        },
+      ],
+    },
   ],
   flashcards: [
     { id: 'f1', frente: 'Misión', reverso: 'Declaración que define el propósito o razón de ser de una organización.', tema: 's01-introduccion' },
@@ -314,5 +453,14 @@ export const analisisDescriptivoProcesos = {
     { id: 's2f6', frente: 'Ciclo de vida de los procesos', reverso: 'Modelar, simular, implementar, monitorear y optimizar.', tema: 's02-ciclo-vida' },
     { id: 's2f7', frente: 'Los 5 porqués', reverso: 'Preguntar "¿por qué?" sucesivamente para llegar a la causa raíz de un problema.', tema: 's02-ciclo-vida' },
     { id: 's2f8', frente: 'Modelos de referencia', reverso: 'Marco de buenas prácticas para comparar y mejorar procesos hacia un estándar.', tema: 's02-ciclo-vida' },
+    { id: 's3f1', frente: 'BPM', reverso: 'Business Process Management: disciplina de gestión que mejora los procesos de negocio con metodologías, herramientas y tecnologías.', tema: 's03-bpm-diseno' },
+    { id: 's3f2', frente: 'Pilares del BPM', reverso: 'Procesos, personas y tecnología de la información, alineados por la estrategia.', tema: 's03-bpm-diseno' },
+    { id: 's3f3', frente: 'Visión BPM de la organización', reverso: 'Un universo de procesos interrelacionados, no áreas funcionales aisladas.', tema: 's03-bpm-diseno' },
+    { id: 's3f4', frente: 'Diseño de procesos', reverso: 'Transformar visión, objetivos y recursos en un medio comprensible y medible para lograr las metas.', tema: 's03-bpm-diseno' },
+    { id: 's3f5', frente: 'Etapas del análisis y diagnóstico', reverso: 'Levantamiento, documentación y caracterización, validación, análisis y diagnóstico.', tema: 's03-bpm-diseno' },
+    { id: 's3f6', frente: 'Las 5 preguntas del análisis', reverso: 'Para qué, qué, quién, cómo y cuándo de un proceso.', tema: 's03-bpm-diseno' },
+    { id: 's3f7', frente: 'Levantamiento de procesos', reverso: 'Obtener la información de cómo operan hoy los procesos, tareas y procedimientos.', tema: 's03-bpm-diseno' },
+    { id: 's3f8', frente: 'Cadena de valor', reverso: 'Actividades principales con impacto directo en la estrategia y en la entrega del producto/servicio.', tema: 's03-bpm-diseno' },
+    { id: 's3f9', frente: 'Modelo de referencia (PCF)', reverso: 'Marco para estructurar y comparar procesos con un estándar de buenas prácticas.', tema: 's03-bpm-diseno' },
   ],
 }
