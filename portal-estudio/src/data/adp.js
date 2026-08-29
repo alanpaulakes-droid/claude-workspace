@@ -433,6 +433,116 @@ export const analisisDescriptivoProcesos = {
         },
       ],
     },
+
+    // ===================== SESIÓN 4 =====================
+    {
+      id: 's04-modelamiento',
+      titulo: 'Modelamiento de procesos e información estadística',
+      resumen: 'Notación BPMN, fuentes de información, data warehouse y presentación de datos.',
+      contenido: [
+        { tipo: 'p', texto: 'Esta sesión aborda cómo modelar procesos con BPMN y cómo obtener, almacenar y presentar la información estadística que alimenta ese análisis.' },
+
+        { tipo: 'h', texto: 'Modelamiento de procesos' },
+        { tipo: 'p', texto: 'Para representar gráficamente los procesos se usa la notación estándar BPMN 2.x, entendible por toda la organización. La caracterización de un proceso sigue estos pasos: nombrar y describir el proceso; determinar responsables y actores; establecer el objetivo; identificar y diagramar las actividades (BPMN); determinar los factores críticos; detallar la lógica de negocio (nodos de decisión) y definir la visión del destinatario.' },
+        { tipo: 'img', src: 'img/adp/s04/fig01-bpmn-simbologia.png', alt: 'Resumen de elementos BPMN', pie: 'Figura 1. Resumen de elementos BPMN: objetos de flujo, conexión, artefactos y carriles.' },
+
+        { tipo: 'h', texto: 'Uso de fuentes de información estadística' },
+        { tipo: 'p', texto: 'Una fuente de información es un recurso que satisface una necesidad informativa. Se clasifican en tres tipos:' },
+        { tipo: 'ul', items: [
+          'Primarias: información nueva y original, directa de la fuente (documentos originales, entrevistas, cartas, discursos, apuntes de investigación). Sus datos se obtienen por observación, experimentación, simulación o entrevista.',
+          'Secundarias: documentos derivados de fuentes primarias (libros, informes, tesis, revistas, bases de datos, periódicos). Se obtienen por revisión bibliográfica y recopilación.',
+          'Terciarias: recursos que resumen y remiten a las secundarias (bibliografías, índices, catálogos, guías). Se obtienen por búsqueda en internet.',
+        ] },
+        { tipo: 'nota', texto: 'Una fuente es confiable si la aporta un experto o institución reconocida, y se sabe de dónde viene, qué dice y por qué. Verifica siempre su actualidad (fecha) y objetividad (sin juicios de valor).' },
+
+        { tipo: 'h', texto: 'Data warehouse (DW)' },
+        { tipo: 'p', texto: 'Un data warehouse es una arquitectura de almacenamiento diseñada para respaldar datos extraídos de sistemas transaccionales y fuentes externas, combinándolos de forma resumida para facilitar el análisis. Es una pieza central del Business Intelligence (BI): concentra la información con un diseño definido por los stakeholders para explotarla.' },
+        { tipo: 'p', texto: 'El DW se compone de fragmentos llamados datamarts, con modelos de almacenamiento estrella o snowflake, que permiten reportería, cubos OLAP, dashboards, minería de datos y más. La herramienta ETL (Extract, Transform, Load) extrae los datos de las fuentes, los transforma al modelo y los carga en el DW.' },
+        { tipo: 'img', src: 'img/adp/s04/fig05-dw-arquitectura.png', alt: 'Arquitectura general de un data warehouse', pie: 'Figura 2. Arquitectura general de un data warehouse: de los datos al conocimiento (orígenes → DW → acceso) vía ETL.' },
+        { tipo: 'p', texto: 'Funcionalidades del DW: orientado a objetos (atiende distintas áreas), integrado (unifica fuentes), no volátil (la información no varía), variante en el tiempo (guarda histórico para trazabilidad) y orientado a la toma de decisiones. A diferencia de una base de datos transaccional (muy normalizada, para altas/bajas/consultas), el DW tiende a no estar normalizado y se organiza por datamarts; conviene separarlo del entorno transaccional para no degradar el rendimiento.' },
+        { tipo: 'img', src: 'img/adp/s04/fig06-transaccional-dw.png', alt: 'Sistema transaccional en convivencia con un data warehouse', pie: 'Figura 3. Convivencia de una arquitectura transaccional con un data warehouse.' },
+
+        { tipo: 'h', texto: 'Presentación de datos' },
+        { tipo: 'p', texto: 'Tan importante como obtener los datos es presentarlos de forma comprensible. Cada tipo de gráfico cumple una función según lo que se quiera mostrar: comparación, relación, distribución o composición.' },
+        { tipo: 'img', src: 'img/adp/s04/fig07-funciones-graficos.png', alt: 'Infografía de funciones de los gráficos: cuál elegir', pie: 'Figura 4. Funciones de los gráficos: ¿cuál elegir según comparación, relación, distribución o composición?' },
+
+        { tipo: 'h', texto: 'Definiciones básicas del modelamiento' },
+        { tipo: 'ul', items: [
+          'Pool: contenedor que agrupa elementos de un proceso. Lane (carril): representa a un actor o rol.',
+          'Evento: suceso de inicio, intermedio o término. Actividad: trabajo o conjunto de tareas ejecutados por los actores.',
+          'Compuerta de convergencia: varias entradas y una salida. Compuerta de divergencia: una entrada y varias salidas.',
+          'Factores críticos: elementos que impactan positiva o negativamente el objetivo del proceso.',
+          'Lógica de negocio: la toma de decisión en un nodo del proceso.',
+          'Simulación / BPSim: técnica para evaluar escenarios a partir de los modelos BPMN.',
+        ] },
+        { tipo: 'nota', texto: 'Caso Volkswagen (cómic de la sesión): pese a un 2014 difícil, el grupo superó los 10 millones de entregas y alcanzó ventas récord, ilustrando fuerza y resiliencia con foco en el largo plazo.' },
+        { tipo: 'img', src: 'img/adp/s04/fig08-comic-vw.png', alt: 'Cómic del caso Volkswagen: fuerza y resiliencia', pie: 'Figura 5. Caso Volkswagen: fuerza y resiliencia (cómic de la sesión).' },
+      ],
+      quiz: [
+        {
+          id: 'q1',
+          pregunta: '¿Qué tipo de fuente de información es una entrevista o un documento original?',
+          opciones: ['Secundaria', 'Terciaria', 'Primaria', 'Ninguna'],
+          correcta: 2,
+          explicacion: 'Las fuentes primarias son directas y originales: documentos originales, entrevistas, discursos, etc.',
+        },
+        {
+          id: 'q2',
+          pregunta: 'Un libro o una tesis se consideran fuentes…',
+          opciones: ['Primarias', 'Secundarias', 'Terciarias', 'No son fuentes'],
+          correcta: 1,
+          explicacion: 'Las secundarias son documentos derivados de las primarias: libros, informes, tesis, revistas, etc.',
+        },
+        {
+          id: 'q3',
+          pregunta: '¿Qué significan las siglas ETL en un data warehouse?',
+          opciones: [
+            'Enter, Test, Load',
+            'Extract, Transform, Load (extraer, transformar y cargar)',
+            'Evaluate, Track, Learn',
+            'Export, Transfer, Link',
+          ],
+          correcta: 1,
+          explicacion: 'ETL: extraer los datos de las fuentes, transformarlos al modelo y cargarlos en el DW.',
+        },
+        {
+          id: 'q4',
+          pregunta: '¿Cuál NO es una característica de un data warehouse?',
+          opciones: [
+            'Integrado (unifica fuentes)',
+            'No volátil (la información no varía)',
+            'Variante en el tiempo (guarda histórico)',
+            'Altamente normalizado como una base transaccional',
+          ],
+          correcta: 3,
+          explicacion: 'A diferencia de las bases transaccionales (muy normalizadas), el DW tiende a NO estar normalizado y se organiza por datamarts.',
+        },
+        {
+          id: 'q5',
+          pregunta: 'En BPMN, ¿qué representa un "lane" (carril)?',
+          opciones: [
+            'Un contenedor de todo el proceso',
+            'Un actor o rol dentro del proceso',
+            'Una decisión',
+            'Un objeto de datos',
+          ],
+          correcta: 1,
+          explicacion: 'El lane representa a un actor o rol; el pool es el contenedor que agrupa el proceso.',
+        },
+        {
+          id: 'q6',
+          pregunta: 'Una compuerta de divergencia se caracteriza por…',
+          opciones: [
+            'Varias entradas y una sola salida',
+            'Una entrada y varias salidas',
+            'No tener conexiones',
+            'Ser un evento de inicio',
+          ],
+          correcta: 1,
+          explicacion: 'La divergencia recibe un conector de entrada y genera múltiples salidas; la convergencia es al revés.',
+        },
+      ],
+    },
   ],
   flashcards: [
     { id: 'f1', frente: 'Misión', reverso: 'Declaración que define el propósito o razón de ser de una organización.', tema: 's01-introduccion' },
@@ -462,5 +572,13 @@ export const analisisDescriptivoProcesos = {
     { id: 's3f7', frente: 'Levantamiento de procesos', reverso: 'Obtener la información de cómo operan hoy los procesos, tareas y procedimientos.', tema: 's03-bpm-diseno' },
     { id: 's3f8', frente: 'Cadena de valor', reverso: 'Actividades principales con impacto directo en la estrategia y en la entrega del producto/servicio.', tema: 's03-bpm-diseno' },
     { id: 's3f9', frente: 'Modelo de referencia (PCF)', reverso: 'Marco para estructurar y comparar procesos con un estándar de buenas prácticas.', tema: 's03-bpm-diseno' },
+    { id: 's4f1', frente: 'Fuentes primarias', reverso: 'Información nueva y original: documentos originales, entrevistas, discursos, apuntes.', tema: 's04-modelamiento' },
+    { id: 's4f2', frente: 'Fuentes secundarias', reverso: 'Documentos derivados de las primarias: libros, informes, tesis, revistas, bases de datos.', tema: 's04-modelamiento' },
+    { id: 's4f3', frente: 'Fuentes terciarias', reverso: 'Recursos que resumen y remiten a las secundarias: bibliografías, índices, catálogos.', tema: 's04-modelamiento' },
+    { id: 's4f4', frente: 'Data warehouse', reverso: 'Arquitectura de almacenamiento para análisis, base del Business Intelligence.', tema: 's04-modelamiento' },
+    { id: 's4f5', frente: 'ETL', reverso: 'Extract, Transform, Load: extraer, transformar y cargar datos en el data warehouse.', tema: 's04-modelamiento' },
+    { id: 's4f6', frente: 'Datamart', reverso: 'Fragmento del DW con modelo estrella o snowflake para un propósito específico.', tema: 's04-modelamiento' },
+    { id: 's4f7', frente: 'Pool vs. Lane (BPMN)', reverso: 'Pool: contenedor del proceso. Lane: actor o rol dentro del proceso.', tema: 's04-modelamiento' },
+    { id: 's4f8', frente: 'Compuerta de convergencia / divergencia', reverso: 'Convergencia: varias entradas, una salida. Divergencia: una entrada, varias salidas.', tema: 's04-modelamiento' },
   ],
 }
