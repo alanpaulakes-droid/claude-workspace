@@ -847,6 +847,115 @@ export const analisisDescriptivoProcesos = {
         },
       ],
     },
+
+    // ===================== SESIÓN 9 =====================
+    {
+      id: 's09-r-python',
+      titulo: 'R, Python y visualización de datos',
+      resumen: 'Lenguajes R y Python, librerías, sintaxis y objetos, y el flujo de análisis con pandas.',
+      contenido: [
+        { tipo: 'p', texto: 'Esta sesión introduce R y Python como herramientas para el análisis descriptivo: qué son, sus librerías, su sintaxis y objetos, y el flujo típico de cargar, limpiar, analizar y graficar datos.' },
+
+        { tipo: 'h', texto: '¿Qué son R y Python?' },
+        { tipo: 'p', texto: 'Son lenguajes interpretados (no requieren compilarse) y orientados a objetos, con sintaxis simple e intuitiva. Muy usados en analítica, minería de datos, estadística y machine learning gracias a su amplia comunidad de librerías de código abierto. Se conectan a bases y conjuntos de datos y generan gráficas de alta calidad.' },
+        { tipo: 'h', texto: 'Principales librerías' },
+        { tipo: 'ul', items: [
+          'R: ggplot2 (gráficos), dplyr/tidyr/readr/purrr/tibble (manipulación, ecosistema tidyverse), caret (machine learning), data.table (estructuras).',
+          'Python: pandas (data science y estadística), NumPy (estructuras numéricas), matplotlib y seaborn (visualización), scikit-learn (machine learning) y TensorFlow (cálculo numérico y deep learning).',
+        ] },
+        { tipo: 'p', texto: 'Los IDE habituales son RStudio para R y PyCharm (o Jupyter Notebook) para Python. Para instalar librerías:' },
+        { tipo: 'code', texto: 'install.packages("ggplot2")   # en RStudio\npip install pandas            # en Python' },
+
+        { tipo: 'h', texto: 'Sintaxis básica' },
+        { tipo: 'p', texto: 'La asignación usa "<-" en R y "=" en Python. Operadores aritméticos: + - * / (potencia: ^ en R, ** en Python; división entera y módulo: %/% y %% en R).' },
+        { tipo: 'code', texto: 'A <- b + c      # R\nA = b + c       # Python\n\nnombre_objeto <- valor   # R\nnombre_objeto = valor    # Python' },
+
+        { tipo: 'h', texto: 'Objetos principales' },
+        { tipo: 'ul', items: [
+          'Variable: entidad con atributos; toma el tipo del valor asignado (int, string, float, etc.).',
+          'Vector: arreglo ordenado de un mismo tipo. En R con c(); en Python con array().',
+          'Matriz: arreglo rectangular de filas y columnas.',
+          'Lista: colección ordenada de cualquier objeto, con list() (R) o corchetes (Python).',
+          'Función: se define con function(){...} en R y con def ...: en Python.',
+        ] },
+        { tipo: 'code', texto: 'vector_r <- c(1, 2, 3, 4, 5)                 # R\nmatriz_r <- matrix(1:20, nrow=4, ncol=5)    # R\n\nvector_py = [1, 2, 3, 4, 5]                 # Python\ndef mi_funcion(a, b):                       # Python\n    return a + b' },
+
+        { tipo: 'h', texto: 'Flujo de análisis con pandas' },
+        { tipo: 'p', texto: 'En la práctica los datos vienen "sucios", así que antes de analizarlos hay que cargarlos, limpiarlos, transformarlos y visualizarlos. Un flujo típico con pandas:' },
+        { tipo: 'code', texto: 'import pandas as pd\n\n# 1. Cargar el CSV (delimitado por comas)\ndata = pd.read_csv("ordenes-de-compra.csv", sep=",")\nprint(data.dtypes)      # columnas y tipos\ndata.head(6)            # primeros registros\n\n# 2. Limpiar: ValorTotal a numérico; nulos -> media\ndata["ValorTotal"] = pd.to_numeric(data["ValorTotal"], errors="coerce")\ndata["ValorTotal"] = data["ValorTotal"].fillna(data["ValorTotal"].mean())\n\n# 3. Estadística descriptiva\ndata["ValorTotal"].max()\ndata["Cantidad"].mean()\ndata["CodigoProveedor"].mode()[0]           # más repetido\ndata["Cantidad"].corr(data["ValorUnitario"])' },
+        { tipo: 'p', texto: 'Y para visualizar e interpretar (gráfico de línea, dispersión y barras):' },
+        { tipo: 'code', texto: 'import matplotlib.pyplot as plt\n\n# Línea: TipodeCambio vs NumeroOrden\ndata.plot(x="NumeroOrden", y="TipodeCambio", kind="line",\n          title="Tipo de cambio por orden")\n\n# Dispersión de los primeros 100 registros\ndata.head(100).plot.scatter(x="Cantidad", y="ValorUnitario")\n\n# Barras: 10 proveedores más solicitados\ndata["CodigoProveedor"].value_counts().head(10).plot.bar()\nplt.show()' },
+        { tipo: 'nota', texto: 'Contexto del Taller 2: a partir de la base "ordenes-de-compra.csv" se practica todo el flujo —lectura y preparación, variables estadísticas y graficado— para luego interpretar los gráficos y apoyar la toma de decisiones. La visualización es clave para el análisis descriptivo de procesos.' },
+
+        { tipo: 'h', texto: 'Tipos de librerías según el objetivo' },
+        { tipo: 'ul', items: [
+          'Visualización: para comprender mejor los datos.',
+          'Cálculo numérico: preparación de datos y atributos relevantes.',
+          'Machine learning: clasificación y regresión.',
+          'Deep learning: predicción a partir de grandes volúmenes.',
+          'Inteligencia artificial explicable: resultados eficientes y comprensibles.',
+        ] },
+      ],
+      quiz: [
+        {
+          id: 'q1',
+          pregunta: 'R y Python se describen como lenguajes…',
+          opciones: [
+            'Compilados y de bajo nivel',
+            'Interpretados y orientados a objetos, de sintaxis simple',
+            'Exclusivos para páginas web',
+            'Sin librerías disponibles',
+          ],
+          correcta: 1,
+          explicacion: 'Ambos son interpretados (no requieren compilación) y orientados a objetos, con sintaxis intuitiva.',
+        },
+        {
+          id: 'q2',
+          pregunta: '¿Qué librería de Python es la más usada para manipular datos tabulares (data science)?',
+          opciones: ['matplotlib', 'pandas', 'TensorFlow', 'seaborn'],
+          correcta: 1,
+          explicacion: 'pandas es la librería central para cargar y manipular datos tabulares; matplotlib/seaborn son para graficar.',
+        },
+        {
+          id: 'q3',
+          pregunta: '¿Cuál es el operador de asignación en R?',
+          opciones: ['=', '<-', '==', ':='],
+          correcta: 1,
+          explicacion: 'En R se asigna con "<-"; en Python se usa "=".',
+        },
+        {
+          id: 'q4',
+          pregunta: '¿Cómo se instala una librería en Python desde la consola?',
+          opciones: [
+            'install.packages("libreria")',
+            'pip install libreria',
+            'import libreria',
+            'library(libreria)',
+          ],
+          correcta: 1,
+          explicacion: 'En Python se usa "pip install"; "install.packages" y "library()" son de R.',
+        },
+        {
+          id: 'q5',
+          pregunta: 'Para reemplazar los valores nulos de una columna por su media en pandas, se usa…',
+          opciones: [
+            'data.dropna()',
+            'data["col"].fillna(data["col"].mean())',
+            'data.head()',
+            'data.plot()',
+          ],
+          correcta: 1,
+          explicacion: 'fillna con la media reemplaza los nulos; dropna los eliminaría en lugar de imputarlos.',
+        },
+        {
+          id: 'q6',
+          pregunta: '¿Qué gráfico conviene para ver la relación entre dos variables numéricas (Cantidad vs ValorUnitario)?',
+          opciones: ['Gráfico de barras', 'Gráfico de dispersión', 'Gráfico de torta', 'Histograma'],
+          correcta: 1,
+          explicacion: 'El gráfico de dispersión (scatter) muestra la relación entre dos variables numéricas.',
+        },
+      ],
+    },
   ],
   flashcards: [
     { id: 'f1', frente: 'Misión', reverso: 'Declaración que define el propósito o razón de ser de una organización.', tema: 's01-introduccion' },
@@ -904,5 +1013,12 @@ export const analisisDescriptivoProcesos = {
     { id: 's8f2', frente: 'Prioridad de las pymes medianas', reverso: 'Optimización de sus procesos operacionales (78%).', tema: 's08-caso-pymes' },
     { id: 's8f3', frente: 'Barreras a la tecnología', reverso: 'Falta de capacidad para invertir (51%) y reentrenar al talento (44%).', tema: 's08-caso-pymes' },
     { id: 's8f4', frente: 'Rol de la digitalización', reverso: 'Principal motor de competitividad y crecimiento, no solo supervivencia.', tema: 's08-caso-pymes' },
+    { id: 's9f1', frente: 'R y Python', reverso: 'Lenguajes interpretados y orientados a objetos, muy usados en análisis de datos y ML.', tema: 's09-r-python' },
+    { id: 's9f2', frente: 'pandas', reverso: 'Librería de Python para cargar y manipular datos tabulares (data science).', tema: 's09-r-python' },
+    { id: 's9f3', frente: 'ggplot2 / matplotlib', reverso: 'Librerías de visualización: ggplot2 en R, matplotlib (y seaborn) en Python.', tema: 's09-r-python' },
+    { id: 's9f4', frente: 'Asignación en R vs Python', reverso: 'R usa "<-"; Python usa "=".', tema: 's09-r-python' },
+    { id: 's9f5', frente: 'Instalar librerías', reverso: 'install.packages("x") en R; pip install x en Python.', tema: 's09-r-python' },
+    { id: 's9f6', frente: 'fillna(mean())', reverso: 'En pandas, reemplaza los valores nulos de una columna por su media.', tema: 's09-r-python' },
+    { id: 's9f7', frente: 'Gráfico de dispersión', reverso: 'Muestra la relación entre dos variables numéricas.', tema: 's09-r-python' },
   ],
 }
