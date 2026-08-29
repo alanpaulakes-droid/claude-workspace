@@ -783,6 +783,70 @@ export const analisisDescriptivoProcesos = {
         },
       ],
     },
+
+    // ===================== SESIÓN 8 =====================
+    {
+      id: 's08-caso-pymes',
+      titulo: 'Caso: transformación digital de las pymes',
+      resumen: 'Lectura de caso: cómo la pandemia impulsó la optimización de procesos y la digitalización de las pymes chilenas.',
+      contenido: [
+        { tipo: 'p', texto: 'Esta sesión es un caso de lectura que conecta la teoría de gestión y optimización de procesos con un fenómeno real: la aceleración digital de las pymes chilenas tras la pandemia, según el estudio "Readaptarse para crecer" (Microsoft Chile y Edelman, 2021).' },
+
+        { tipo: 'h', texto: 'Optimización de procesos y foco en el cliente' },
+        { tipo: 'p', texto: 'El 88% de las pymes afirma que la pandemia aceleró su digitalización. Las microempresas priorizaron reinventar cómo conectan con los clientes (68%), mientras que las medianas se enfocaron en optimizar sus procesos operacionales (78%). El trabajo remoto, la nube, las videollamadas y la automatización de procesos (35%) fueron iniciativas clave, y un 41% reinventó sus objetivos y estrategias.' },
+        { tipo: 'h', texto: 'Tecnología como motor de competitividad' },
+        { tipo: 'p', texto: 'La digitalización permitió superar la crisis inmediata y sentar bases de crecimiento sostenible. El 79% considera que adoptar nuevas tecnologías es crucial para la reactivación, pero persisten barreras: falta de capacidad para invertir (51%) y necesidad de reentrenar al talento (44%).' },
+        { tipo: 'h', texto: 'Capacitación y futuro digital' },
+        { tipo: 'p', texto: 'El 61% de las pymes capacita a sus empleados en nuevas tecnologías y el 80% lo considera esencial para la reactivación. El conocimiento de Big Data e IA aún es limitado (35%), pero crece el interés. De cara al futuro, el 71% planea seguir invirtiendo en tecnología, con la automatización de procesos y la reinvención estratégica como pilares.' },
+        { tipo: 'nota', texto: 'Idea clave: la digitalización no es solo un mecanismo de supervivencia, sino el principal motor de competitividad y crecimiento, apoyando la optimización de procesos y la toma de decisiones basada en datos.' },
+        { tipo: 'img', src: 'img/adp/s08/fig01-caso-pymes.png', alt: 'Infografía del caso: transformación digital de las pymes chilenas', pie: 'Figura 1. Caso: cómo la pandemia impulsó la optimización y transformación digital de las pymes chilenas.' },
+      ],
+      quiz: [
+        {
+          id: 'q1',
+          pregunta: 'Según el estudio, ¿qué porcentaje de pymes afirma que la pandemia aceleró su digitalización?',
+          opciones: ['35%', '61%', '88%', '41%'],
+          correcta: 2,
+          explicacion: 'El 88% de las pymes aseguró que la pandemia aceleró su digitalización.',
+        },
+        {
+          id: 'q2',
+          pregunta: 'Las empresas medianas priorizaron especialmente…',
+          opciones: [
+            'Reinventar la conexión con los clientes',
+            'La optimización de sus procesos operacionales (78%)',
+            'Reducir personal',
+            'Cerrar sucursales',
+          ],
+          correcta: 1,
+          explicacion: 'Las medianas se enfocaron en optimizar procesos operacionales (78%); las microempresas, en conectar con clientes (68%).',
+        },
+        {
+          id: 'q3',
+          pregunta: '¿Cuál fue una de las principales barreras identificadas para adoptar tecnología?',
+          opciones: [
+            'Exceso de personal capacitado',
+            'Falta de capacidad para invertir (51%) y reentrenar al talento (44%)',
+            'Demasiada competencia digital',
+            'Falta de clientes',
+          ],
+          correcta: 1,
+          explicacion: 'Las barreras clave fueron la falta de capacidad para invertir (51%) y la necesidad de reentrenar al talento (44%).',
+        },
+        {
+          id: 'q4',
+          pregunta: 'Según el caso, la digitalización se erige principalmente como…',
+          opciones: [
+            'Un gasto innecesario',
+            'El principal motor para la competitividad y el crecimiento futuro',
+            'Una moda pasajera',
+            'Un requisito legal',
+          ],
+          correcta: 1,
+          explicacion: 'La digitalización se plantea como motor de competitividad y crecimiento, más allá de la mera supervivencia.',
+        },
+      ],
+    },
   ],
   flashcards: [
     { id: 'f1', frente: 'Misión', reverso: 'Declaración que define el propósito o razón de ser de una organización.', tema: 's01-introduccion' },
@@ -836,5 +900,9 @@ export const analisisDescriptivoProcesos = {
     { id: 's6f6', frente: 'Variables de eficiencia del análisis', reverso: 'Utilización de recursos, distribución, tiempos, y calidad y costos.', tema: 's06-analisis' },
     { id: 's6f7', frente: 'Diagnóstico de procesos', reverso: 'Detectar los puntos de error para formular una propuesta de mejora.', tema: 's06-analisis' },
     { id: 's6f8', frente: 'Actividades críticas', reverso: 'Puntos del proceso que deben salir bien para cumplir el objetivo.', tema: 's06-analisis' },
+    { id: 's8f1', frente: 'Aceleración digital pymes (pandemia)', reverso: 'El 88% de las pymes chilenas afirmó que la pandemia aceleró su digitalización.', tema: 's08-caso-pymes' },
+    { id: 's8f2', frente: 'Prioridad de las pymes medianas', reverso: 'Optimización de sus procesos operacionales (78%).', tema: 's08-caso-pymes' },
+    { id: 's8f3', frente: 'Barreras a la tecnología', reverso: 'Falta de capacidad para invertir (51%) y reentrenar al talento (44%).', tema: 's08-caso-pymes' },
+    { id: 's8f4', frente: 'Rol de la digitalización', reverso: 'Principal motor de competitividad y crecimiento, no solo supervivencia.', tema: 's08-caso-pymes' },
   ],
 }
