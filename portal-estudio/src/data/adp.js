@@ -669,6 +669,120 @@ export const analisisDescriptivoProcesos = {
         },
       ],
     },
+
+    // ===================== SESIÓN 6 =====================
+    {
+      id: 's06-analisis',
+      titulo: 'Análisis y descubrimiento de procesos',
+      resumen: 'Levantamiento, herramientas de descubrimiento (SIPOC, RACI), técnicas de análisis y actividades críticas.',
+      contenido: [
+        { tipo: 'p', texto: 'Esta sesión detalla cómo descubrir y analizar un proceso para diagnosticarlo y proponer mejoras: desde el levantamiento hasta el diagnóstico, con sus herramientas y variables de eficiencia.' },
+
+        { tipo: 'h', texto: 'Definiciones y alcances del análisis y diagnóstico' },
+        { tipo: 'p', texto: 'El análisis sirve para conocer minuciosamente cada proceso: su motivación (para qué), qué se realiza (qué), sus participantes (quién), la forma (cómo) y la temporalidad (cuándo). Se recomienda ir de lo general a lo específico. Sus etapas son:' },
+        { tipo: 'ul', items: [
+          'Levantamiento: obtener la información de cómo operan hoy los procesos (herramientas, visitas en terreno, reuniones).',
+          'Documentación y caracterización: revisar, clasificar y archivar; generar diagramas y fichas de proceso.',
+          'Validación: contrastar la documentación con los roles que lideran y ejecutan el proceso.',
+          'Análisis y diagnóstico: identificar oportunidades de mejora, brechas y desempeño.',
+        ] },
+
+        { tipo: 'h', texto: 'Herramientas para descubrir un proceso' },
+        { tipo: 'p', texto: 'Para el descubrimiento se apoyan varias herramientas: la matriz de descubrimiento (qué, desde quién, cómo, para quién), el SIPOC (Suppliers, Inputs, Process, Outputs, Customers) que ordena proveedores, entradas, los 4–6 grandes pasos, salidas y clientes, y la matriz RACI/RECI (Responsable, Ejecutor, Consultado, Informado) para asignar roles sobre cada actividad.' },
+        { tipo: 'img', src: 'img/adp/s06/fig01-descubrimiento.png', alt: 'Infografía de herramientas para descubrir un proceso: SIPOC y RACI', pie: 'Figura 1. Herramientas para descubrir un proceso: matriz de descubrimiento, SIPOC y matriz RACI (ABPMP, 2019).' },
+
+        { tipo: 'h', texto: 'Patrones de obtención de información' },
+        { tipo: 'ul', items: [
+          'Entrevistas: contacto directo del especialista con la organización; se preparan y planifican según los objetivos, idealmente en una sola sesión.',
+          'Análisis de documentación: revisar documentos y formularios que llegan, se generan y salen del proceso; permite detectar demoras y cuellos de botella.',
+          'Observaciones directas: opinión objetiva observando la disposición física, la circulación de información y personas, la carga de trabajo y la atención al usuario.',
+        ] },
+        { tipo: 'p', texto: 'Las preguntas de levantamiento estructuran la entrevista: ¿para qué se hace? (objetivo), ¿qué trabajo se hace? (tareas), ¿quién lo hace? (roles), ¿cómo se hace? (medios y herramientas) y ¿cuándo se hace? (secuencia temporal).' },
+        { tipo: 'img', src: 'img/adp/s06/fig02-ficha-proceso.png', alt: 'Estructura básica para documentar un proceso (ficha de proceso)', pie: 'Figura 2. Estructura básica para documentar un proceso: ficha con proveedor, entradas, actividades, resultados y cliente.' },
+
+        { tipo: 'h', texto: 'Variables del análisis y diagnóstico' },
+        { tipo: 'p', texto: 'El objetivo del análisis es implementar mejoras: eliminar errores y duplicidades, minimizar tiempos, eliminar cuellos de botella y optimizar recursos. Se enfoca en cuatro variables de eficiencia:' },
+        { tipo: 'ul', items: [
+          'Utilización de recursos: recursos usados por unidad de salida (dinero, personas, espacios).',
+          'Análisis de distribución: valores de las variables y su frecuencia, con apoyo estadístico y gráfico.',
+          'Análisis de tiempos: operaciones por unidad de tiempo; tiempo de ciclo y de espera por unidad de proceso.',
+          'Calidad y costos: instancias defectuosas y el costo de la mala calidad por unidad de proceso.',
+        ] },
+        { tipo: 'nota', texto: 'El diagnóstico es el paso final: detectar los puntos fundamentales de error para formular una propuesta de mejora. Hay que mirar no solo el error, sino su impacto en la organización.' },
+
+        { tipo: 'h', texto: 'Actividades críticas' },
+        { tipo: 'p', texto: 'La caracterización de un proceso culmina identificando los factores y procesos críticos: los puntos que precisan resultados favorables para cumplir el objetivo. Son subprocesos, actividades o tareas que deben realizarse con precisión, eficiencia y coherencia, porque de lo contrario todo el proceso puede fallar.' },
+      ],
+      quiz: [
+        {
+          id: 'q1',
+          pregunta: '¿Qué significan las siglas SIPOC?',
+          opciones: [
+            'Sistema Integral de Procesos y Control',
+            'Suppliers, Inputs, Process, Outputs, Customers',
+            'Seguimiento, Inspección, Proceso, Optimización, Calidad',
+            'Simulación de Procesos con Control',
+          ],
+          correcta: 1,
+          explicacion: 'SIPOC ordena Proveedores, Entradas, Proceso (4–6 grandes pasos), Salidas y Clientes.',
+        },
+        {
+          id: 'q2',
+          pregunta: 'En una matriz RACI, ¿qué rol tiene la autoridad máxima / rinde cuentas de la actividad?',
+          opciones: ['Consultado', 'Informado', 'Responsable', 'Ejecutor'],
+          correcta: 2,
+          explicacion: 'El Responsable tiene la autoridad máxima; el Ejecutor realiza la actividad, el Consultado aporta y el Informado se entera.',
+        },
+        {
+          id: 'q3',
+          pregunta: '¿Cuál es el orden correcto de las etapas del análisis de procesos?',
+          opciones: [
+            'Validación → levantamiento → diagnóstico → documentación',
+            'Levantamiento → documentación y caracterización → validación → análisis y diagnóstico',
+            'Diagnóstico → análisis → levantamiento → validación',
+            'Documentación → validación → levantamiento → análisis',
+          ],
+          correcta: 1,
+          explicacion: 'Primero se levanta la información, luego se documenta/caracteriza, se valida y finalmente se analiza y diagnostica.',
+        },
+        {
+          id: 'q4',
+          pregunta: 'El análisis de documentación permite detectar especialmente…',
+          opciones: [
+            'La misión de la empresa',
+            'Demoras y cuellos de botella',
+            'El precio de venta',
+            'La visión estratégica',
+          ],
+          correcta: 1,
+          explicacion: 'Revisar los documentos que entran, se generan y salen permite detectar demoras y cuellos de botella.',
+        },
+        {
+          id: 'q5',
+          pregunta: 'La variable "análisis de tiempos" mide principalmente…',
+          opciones: [
+            'El costo de la mala calidad',
+            'El tiempo de ciclo y de espera por unidad de proceso',
+            'La frecuencia de los valores',
+            'La cantidad de personas contratadas',
+          ],
+          correcta: 1,
+          explicacion: 'El análisis de tiempos busca operaciones por unidad de tiempo, midiendo el tiempo de ciclo y de espera.',
+        },
+        {
+          id: 'q6',
+          pregunta: '¿Qué son las actividades críticas de un proceso?',
+          opciones: [
+            'Las más fáciles de ejecutar',
+            'Los puntos que precisan resultados favorables para cumplir el objetivo del proceso',
+            'Las que no aportan valor',
+            'Las tareas opcionales',
+          ],
+          correcta: 1,
+          explicacion: 'Son los subprocesos/actividades que deben salir bien, pues de ellos depende el cumplimiento del objetivo.',
+        },
+      ],
+    },
   ],
   flashcards: [
     { id: 'f1', frente: 'Misión', reverso: 'Declaración que define el propósito o razón de ser de una organización.', tema: 's01-introduccion' },
@@ -714,5 +828,13 @@ export const analisisDescriptivoProcesos = {
     { id: 's5f6', frente: 'Etapas de simulación', reverso: 'Formular, diseñar modelo conceptual, recolectar datos, construir, verificar/validar, analizar, interpretar y documentar.', tema: 's05-simulacion' },
     { id: 's5f7', frente: 'BPSim', reverso: 'Estándar de simulación de procesos que Bizagi usa para simular a partir de modelos BPMN.', tema: 's05-simulacion' },
     { id: 's5f8', frente: 'Actividad simple vs compuesta', reverso: 'Simple: indivisible. Compuesta: se subdivide en grupos de actividades.', tema: 's05-simulacion' },
+    { id: 's6f1', frente: 'SIPOC', reverso: 'Suppliers, Inputs, Process, Outputs, Customers: proveedores, entradas, proceso, salidas y clientes.', tema: 's06-analisis' },
+    { id: 's6f2', frente: 'Matriz RACI', reverso: 'Responsable, Ejecutor (Accountable), Consultado e Informado: roles sobre cada actividad.', tema: 's06-analisis' },
+    { id: 's6f3', frente: 'Etapas del análisis', reverso: 'Levantamiento, documentación y caracterización, validación, y análisis y diagnóstico.', tema: 's06-analisis' },
+    { id: 's6f4', frente: 'Patrones de obtención de información', reverso: 'Entrevistas, análisis de documentación y observaciones directas.', tema: 's06-analisis' },
+    { id: 's6f5', frente: 'Preguntas de levantamiento', reverso: '¿Para qué?, ¿qué?, ¿quién?, ¿cómo? y ¿cuándo?', tema: 's06-analisis' },
+    { id: 's6f6', frente: 'Variables de eficiencia del análisis', reverso: 'Utilización de recursos, distribución, tiempos, y calidad y costos.', tema: 's06-analisis' },
+    { id: 's6f7', frente: 'Diagnóstico de procesos', reverso: 'Detectar los puntos de error para formular una propuesta de mejora.', tema: 's06-analisis' },
+    { id: 's6f8', frente: 'Actividades críticas', reverso: 'Puntos del proceso que deben salir bien para cumplir el objetivo.', tema: 's06-analisis' },
   ],
 }
