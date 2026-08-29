@@ -1071,6 +1071,89 @@ export const analisisDescriptivoProcesos = {
         },
       ],
     },
+
+    // ===================== SESIÓN 12 =====================
+    {
+      id: 's12-ejercicios',
+      titulo: 'Ejercicios resueltos y visualización de datos',
+      resumen: 'Un modelo BPMN resuelto paso a paso y el cierre sobre análisis descriptivo y visualización de datos.',
+      contenido: [
+        { tipo: 'p', texto: 'Esta sesión de cierre integra lo aprendido: un ejercicio resuelto de modelamiento BPMN y un repaso del análisis descriptivo y la visualización de datos.' },
+
+        { tipo: 'h', texto: 'Ejercicio resuelto: Planta de Revisión Técnica' },
+        { tipo: 'p', texto: 'Situación: al llegar, el cliente es atendido por el recepcionista, que ingresa los datos del vehículo. Luego el cliente paga en caja y recibe boleta o factura. Tras el pago, los mecánicos revisan gases, luces y amortiguación (sin orden entre ellos), y después frenos y dirección. Si el vehículo aprueba, el jefe firma los documentos; si no, el asistente imprime el detalle de defectos. Finalmente, solo si ya recibió su boleta/factura, el recepcionista entrega todos los documentos.' },
+        { tipo: 'p', texto: 'Para modelarlo se trabaja en tres pasos: (1) determinar los roles (recepcionista, cajero, mecánico, jefe y asistente de la planta), que serán los carriles; (2) listar las actividades (ingresar datos, recibir pago, entregar boleta/factura, revisar gases/luces/amortiguación/frenos/dirección, firmar, imprimir defectos, entregar documentos); y (3) definir las reglas de negocio (¿boleta o factura?, ¿aprobó la revisión?).' },
+        { tipo: 'img', src: 'img/adp/s12/fig02-bpmn-resuelto.png', alt: 'Modelo BPMN resuelto de la Planta de Revisión Técnica', pie: 'Figura 1. Modelo BPMN resuelto: carriles por rol, compuertas paralelas (revisar gases/luces/amortiguación en paralelo) y exclusivas (decisiones).' },
+        { tipo: 'nota', texto: 'Fíjate en las compuertas: la paralela (AND) permite ejecutar varias actividades a la vez (las tres revisiones sin orden), mientras que la exclusiva (XOR) modela decisiones excluyentes (boleta o factura; aprobó o no).' },
+
+        { tipo: 'h', texto: 'Análisis descriptivo y visualización de datos' },
+        { tipo: 'p', texto: 'El análisis descriptivo recolecta y ordena la información para extraer las características más representativas de los datos y describir tendencias y patrones. La visualización de datos es la presentación de esos datos en formato gráfico: una forma rápida y universal de transmitir conceptos.' },
+        { tipo: 'p', texto: 'Para visualizar bien no basta comprender los datos; hay que: entender los datos (tamaño y cardinalidad), definir qué se quiere comunicar, conocer a la audiencia y cómo procesa la información, y elegir un gráfico que transmita el mensaje de forma simple. Se apoya en medidas de tendencia central, de dispersión y de distribución.' },
+        { tipo: 'img', src: 'img/adp/s12/fig01-visualizacion.png', alt: 'Infografía de análisis descriptivo y visualización de datos', pie: 'Figura 2. Análisis descriptivo y visualización de datos: preparación, medidas y beneficios.' },
+        { tipo: 'p', texto: 'Beneficios: detectar patrones, tendencias y correlaciones que pasarían desapercibidos en tablas; identificar áreas que necesitan mejora; aclarar qué factores influyen en el cliente; y apoyar predicciones (por ejemplo, de ventas). Con herramientas como R o Python se pueden explorar gráficos interactivos con más detalle.' },
+      ],
+      quiz: [
+        {
+          id: 'q1',
+          pregunta: '¿Qué elemento BPMN se utiliza para representar una decisión en un proceso?',
+          opciones: ['Evento', 'Pasarela (Gateway)', 'Tarea (Task)', 'Flujo de datos (Data Flow)'],
+          correcta: 1,
+          explicacion: 'Las pasarelas (gateways) modelan puntos de decisión o bifurcación en el flujo del proceso.',
+        },
+        {
+          id: 'q2',
+          pregunta: '¿Cuál es la representación correcta de una actividad en BPMN?',
+          opciones: ['Un círculo', 'Un rombo', 'Un rectángulo con bordes redondeados', 'Un triángulo'],
+          correcta: 2,
+          explicacion: 'Las actividades se representan como rectángulos con bordes redondeados. El círculo es evento y el rombo es compuerta.',
+        },
+        {
+          id: 'q3',
+          pregunta: '¿Qué representa una línea de carril (swimlane) en un modelo BPMN?',
+          opciones: ['Una tarea asignada', 'Un flujo de datos', 'Un rol o responsable dentro del proceso', 'Una decisión'],
+          correcta: 2,
+          explicacion: 'Los carriles dividen el proceso por roles o departamentos responsables de ejecutar las tareas.',
+        },
+        {
+          id: 'q4',
+          pregunta: 'Para indicar que varias tareas se ejecutan en paralelo en BPMN se usa…',
+          opciones: ['Una pasarela inclusiva', 'Una pasarela paralela (AND)', 'Un flujo secuencial', 'Una tarea compuesta'],
+          correcta: 1,
+          explicacion: 'La pasarela paralela (AND) permite que varias actividades se ejecuten al mismo tiempo.',
+        },
+        {
+          id: 'q5',
+          pregunta: 'En un análisis SIPOC, ¿qué representa la "P"?',
+          opciones: ['Proceso', 'Producto', 'Proveedor', 'Participante'],
+          correcta: 0,
+          explicacion: 'La "P" es Process (proceso): las actividades que transforman las entradas en salidas.',
+        },
+        {
+          id: 'q6',
+          pregunta: 'En la matriz RECI, ¿qué responsabilidad tiene el rol "E" (Ejecutor)?',
+          opciones: [
+            'Informar los resultados a los interesados',
+            'Ejecutar las tareas específicas del proceso',
+            'Consultar para tomar decisiones',
+            'Aprobar los entregables',
+          ],
+          correcta: 1,
+          explicacion: 'El Ejecutor realiza las tareas específicas; el Informado se entera, el Consultado aporta y el Responsable aprueba.',
+        },
+        {
+          id: 'q7',
+          pregunta: '¿Qué es la visualización de datos?',
+          opciones: [
+            'Escribir informes de texto extensos',
+            'La presentación de datos en formato gráfico para transmitir conceptos de forma rápida y universal',
+            'Almacenar datos en un servidor',
+            'Un tipo de compuerta',
+          ],
+          correcta: 1,
+          explicacion: 'Es presentar los datos de forma pictórica/gráfica, aprovechando cómo el cerebro procesa la información visual.',
+        },
+      ],
+    },
   ],
   flashcards: [
     { id: 'f1', frente: 'Misión', reverso: 'Declaración que define el propósito o razón de ser de una organización.', tema: 's01-introduccion' },
@@ -1142,5 +1225,11 @@ export const analisisDescriptivoProcesos = {
     { id: 's10f5', frente: 'Big Five', reverso: 'Extraversión, amabilidad, conciencia, neuroticismo y apertura a la experiencia.', tema: 's10-analisis-descriptivo' },
     { id: 's10f6', frente: 'Inteligencia de negocios (BI)', reverso: 'Transformar datos en información, en conocimiento y en estrategia empresarial.', tema: 's10-analisis-descriptivo' },
     { id: 's10f7', frente: 'Dashboard', reverso: 'Cuadro de mando que presenta de forma dinámica los aspectos clave del negocio.', tema: 's10-analisis-descriptivo' },
+    { id: 's12f1', frente: 'Compuerta paralela (AND)', reverso: 'Permite que varias actividades se ejecuten al mismo tiempo (en paralelo).', tema: 's12-ejercicios' },
+    { id: 's12f2', frente: 'Compuerta exclusiva (XOR)', reverso: 'Modela una decisión excluyente: se toma solo uno de los caminos.', tema: 's12-ejercicios' },
+    { id: 's12f3', frente: 'Actividad vs evento vs compuerta (BPMN)', reverso: 'Actividad: rectángulo redondeado. Evento: círculo. Compuerta: rombo.', tema: 's12-ejercicios' },
+    { id: 's12f4', frente: 'Pasos para modelar', reverso: 'Determinar roles (carriles), listar actividades y definir reglas de negocio.', tema: 's12-ejercicios' },
+    { id: 's12f5', frente: 'Visualización de datos', reverso: 'Presentación gráfica de los datos para transmitir conceptos de forma rápida y universal.', tema: 's12-ejercicios' },
+    { id: 's12f6', frente: 'Antes de visualizar', reverso: 'Entender los datos, definir el mensaje, conocer la audiencia y elegir el gráfico adecuado.', tema: 's12-ejercicios' },
   ],
 }
