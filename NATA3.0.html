@@ -3063,16 +3063,22 @@ function exportarSprintXLS(){
       p._vx=vx*0.5; p._vy=vy*0.5;   // sin buen match: inercia amortiguada, no se clava
     }
   }
+  // Una sola pasada de seguimiento sobre el frame actual (para stepping/seek)
+  var avisoLeer = false;
+  function trackOnce(){
+    if(!seguir) return;
+    var g = grayNow();
+    if(!g){
+      if(!avisoLeer){ avisoLeer=true; var h=document.getElementById('tool-hint'); if(h) h.textContent='⚠️ No puedo leer los frames del video para seguir (formato o seguridad). Probá otro archivo/navegador.'; }
+      return;
+    }
+    shapes.forEach(function(s){ s.pts.forEach(function(p){ matchNCC(g,p); }); });
+    puntos.forEach(function(p){ matchNCC(g,p); });
+    redraw();
+  }
   function cadaFrame(){
     if(video.paused || video.ended){ trackId=null; return; }
-    if(seguir){
-      var g = grayNow();
-      if(g){
-        shapes.forEach(function(s){ s.pts.forEach(function(p){ matchNCC(g,p); }); });
-        puntos.forEach(function(p){ matchNCC(g,p); });
-        redraw();
-      }
-    }
+    trackOnce();
     programar();
   }
   function programar(){
@@ -3082,6 +3088,15 @@ function exportarSprintXLS(){
   video.addEventListener('play', function(){ if(trackId===null) programar(); });
   video.addEventListener('pause', function(){
     if(trackId){ if(video.cancelVideoFrameCallback){ try{video.cancelVideoFrameCallback(trackId);}catch(_){}} clearTimeout(trackId); trackId=null; }
+  });
+  // Seguimiento al avanzar/retroceder frames o mover la barra (con el video en pausa)
+  var seekTracking=false;
+  video.addEventListener('seeked', function(){
+    if(video.paused && !arrastrando){
+      if(seekTracking) return; seekTracking=true;
+      // dar un instante a que el frame quede pintado antes de leerlo
+      requestAnimationFrame(function(){ trackOnce(); seekTracking=false; });
+    }
   });
   var segBtn = document.getElementById('tool-seguir');
   if(segBtn){ segBtn.addEventListener('click', function(){
