@@ -461,7 +461,7 @@
     <button class="tab-btn antro" id="btn-antro" role="tab" aria-selected="false" aria-controls="panel-antro" data-tab="antro" tabindex="-1" onclick="showPanel('antro')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.2 3.5v17"/><path d="M4.2 7.5h2.4M4.2 12h3.2M4.2 16.5h2.4"/><path d="M14 3.2l-4.2 9.4H13l-1 7.9 6.2-11.2H15l1-6.1z"/></svg> Antropometría / Potencia</button>
   </div>
 
-  <div class="control-bar">
+  <div class="control-bar" id="control-bar" hidden>
     <div class="cb-group">
       <label for="perfil-select">Perfil / nadador</label>
       <select id="perfil-select" aria-label="Seleccionar perfil de nadador"></select>
@@ -1000,7 +1000,7 @@ function formatTime(totalSeconds){
 
 var TABS = ['perfil','fc','swim','sprint','banco','antro'];
 function showPanel(which){
-  if(TABS.indexOf(which) === -1){ which = 'fc'; }
+  if(TABS.indexOf(which) === -1){ which = 'perfil'; }
   TABS.forEach(function(t){
     var active = t === which;
     document.getElementById('panel-'+t).classList.toggle('active', active);
@@ -1009,6 +1009,8 @@ function showPanel(which){
     btn.setAttribute('aria-selected', active ? 'true' : 'false');
     btn.tabIndex = active ? 0 : -1;
   });
+  var cb = document.getElementById('control-bar');
+  if(cb){ cb.hidden = (which !== 'perfil'); }
   try{ localStorage.setItem('nata-tab', which); }catch(e){}
 }
 
@@ -1027,7 +1029,7 @@ function initTabs(){
   });
   var saved;
   try{ saved = localStorage.getItem('nata-tab'); }catch(e){}
-  if(saved && TABS.indexOf(saved) !== -1){ showPanel(saved); }
+  showPanel(saved && TABS.indexOf(saved) !== -1 ? saved : 'perfil');
 }
 
 /* ============================= ZONAS FC ============================= */
