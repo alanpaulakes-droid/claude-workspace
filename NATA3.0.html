@@ -534,12 +534,8 @@
 
     <div class="export-card">
       <h2>📤 Exportar tabla de ritmos CSS por zona</h2>
-      <p class="hintx">La exportación incluye la tabla de zonas de ritmo CSS (con ppm de zona), el nombre del nadador y la fecha de descarga. En JPG y PDF se muestran solo los rangos (sin las columnas de fisiología) para que todo entre bien en la imagen/página.</p>
+      <p class="hintx">Usa el <strong>nombre del atleta</strong> cargado en la pestaña Frecuencia cardíaca. Incluye la tabla de zonas de ritmo CSS (con ppm de zona) y la fecha de descarga. En JPG y PDF se muestran solo los rangos (sin las columnas de fisiología) para que todo entre bien en la imagen/página.</p>
       <div class="export-grid">
-        <div class="export-field">
-          <label for="exp-nadador">Nombre del nadador</label>
-          <input type="text" id="exp-nadador" placeholder="Ej: Juan Pérez">
-        </div>
         <div class="export-buttons">
           <button class="export-btn" onclick="exportarHTML()">🌐 Exportar HTML</button>
           <button class="export-btn" onclick="exportarPDF()">📄 Exportar PDF (carta horizontal)</button>
@@ -617,12 +613,8 @@
   <section class="panel sprint" id="panel-sprint" role="tabpanel" aria-labelledby="btn-sprint">
     <div class="export-card sprint">
       <h2>📤 Exportar Test Sprinter</h2>
-      <p class="hintx">Genera un documento con nombre y fecha para compartir o archivar.</p>
+      <p class="hintx">Usa el <strong>nombre del atleta</strong> cargado en la pestaña Frecuencia cardíaca. Genera un documento con nombre y fecha para compartir o archivar.</p>
       <div class="export-grid">
-        <div class="export-field">
-          <label for="exp-nadador-sprint">Nombre del nadador</label>
-          <input type="text" id="exp-nadador-sprint" placeholder="Ej: Juan Pérez">
-        </div>
         <div class="export-buttons">
           <button class="export-btn" onclick="exportarSprintHTML()">🌐 Exportar HTML</button>
           <button class="export-btn" onclick="exportarSprintPDF()">📄 Exportar PDF (carta horizontal)</button>
@@ -1671,10 +1663,12 @@ function fechaDescargaTexto(){
   return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
 }
 
-function nombreNadadorTexto(){
-  var v = document.getElementById('exp-nadador').value.trim();
+function nombreDelPerfil(){
+  var el = document.getElementById('fc-nombre');
+  var v = el ? el.value.trim() : '';
   return v ? v : 'Sin especificar';
 }
+function nombreNadadorTexto(){ return nombreDelPerfil(); }
 
 /* Construye el HTML de la tabla de ritmos CSS por zona (con PPM de zona) a partir del DOM actual.
    Si soloRangos es true, se excluyen las columnas de fisiología (Sustrato, Fisiología avanzada,
@@ -1886,10 +1880,7 @@ function setExportStatusSprint(msg, isError){
   el.style.color = isError ? '#FFD7CC' : 'rgba(255,255,255,.85)';
 }
 
-function nombreNadadorTextoSprint(){
-  var v = document.getElementById('exp-nadador-sprint').value.trim();
-  return v ? v : 'Sin especificar';
-}
+function nombreNadadorTextoSprint(){ return nombreDelPerfil(); }
 
 function construirTablaSprintExportHTML(){
   var headRow = document.querySelector('#tabla-sprint thead tr');
@@ -2418,7 +2409,7 @@ function exportarSprintXLS(){
     URL.revokeObjectURL(url);
   }
   function nombreArchivo(base){
-    var n=val('exp-nadador')||val('exp-nadador-sprint');
+    var n=val('fc-nombre');
     return base+(n?'-'+n.replace(/\s+/g,'_'):'');
   }
   function tablaMesocicloHTML(){
@@ -2438,7 +2429,7 @@ function exportarSprintXLS(){
       '<tbody>'+filas+'</tbody></table>';
   }
   function exportarMesocicloHTML(){
-    var nombre=val('exp-nadador')||val('exp-nadador-sprint')||'Sin especificar';
+    var nombre=val('fc-nombre')||'Sin especificar';
     var doc='<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Mesociclo — '+nombre+'</title></head><body>'+
       '<h1 style="font-family:Arial">Mesociclo semanal — '+nombre+'</h1>'+
       '<p style="font-family:Arial;color:#555">Volumen total: '+
