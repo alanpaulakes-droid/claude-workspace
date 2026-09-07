@@ -561,6 +561,7 @@
         <div class="field">
           <label for="an-sexo">Sexo biológico</label>
           <select id="an-sexo">
+            <option value="" selected>—</option>
             <option value="1">Masculino</option>
             <option value="0">Femenino</option>
           </select>
@@ -568,22 +569,22 @@
         </div>
         <div class="field">
           <label for="fc-edad">Edad</label>
-          <input type="number" id="fc-edad" value="20" min="5" max="99">
+          <input type="number" id="fc-edad" value="" min="5" max="99">
           <span class="hint">años cronológicos</span>
         </div>
         <div class="field">
           <label for="an-peso">Peso corporal</label>
-          <input type="number" id="an-peso" value="70" min="20" max="200" step="0.1">
+          <input type="number" id="an-peso" value="" min="20" max="200" step="0.1">
           <span class="hint">kg</span>
         </div>
         <div class="field">
           <label for="an-altura">Altura</label>
-          <input type="number" id="an-altura" value="175" min="1" max="230" step="0.5">
+          <input type="number" id="an-altura" value="" min="1" max="230" step="0.5">
           <span class="hint">cm (acepta metros, ej. 1.75)</span>
         </div>
         <div class="field">
           <label for="an-envergadura">Envergadura (brazada)</label>
-          <input type="number" id="an-envergadura" value="180" min="1" max="250" step="0.5">
+          <input type="number" id="an-envergadura" value="" min="1" max="250" step="0.5">
           <span class="hint">cm, punta a punta (acepta metros)</span>
         </div>
       </div>
@@ -597,12 +598,12 @@
       <div class="grid-inputs">
         <div class="field">
           <label for="fc-max">FC máxima real</label>
-          <input type="number" id="fc-max" value="200" min="60" max="240">
+          <input type="number" id="fc-max" value="" min="60" max="240">
           <span class="hint">ppm, test de campo al fallo</span>
         </div>
         <div class="field">
           <label for="fc-reposo">FC de reposo</label>
-          <input type="number" id="fc-reposo" value="50" min="20" max="120">
+          <input type="number" id="fc-reposo" value="" min="20" max="120">
           <span class="hint">ppm, promedio matutino 3–5 días</span>
         </div>
       </div>
@@ -620,7 +621,7 @@
         </div>
         <div class="field">
           <label for="sw-t1">Tiempo 1 (mm:ss)</label>
-          <input type="text" id="sw-t1" value="6:40">
+          <input type="text" id="sw-t1" value="" placeholder="mm:ss">
           <span class="hint">tiempo del test más largo</span>
         </div>
         <div class="field">
@@ -629,7 +630,7 @@
         </div>
         <div class="field">
           <label for="sw-t2">Tiempo 2 (mm:ss)</label>
-          <input type="text" id="sw-t2" value="3:00">
+          <input type="text" id="sw-t2" value="" placeholder="mm:ss">
           <span class="hint">tiempo del test más corto</span>
         </div>
       </div>
@@ -643,19 +644,19 @@
       <div class="grid-inputs">
         <div class="field">
           <label for="sp-r1">Repetición 1 (seg)</label>
-          <input type="number" id="sp-r1" value="20" step="0.1" min="0">
+          <input type="number" id="sp-r1" value="" step="0.1" min="0">
         </div>
         <div class="field">
           <label for="sp-r2">Repetición 2 (seg)</label>
-          <input type="number" id="sp-r2" value="27.2" step="0.1" min="0">
+          <input type="number" id="sp-r2" value="" step="0.1" min="0">
         </div>
         <div class="field">
           <label for="sp-r3">Repetición 3 (seg)</label>
-          <input type="number" id="sp-r3" value="27.8" step="0.1" min="0">
+          <input type="number" id="sp-r3" value="" step="0.1" min="0">
         </div>
         <div class="field">
           <label for="sp-r4">Repetición 4 (seg)</label>
-          <input type="number" id="sp-r4" value="28.1" step="0.1" min="0">
+          <input type="number" id="sp-r4" value="" step="0.1" min="0">
         </div>
       </div>
       <p style="font-size:12.5px;color:var(--muted);margin:12px 0 0;line-height:1.6;">
@@ -2770,6 +2771,15 @@ function exportarSprintXLS(){
     get: function(k){ return lsGet(k); },
     set: function(k,v){ return lsSet(k,v); }
   };
+
+  /* ---------- Migración: quitar el perfil por defecto "Principal" heredado ---------- */
+  (function(){
+    var pf = leerPerfiles();
+    if(pf && Object.prototype.hasOwnProperty.call(pf,'Principal')){
+      delete pf['Principal']; guardarPerfiles(pf);
+      if(perfilActivo()==='Principal') lsSet(KEY_ACTIVO,'');
+    }
+  })();
 
   /* ---------- Arranque ---------- */
   crearCajaValidacion('panel-perfil','val-fc');
