@@ -1238,8 +1238,9 @@ function calcSwim(){
 
   var velCss = NaN, pace100 = NaN;
   if(isFinite(t1) && isFinite(t2) && (t1-t2) !== 0 && (d1-d2) !== 0){
-    velCss = (d1-d2)/(t1-t2); // m/s
-    pace100 = 100/velCss;     // seg por 100m
+    var v = (d1-d2)/(t1-t2); // m/s
+    // Solo válido si la distancia mayor tiene el tiempo mayor (velocidad positiva y realista)
+    if(v > 0 && v < 5){ velCss = v; pace100 = 100/velCss; }
   }
 
   document.getElementById('sw-css-vel').value = isFinite(velCss) ? velCss.toFixed(3)+' m/s' : '—';
