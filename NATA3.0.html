@@ -134,6 +134,27 @@
   .tab-btn.active.antro{background:#1F7A6D; color:#fff;}
   .tab-btn.active.perfil{background:var(--navy-900); color:#fff;}
   .panel.perfil .stat{background:linear-gradient(160deg,#062A3F,var(--navy-800));}
+  .tab-btn.active.video{background:#B45309; color:#fff;}
+  .panel.video .stat{background:linear-gradient(160deg,#5A2A05,#B45309);}
+  .vid-toolbar{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;}
+  .vid-name{font-size:13px; color:var(--muted); font-family:'JetBrains Mono',monospace;}
+  .vid-wrap{position:relative; width:100%; background:#000; border-radius:12px; overflow:hidden; line-height:0;}
+  .vid-wrap video{width:100%; height:auto; display:block; max-height:70vh;}
+  .vid-wrap canvas{position:absolute; inset:0; width:100%; height:100%; touch-action:none; cursor:crosshair;}
+  .vid-controls{display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap; margin:12px 0;}
+  .vid-controls .cb-group{display:flex; flex-direction:column; gap:5px;}
+  .vid-controls label{font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
+  .vid-controls select, .vid-controls input{font-family:'Inter',sans-serif; font-size:14px; padding:9px 11px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);}
+  .vid-seek{width:100%; margin:4px 0 2px; accent-color:#B45309;}
+  .vid-time{font-size:12.5px; color:var(--muted); margin-bottom:12px;}
+  .vid-tools{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .vid-tools .cb-btn.active{background:#B45309; color:#fff; border-color:#B45309;}
+  .vid-hint{font-size:12px; color:var(--muted);}
+  .vid-check{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .vid-check label{display:flex; align-items:flex-start; gap:9px; font-size:13.5px; line-height:1.4; cursor:pointer;}
+  .vid-check input{margin-top:2px; width:17px; height:17px; accent-color:#B45309; flex:none;}
+  @media(max-width:640px){ .vid-check{grid-template-columns:1fr;} }
+  @media print{ .panel.video{display:none !important;} }
   .tab-btn:not(.active):hover{background:var(--bg); color:var(--ink);}
 
   .panel{display:none; animation:fade .3s ease;}
@@ -473,6 +494,7 @@
     <button class="tab-btn sprint" id="btn-sprint" role="tab" aria-selected="false" aria-controls="panel-sprint" data-tab="sprint" tabindex="-1" onclick="showPanel('sprint')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 3h5"/><path d="M12 3v2.6"/><circle cx="12" cy="13.5" r="6.6"/><path d="M12 13.5V9.7"/><path d="M18.6 7.4l1.3-1.3"/></svg> Natación · Sprinter</button>
     <button class="tab-btn banco" id="btn-banco" role="tab" aria-selected="false" aria-controls="panel-banco" data-tab="banco" tabindex="-1" onclick="showPanel('banco')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.2" y="5" width="13.6" height="16" rx="2.2"/><rect x="9" y="3" width="6" height="3.4" rx="1.1"/><path d="M8.6 11h6.8M8.6 14.3h6.8M8.6 17.6h4.2"/></svg> Banco / Prescriptor</button>
     <button class="tab-btn antro" id="btn-antro" role="tab" aria-selected="false" aria-controls="panel-antro" data-tab="antro" tabindex="-1" onclick="showPanel('antro')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.2 3.5v17"/><path d="M4.2 7.5h2.4M4.2 12h3.2M4.2 16.5h2.4"/><path d="M14 3.2l-4.2 9.4H13l-1 7.9 6.2-11.2H15l1-6.1z"/></svg> Antropometría / Potencia</button>
+    <button class="tab-btn video" id="btn-video" role="tab" aria-selected="false" aria-controls="panel-video" data-tab="video" tabindex="-1" onclick="showPanel('video')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg> Video / Técnica</button>
   </div>
 
   <div class="control-bar" id="control-bar" hidden>
@@ -978,6 +1000,100 @@
     </div>
   </section>
 
+  <!-- ============================================================ -->
+  <!-- PANEL 6: VIDEO / ANÁLISIS DE TÉCNICA (manual) -->
+  <!-- ============================================================ -->
+  <section class="panel video" id="panel-video" role="tabpanel" aria-labelledby="btn-video">
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Video de técnica</h2>
+        <span class="tag" style="color:#B45309">CÁMARA LENTA · FRAME A FRAME · ÁNGULOS</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);margin:-6px 0 12px;line-height:1.6;">
+        El video se abre solo en tu dispositivo (no se sube a internet). Cargá un clip lateral, con buena luz y cámara fija, para medir mejor.
+      </p>
+
+      <div class="vid-toolbar">
+        <label class="cb-btn" for="vid-file"><span aria-hidden="true">📂</span> Cargar video</label>
+        <input type="file" id="vid-file" accept="video/*" hidden>
+        <span class="vid-name" id="vid-name">Ningún video cargado</span>
+      </div>
+
+      <div class="vid-stage" id="vid-stage" hidden>
+        <div class="vid-wrap" id="vid-wrap">
+          <video id="vid-player" playsinline preload="metadata"></video>
+          <canvas id="vid-canvas"></canvas>
+        </div>
+
+        <div class="vid-controls">
+          <button class="cb-btn" id="vid-play" type="button"><span aria-hidden="true">▶️</span> Play</button>
+          <button class="cb-btn" id="vid-back1" type="button" title="Un frame atrás">⏮ frame</button>
+          <button class="cb-btn" id="vid-fwd1" type="button" title="Un frame adelante">frame ⏭</button>
+          <div class="cb-group">
+            <label for="vid-rate">Velocidad</label>
+            <select id="vid-rate">
+              <option value="0.1">0.1× (muy lento)</option>
+              <option value="0.25">0.25×</option>
+              <option value="0.5" selected>0.5×</option>
+              <option value="1">1× (normal)</option>
+            </select>
+          </div>
+          <div class="cb-group">
+            <label for="vid-fps">FPS del video</label>
+            <input type="number" id="vid-fps" value="30" min="15" max="240" step="1" style="width:80px;">
+          </div>
+        </div>
+
+        <input type="range" id="vid-seek" min="0" max="100" value="0" step="0.1" class="vid-seek" aria-label="Posición del video">
+        <div class="vid-time mono" id="vid-time">0.00 s / 0.00 s</div>
+
+        <div class="vid-tools">
+          <button class="cb-btn" id="tool-angulo" type="button"><span aria-hidden="true">📐</span> Medir ángulo</button>
+          <button class="cb-btn" id="tool-linea" type="button"><span aria-hidden="true">📏</span> Línea</button>
+          <button class="cb-btn danger" id="tool-limpiar" type="button"><span aria-hidden="true">🧽</span> Borrar dibujos</button>
+          <span class="vid-hint" id="tool-hint">Elegí una herramienta y tocá el video.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Frecuencia de brazada</h2>
+        <span class="tag" style="color:#B45309">TOCÁ EN CADA BRAZADA</span>
+      </div>
+      <div class="vid-tools">
+        <button class="cb-btn primary" id="sr-tap" type="button"><span aria-hidden="true">👏</span> Marcar brazada</button>
+        <button class="cb-btn" id="sr-reset" type="button">↺ Reiniciar</button>
+      </div>
+      <div class="stat-strip">
+        <div class="stat"><div class="k">Brazadas/min</div><div class="v" id="sr-spm">—</div></div>
+        <div class="stat"><div class="k">Ciclos/min (2 brazadas)</div><div class="v" id="sr-cpm">—</div></div>
+        <div class="stat"><div class="k">Tempo</div><div class="v" id="sr-tempo">—<span class="u">s/brazada</span></div></div>
+        <div class="stat"><div class="k">Marcas</div><div class="v" id="sr-count">0</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Checklist de técnica y notas</h2>
+        <span class="tag" style="color:#B45309">SE GUARDA EN EL PERFIL DEL ATLETA</span>
+      </div>
+      <div class="vid-check" id="vid-check">
+        <label><input type="checkbox" data-vk="entrada"> Entrada de mano alineada (sin cruzar)</label>
+        <label><input type="checkbox" data-vk="agarre"> Agarre con codo alto (EVF)</label>
+        <label><input type="checkbox" data-vk="rolido"> Rolido de cadera y hombro</label>
+        <label><input type="checkbox" data-vk="empuje"> Empuje completo hasta la cadera</label>
+        <label><input type="checkbox" data-vk="patada"> Patada continua desde la cadera</label>
+        <label><input type="checkbox" data-vk="respiracion"> Respiración sin levantar la cabeza</label>
+        <label><input type="checkbox" data-vk="alineacion"> Alineación horizontal (caderas altas)</label>
+        <label><input type="checkbox" data-vk="simetria"> Simetría izquierda/derecha</label>
+      </div>
+      <label for="vid-notas" style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px;">Observaciones</label>
+      <textarea id="vid-notas" rows="4" placeholder="Notas de la corrección técnica…" style="width:100%;font-family:'Inter',sans-serif;font-size:14px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;resize:vertical;"></textarea>
+    </div>
+  </section>
+
   <div class="divider">todos los campos son editables — click y escribí</div>
   <footer class="note">
     FC: modelo de Karvonen (Frecuencia Cardíaca de Reserva). Tanaka = 208 − 0.7×edad, solo referencial.
@@ -1018,7 +1134,7 @@ function formatTime(totalSeconds){
   return sign + m + ':' + String(s).padStart(2,'0');
 }
 
-var TABS = ['perfil','fc','swim','sprint','banco','antro'];
+var TABS = ['perfil','fc','swim','sprint','banco','antro','video'];
 function showPanel(which){
   if(TABS.indexOf(which) === -1){ which = 'perfil'; }
   TABS.forEach(function(t){
@@ -2321,7 +2437,8 @@ function exportarSprintXLS(){
               vel:val('an-vel'), cd:val('an-cd'), area:val('an-area') },
       filtro: val('banco-filtro-fase'),
       banco: JSON.parse(JSON.stringify(bancoSeries)),
-      meso: JSON.parse(JSON.stringify(mesociclo))
+      meso: JSON.parse(JSON.stringify(mesociclo)),
+      video: (typeof window.serializarVideo==='function' ? window.serializarVideo() : null)
     };
   }
 
@@ -2359,6 +2476,8 @@ function exportarSprintXLS(){
     cargando = false;
     validarTodo();
     if(typeof actualizarBannerAtleta === 'function') actualizarBannerAtleta();
+    try{ window.__ultimoEstado = est; }catch(e){}
+    if(typeof window.aplicarVideo === 'function') window.aplicarVideo(est.video);
   }
 
   /* ---------- Perfiles ----------
@@ -2702,6 +2821,171 @@ function exportarSprintXLS(){
     if(typeof actualizarBannerAtleta === 'function') actualizarBannerAtleta();
   }
   cargando=false;
+})();
+
+/* ==================================================================== */
+/* ============ MÓDULO: Video / análisis de técnica (manual) ========== */
+/* ==================================================================== */
+(function(){
+  'use strict';
+  var file   = document.getElementById('vid-file');
+  if(!file) return;
+  var stage  = document.getElementById('vid-stage');
+  var nameEl = document.getElementById('vid-name');
+  var video  = document.getElementById('vid-player');
+  var canvas = document.getElementById('vid-canvas');
+  var ctx    = canvas.getContext('2d');
+  var seek   = document.getElementById('vid-seek');
+  var timeEl = document.getElementById('vid-time');
+  var rate   = document.getElementById('vid-rate');
+  var fpsEl  = document.getElementById('vid-fps');
+  var playBtn= document.getElementById('vid-play');
+  var urlActual = null;
+
+  /* ---- carga del archivo ---- */
+  file.addEventListener('change', function(){
+    var f = file.files && file.files[0];
+    if(!f) return;
+    if(urlActual) URL.revokeObjectURL(urlActual);
+    urlActual = URL.createObjectURL(f);
+    video.src = urlActual;
+    nameEl.textContent = f.name;
+    stage.hidden = false;
+    shapes = []; puntos = [];
+  });
+
+  video.addEventListener('loadedmetadata', function(){ ajustarCanvas(); redraw(); });
+  video.addEventListener('play',  function(){ playBtn.innerHTML='⏸️ Pausa'; });
+  video.addEventListener('pause', function(){ playBtn.innerHTML='▶️ Play'; });
+  video.addEventListener('timeupdate', function(){
+    if(video.duration){ seek.value = (video.currentTime/video.duration)*100; }
+    timeEl.textContent = video.currentTime.toFixed(2)+' s / '+(video.duration||0).toFixed(2)+' s';
+  });
+  window.addEventListener('resize', function(){ ajustarCanvas(); redraw(); });
+
+  playBtn.addEventListener('click', function(){ if(video.paused) video.play(); else video.pause(); });
+  rate.addEventListener('change', function(){ video.playbackRate = parseFloat(rate.value); });
+  function paso(dir){
+    var fps = parseFloat(fpsEl.value) || 30;
+    video.pause();
+    video.currentTime = Math.max(0, Math.min(video.duration||0, video.currentTime + dir/fps));
+  }
+  document.getElementById('vid-back1').addEventListener('click', function(){ paso(-1); });
+  document.getElementById('vid-fwd1').addEventListener('click', function(){ paso(1); });
+  seek.addEventListener('input', function(){
+    if(video.duration){ video.pause(); video.currentTime = (parseFloat(seek.value)/100)*video.duration; }
+  });
+
+  /* ---- canvas / dibujo (coordenadas normalizadas 0..1) ---- */
+  function ajustarCanvas(){
+    var r = video.getBoundingClientRect();
+    canvas.width = Math.max(1, Math.round(r.width));
+    canvas.height = Math.max(1, Math.round(r.height));
+  }
+  var shapes = [];   // {tipo:'angulo'|'linea', pts:[{x,y}...]} normalizado
+  var puntos = [];   // puntos en curso
+  var herramienta = null;
+
+  function setHerramienta(t){
+    herramienta = (herramienta===t) ? null : t;
+    puntos = [];
+    ['tool-angulo','tool-linea'].forEach(function(id){
+      document.getElementById(id).classList.toggle('active',
+        (id==='tool-angulo'&&herramienta==='angulo')||(id==='tool-linea'&&herramienta==='linea'));
+    });
+    document.getElementById('tool-hint').textContent = herramienta==='angulo'
+      ? 'Tocá 3 puntos: extremo, vértice y extremo.'
+      : herramienta==='linea' ? 'Tocá 2 puntos.' : 'Elegí una herramienta y tocá el video.';
+  }
+  document.getElementById('tool-angulo').addEventListener('click', function(){ setHerramienta('angulo'); });
+  document.getElementById('tool-linea').addEventListener('click', function(){ setHerramienta('linea'); });
+  document.getElementById('tool-limpiar').addEventListener('click', function(){ shapes=[]; puntos=[]; redraw(); });
+
+  canvas.addEventListener('pointerdown', function(e){
+    if(!herramienta) return;
+    var r = canvas.getBoundingClientRect();
+    puntos.push({ x:(e.clientX-r.left)/r.width, y:(e.clientY-r.top)/r.height });
+    var need = herramienta==='angulo' ? 3 : 2;
+    if(puntos.length===need){ shapes.push({tipo:herramienta, pts:puntos.slice()}); puntos=[]; }
+    redraw();
+  });
+
+  function P(pt){ return { x:pt.x*canvas.width, y:pt.y*canvas.height }; }
+  function anguloEntre(a,b,c){
+    var A=P(a),B=P(b),C=P(c);
+    var v1={x:A.x-B.x,y:A.y-B.y}, v2={x:C.x-B.x,y:C.y-B.y};
+    var d=v1.x*v2.x+v1.y*v2.y;
+    var m=Math.hypot(v1.x,v1.y)*Math.hypot(v2.x,v2.y)||1;
+    return Math.acos(Math.max(-1,Math.min(1,d/m)))*180/Math.PI;
+  }
+  function dibujarPuntos(pts, color){
+    ctx.fillStyle=color;
+    pts.forEach(function(p){ var q=P(p); ctx.beginPath(); ctx.arc(q.x,q.y,4,0,7); ctx.fill(); });
+  }
+  function redraw(){
+    if(!canvas.width) return;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.lineWidth=2.5; ctx.font='bold 15px JetBrains Mono, monospace';
+    var naranja='#FF8A3D';
+    shapes.concat(puntos.length?[{tipo:herramienta,pts:puntos,parcial:true}]:[]).forEach(function(s){
+      var col = s.parcial ? '#FFD27F' : naranja;
+      ctx.strokeStyle=col;
+      if(s.pts.length>=2){
+        ctx.beginPath();
+        s.pts.forEach(function(p,i){ var q=P(p); i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y); });
+        ctx.stroke();
+      }
+      dibujarPuntos(s.pts, col);
+      if(s.tipo==='angulo' && s.pts.length===3){
+        var ang=anguloEntre(s.pts[0],s.pts[1],s.pts[2]); var v=P(s.pts[1]);
+        ctx.fillStyle='#000'; ctx.globalAlpha=.55; ctx.fillRect(v.x+8,v.y-22,66,22); ctx.globalAlpha=1;
+        ctx.fillStyle='#fff'; ctx.fillText(ang.toFixed(0)+'°', v.x+12, v.y-6);
+      }
+      if(s.tipo==='linea' && s.pts.length===2){
+        var A=P(s.pts[0]),B=P(s.pts[1]); var mid={x:(A.x+B.x)/2,y:(A.y+B.y)/2};
+        var largoPx=Math.hypot(A.x-B.x,A.y-B.y);
+        var pct=(largoPx/canvas.width*100).toFixed(0);
+        ctx.fillStyle='#000'; ctx.globalAlpha=.55; ctx.fillRect(mid.x+6,mid.y-20,74,22); ctx.globalAlpha=1;
+        ctx.fillStyle='#fff'; ctx.fillText(pct+'% ancho', mid.x+10, mid.y-4);
+      }
+    });
+  }
+
+  /* ---- frecuencia de brazada ---- */
+  var taps=[];
+  function refrescarSR(){
+    document.getElementById('sr-count').textContent = taps.length;
+    if(taps.length<2){
+      document.getElementById('sr-spm').innerHTML='—';
+      document.getElementById('sr-cpm').innerHTML='—';
+      document.getElementById('sr-tempo').innerHTML='—<span class="u">s/brazada</span>';
+      return;
+    }
+    var difs=[]; for(var i=1;i<taps.length;i++) difs.push(taps[i]-taps[i-1]);
+    var prom=difs.reduce(function(a,b){return a+b;},0)/difs.length/1000; // s
+    var spm=60/prom;
+    document.getElementById('sr-spm').innerHTML=spm.toFixed(0)+'<span class="u">br/min</span>';
+    document.getElementById('sr-cpm').innerHTML=(spm/2).toFixed(0)+'<span class="u">cic/min</span>';
+    document.getElementById('sr-tempo').innerHTML=prom.toFixed(2)+'<span class="u">s/brazada</span>';
+  }
+  document.getElementById('sr-tap').addEventListener('click', function(){ taps.push(performance.now()); refrescarSR(); });
+  document.getElementById('sr-reset').addEventListener('click', function(){ taps=[]; refrescarSR(); });
+
+  /* ---- persistencia de checklist + notas (via perfil) ---- */
+  window.serializarVideo = function(){
+    var chk=[];
+    document.querySelectorAll('#vid-check input[type=checkbox]').forEach(function(c){ if(c.checked) chk.push(c.dataset.vk); });
+    var n=document.getElementById('vid-notas');
+    return { chk:chk, notas: n?n.value:'' };
+  };
+  window.aplicarVideo = function(v){
+    v = v || {chk:[], notas:''};
+    var set = v.chk || [];
+    document.querySelectorAll('#vid-check input[type=checkbox]').forEach(function(c){ c.checked = set.indexOf(c.dataset.vk)!==-1; });
+    var n=document.getElementById('vid-notas'); if(n) n.value = v.notas || '';
+  };
+  // Restaurar lo ya cargado por el módulo de perfiles (que corrió antes)
+  if(window.__ultimoEstado){ window.aplicarVideo(window.__ultimoEstado.video); }
 })();
 </script>
 </body>
