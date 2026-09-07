@@ -2994,8 +2994,7 @@ function exportarSprintXLS(){
   var procW = 0, procH = 0;
   var trackId = null;
   var seguir = true;
-  var R = 7;    // radio de la plantilla (parche (2R+1)^2)
-  var SW = 14;  // radio de la ventana de búsqueda
+  var R = 6;    // radio de la plantilla (parche (2R+1)^2)
 
   function grayNow(){
     if(!video.videoWidth) return null;
@@ -3004,8 +3003,15 @@ function exportarSprintXLS(){
     if(off.width!==procW){ off.width=procW; off.height=procH; }
     try{ offctx.drawImage(video, 0, 0, procW, procH); }catch(e){ return null; }
     var d; try{ d = offctx.getImageData(0,0,procW,procH).data; }catch(e){ return null; }
-    var g = new Float32Array(procW*procH);
-    for(var i=0,j=0;i<d.length;i+=4,j++){ g[j]=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114; }
+    var g0 = new Float32Array(procW*procH);
+    for(var i=0,j=0;i<d.length;i+=4,j++){ g0[j]=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114; }
+    // desenfoque 3x3: ensancha el pico de correlación y reduce ruido (más robusto)
+    var g = new Float32Array(procW*procH), x, y, a, b;
+    for(y=0;y<procH;y++){ for(x=0;x<procW;x++){
+      var s=0,c=0;
+      for(b=-1;b<=1;b++){ for(a=-1;a<=1;a++){ var xx=x+a, yy=y+b; if(xx>=0&&yy>=0&&xx<procW&&yy<procH){ s+=g0[yy*procW+xx]; c++; } } }
+      g[y*procW+x]=s/c;
+    } }
     return g;
   }
   function clampX(x){ return x<0?0:(x>=procW?procW-1:x); }
@@ -3017,22 +3023,45 @@ function exportarSprintXLS(){
     var n=(2*R+1)*(2*R+1), t=new Float32Array(n), k=0, sum=0, x,y,dx,dy;
     for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(cx+dx); y=clampY(cy+dy); t[k]=gray[y*procW+x]; sum+=t[k]; k++; } }
     var mean=sum/n, ss=0; for(k=0;k<n;k++){ t[k]-=mean; ss+=t[k]*t[k]; }
-    p._tpl=t; p._tnorm=Math.sqrt(ss)||1;
+    p._tpl=t; p._tnorm=Math.sqrt(ss)||1; p._vx=0; p._vy=0;  // reinicia velocidad al (re)anclar
   }
-  // Busca la plantilla por NCC en una ventana alrededor de la última posición
+  // NCC de la plantilla t centrada en (sx,sy)
+  function nccAt(gray, sx, sy, t, tnorm, n){
+    var sum=0, dx,dy,x,y,k=0;
+    for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(sx+dx); y=clampY(sy+dy); sum+=gray[y*procW+x]; } }
+    var mean=sum/n, dot=0, ss=0, v; k=0;
+    for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(sx+dx); y=clampY(sy+dy); v=gray[y*procW+x]-mean; dot+=t[k]*v; ss+=v*v; k++; } }
+    return dot/(tnorm*(Math.sqrt(ss)||1));
+  }
+  // Refresco adaptativo leve de la plantilla (sigue cambios de apariencia)
+  function refrescarTpl(gray, p, cx, cy, alpha){
+    cx=Math.round(cx); cy=Math.round(cy);
+    var t=p._tpl, n=t.length, tmp=new Float32Array(n), k=0, sum=0, dx,dy,x,y;
+    for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(cx+dx); y=clampY(cy+dy); tmp[k]=gray[y*procW+x]; sum+=tmp[k]; k++; } }
+    var mean=sum/n; for(k=0;k<n;k++){ tmp[k]-=mean; }
+    var ss=0; for(k=0;k<n;k++){ t[k]=(1-alpha)*t[k]+alpha*tmp[k]; ss+=t[k]*t[k]; }
+    p._tnorm=Math.sqrt(ss)||1;
+  }
+  // Busca la plantilla: predicción por velocidad + búsqueda exhaustiva (paso 1)
   function matchNCC(gray, p){
     if(!p._tpl) return;
-    var cx=Math.round(p.x*procW), cy=Math.round(p.y*procH);
-    var t=p._tpl, tnorm=p._tnorm, n=t.length, best=-2, bx=cx, by=cy, ox,oy,dx,dy,x,y,k;
-    for(oy=-SW;oy<=SW;oy++){ for(ox=-SW;ox<=SW;ox++){
-      var sx=cx+ox, sy=cy+oy, sum=0;
-      for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(sx+dx); y=clampY(sy+dy); sum+=gray[y*procW+x]; } }
-      var mean=sum/n, dot=0, ss=0, v; k=0;
-      for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(sx+dx); y=clampY(sy+dy); v=gray[y*procW+x]-mean; dot+=t[k]*v; ss+=v*v; k++; } }
-      var ncc = dot/(tnorm*(Math.sqrt(ss)||1)) - 0.0006*(ox*ox+oy*oy); // sesgo leve a lo cercano
-      if(ncc>best){ best=ncc; bx=sx; by=sy; }
+    var t=p._tpl, tnorm=p._tnorm, n=t.length;
+    var px=p.x*procW, py=p.y*procH;
+    var vx=p._vx||0, vy=p._vy||0;
+    var predx=Math.round(px+vx), predy=Math.round(py+vy);   // centro = donde debería estar
+    var big=Math.round(Math.max(16, procW*0.05));           // ventana adaptativa
+    var best=-2, bx=predx, by=predy, ox, oy, s;
+    for(oy=-big;oy<=big;oy++){ for(ox=-big;ox<=big;ox++){
+      s=nccAt(gray, predx+ox, predy+oy, t, tnorm, n);
+      if(s>best){ best=s; bx=predx+ox; by=predy+oy; }
     } }
-    if(best>0.35){ p.x=bx/procW; p.y=by/procH; }  // solo si hay coincidencia razonable
+    if(best>0.45){
+      p._vx=0.5*vx + 0.5*(bx-px); p._vy=0.5*vy + 0.5*(by-py);  // velocidad suavizada
+      p.x=Math.min(1,Math.max(0, bx/procW)); p.y=Math.min(1,Math.max(0, by/procH));
+      if(best>0.8) refrescarTpl(gray, p, bx, by, 0.10);        // adapta apariencia si el match es muy fuerte
+    } else {
+      p._vx=vx*0.5; p._vy=vy*0.5;   // sin buen match: inercia amortiguada, no se clava
+    }
   }
   function cadaFrame(){
     if(video.paused || video.ended){ trackId=null; return; }
