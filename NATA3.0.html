@@ -2258,6 +2258,7 @@ function exportarSprintXLS(){
   'use strict';
   var KEY_PERFILES = 'nata-perfiles';
   var KEY_ACTIVO   = 'nata-perfil-activo';
+  var KEY_WORKING  = 'nata-trabajo';   // estado en edición (NO pisa un perfil grabado)
   var cargando = true;          // evita autoguardar mientras se restaura
   var timerAutosave = null;
 
@@ -2356,33 +2357,41 @@ function exportarSprintXLS(){
     if(typeof actualizarBannerAtleta === 'function') actualizarBannerAtleta();
   }
 
-  /* ---------- Perfiles ---------- */
+  /* ---------- Perfiles ----------
+     Los perfiles grabados SOLO se escriben al pulsar "Grabar perfil de atleta".
+     La edición en vivo se autoguarda en un estado de trabajo aparte (KEY_WORKING),
+     así cambiar de atleta no pisa un perfil ya grabado. */
   function leerPerfiles(){
     try{ return JSON.parse(lsGet(KEY_PERFILES)) || {}; }catch(e){ return {}; }
   }
   function guardarPerfiles(p){ lsSet(KEY_PERFILES, JSON.stringify(p)); }
-  function perfilActivo(){ return lsGet(KEY_ACTIVO) || 'Principal'; }
+  function perfilActivo(){ return lsGet(KEY_ACTIVO) || ''; }
 
   function refrescarSelectorPerfiles(){
     var sel = document.getElementById('perfil-select');
     if(!sel) return;
-    var perfiles = leerPerfiles();
-    var nombres = Object.keys(perfiles);
-    if(nombres.indexOf('Principal')===-1) nombres.unshift('Principal');
-    sel.innerHTML = nombres.map(function(n){
+    var nombres = Object.keys(leerPerfiles());
+    var activo = perfilActivo();
+    if(!nombres.length){
+      sel.innerHTML = '<option value="">(sin perfiles grabados)</option>';
+      sel.value = '';
+      return;
+    }
+    var html = '<option value="">— elegí un atleta —</option>';
+    html += nombres.map(function(n){
       return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n+'</option>';
     }).join('');
-    sel.value = perfilActivo();
+    sel.innerHTML = html;
+    sel.value = (nombres.indexOf(activo)!==-1) ? activo : '';
   }
 
   function autosave(){
     if(cargando) return;
     if(timerAutosave) clearTimeout(timerAutosave);
     timerAutosave = setTimeout(function(){
-      var perfiles = leerPerfiles();
-      perfiles[perfilActivo()] = serializar();
-      guardarPerfiles(perfiles);
-      setStatus('Guardado ✓ · perfil "'+perfilActivo()+'"');
+      lsSet(KEY_WORKING, JSON.stringify(serializar()));
+      var act = perfilActivo();
+      setStatus(act ? ('Editando "'+act+'" · cambios sin grabar (pulsá Grabar)') : 'Cambios guardados en esta sesión');
     }, 400);
   }
 
@@ -2408,13 +2417,15 @@ function exportarSprintXLS(){
     try{
       var est = JSON.parse(b64DecodeUnicode(decodeURIComponent(m[1])));
       aplicar(est);
-      // Guardar como perfil "Compartido" y activarlo
+      lsSet(KEY_WORKING, JSON.stringify(est));
+      var nom = (est && est.nadador) ? est.nadador : 'Compartido';
       var perfiles = leerPerfiles();
-      perfiles['Compartido'] = est;
+      perfiles[nom] = est;
       guardarPerfiles(perfiles);
-      lsSet(KEY_ACTIVO, 'Compartido');
+      lsSet(KEY_ACTIVO, nom);
       refrescarSelectorPerfiles();
-      setStatus('Planilla cargada desde link (perfil "Compartido")');
+      if(typeof actualizarBannerAtleta === 'function') actualizarBannerAtleta();
+      setStatus('Planilla cargada desde link (atleta "'+nom+'")');
       history.replaceState(null,'', location.pathname);
       return true;
     }catch(e){ return false; }
@@ -2597,10 +2608,13 @@ function exportarSprintXLS(){
     toolbar.appendChild(b1); toolbar.appendChild(b2);
   }
 
-  /* ---------- Reiniciar ---------- */
+  /* ---------- Reiniciar (limpia el estado de trabajo, NO borra perfiles grabados) ---------- */
   function reiniciar(){
-    if(!confirm('¿Reiniciar el perfil "'+perfilActivo()+'" a los valores por defecto? Se perderán los cambios de este perfil.')) return;
-    var perfiles=leerPerfiles(); delete perfiles[perfilActivo()]; guardarPerfiles(perfiles);
+    if(typeof confirm === 'function'){
+      var ok; try{ ok = confirm('¿Reiniciar los datos en pantalla a los valores por defecto? Los perfiles grabados no se borran.'); }catch(e){ ok = true; }
+      if(ok === false) return;
+    }
+    lsDel(KEY_WORKING); lsSet(KEY_ACTIVO,'');
     location.hash=''; location.reload();
   }
 
@@ -2617,26 +2631,35 @@ function exportarSprintXLS(){
       return;
     }
     if(campo) campo.classList.remove('invalid');
-    var perfiles=leerPerfiles(); perfiles[nombre]=serializar(); guardarPerfiles(perfiles);
+    var snap=serializar();
+    var perfiles=leerPerfiles(); perfiles[nombre]=snap; guardarPerfiles(perfiles);
     lsSet(KEY_ACTIVO, nombre);
-    refrescarSelectorPerfiles(); autosave();
+    lsSet(KEY_WORKING, JSON.stringify(snap));
+    refrescarSelectorPerfiles();
     if(typeof actualizarBannerAtleta === 'function') actualizarBannerAtleta();
     setStatus('✅ Atleta: "'+nombre+'" grabado con éxito');
   });
   document.getElementById('cb-borrar-perfil').addEventListener('click', function(){
     var actual=perfilActivo();
-    if(actual==='Principal'){ setStatus('El perfil "Principal" no se puede borrar (usá Reiniciar).'); return; }
-    if(!confirm('¿Borrar el perfil "'+actual+'"?')) return;
+    if(!actual){ setStatus('⚠️ Elegí un perfil en la lista para borrarlo.'); return; }
+    if(typeof confirm === 'function'){
+      var ok; try{ ok = confirm('¿Borrar el perfil "'+actual+'"? (no afecta los datos en pantalla)'); }catch(e){ ok = true; }
+      if(ok === false) return;
+    }
     var perfiles=leerPerfiles(); delete perfiles[actual]; guardarPerfiles(perfiles);
-    lsSet(KEY_ACTIVO,'Principal'); refrescarSelectorPerfiles();
-    aplicar(leerPerfiles()['Principal'] || {});
-    setStatus('Perfil borrado. Activo: "Principal"');
+    lsSet(KEY_ACTIVO,''); refrescarSelectorPerfiles();
+    setStatus('🗑️ Perfil "'+actual+'" borrado.');
   });
   document.getElementById('perfil-select').addEventListener('change', function(){
-    lsSet(KEY_ACTIVO, this.value);
-    var est=leerPerfiles()[this.value];
-    if(est) aplicar(est);
-    setStatus('Perfil activo: "'+this.value+'"');
+    var nombre=this.value;
+    if(!nombre){ lsSet(KEY_ACTIVO,''); setStatus('Elegí un atleta de la lista.'); return; }
+    var est=leerPerfiles()[nombre];
+    if(!est){ setStatus('No se encontró el perfil "'+nombre+'".'); return; }
+    lsSet(KEY_ACTIVO, nombre);
+    aplicar(est);                                   // carga TODOS los datos del perfil
+    lsSet(KEY_WORKING, JSON.stringify(est));         // el estado de trabajo pasa a ser este perfil
+    if(typeof actualizarBannerAtleta === 'function') actualizarBannerAtleta();
+    setStatus('✅ Atleta seleccionado: "'+nombre+'"');
   });
 
   // Sincronizar los campos de nombre del atleta (FC ↔ export CSS ↔ export Sprint)
@@ -2667,9 +2690,12 @@ function exportarSprintXLS(){
   refrescarSelectorPerfiles();
 
   if(!cargarDesdeHash()){
-    var est=leerPerfiles()[perfilActivo()];
-    if(est){ aplicar(est); }
-    else { cargando=false; validarTodo(); autosave(); }
+    var work=null;
+    try{ work = JSON.parse(lsGet(KEY_WORKING)); }catch(e){}
+    if(!work){ var act=perfilActivo(); if(act) work = leerPerfiles()[act]; }
+    if(work){ aplicar(work); }
+    else { cargando=false; validarTodo(); }
+    if(typeof actualizarBannerAtleta === 'function') actualizarBannerAtleta();
   }
   cargando=false;
 })();
