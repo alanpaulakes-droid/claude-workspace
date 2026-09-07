@@ -1052,6 +1052,7 @@
           <button class="cb-btn" id="tool-angulo" type="button"><span aria-hidden="true">📐</span> Medir ángulo</button>
           <button class="cb-btn" id="tool-linea" type="button"><span aria-hidden="true">📏</span> Línea</button>
           <button class="cb-btn" id="tool-deshacer" type="button"><span aria-hidden="true">↩️</span> Deshacer</button>
+          <button class="cb-btn active" id="tool-seguir" type="button"><span aria-hidden="true">🎯</span> Seguir: ON</button>
           <button class="cb-btn danger" id="tool-limpiar" type="button"><span aria-hidden="true">🧽</span> Borrar todo</button>
           <span class="vid-hint" id="tool-hint">Elegí una herramienta y tocá el video.</span>
         </div>
@@ -2883,9 +2884,12 @@ function exportarSprintXLS(){
     canvas.width = Math.max(1, Math.round(r.width));
     canvas.height = Math.max(1, Math.round(r.height));
   }
-  var shapes = [];   // {tipo:'angulo'|'linea', pts:[{x,y}...]} normalizado
+  var shapes = [];   // {tipo:'angulo'|'linea', pts:[{x,y}...], color} normalizado
   var puntos = [];   // puntos en curso
   var herramienta = null;
+  var PALETA = ['#FF8A3D','#42A5F5','#66BB6A','#EC407A','#AB47BC','#FFCA28','#26C6DA','#EF5350'];
+  var colorIdx = 0;
+  function siguienteColor(){ return PALETA[(colorIdx++) % PALETA.length]; }
 
   function setHerramienta(t){
     herramienta = (herramienta===t) ? null : t;
@@ -2905,14 +2909,14 @@ function exportarSprintXLS(){
     else if(shapes.length){ shapes.pop(); } // borra el último vector dibujado
     redraw();
   });
-  document.getElementById('tool-limpiar').addEventListener('click', function(){ shapes=[]; puntos=[]; redraw(); });
+  document.getElementById('tool-limpiar').addEventListener('click', function(){ shapes=[]; puntos=[]; colorIdx=0; redraw(); });
 
   canvas.addEventListener('pointerdown', function(e){
     if(!herramienta) return;
     var r = canvas.getBoundingClientRect();
     puntos.push({ x:(e.clientX-r.left)/r.width, y:(e.clientY-r.top)/r.height });
     var need = herramienta==='angulo' ? 3 : 2;
-    if(puntos.length===need){ shapes.push({tipo:herramienta, pts:puntos.slice()}); puntos=[]; }
+    if(puntos.length===need){ shapes.push({tipo:herramienta, pts:puntos.slice(), color:siguienteColor()}); puntos=[]; }
     redraw();
   });
 
@@ -2934,7 +2938,7 @@ function exportarSprintXLS(){
     ctx.lineWidth=2.5; ctx.font='bold 15px JetBrains Mono, monospace';
     var naranja='#FF8A3D';
     shapes.concat(puntos.length?[{tipo:herramienta,pts:puntos,parcial:true}]:[]).forEach(function(s){
-      var col = s.parcial ? '#FFD27F' : naranja;
+      var col = s.parcial ? '#FFD27F' : (s.color || naranja);
       ctx.strokeStyle=col;
       if(s.pts.length>=2){
         ctx.beginPath();
@@ -2956,6 +2960,69 @@ function exportarSprintXLS(){
       }
     });
   }
+
+  /* ---- Seguimiento de puntos durante la reproducción ----
+     Sin librerías: correlación local (SAD) frame a frame sobre una versión
+     reducida en escala de grises del video. Los puntos "se pegan" a la textura
+     que tienen debajo y siguen el movimiento de la articulación. Es una
+     aproximación: cámara fija, buen contraste y lento funcionan mejor. */
+  var off = document.createElement('canvas');
+  var offctx = off.getContext('2d', { willReadFrequently:true });
+  var prevGray = null, procW = 0, procH = 0;
+  var trackId = null;
+  var seguir = true; // se puede apagar con el botón
+
+  function grabGray(){
+    if(!video.videoWidth) return null;
+    procW = Math.min(video.videoWidth, 480);
+    procH = Math.round(procW * video.videoHeight / video.videoWidth);
+    if(off.width!==procW){ off.width=procW; off.height=procH; }
+    try{ offctx.drawImage(video, 0, 0, procW, procH); }catch(e){ return null; }
+    var d;
+    try{ d = offctx.getImageData(0,0,procW,procH).data; }catch(e){ return null; }
+    var g = new Uint8Array(procW*procH);
+    for(var i=0,j=0;i<d.length;i+=4,j++){ g[j]=(d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114)|0; }
+    return g;
+  }
+  function sad(a,b, ax,ay, bx,by, r){
+    var s=0, cnt=0;
+    for(var dy=-r;dy<=r;dy++){ for(var dx=-r;dx<=r;dx++){
+      var axx=ax+dx, ayy=ay+dy, bxx=bx+dx, byy=by+dy;
+      if(axx<0||ayy<0||axx>=procW||ayy>=procH||bxx<0||byy<0||bxx>=procW||byy>=procH) continue;
+      s += Math.abs(a[ayy*procW+axx]-b[byy*procW+bxx]); cnt++;
+    }}
+    return cnt ? s/cnt : 1e9;
+  }
+  function seguirPunto(prevG, curG, p){
+    var px = Math.round(p.x*procW), py = Math.round(p.y*procH);
+    var r = 5, win = 10, best = 1e9, bx = px, by = py;
+    for(var oy=-win;oy<=win;oy++){ for(var ox=-win;ox<=win;ox++){
+      // penalización leve por desplazamiento: evita la deriva en zonas planas
+      var e = sad(prevG, curG, px, py, px+ox, py+oy, r) + 0.6*Math.sqrt(ox*ox+oy*oy);
+      if(e < best){ best=e; bx=px+ox; by=py+oy; }
+    }}
+    p.x = Math.min(1, Math.max(0, bx/procW));
+    p.y = Math.min(1, Math.max(0, by/procH));
+  }
+  function tickSeguimiento(){
+    if(video.paused || video.ended){ trackId=null; return; }
+    var cur = grabGray();
+    if(cur && prevGray && seguir){
+      shapes.forEach(function(s){ s.pts.forEach(function(p){ seguirPunto(prevGray, cur, p); }); });
+      puntos.forEach(function(p){ seguirPunto(prevGray, cur, p); });
+      redraw();
+    }
+    if(cur) prevGray = cur;
+    trackId = setTimeout(function(){ requestAnimationFrame(tickSeguimiento); }, 60); // ~16 fps
+  }
+  video.addEventListener('play', function(){ prevGray = grabGray(); if(trackId===null) requestAnimationFrame(tickSeguimiento); });
+  video.addEventListener('pause', function(){ if(trackId){ clearTimeout(trackId); trackId=null; } });
+  video.addEventListener('seeked', function(){ prevGray = grabGray(); });
+  var segBtn = document.getElementById('tool-seguir');
+  if(segBtn){ segBtn.addEventListener('click', function(){
+    seguir = !seguir; segBtn.classList.toggle('active', seguir);
+    segBtn.innerHTML = seguir ? '<span aria-hidden="true">🎯</span> Seguir: ON' : '<span aria-hidden="true">🎯</span> Seguir: OFF';
+  }); }
 
   /* ---- frecuencia de brazada ---- */
   var taps=[];
