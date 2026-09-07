@@ -1051,7 +1051,8 @@
         <div class="vid-tools">
           <button class="cb-btn" id="tool-angulo" type="button"><span aria-hidden="true">📐</span> Medir ángulo</button>
           <button class="cb-btn" id="tool-linea" type="button"><span aria-hidden="true">📏</span> Línea</button>
-          <button class="cb-btn danger" id="tool-limpiar" type="button"><span aria-hidden="true">🧽</span> Borrar dibujos</button>
+          <button class="cb-btn" id="tool-deshacer" type="button"><span aria-hidden="true">↩️</span> Deshacer</button>
+          <button class="cb-btn danger" id="tool-limpiar" type="button"><span aria-hidden="true">🧽</span> Borrar todo</button>
           <span class="vid-hint" id="tool-hint">Elegí una herramienta y tocá el video.</span>
         </div>
       </div>
@@ -2899,6 +2900,11 @@ function exportarSprintXLS(){
   }
   document.getElementById('tool-angulo').addEventListener('click', function(){ setHerramienta('angulo'); });
   document.getElementById('tool-linea').addEventListener('click', function(){ setHerramienta('linea'); });
+  document.getElementById('tool-deshacer').addEventListener('click', function(){
+    if(puntos.length){ puntos.pop(); }   // cancela el punto a medio marcar
+    else if(shapes.length){ shapes.pop(); } // borra el último vector dibujado
+    redraw();
+  });
   document.getElementById('tool-limpiar').addEventListener('click', function(){ shapes=[]; puntos=[]; redraw(); });
 
   canvas.addEventListener('pointerdown', function(e){
