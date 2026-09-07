@@ -466,6 +466,11 @@
       </div>
       <div class="grid-inputs">
         <div class="field">
+          <label for="fc-nombre">Nombre del atleta</label>
+          <input type="text" id="fc-nombre" placeholder="Ej: Juan Pérez">
+          <span class="hint">se usa en exportaciones y perfiles</span>
+        </div>
+        <div class="field">
           <label for="fc-edad">Edad del atleta</label>
           <input type="number" id="fc-edad" value="20" min="5" max="99">
           <span class="hint">años cronológicos</span>
@@ -1954,7 +1959,7 @@ function exportarSprintXLS(){
       swim:{ d1:val('sw-d1'), t1:val('sw-t1'), d2:val('sw-d2'), t2:val('sw-t2') },
       sprint:{ r1:val('sp-r1'), r2:val('sp-r2'), r3:val('sp-r3'), r4:val('sp-r4'),
                txt:textosEditables('tabla-sprint',[5,6]) },
-      nadador: val('exp-nadador') || val('exp-nadador-sprint'),
+      nadador: val('fc-nombre') || val('exp-nadador') || val('exp-nadador-sprint'),
       filtro: val('banco-filtro-fase'),
       banco: JSON.parse(JSON.stringify(bancoSeries)),
       meso: JSON.parse(JSON.stringify(mesociclo))
@@ -1967,7 +1972,7 @@ function exportarSprintXLS(){
     if(est.fc){ setVal('fc-edad',est.fc.edad); setVal('fc-max',est.fc.max); setVal('fc-reposo',est.fc.reposo); }
     if(est.swim){ setVal('sw-d1',est.swim.d1); setVal('sw-t1',est.swim.t1); setVal('sw-d2',est.swim.d2); setVal('sw-t2',est.swim.t2); }
     if(est.sprint){ setVal('sp-r1',est.sprint.r1); setVal('sp-r2',est.sprint.r2); setVal('sp-r3',est.sprint.r3); setVal('sp-r4',est.sprint.r4); }
-    if(est.nadador!=null){ setVal('exp-nadador',est.nadador); setVal('exp-nadador-sprint',est.nadador); }
+    if(est.nadador!=null){ setVal('fc-nombre',est.nadador); setVal('exp-nadador',est.nadador); setVal('exp-nadador-sprint',est.nadador); }
     if(est.filtro){ setVal('banco-filtro-fase',est.filtro); }
     if(Array.isArray(est.banco)){ bancoSeries.length=0; est.banco.forEach(function(s){ bancoSeries.push(s); }); }
     if(est.meso){ diasSemana.forEach(function(d){ mesociclo[d] = Array.isArray(est.meso[d]) ? est.meso[d] : []; }); }
@@ -2246,7 +2251,7 @@ function exportarSprintXLS(){
     nombre=nombre.trim(); if(!nombre) return;
     var perfiles=leerPerfiles(); perfiles[nombre]=serializar(); guardarPerfiles(perfiles);
     lsSet(KEY_ACTIVO, nombre);
-    setVal('exp-nadador',nombre); setVal('exp-nadador-sprint',nombre);
+    setVal('fc-nombre',nombre); setVal('exp-nadador',nombre); setVal('exp-nadador-sprint',nombre);
     refrescarSelectorPerfiles(); autosave();
     setStatus('Perfil "'+nombre+'" guardado');
   });
@@ -2264,6 +2269,16 @@ function exportarSprintXLS(){
     var est=leerPerfiles()[this.value];
     if(est) aplicar(est);
     setStatus('Perfil activo: "'+this.value+'"');
+  });
+
+  // Sincronizar los campos de nombre del atleta (FC ↔ export CSS ↔ export Sprint)
+  ['fc-nombre','exp-nadador','exp-nadador-sprint'].forEach(function(id){
+    var el=document.getElementById(id); if(!el) return;
+    el.addEventListener('input', function(){
+      ['fc-nombre','exp-nadador','exp-nadador-sprint'].forEach(function(otro){
+        if(otro!==id) setVal(otro, el.value);
+      });
+    });
   });
 
   // Autoguardado y validación ante cualquier edición
