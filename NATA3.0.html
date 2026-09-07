@@ -2900,7 +2900,8 @@ function exportarSprintXLS(){
     });
     document.getElementById('tool-hint').textContent = herramienta==='angulo'
       ? 'Tocá 3 puntos: extremo, vértice y extremo.'
-      : herramienta==='linea' ? 'Tocá 2 puntos.' : 'Elegí una herramienta y tocá el video.';
+      : herramienta==='linea' ? 'Tocá 2 puntos.' : 'Sin herramienta: arrastrá un punto para corregir su posición.';
+    canvas.style.cursor = herramienta ? 'crosshair' : 'grab';
   }
   document.getElementById('tool-angulo').addEventListener('click', function(){ setHerramienta('angulo'); });
   document.getElementById('tool-linea').addEventListener('click', function(){ setHerramienta('linea'); });
@@ -2911,13 +2912,35 @@ function exportarSprintXLS(){
   });
   document.getElementById('tool-limpiar').addEventListener('click', function(){ shapes=[]; puntos=[]; colorIdx=0; redraw(); });
 
+  var arrastrando = null;
+  function puntoCercano(nx,ny,w,h,thrPx){
+    var best=null, bd=thrPx*thrPx;
+    function consider(p){ var dx=(p.x-nx)*w, dy=(p.y-ny)*h; var d=dx*dx+dy*dy; if(d<bd){bd=d;best=p;} }
+    shapes.forEach(function(s){ s.pts.forEach(consider); }); puntos.forEach(consider);
+    return best;
+  }
   canvas.addEventListener('pointerdown', function(e){
-    if(!herramienta) return;
     var r = canvas.getBoundingClientRect();
-    puntos.push({ x:(e.clientX-r.left)/r.width, y:(e.clientY-r.top)/r.height });
-    var need = herramienta==='angulo' ? 3 : 2;
-    if(puntos.length===need){ shapes.push({tipo:herramienta, pts:puntos.slice(), color:siguienteColor()}); puntos=[]; }
+    var nx=(e.clientX-r.left)/r.width, ny=(e.clientY-r.top)/r.height;
+    if(herramienta){
+      var pt={x:nx,y:ny}; puntos.push(pt);
+      var g=grayNow(); if(g) capturarTpl(g, pt);   // plantilla de referencia del punto
+      var need = herramienta==='angulo' ? 3 : 2;
+      if(puntos.length===need){ shapes.push({tipo:herramienta, pts:puntos.slice(), color:siguienteColor()}); puntos=[]; }
+      redraw(); return;
+    }
+    // sin herramienta activa: arrastrar un punto existente para corregirlo
+    var hit = puntoCercano(nx,ny, r.width, r.height, 20);
+    if(hit){ arrastrando=hit; try{ canvas.setPointerCapture(e.pointerId); }catch(_){} }
+  });
+  canvas.addEventListener('pointermove', function(e){
+    if(!arrastrando) return;
+    var r = canvas.getBoundingClientRect();
+    arrastrando.x=(e.clientX-r.left)/r.width; arrastrando.y=(e.clientY-r.top)/r.height;
     redraw();
+  });
+  canvas.addEventListener('pointerup', function(){
+    if(arrastrando){ var g=grayNow(); if(g) capturarTpl(g, arrastrando); arrastrando=null; }
   });
 
   function P(pt){ return { x:pt.x*canvas.width, y:pt.y*canvas.height }; }
@@ -2961,63 +2984,76 @@ function exportarSprintXLS(){
     });
   }
 
-  /* ---- Seguimiento de puntos durante la reproducción ----
-     Sin librerías: correlación local (SAD) frame a frame sobre una versión
-     reducida en escala de grises del video. Los puntos "se pegan" a la textura
-     que tienen debajo y siguen el movimiento de la articulación. Es una
-     aproximación: cámara fija, buen contraste y lento funcionan mejor. */
+  /* ---- Seguimiento de puntos (estilo Kinovea) ----
+     Cada punto guarda una PLANTILLA de referencia (parche en gris) tomada al
+     colocarlo o al corregirlo arrastrándolo. En cada frame del video se busca
+     esa plantilla en una ventana alrededor de la última posición usando
+     correlación cruzada normalizada (NCC), robusta a cambios de luz. */
   var off = document.createElement('canvas');
   var offctx = off.getContext('2d', { willReadFrequently:true });
-  var prevGray = null, procW = 0, procH = 0;
+  var procW = 0, procH = 0;
   var trackId = null;
-  var seguir = true; // se puede apagar con el botón
+  var seguir = true;
+  var R = 7;    // radio de la plantilla (parche (2R+1)^2)
+  var SW = 14;  // radio de la ventana de búsqueda
 
-  function grabGray(){
+  function grayNow(){
     if(!video.videoWidth) return null;
     procW = Math.min(video.videoWidth, 480);
     procH = Math.round(procW * video.videoHeight / video.videoWidth);
     if(off.width!==procW){ off.width=procW; off.height=procH; }
     try{ offctx.drawImage(video, 0, 0, procW, procH); }catch(e){ return null; }
-    var d;
-    try{ d = offctx.getImageData(0,0,procW,procH).data; }catch(e){ return null; }
-    var g = new Uint8Array(procW*procH);
-    for(var i=0,j=0;i<d.length;i+=4,j++){ g[j]=(d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114)|0; }
+    var d; try{ d = offctx.getImageData(0,0,procW,procH).data; }catch(e){ return null; }
+    var g = new Float32Array(procW*procH);
+    for(var i=0,j=0;i<d.length;i+=4,j++){ g[j]=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114; }
     return g;
   }
-  function sad(a,b, ax,ay, bx,by, r){
-    var s=0, cnt=0;
-    for(var dy=-r;dy<=r;dy++){ for(var dx=-r;dx<=r;dx++){
-      var axx=ax+dx, ayy=ay+dy, bxx=bx+dx, byy=by+dy;
-      if(axx<0||ayy<0||axx>=procW||ayy>=procH||bxx<0||byy<0||bxx>=procW||byy>=procH) continue;
-      s += Math.abs(a[ayy*procW+axx]-b[byy*procW+bxx]); cnt++;
-    }}
-    return cnt ? s/cnt : 1e9;
+  function clampX(x){ return x<0?0:(x>=procW?procW-1:x); }
+  function clampY(y){ return y<0?0:(y>=procH?procH-1:y); }
+  // Captura la plantilla de referencia (media restada + norma) alrededor del punto
+  function capturarTpl(gray, p){
+    if(!procW){ if(!grayNow()) return; }
+    var cx=Math.round(p.x*procW), cy=Math.round(p.y*procH);
+    var n=(2*R+1)*(2*R+1), t=new Float32Array(n), k=0, sum=0, x,y,dx,dy;
+    for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(cx+dx); y=clampY(cy+dy); t[k]=gray[y*procW+x]; sum+=t[k]; k++; } }
+    var mean=sum/n, ss=0; for(k=0;k<n;k++){ t[k]-=mean; ss+=t[k]*t[k]; }
+    p._tpl=t; p._tnorm=Math.sqrt(ss)||1;
   }
-  function seguirPunto(prevG, curG, p){
-    var px = Math.round(p.x*procW), py = Math.round(p.y*procH);
-    var r = 5, win = 10, best = 1e9, bx = px, by = py;
-    for(var oy=-win;oy<=win;oy++){ for(var ox=-win;ox<=win;ox++){
-      // penalización leve por desplazamiento: evita la deriva en zonas planas
-      var e = sad(prevG, curG, px, py, px+ox, py+oy, r) + 0.6*Math.sqrt(ox*ox+oy*oy);
-      if(e < best){ best=e; bx=px+ox; by=py+oy; }
-    }}
-    p.x = Math.min(1, Math.max(0, bx/procW));
-    p.y = Math.min(1, Math.max(0, by/procH));
+  // Busca la plantilla por NCC en una ventana alrededor de la última posición
+  function matchNCC(gray, p){
+    if(!p._tpl) return;
+    var cx=Math.round(p.x*procW), cy=Math.round(p.y*procH);
+    var t=p._tpl, tnorm=p._tnorm, n=t.length, best=-2, bx=cx, by=cy, ox,oy,dx,dy,x,y,k;
+    for(oy=-SW;oy<=SW;oy++){ for(ox=-SW;ox<=SW;ox++){
+      var sx=cx+ox, sy=cy+oy, sum=0;
+      for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(sx+dx); y=clampY(sy+dy); sum+=gray[y*procW+x]; } }
+      var mean=sum/n, dot=0, ss=0, v; k=0;
+      for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(sx+dx); y=clampY(sy+dy); v=gray[y*procW+x]-mean; dot+=t[k]*v; ss+=v*v; k++; } }
+      var ncc = dot/(tnorm*(Math.sqrt(ss)||1)) - 0.0006*(ox*ox+oy*oy); // sesgo leve a lo cercano
+      if(ncc>best){ best=ncc; bx=sx; by=sy; }
+    } }
+    if(best>0.35){ p.x=bx/procW; p.y=by/procH; }  // solo si hay coincidencia razonable
   }
-  function tickSeguimiento(){
+  function cadaFrame(){
     if(video.paused || video.ended){ trackId=null; return; }
-    var cur = grabGray();
-    if(cur && prevGray && seguir){
-      shapes.forEach(function(s){ s.pts.forEach(function(p){ seguirPunto(prevGray, cur, p); }); });
-      puntos.forEach(function(p){ seguirPunto(prevGray, cur, p); });
-      redraw();
+    if(seguir){
+      var g = grayNow();
+      if(g){
+        shapes.forEach(function(s){ s.pts.forEach(function(p){ matchNCC(g,p); }); });
+        puntos.forEach(function(p){ matchNCC(g,p); });
+        redraw();
+      }
     }
-    if(cur) prevGray = cur;
-    trackId = setTimeout(function(){ requestAnimationFrame(tickSeguimiento); }, 60); // ~16 fps
+    programar();
   }
-  video.addEventListener('play', function(){ prevGray = grabGray(); if(trackId===null) requestAnimationFrame(tickSeguimiento); });
-  video.addEventListener('pause', function(){ if(trackId){ clearTimeout(trackId); trackId=null; } });
-  video.addEventListener('seeked', function(){ prevGray = grabGray(); });
+  function programar(){
+    if(video.requestVideoFrameCallback){ trackId = video.requestVideoFrameCallback(function(){ cadaFrame(); }); }
+    else { trackId = setTimeout(function(){ requestAnimationFrame(cadaFrame); }, 45); }
+  }
+  video.addEventListener('play', function(){ if(trackId===null) programar(); });
+  video.addEventListener('pause', function(){
+    if(trackId){ if(video.cancelVideoFrameCallback){ try{video.cancelVideoFrameCallback(trackId);}catch(_){}} clearTimeout(trackId); trackId=null; }
+  });
   var segBtn = document.getElementById('tool-seguir');
   if(segBtn){ segBtn.addEventListener('click', function(){
     seguir = !seguir; segBtn.classList.toggle('active', seguir);
