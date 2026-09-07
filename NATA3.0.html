@@ -318,6 +318,17 @@
   .btn-mini.add{background:var(--teal-500); color:#fff;}
   .btn-mini.del{background:#FBE9E4; color:var(--danger);}
   .btn-mini.new{background:#6B4FA0; color:#fff; padding:11px 18px; font-size:13.5px; border-radius:10px;}
+  .btn-mini.instr{background:#EAE4F6; color:#5A3E93;}
+  .instr-list{list-style:none; margin:9px 0 0; padding:0; display:flex; flex-direction:column; gap:5px; min-width:180px;}
+  .instr-item{display:flex; align-items:flex-start; gap:6px; font-size:12.5px; line-height:1.4;}
+  .instr-dash{color:#6B4FA0; font-weight:700; line-height:1.5;}
+  .instr-text{
+    flex:1; min-width:0; color:var(--ink); background:#F7F4FC; border:1px solid #E7DEF6;
+    border-radius:7px; padding:4px 8px; outline:none; word-break:break-word;
+  }
+  .instr-text:focus{border-color:#6B4FA0; box-shadow:0 0 0 3px rgba(107,79,160,.14);}
+  .instr-text:empty::before{content:'Escribí la instrucción…'; color:var(--muted);}
+  .instr-del{border:none; background:none; cursor:pointer; color:var(--danger); font-size:12px; line-height:1; padding:4px 2px;}
   .panel.banco thead th{background:#6B4FA0;}
 
   .dias-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-top:6px;}
@@ -403,7 +414,7 @@
     header.top::before, .pulse-row{display:none;}
     .brand-logo{height:70px;}
     .tabbar, .control-bar, .export-card, .banco-toolbar, .copy-table-btn,
-    .banco-actions, .meso-del, .divider, .undo-toast, .validacion{display:none !important;}
+    .banco-actions, .instr-del, .meso-del, .divider, .undo-toast, .validacion{display:none !important;}
     .wrap{margin:12px auto 0; max-width:100%;}
     .panel{display:block !important; break-inside:avoid; margin-bottom:14px;}
     .panel:not(:first-of-type){break-before:page;}
@@ -1486,12 +1497,49 @@ function renderBanco(){
       '<td contenteditable="true" class="banco-objetivo">'+serie.objetivo+'</td>'+
       '<td class="vol-cell banco-vol'+(estructura.valido?'':' banco-vol-error')+'">'+volHTML+'</td>'+
       '<td><select class="banco-dia">'+opcionesDia()+'</select></td>'+
-      '<td><div class="banco-actions">'+
-        '<button class="btn-mini add" onclick="agregarAMesociclo(this)">➕ Agregar</button>'+
-        '<button class="btn-mini del" onclick="eliminarSerieBanco(this)">🗑</button>'+
-      '</div></td>';
+      '<td>'+
+        '<div class="banco-actions">'+
+          '<button class="btn-mini add" onclick="agregarAMesociclo(this)">➕ Agregar</button>'+
+          '<button class="btn-mini instr" onclick="agregarInstruccion(this)">📝 Instrucción</button>'+
+          '<button class="btn-mini del" onclick="eliminarSerieBanco(this)" title="Borrar serie">🗑</button>'+
+        '</div>'+
+        instruccionesHTML(serie)+
+      '</td>';
     tbody.appendChild(tr);
   });
+}
+
+function escaparHTML(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function instruccionesHTML(serie){
+  var lista = serie.instrucciones || [];
+  var items = lista.map(function(txt, k){
+    return '<li class="instr-item">'+
+      '<span class="instr-dash" aria-hidden="true">–</span>'+
+      '<span class="instr-text" contenteditable="true" data-k="'+k+'" spellcheck="false">'+escaparHTML(txt)+'</span>'+
+      '<button class="instr-del" title="Borrar instrucción" aria-label="Borrar instrucción" onclick="eliminarInstruccion(this)">🗑</button>'+
+    '</li>';
+  }).join('');
+  return '<ul class="instr-list"'+(lista.length?'':' hidden')+'>'+items+'</ul>';
+}
+function agregarInstruccion(btn){
+  var tr = btn.closest('tr');
+  var idx = parseInt(tr.dataset.idx, 10);
+  var serie = bancoSeries[idx];
+  if(!serie.instrucciones) serie.instrucciones = [];
+  serie.instrucciones.push('');
+  renderBanco();
+  var row = document.querySelector('#tabla-banco tbody tr[data-idx="'+idx+'"]');
+  if(row){ var items = row.querySelectorAll('.instr-text'); var last = items[items.length-1]; if(last) last.focus(); }
+}
+function eliminarInstruccion(btn){
+  var tr = btn.closest('tr');
+  var idx = parseInt(tr.dataset.idx, 10);
+  var k = parseInt(btn.closest('.instr-item').querySelector('.instr-text').dataset.k, 10);
+  var serie = bancoSeries[idx];
+  if(serie.instrucciones){ serie.instrucciones.splice(k, 1); }
+  renderBanco();
 }
 
 function filaDeBoton(btn){ return btn.closest('tr'); }
@@ -1503,6 +1551,11 @@ document.addEventListener('input', function(e){
   var serie = bancoSeries[idx];
   if(e.target.classList.contains('banco-tipo')) serie.tipo = e.target.textContent.trim();
   if(e.target.classList.contains('banco-objetivo')) serie.objetivo = e.target.textContent.trim();
+  if(e.target.classList.contains('instr-text')){
+    if(!serie.instrucciones) serie.instrucciones = [];
+    var k = parseInt(e.target.dataset.k, 10);
+    serie.instrucciones[k] = e.target.textContent.trim();
+  }
   if(e.target.classList.contains('banco-serie')){
     serie.notacion = e.target.textContent.trim();
     var estructura = parseNotacion(serie.notacion);
@@ -1527,7 +1580,7 @@ document.addEventListener('change', function(e){
 });
 
 function agregarSerieNueva(){
-  bancoSeries.push({zona:'css-Z2', fase:'Acumulacion', tipo:'Nueva serie', notacion:'4x100 d20', objetivo:''});
+  bancoSeries.push({zona:'css-Z2', fase:'Acumulacion', tipo:'Nueva serie', notacion:'4x100 d20', objetivo:'', instrucciones:[]});
   document.getElementById('banco-filtro-fase').value = 'todas';
   renderBanco();
 }
