@@ -353,6 +353,19 @@
   .resumen-zona-row .pct{color:var(--muted);}
 
   /* ---------- Barra de control global ---------- */
+  .athlete-banner[hidden]{display:none !important;}
+  .athlete-banner{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    background:linear-gradient(135deg, var(--navy-800), var(--teal-600));
+    color:#fff; border-radius:12px; padding:11px 16px; margin:0 auto 22px;
+    box-shadow:0 10px 24px -18px rgba(11,31,51,.5);
+  }
+  .athlete-banner svg{width:20px; height:20px; flex:none; opacity:.9;}
+  .athlete-banner .ab-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--teal-300);
+  }
+  .athlete-banner strong{font-size:16px; font-weight:700;}
   .control-bar[hidden]{display:none !important;}
   .control-bar{
     display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px;
@@ -475,6 +488,12 @@
       <button class="cb-btn danger" id="cb-reiniciar" type="button"><span aria-hidden="true">↺</span> Reiniciar</button>
     </div>
     <div class="cb-status" id="cb-status" role="status" aria-live="polite"></div>
+  </div>
+
+  <div class="athlete-banner" id="athlete-banner" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5 19.5a7 7 0 0 1 14 0"/></svg>
+    <span class="ab-label">Atleta</span>
+    <strong id="athlete-banner-name">—</strong>
   </div>
 
   <div class="undo-toast" id="undo-toast" role="alert">
@@ -1012,7 +1031,18 @@ function showPanel(which){
   });
   var cb = document.getElementById('control-bar');
   if(cb){ cb.hidden = (which !== 'perfil'); }
+  var ab = document.getElementById('athlete-banner');
+  if(ab){ ab.hidden = (which === 'perfil'); }
+  actualizarBannerAtleta();
   try{ localStorage.setItem('nata-tab', which); }catch(e){}
+}
+
+function actualizarBannerAtleta(){
+  var el = document.getElementById('athlete-banner-name');
+  if(!el) return;
+  var nom = document.getElementById('fc-nombre');
+  var v = nom ? nom.value.trim() : '';
+  el.textContent = v ? v : 'Sin especificar';
 }
 
 /* Navegación con teclado entre pestañas (flechas / Home / End) + restauración de la última pestaña. */
@@ -2317,6 +2347,7 @@ function exportarSprintXLS(){
     if(est.sprint) aplicarTextosEditables('tabla-sprint',[5,6], est.sprint.txt);
     cargando = false;
     validarTodo();
+    if(typeof actualizarBannerAtleta === 'function') actualizarBannerAtleta();
   }
 
   /* ---------- Perfiles ---------- */
@@ -2604,6 +2635,7 @@ function exportarSprintXLS(){
       ['fc-nombre','exp-nadador','exp-nadador-sprint'].forEach(function(otro){
         if(otro!==id) setVal(otro, el.value);
       });
+      if(typeof actualizarBannerAtleta === 'function') actualizarBannerAtleta();
     });
   });
 
