@@ -326,6 +326,84 @@
     background:#FBFCFE; border:1px solid var(--line); border-radius:9px; padding:8px 12px;
   }
   .resumen-zona-row .pct{color:var(--muted);}
+
+  /* ---------- Barra de control global ---------- */
+  .control-bar{
+    display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px;
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; margin:0 auto 22px; box-shadow:0 10px 24px -18px rgba(11,31,51,.35);
+  }
+  .control-bar .cb-group{display:flex; flex-direction:column; gap:5px;}
+  .control-bar label{font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
+  .control-bar select, .control-bar input{
+    font-family:'Inter',sans-serif; font-size:14px; padding:9px 11px;
+    border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);
+  }
+  .control-bar .cb-actions{display:flex; flex-wrap:wrap; gap:8px; margin-left:auto; align-items:flex-end;}
+  .cb-btn{
+    border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:13px;
+    padding:9px 14px; border-radius:10px; display:inline-flex; align-items:center; gap:7px;
+    transition:transform .12s ease, background .12s ease, border-color .12s ease;
+  }
+  .cb-btn:hover{transform:translateY(-1px); border-color:var(--navy-500);}
+  .cb-btn.primary{background:var(--navy-700); color:#fff; border-color:var(--navy-700);}
+  .cb-btn.danger{color:var(--danger); border-color:#F0D3CC;}
+  .cb-btn.danger:hover{background:#FBE9E4; border-color:var(--danger);}
+  .cb-status{width:100%; font-size:12px; color:var(--teal-600); min-height:16px; font-family:'JetBrains Mono',monospace;}
+
+  .copy-table-btn{
+    border:1px solid var(--line); background:#fff; color:var(--muted); cursor:pointer;
+    font-size:12px; font-weight:600; padding:6px 11px; border-radius:9px;
+    display:inline-flex; align-items:center; gap:6px; transition:all .12s ease;
+  }
+  .copy-table-btn:hover{border-color:var(--navy-500); color:var(--navy-700);}
+
+  .validacion{
+    display:none; gap:8px; align-items:flex-start;
+    background:#FDECE7; border:1px solid #F0C7BC; color:#7A2E1B;
+    border-radius:10px; padding:10px 14px; margin:0 0 14px; font-size:13px; line-height:1.5;
+  }
+  .validacion.show{display:flex;}
+  .validacion .vico{flex:none;}
+  input.invalid, select.invalid{border-color:var(--danger) !important; box-shadow:0 0 0 3px rgba(179,67,43,.14) !important;}
+
+  .undo-toast{
+    position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; border-radius:12px; padding:12px 18px;
+    display:flex; align-items:center; gap:14px; font-size:14px; z-index:50;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5); opacity:0; pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  .undo-toast.show{opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto;}
+  .undo-toast button{
+    border:none; background:var(--teal-500); color:#fff; cursor:pointer;
+    font-weight:700; font-size:13px; padding:7px 14px; border-radius:8px;
+  }
+
+  @media(max-width:640px){
+    .control-bar .cb-actions{margin-left:0; width:100%;}
+    .cb-btn{flex:1 1 auto; justify-content:center;}
+  }
+
+  /* ---------- Impresión ---------- */
+  @media print{
+    @page{ size:landscape; margin:12mm; }
+    body{background:#fff !important; padding:0;}
+    header.top{background:var(--navy-900) !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:16px 20px;}
+    header.top::before, .pulse-row{display:none;}
+    .brand-logo{height:70px;}
+    .tabbar, .control-bar, .export-card, .banco-toolbar, .copy-table-btn,
+    .banco-actions, .meso-del, .divider, .undo-toast, .validacion{display:none !important;}
+    .wrap{margin:12px auto 0; max-width:100%;}
+    .panel{display:block !important; break-inside:avoid; margin-bottom:14px;}
+    .panel:not(:first-of-type){break-before:page;}
+    .card{box-shadow:none; border:1px solid #ccc; break-inside:avoid;}
+    .table-scroll{overflow:visible;}
+    table{min-width:0 !important; font-size:10px;}
+    thead th{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    a[href]:after{content:"";}
+  }
 </style>
 </head>
 <body>
@@ -354,6 +432,26 @@
     <button class="tab-btn swim" id="btn-swim" role="tab" aria-selected="false" aria-controls="panel-swim" data-tab="swim" tabindex="-1" onclick="showPanel('swim')"><span aria-hidden="true">🏊</span> Natación · CSS</button>
     <button class="tab-btn sprint" id="btn-sprint" role="tab" aria-selected="false" aria-controls="panel-sprint" data-tab="sprint" tabindex="-1" onclick="showPanel('sprint')"><span aria-hidden="true">🏁</span> Natación · Sprinter</button>
     <button class="tab-btn banco" id="btn-banco" role="tab" aria-selected="false" aria-controls="panel-banco" data-tab="banco" tabindex="-1" onclick="showPanel('banco')"><span aria-hidden="true">🗂️</span> Banco / Prescriptor</button>
+  </div>
+
+  <div class="control-bar">
+    <div class="cb-group">
+      <label for="perfil-select">Perfil / nadador</label>
+      <select id="perfil-select" aria-label="Seleccionar perfil de nadador"></select>
+    </div>
+    <div class="cb-actions">
+      <button class="cb-btn" id="cb-guardar" type="button"><span aria-hidden="true">💾</span> Guardar como…</button>
+      <button class="cb-btn danger" id="cb-borrar-perfil" type="button"><span aria-hidden="true">🗑️</span> Borrar perfil</button>
+      <button class="cb-btn" id="cb-compartir" type="button"><span aria-hidden="true">🔗</span> Copiar link</button>
+      <button class="cb-btn" id="cb-imprimir" type="button"><span aria-hidden="true">🖨️</span> Imprimir</button>
+      <button class="cb-btn danger" id="cb-reiniciar" type="button"><span aria-hidden="true">↺</span> Reiniciar</button>
+    </div>
+    <div class="cb-status" id="cb-status" role="status" aria-live="polite"></div>
+  </div>
+
+  <div class="undo-toast" id="undo-toast" role="alert">
+    <span id="undo-msg">Elemento eliminado.</span>
+    <button type="button" id="undo-btn">Deshacer</button>
   </div>
 
   <!-- ============================================================ -->
@@ -1801,6 +1899,396 @@ function exportarSprintXLS(){
   descargarTablaComoXLS('tabla-sprint', 'matriz-ritmos-sprinter', nombre);
   setExportStatusSprint('✅ XLS exportado correctamente.');
 }
+
+/* ==================================================================== */
+/* ============ MÓDULO: persistencia, perfiles, validación, ============ */
+/* ============ compartir, deshacer, copiar y exportar banco ========== */
+/* ==================================================================== */
+(function(){
+  'use strict';
+  var KEY_PERFILES = 'nata-perfiles';
+  var KEY_ACTIVO   = 'nata-perfil-activo';
+  var cargando = true;          // evita autoguardar mientras se restaura
+  var timerAutosave = null;
+
+  function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function lsSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } }
+  function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+
+  function setStatus(msg){
+    var el = document.getElementById('cb-status');
+    if(el) el.textContent = msg || '';
+  }
+
+  /* ---------- Serialización del estado completo ---------- */
+  function val(id){ var e=document.getElementById(id); return e ? e.value : ''; }
+  function setVal(id,v){ var e=document.getElementById(id); if(e && v!=null) e.value = v; }
+
+  function textosEditables(tableId, indices){
+    var filas = document.querySelectorAll('#'+tableId+' tbody tr');
+    return Array.prototype.map.call(filas, function(tr){
+      return indices.map(function(i){ return tr.children[i] ? tr.children[i].innerHTML : ''; });
+    });
+  }
+  function aplicarTextosEditables(tableId, indices, datos){
+    if(!datos) return;
+    var filas = document.querySelectorAll('#'+tableId+' tbody tr');
+    Array.prototype.forEach.call(filas, function(tr, r){
+      if(!datos[r]) return;
+      indices.forEach(function(i, k){
+        if(tr.children[i] && datos[r][k] != null) tr.children[i].innerHTML = datos[r][k];
+      });
+    });
+  }
+
+  function serializar(){
+    var pct = fcZonas.map(function(zn,i){
+      var mn = document.querySelector('.fc-pmin[data-i="'+i+'"]');
+      var mx = document.querySelector('.fc-pmax[data-i="'+i+'"]');
+      return [ mn?mn.value:zn.pmin, mx?mx.value:(zn.pmax==null?null:zn.pmax) ];
+    });
+    return {
+      v:1,
+      fc:{ edad:val('fc-edad'), max:val('fc-max'), reposo:val('fc-reposo'), pct:pct,
+           txt:textosEditables('tabla-fc',[5,6,7]) },
+      swim:{ d1:val('sw-d1'), t1:val('sw-t1'), d2:val('sw-d2'), t2:val('sw-t2') },
+      sprint:{ r1:val('sp-r1'), r2:val('sp-r2'), r3:val('sp-r3'), r4:val('sp-r4'),
+               txt:textosEditables('tabla-sprint',[5,6]) },
+      nadador: val('exp-nadador') || val('exp-nadador-sprint'),
+      filtro: val('banco-filtro-fase'),
+      banco: JSON.parse(JSON.stringify(bancoSeries)),
+      meso: JSON.parse(JSON.stringify(mesociclo))
+    };
+  }
+
+  function aplicar(est){
+    if(!est) return;
+    cargando = true;
+    if(est.fc){ setVal('fc-edad',est.fc.edad); setVal('fc-max',est.fc.max); setVal('fc-reposo',est.fc.reposo); }
+    if(est.swim){ setVal('sw-d1',est.swim.d1); setVal('sw-t1',est.swim.t1); setVal('sw-d2',est.swim.d2); setVal('sw-t2',est.swim.t2); }
+    if(est.sprint){ setVal('sp-r1',est.sprint.r1); setVal('sp-r2',est.sprint.r2); setVal('sp-r3',est.sprint.r3); setVal('sp-r4',est.sprint.r4); }
+    if(est.nadador!=null){ setVal('exp-nadador',est.nadador); setVal('exp-nadador-sprint',est.nadador); }
+    if(est.filtro){ setVal('banco-filtro-fase',est.filtro); }
+    if(Array.isArray(est.banco)){ bancoSeries.length=0; est.banco.forEach(function(s){ bancoSeries.push(s); }); }
+    if(est.meso){ diasSemana.forEach(function(d){ mesociclo[d] = Array.isArray(est.meso[d]) ? est.meso[d] : []; }); }
+
+    // Recalcular todo
+    calcFc(); calcSwim(); calcSprint(); renderBanco(); renderMesociclo();
+
+    // Rangos de % de FC editables + textos de celdas
+    if(est.fc && est.fc.pct){
+      est.fc.pct.forEach(function(par,i){
+        var mn=document.querySelector('.fc-pmin[data-i="'+i+'"]');
+        var mx=document.querySelector('.fc-pmax[data-i="'+i+'"]');
+        if(mn && par[0]!=null) mn.value=par[0];
+        if(mx && par[1]!=null) mx.value=par[1];
+      });
+      calcFc();
+    }
+    if(est.fc) aplicarTextosEditables('tabla-fc',[5,6,7], est.fc.txt);
+    if(est.sprint) aplicarTextosEditables('tabla-sprint',[5,6], est.sprint.txt);
+    cargando = false;
+    validarTodo();
+  }
+
+  /* ---------- Perfiles ---------- */
+  function leerPerfiles(){
+    try{ return JSON.parse(lsGet(KEY_PERFILES)) || {}; }catch(e){ return {}; }
+  }
+  function guardarPerfiles(p){ lsSet(KEY_PERFILES, JSON.stringify(p)); }
+  function perfilActivo(){ return lsGet(KEY_ACTIVO) || 'Principal'; }
+
+  function refrescarSelectorPerfiles(){
+    var sel = document.getElementById('perfil-select');
+    if(!sel) return;
+    var perfiles = leerPerfiles();
+    var nombres = Object.keys(perfiles);
+    if(nombres.indexOf('Principal')===-1) nombres.unshift('Principal');
+    sel.innerHTML = nombres.map(function(n){
+      return '<option value="'+n.replace(/"/g,'&quot;')+'">'+n+'</option>';
+    }).join('');
+    sel.value = perfilActivo();
+  }
+
+  function autosave(){
+    if(cargando) return;
+    if(timerAutosave) clearTimeout(timerAutosave);
+    timerAutosave = setTimeout(function(){
+      var perfiles = leerPerfiles();
+      perfiles[perfilActivo()] = serializar();
+      guardarPerfiles(perfiles);
+      setStatus('Guardado ✓ · perfil "'+perfilActivo()+'"');
+    }, 400);
+  }
+
+  /* ---------- Compartir por link ---------- */
+  function b64EncodeUnicode(str){ return btoa(unescape(encodeURIComponent(str))); }
+  function b64DecodeUnicode(str){ return decodeURIComponent(escape(atob(str))); }
+
+  function copiarLink(){
+    var data = b64EncodeUnicode(JSON.stringify(serializar()));
+    var url = location.origin + location.pathname + '#d=' + encodeURIComponent(data);
+    var hacerCopia = navigator.clipboard && navigator.clipboard.writeText
+      ? navigator.clipboard.writeText(url)
+      : Promise.reject();
+    hacerCopia.then(function(){ setStatus('🔗 Link copiado al portapapeles'); })
+      .catch(function(){
+        prompt('Copiá este link para compartir la planilla:', url);
+      });
+  }
+
+  function cargarDesdeHash(){
+    var m = location.hash.match(/[#&]d=([^&]+)/);
+    if(!m) return false;
+    try{
+      var est = JSON.parse(b64DecodeUnicode(decodeURIComponent(m[1])));
+      aplicar(est);
+      // Guardar como perfil "Compartido" y activarlo
+      var perfiles = leerPerfiles();
+      perfiles['Compartido'] = est;
+      guardarPerfiles(perfiles);
+      lsSet(KEY_ACTIVO, 'Compartido');
+      refrescarSelectorPerfiles();
+      setStatus('Planilla cargada desde link (perfil "Compartido")');
+      history.replaceState(null,'', location.pathname);
+      return true;
+    }catch(e){ return false; }
+  }
+
+  /* ---------- Validación ---------- */
+  function crearCajaValidacion(panelId, id){
+    var panel = document.getElementById(panelId);
+    if(!panel || document.getElementById(id)) return;
+    var box = document.createElement('div');
+    box.className = 'validacion'; box.id = id;
+    box.innerHTML = '<span class="vico" aria-hidden="true">⚠️</span><span class="vmsg"></span>';
+    panel.insertBefore(box, panel.firstChild);
+  }
+  function mostrarValidacion(id, mensajes, campos){
+    var box = document.getElementById(id);
+    if(!box) return;
+    ['fc-edad','fc-max','fc-reposo','sw-d1','sw-t1','sw-d2','sw-t2','sp-r1','sp-r2','sp-r3','sp-r4'].forEach(function(cid){
+      var e=document.getElementById(cid); if(e && campos && campos.indexOf(cid)!==-1) e.classList.add('invalid');
+    });
+    if(mensajes.length){
+      box.querySelector('.vmsg').innerHTML = mensajes.join('<br>');
+      box.classList.add('show');
+    } else {
+      box.classList.remove('show');
+    }
+  }
+  function limpiarInvalid(ids){ ids.forEach(function(id){ var e=document.getElementById(id); if(e) e.classList.remove('invalid'); }); }
+
+  function validarFc(){
+    limpiarInvalid(['fc-edad','fc-max','fc-reposo']);
+    var msgs=[], campos=[];
+    var edad=clampNum(val('fc-edad'),NaN), max=clampNum(val('fc-max'),NaN), rep=clampNum(val('fc-reposo'),NaN);
+    if(isFinite(edad) && (edad<5||edad>99)){ msgs.push('La edad debería estar entre 5 y 99 años.'); campos.push('fc-edad'); }
+    if(isFinite(max)&&isFinite(rep)&&max<=rep){ msgs.push('La FC máxima debe ser mayor que la FC de reposo.'); campos.push('fc-max'); campos.push('fc-reposo'); }
+    mostrarValidacion('val-fc', msgs, campos);
+  }
+  function validarSwim(){
+    limpiarInvalid(['sw-d1','sw-t1','sw-d2','sw-t2']);
+    var msgs=[], campos=[];
+    var d1=clampNum(val('sw-d1'),NaN), d2=clampNum(val('sw-d2'),NaN);
+    var t1=parseTime(val('sw-t1')), t2=parseTime(val('sw-t2'));
+    if(!isFinite(t1)){ msgs.push('Tiempo 1 inválido (usá mm:ss, ej: 6:40).'); campos.push('sw-t1'); }
+    if(!isFinite(t2)){ msgs.push('Tiempo 2 inválido (usá mm:ss, ej: 3:00).'); campos.push('sw-t2'); }
+    if(isFinite(d1)&&isFinite(d2)&&d1<=d2){ msgs.push('La Distancia 1 debe ser mayor que la Distancia 2.'); campos.push('sw-d1'); campos.push('sw-d2'); }
+    if(isFinite(t1)&&isFinite(t2)&&t1<=t2){ msgs.push('El Tiempo 1 (test largo) debe ser mayor que el Tiempo 2 (test corto).'); campos.push('sw-t1'); campos.push('sw-t2'); }
+    mostrarValidacion('val-swim', msgs, campos);
+  }
+  function validarSprint(){
+    limpiarInvalid(['sp-r1','sp-r2','sp-r3','sp-r4']);
+    var msgs=[], campos=[];
+    ['sp-r1','sp-r2','sp-r3','sp-r4'].forEach(function(id){
+      var v=clampNum(val(id),NaN);
+      if(isFinite(v) && v<=0){ msgs.push('Las repeticiones deben ser mayores que 0 segundos.'); campos.push(id); }
+    });
+    mostrarValidacion('val-sprint', msgs, campos.filter(function(v,i,a){return a.indexOf(v)===i;}));
+  }
+  function validarTodo(){ validarFc(); validarSwim(); validarSprint(); }
+
+  /* ---------- Deshacer (undo) ---------- */
+  var undoBackup=null, undoTimer=null;
+  function mostrarUndo(mensaje, restaurar){
+    undoBackup = restaurar;
+    var toast=document.getElementById('undo-toast');
+    document.getElementById('undo-msg').textContent = mensaje;
+    toast.classList.add('show');
+    if(undoTimer) clearTimeout(undoTimer);
+    undoTimer=setTimeout(function(){ toast.classList.remove('show'); undoBackup=null; }, 6000);
+  }
+  document.getElementById('undo-btn').addEventListener('click', function(){
+    if(undoBackup) undoBackup();
+    document.getElementById('undo-toast').classList.remove('show');
+    undoBackup=null;
+  });
+
+  // Envolver eliminaciones para ofrecer deshacer
+  var _elimSerie = window.eliminarSerieBanco;
+  window.eliminarSerieBanco = function(btn){
+    var tr = btn.closest('tr'); var idx = parseInt(tr.dataset.idx,10);
+    var copia = JSON.parse(JSON.stringify(bancoSeries[idx]));
+    _elimSerie(btn);
+    mostrarUndo('Serie eliminada del banco.', function(){
+      bancoSeries.splice(Math.min(idx,bancoSeries.length),0,copia); renderBanco(); autosave();
+    });
+    autosave();
+  };
+  var _elimMeso = window.eliminarDeMesociclo;
+  window.eliminarDeMesociclo = function(dia, idx){
+    var copia = JSON.parse(JSON.stringify(mesociclo[dia][idx]));
+    _elimMeso(dia, idx);
+    mostrarUndo('Serie quitada del '+dia+'.', function(){
+      mesociclo[dia].splice(Math.min(idx,mesociclo[dia].length),0,copia); renderMesociclo(); autosave();
+    });
+    autosave();
+  };
+
+  /* ---------- Copiar tabla al portapapeles ---------- */
+  function tablaComoTexto(tableId){
+    var filas = document.querySelectorAll('#'+tableId+' tr');
+    return Array.prototype.map.call(filas, function(tr){
+      return Array.prototype.map.call(tr.querySelectorAll('th,td'), function(c){
+        var sel=c.querySelector('select'); if(sel) return sel.options[sel.selectedIndex].text;
+        return (c.innerText||'').replace(/\s+/g,' ').trim();
+      }).join('\t');
+    }).join('\n');
+  }
+  function agregarBotonesCopiar(){
+    [['tabla-fc','Copiar tabla FC'],['tabla-swim','Copiar tabla CSS'],
+     ['tabla-sprint','Copiar tabla Sprint'],['tabla-banco','Copiar banco']].forEach(function(par){
+      var tabla=document.getElementById(par[0]); if(!tabla) return;
+      var card=tabla.closest('.card'); if(!card) return;
+      var head=card.querySelector('.card-head'); if(!head || head.querySelector('.copy-table-btn')) return;
+      var b=document.createElement('button');
+      b.type='button'; b.className='copy-table-btn'; b.innerHTML='📋 Copiar';
+      b.setAttribute('aria-label', par[1]);
+      b.addEventListener('click', function(){
+        var txt=tablaComoTexto(par[0]);
+        var p = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(txt) : Promise.reject();
+        p.then(function(){ b.innerHTML='✅ Copiado'; setTimeout(function(){ b.innerHTML='📋 Copiar'; },1500); })
+         .catch(function(){ b.innerHTML='⚠️'; setTimeout(function(){ b.innerHTML='📋 Copiar'; },1500); });
+      });
+      head.appendChild(b);
+    });
+  }
+
+  /* ---------- Exportar Banco / Mesociclo ---------- */
+  function descargarArchivo(nombre, contenido, mime){
+    var blob=new Blob([contenido],{type:mime});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a'); a.href=url; a.download=nombre;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  function nombreArchivo(base){
+    var n=val('exp-nadador')||val('exp-nadador-sprint');
+    return base+(n?'-'+n.replace(/\s+/g,'_'):'');
+  }
+  function tablaMesocicloHTML(){
+    var filas='';
+    diasSemana.forEach(function(dia){
+      var items=mesociclo[dia];
+      if(!items.length){ filas+='<tr><td><b>'+dia+'</b></td><td colspan="5"><i>Sin series</i></td></tr>'; return; }
+      items.forEach(function(e,i){
+        filas+='<tr>'+
+          '<td>'+(i===0?'<b>'+dia+'</b>':'')+'</td>'+
+          '<td>'+e.zcode+'</td><td>'+e.tipo+'</td><td>'+e.estructuraTexto+'</td>'+
+          '<td>'+e.ritmo+'</td><td>'+e.volumen+' m</td></tr>';
+      });
+    });
+    return '<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px">'+
+      '<thead><tr style="background:#6B4FA0;color:#fff"><th>Día</th><th>Zona</th><th>Tipo</th><th>Serie</th><th>Ritmo</th><th>Volumen</th></tr></thead>'+
+      '<tbody>'+filas+'</tbody></table>';
+  }
+  function exportarMesocicloHTML(){
+    var nombre=val('exp-nadador')||val('exp-nadador-sprint')||'Sin especificar';
+    var doc='<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Mesociclo — '+nombre+'</title></head><body>'+
+      '<h1 style="font-family:Arial">Mesociclo semanal — '+nombre+'</h1>'+
+      '<p style="font-family:Arial;color:#555">Volumen total: '+
+        document.getElementById('meso-total').textContent+'</p>'+
+      tablaMesocicloHTML()+'</body></html>';
+    descargarArchivo(nombreArchivo('mesociclo')+'.html', doc, 'text/html;charset=utf-8');
+    setStatus('🌐 Mesociclo exportado (HTML)');
+  }
+  function exportarMesocicloXLS(){
+    var doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">'+
+      '<head><meta charset="UTF-8"></head><body>'+tablaMesocicloHTML()+'</body></html>';
+    descargarArchivo(nombreArchivo('mesociclo')+'.xls', '﻿'+doc, 'application/vnd.ms-excel;charset=utf-8');
+    setStatus('📊 Mesociclo exportado (XLS)');
+  }
+  function agregarBotonesBanco(){
+    var toolbar=document.querySelector('.banco-toolbar');
+    if(!toolbar || toolbar.querySelector('.cb-btn')) return;
+    var b1=document.createElement('button'); b1.type='button'; b1.className='cb-btn';
+    b1.innerHTML='🌐 Exportar mesociclo (HTML)'; b1.addEventListener('click', exportarMesocicloHTML);
+    var b2=document.createElement('button'); b2.type='button'; b2.className='cb-btn';
+    b2.innerHTML='📊 Exportar mesociclo (XLS)'; b2.addEventListener('click', exportarMesocicloXLS);
+    toolbar.appendChild(b1); toolbar.appendChild(b2);
+  }
+
+  /* ---------- Reiniciar ---------- */
+  function reiniciar(){
+    if(!confirm('¿Reiniciar el perfil "'+perfilActivo()+'" a los valores por defecto? Se perderán los cambios de este perfil.')) return;
+    var perfiles=leerPerfiles(); delete perfiles[perfilActivo()]; guardarPerfiles(perfiles);
+    location.hash=''; location.reload();
+  }
+
+  /* ---------- Wiring de la barra de control ---------- */
+  document.getElementById('cb-compartir').addEventListener('click', copiarLink);
+  document.getElementById('cb-imprimir').addEventListener('click', function(){ window.print(); });
+  document.getElementById('cb-reiniciar').addEventListener('click', reiniciar);
+  document.getElementById('cb-guardar').addEventListener('click', function(){
+    var nombre=prompt('Nombre del perfil (nadador):');
+    if(!nombre) return;
+    nombre=nombre.trim(); if(!nombre) return;
+    var perfiles=leerPerfiles(); perfiles[nombre]=serializar(); guardarPerfiles(perfiles);
+    lsSet(KEY_ACTIVO, nombre);
+    setVal('exp-nadador',nombre); setVal('exp-nadador-sprint',nombre);
+    refrescarSelectorPerfiles(); autosave();
+    setStatus('Perfil "'+nombre+'" guardado');
+  });
+  document.getElementById('cb-borrar-perfil').addEventListener('click', function(){
+    var actual=perfilActivo();
+    if(actual==='Principal'){ setStatus('El perfil "Principal" no se puede borrar (usá Reiniciar).'); return; }
+    if(!confirm('¿Borrar el perfil "'+actual+'"?')) return;
+    var perfiles=leerPerfiles(); delete perfiles[actual]; guardarPerfiles(perfiles);
+    lsSet(KEY_ACTIVO,'Principal'); refrescarSelectorPerfiles();
+    aplicar(leerPerfiles()['Principal'] || {});
+    setStatus('Perfil borrado. Activo: "Principal"');
+  });
+  document.getElementById('perfil-select').addEventListener('change', function(){
+    lsSet(KEY_ACTIVO, this.value);
+    var est=leerPerfiles()[this.value];
+    if(est) aplicar(est);
+    setStatus('Perfil activo: "'+this.value+'"');
+  });
+
+  // Autoguardado y validación ante cualquier edición
+  document.addEventListener('input', function(){ autosave(); validarTodo(); });
+  document.addEventListener('change', function(){ autosave(); });
+
+  // Envolver renders para autoguardar tras mutaciones del banco/mesociclo
+  var _rb=renderBanco; renderBanco=function(){ _rb.apply(this,arguments); autosave(); };
+  var _rm=renderMesociclo; renderMesociclo=function(){ _rm.apply(this,arguments); autosave(); };
+
+  /* ---------- Arranque ---------- */
+  crearCajaValidacion('panel-fc','val-fc');
+  crearCajaValidacion('panel-swim','val-swim');
+  crearCajaValidacion('panel-sprint','val-sprint');
+  agregarBotonesCopiar();
+  agregarBotonesBanco();
+  refrescarSelectorPerfiles();
+
+  if(!cargarDesdeHash()){
+    var est=leerPerfiles()[perfilActivo()];
+    if(est){ aplicar(est); }
+    else { cargando=false; validarTodo(); autosave(); }
+  }
+  cargando=false;
+})();
 </script>
 </body>
 </html>
