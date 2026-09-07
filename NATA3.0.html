@@ -125,6 +125,8 @@
     display:flex; align-items:center; justify-content:center; gap:8px;
     white-space:nowrap; transition:all .18s ease;
   }
+  .tab-ico{width:20px; height:20px; flex:none; display:block;}
+  @media(max-width:640px){ .tab-ico{width:18px; height:18px;} }
   .tab-btn.active.fc{background:var(--navy-700); color:#fff;}
   .tab-btn.active.swim{background:var(--teal-600); color:#fff;}
   .tab-btn.active.sprint{background:var(--danger); color:#fff;}
@@ -451,12 +453,12 @@
 
 <div class="wrap">
   <div class="tabbar" role="tablist" aria-label="Secciones de la planilla">
-    <button class="tab-btn perfil active" id="btn-perfil" role="tab" aria-selected="true" aria-controls="panel-perfil" data-tab="perfil" onclick="showPanel('perfil')"><span aria-hidden="true">🧑‍💼</span> Perfil del atleta</button>
-    <button class="tab-btn fc" id="btn-fc" role="tab" aria-selected="false" aria-controls="panel-fc" data-tab="fc" tabindex="-1" onclick="showPanel('fc')"><span aria-hidden="true">❤️</span> Frecuencia cardíaca</button>
-    <button class="tab-btn swim" id="btn-swim" role="tab" aria-selected="false" aria-controls="panel-swim" data-tab="swim" tabindex="-1" onclick="showPanel('swim')"><span aria-hidden="true">🏊</span> Natación · CSS</button>
-    <button class="tab-btn sprint" id="btn-sprint" role="tab" aria-selected="false" aria-controls="panel-sprint" data-tab="sprint" tabindex="-1" onclick="showPanel('sprint')"><span aria-hidden="true">🏁</span> Natación · Sprinter</button>
-    <button class="tab-btn banco" id="btn-banco" role="tab" aria-selected="false" aria-controls="panel-banco" data-tab="banco" tabindex="-1" onclick="showPanel('banco')"><span aria-hidden="true">🗂️</span> Banco / Prescriptor</button>
-    <button class="tab-btn antro" id="btn-antro" role="tab" aria-selected="false" aria-controls="panel-antro" data-tab="antro" tabindex="-1" onclick="showPanel('antro')"><span aria-hidden="true">📐</span> Antropometría / Potencia</button>
+    <button class="tab-btn perfil active" id="btn-perfil" role="tab" aria-selected="true" aria-controls="panel-perfil" data-tab="perfil" onclick="showPanel('perfil')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5 19.5a7 7 0 0 1 14 0"/></svg> Perfil del atleta</button>
+    <button class="tab-btn fc" id="btn-fc" role="tab" aria-selected="false" aria-controls="panel-fc" data-tab="fc" tabindex="-1" onclick="showPanel('fc')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.3S4.5 15.6 4.5 9.9A3.9 3.9 0 0 1 12 8a3.9 3.9 0 0 1 7.5 1.9c0 5.7-7.5 10.4-7.5 10.4Z"/><path d="M6.5 12.2h2.2l1.3-2.6 2 4.6 1.2-2h2.4"/></svg> Frecuencia cardíaca</button>
+    <button class="tab-btn swim" id="btn-swim" role="tab" aria-selected="false" aria-controls="panel-swim" data-tab="swim" tabindex="-1" onclick="showPanel('swim')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8.2" cy="7.6" r="1.7"/><path d="M4 13.2c1.9-1.5 3.6-1.4 5.6 0L13 15.5l3.2-4.7"/><path d="M3 18.2c1.5 1.2 3 1.2 4.5 0s3-1.2 4.5 0 3 1.2 4.5 0"/></svg> Natación · CSS</button>
+    <button class="tab-btn sprint" id="btn-sprint" role="tab" aria-selected="false" aria-controls="panel-sprint" data-tab="sprint" tabindex="-1" onclick="showPanel('sprint')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 3h5"/><path d="M12 3v2.6"/><circle cx="12" cy="13.5" r="6.6"/><path d="M12 13.5V9.7"/><path d="M18.6 7.4l1.3-1.3"/></svg> Natación · Sprinter</button>
+    <button class="tab-btn banco" id="btn-banco" role="tab" aria-selected="false" aria-controls="panel-banco" data-tab="banco" tabindex="-1" onclick="showPanel('banco')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.2" y="5" width="13.6" height="16" rx="2.2"/><rect x="9" y="3" width="6" height="3.4" rx="1.1"/><path d="M8.6 11h6.8M8.6 14.3h6.8M8.6 17.6h4.2"/></svg> Banco / Prescriptor</button>
+    <button class="tab-btn antro" id="btn-antro" role="tab" aria-selected="false" aria-controls="panel-antro" data-tab="antro" tabindex="-1" onclick="showPanel('antro')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.2 3.5v17"/><path d="M4.2 7.5h2.4M4.2 12h3.2M4.2 16.5h2.4"/><path d="M14 3.2l-4.2 9.4H13l-1 7.9 6.2-11.2H15l1-6.1z"/></svg> Antropometría / Potencia</button>
   </div>
 
   <div class="control-bar">
