@@ -2261,9 +2261,15 @@ function exportarSprintXLS(){
   var cargando = true;          // evita autoguardar mientras se restaura
   var timerAutosave = null;
 
-  function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
-  function lsSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } }
-  function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+  /* Respaldo en memoria: algunos visores (webview del celular) bloquean localStorage.
+     Con esto los perfiles y la selección funcionan igual dentro de la sesión. */
+  var _mem = {};
+  function lsGet(k){
+    try{ var v = localStorage.getItem(k); if(v!=null) return v; }catch(e){}
+    return (k in _mem) ? _mem[k] : null;
+  }
+  function lsSet(k,v){ _mem[k]=v; try{ localStorage.setItem(k,v); }catch(e){} return true; }
+  function lsDel(k){ delete _mem[k]; try{ localStorage.removeItem(k); }catch(e){} }
 
   function setStatus(msg){
     var el = document.getElementById('cb-status');
