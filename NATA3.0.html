@@ -127,6 +127,7 @@
   .tab-btn.active.swim{background:var(--teal-600); color:#fff;}
   .tab-btn.active.sprint{background:var(--danger); color:#fff;}
   .tab-btn.active.banco{background:#6B4FA0; color:#fff;}
+  .tab-btn.active.antro{background:#1F7A6D; color:#fff;}
   .tab-btn:not(.active):hover{background:var(--bg); color:var(--ink);}
 
   .panel{display:none; animation:fade .3s ease;}
@@ -168,6 +169,7 @@
   }
   .panel.swim .stat{background:linear-gradient(160deg,#08403f,var(--teal-600));}
   .panel.sprint .stat{background:linear-gradient(160deg,#5C1A0F,var(--danger));}
+  .panel.antro .stat{background:linear-gradient(160deg,#0E3B34,#1F7A6D);}
   .stat .k{font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:rgba(255,255,255,.72); margin-bottom:6px;}
   .stat .v{font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:700;}
   .stat .u{font-size:12px; color:rgba(255,255,255,.65); margin-left:4px;}
@@ -432,6 +434,7 @@
     <button class="tab-btn swim" id="btn-swim" role="tab" aria-selected="false" aria-controls="panel-swim" data-tab="swim" tabindex="-1" onclick="showPanel('swim')"><span aria-hidden="true">🏊</span> Natación · CSS</button>
     <button class="tab-btn sprint" id="btn-sprint" role="tab" aria-selected="false" aria-controls="panel-sprint" data-tab="sprint" tabindex="-1" onclick="showPanel('sprint')"><span aria-hidden="true">🏁</span> Natación · Sprinter</button>
     <button class="tab-btn banco" id="btn-banco" role="tab" aria-selected="false" aria-controls="panel-banco" data-tab="banco" tabindex="-1" onclick="showPanel('banco')"><span aria-hidden="true">🗂️</span> Banco / Prescriptor</button>
+    <button class="tab-btn antro" id="btn-antro" role="tab" aria-selected="false" aria-controls="panel-antro" data-tab="antro" tabindex="-1" onclick="showPanel('antro')"><span aria-hidden="true">📐</span> Antropometría / Potencia</button>
   </div>
 
   <div class="control-bar">
@@ -762,6 +765,149 @@
     </div>
   </section>
 
+  <!-- ============================================================ -->
+  <!-- PANEL 5: ANTROPOMETRÍA / POTENCIA / GASTO CALÓRICO -->
+  <!-- ============================================================ -->
+  <section class="panel antro" id="panel-antro" role="tabpanel" aria-labelledby="btn-antro">
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Datos del atleta</h2>
+        <span class="tag" style="color:#1F7A6D">BASE PARA TODOS LOS CÁLCULOS DE ESTA PESTAÑA</span>
+      </div>
+      <div class="grid-inputs">
+        <div class="field">
+          <label for="an-peso">Peso corporal</label>
+          <input type="number" id="an-peso" value="70" min="20" max="200" step="0.1">
+          <span class="hint">kg</span>
+        </div>
+        <div class="field">
+          <label for="an-altura">Altura</label>
+          <input type="number" id="an-altura" value="175" min="100" max="230" step="0.5">
+          <span class="hint">cm</span>
+        </div>
+        <div class="field">
+          <label for="an-envergadura">Envergadura (brazada)</label>
+          <input type="number" id="an-envergadura" value="180" min="100" max="250" step="0.5">
+          <span class="hint">cm, punta a punta de dedos</span>
+        </div>
+        <div class="field">
+          <label for="an-sexo">Sexo biológico</label>
+          <select id="an-sexo">
+            <option value="1">Masculino</option>
+            <option value="0">Femenino</option>
+          </select>
+          <span class="hint">para estimar % de grasa</span>
+        </div>
+        <div class="field">
+          <label for="an-edad">Edad</label>
+          <input type="number" id="an-edad" value="20" min="5" max="99">
+          <span class="hint">años (se toma de FC si la editás allí)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Índices antropométricos</h2>
+        <span class="tag" style="color:#1F7A6D">PERFIL FÍSICO DEL NADADOR</span>
+      </div>
+      <div class="stat-strip">
+        <div class="stat"><div class="k">IMC</div><div class="v" id="stat-imc">—<span class="u">kg/m²</span></div></div>
+        <div class="stat"><div class="k">Índice de envergadura</div><div class="v" id="stat-ape">—<span class="u">%</span></div></div>
+        <div class="stat"><div class="k">% de grasa (est.)</div><div class="v" id="stat-grasa">—<span class="u">%</span></div></div>
+        <div class="stat"><div class="k">Masa magra</div><div class="v" id="stat-magra">—<span class="u">kg</span></div></div>
+        <div class="stat"><div class="k">Superficie corporal</div><div class="v" id="stat-sc">—<span class="u">m²</span></div></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin:14px 0 0;line-height:1.6;">
+        <strong id="an-imc-cat">—</strong> · Índice de envergadura = envergadura ÷ altura (los nadadores de élite suelen superar el 100%, ventaja de palanca).
+        % de grasa estimado con la fórmula de Deurenberg (IMC, edad y sexo) — es una aproximación, no reemplaza la medición con plicómetro o DEXA.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Gasto calórico por sesión</h2>
+        <span class="tag" style="color:#1F7A6D">MÉTODO MET · KCAL = MET × KG × HORAS</span>
+      </div>
+      <div class="grid-inputs">
+        <div class="field">
+          <label for="an-met">Intensidad (MET)</label>
+          <select id="an-met">
+            <option value="4.8">Suave / recreativo (4.8)</option>
+            <option value="6">Aeróbico moderado (6.0)</option>
+            <option value="8.3" selected>Crol vigoroso / entreno (8.3)</option>
+            <option value="9.8">Rápido / continuo fuerte (9.8)</option>
+            <option value="11">Competición / sprints (11.0)</option>
+          </select>
+          <span class="hint">MET según esfuerzo (Compendium)</span>
+        </div>
+        <div class="field">
+          <label for="an-dur">Duración de la sesión</label>
+          <input type="number" id="an-dur" value="60" min="1" max="360" step="1">
+          <span class="hint">minutos</span>
+        </div>
+        <div class="field">
+          <label>Gasto total</label>
+          <input type="text" id="an-kcal" class="result" readonly>
+          <span class="hint">kcal de la sesión</span>
+        </div>
+        <div class="field">
+          <label>Ritmo de gasto</label>
+          <input type="text" id="an-kcalh" class="result" readonly>
+          <span class="hint">kcal por hora</span>
+        </div>
+      </div>
+      <div class="stat-strip">
+        <div class="stat"><div class="k">Gasto de la sesión</div><div class="v" id="stat-kcal">—<span class="u">kcal</span></div></div>
+        <div class="stat"><div class="k">Por hora</div><div class="v" id="stat-kcalh">—<span class="u">kcal/h</span></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Potencia y arrastre hidrodinámico</h2>
+        <span class="tag" style="color:#1F7A6D">MODELO Fd = ½·ρ·Cd·A·v²</span>
+      </div>
+      <div class="grid-inputs">
+        <div class="field">
+          <label for="an-vel">Velocidad de nado</label>
+          <input type="number" id="an-vel" value="1.2" min="0.1" max="3" step="0.01">
+          <span class="hint">m/s <button type="button" id="an-usar-css" class="copy-table-btn" style="margin-left:6px;padding:2px 8px;">↺ tomar del CSS</button></span>
+        </div>
+        <div class="field">
+          <label for="an-cd">Coef. de arrastre (Cd)</label>
+          <input type="number" id="an-cd" value="0.7" min="0.2" max="1.5" step="0.01">
+          <span class="hint">típico 0.6–0.9 en nado</span>
+        </div>
+        <div class="field">
+          <label for="an-area">Área frontal (A)</label>
+          <input type="number" id="an-area" value="0.08" min="0.02" max="0.2" step="0.005">
+          <span class="hint">m² (≈ 0.08; se ajusta con tu sección)</span>
+        </div>
+        <div class="field">
+          <label>Fuerza de arrastre</label>
+          <input type="text" id="an-drag" class="result" readonly>
+          <span class="hint">Newtons a esa velocidad</span>
+        </div>
+        <div class="field">
+          <label>Potencia para vencerlo</label>
+          <input type="text" id="an-pot" class="result" readonly>
+          <span class="hint">Watts = Fd × v</span>
+        </div>
+      </div>
+      <div class="stat-strip">
+        <div class="stat"><div class="k">Arrastre</div><div class="v" id="stat-drag">—<span class="u">N</span></div></div>
+        <div class="stat"><div class="k">Potencia mecánica</div><div class="v" id="stat-pot">—<span class="u">W</span></div></div>
+        <div class="stat"><div class="k">Área estimada por talla</div><div class="v" id="stat-area-est">—<span class="u">m²</span></div></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin:14px 0 0;line-height:1.6;">
+        La potencia mostrada es <strong>mecánica</strong> (la que disipa el agua), no el gasto metabólico: la eficiencia de propulsión en nado es baja (~5–9%),
+        así que el consumo real es varias veces mayor. El área frontal por defecto es una estimación; el botón de arriba usa un modelo talla·peso solo como referencia.
+      </p>
+    </div>
+  </section>
+
   <div class="divider">todos los campos son editables — click y escribí</div>
   <footer class="note">
     FC: modelo de Karvonen (Frecuencia Cardíaca de Reserva). Tanaka = 208 − 0.7×edad, solo referencial.
@@ -802,7 +948,7 @@ function formatTime(totalSeconds){
   return sign + m + ':' + String(s).padStart(2,'0');
 }
 
-var TABS = ['fc','swim','sprint','banco'];
+var TABS = ['fc','swim','sprint','banco','antro'];
 function showPanel(which){
   if(TABS.indexOf(which) === -1){ which = 'fc'; }
   TABS.forEach(function(t){
@@ -1425,6 +1571,80 @@ function renderMesociclo(){
   }
 }
 
+/* ============================= ANTROPOMETRÍA / POTENCIA / KCAL ============================= */
+function categoriaIMC(imc){
+  if(!isFinite(imc)) return '—';
+  if(imc < 18.5) return 'Bajo peso';
+  if(imc < 25)   return 'Peso normal';
+  if(imc < 30)   return 'Sobrepeso';
+  return 'Obesidad';
+}
+function calcAntro(){
+  var peso = clampNum(document.getElementById('an-peso').value, NaN);   // kg
+  var alturaCm = clampNum(document.getElementById('an-altura').value, NaN); // cm
+  var envCm = clampNum(document.getElementById('an-envergadura').value, NaN);
+  var sexo = parseInt(document.getElementById('an-sexo').value, 10);    // 1 = M, 0 = F
+  var edad = clampNum(document.getElementById('an-edad').value, NaN);
+  var alturaM = alturaCm/100;
+
+  // --- Índices ---
+  var imc = (isFinite(peso)&&alturaM>0) ? peso/(alturaM*alturaM) : NaN;
+  var ape = (isFinite(envCm)&&alturaCm>0) ? (envCm/alturaCm)*100 : NaN; // %
+  // Deurenberg: %grasa = 1.20*IMC + 0.23*edad - 10.8*sexo - 5.4
+  var grasa = (isFinite(imc)&&isFinite(edad)) ? (1.20*imc + 0.23*edad - 10.8*sexo - 5.4) : NaN;
+  if(isFinite(grasa)) grasa = Math.max(2, Math.min(60, grasa));
+  var magra = (isFinite(peso)&&isFinite(grasa)) ? peso*(1-grasa/100) : NaN;
+  // Mosteller: SC(m²) = sqrt(altura_cm * peso / 3600)
+  var sc = (isFinite(peso)&&isFinite(alturaCm)) ? Math.sqrt(alturaCm*peso/3600) : NaN;
+
+  var setStat = function(id, v, u){ document.getElementById(id).innerHTML = (isFinite(v)?v:'—') + (u?'<span class="u">'+u+'</span>':''); };
+  setStat('stat-imc', isFinite(imc)?imc.toFixed(1):NaN, 'kg/m²');
+  setStat('stat-ape', isFinite(ape)?ape.toFixed(1):NaN, '%');
+  setStat('stat-grasa', isFinite(grasa)?grasa.toFixed(1):NaN, '%');
+  setStat('stat-magra', isFinite(magra)?magra.toFixed(1):NaN, 'kg');
+  setStat('stat-sc', isFinite(sc)?sc.toFixed(2):NaN, 'm²');
+  document.getElementById('an-imc-cat').textContent = 'IMC: '+categoriaIMC(imc);
+
+  // --- Gasto calórico (MET) ---
+  var met = clampNum(document.getElementById('an-met').value, NaN);
+  var durMin = clampNum(document.getElementById('an-dur').value, NaN);
+  var kcalH = (isFinite(met)&&isFinite(peso)) ? met*peso : NaN;       // kcal por hora
+  var kcal = (isFinite(kcalH)&&isFinite(durMin)) ? kcalH*(durMin/60) : NaN;
+  document.getElementById('an-kcal').value = isFinite(kcal) ? Math.round(kcal)+' kcal' : '—';
+  document.getElementById('an-kcalh').value = isFinite(kcalH) ? Math.round(kcalH)+' kcal/h' : '—';
+  setStat('stat-kcal', isFinite(kcal)?Math.round(kcal):NaN, 'kcal');
+  setStat('stat-kcalh', isFinite(kcalH)?Math.round(kcalH):NaN, 'kcal/h');
+
+  // --- Potencia / arrastre ---
+  var rho = 1000; // kg/m³ agua
+  var v = clampNum(document.getElementById('an-vel').value, NaN);
+  var cd = clampNum(document.getElementById('an-cd').value, NaN);
+  var area = clampNum(document.getElementById('an-area').value, NaN);
+  var drag = (isFinite(v)&&isFinite(cd)&&isFinite(area)) ? 0.5*rho*cd*area*v*v : NaN; // N
+  var pot = (isFinite(drag)&&isFinite(v)) ? drag*v : NaN; // W
+  document.getElementById('an-drag').value = isFinite(drag) ? drag.toFixed(1)+' N' : '—';
+  document.getElementById('an-pot').value = isFinite(pot) ? pot.toFixed(1)+' W' : '—';
+  setStat('stat-drag', isFinite(drag)?drag.toFixed(1):NaN, 'N');
+  setStat('stat-pot', isFinite(pot)?pot.toFixed(1):NaN, 'W');
+  // Área frontal estimada por talla (referencia): ~0.09 * SC de tronco ≈ 0.0138 * peso^0.425 * altura_cm^0.725 * 0.11
+  var areaEst = isFinite(sc) ? sc*0.11 : NaN;
+  setStat('stat-area-est', isFinite(areaEst)?areaEst.toFixed(3):NaN, 'm²');
+}
+
+['an-peso','an-altura','an-envergadura','an-sexo','an-edad','an-met','an-dur','an-vel','an-cd','an-area'].forEach(function(id){
+  var el=document.getElementById(id); if(el) el.addEventListener('input', calcAntro);
+});
+// Tomar la velocidad desde el test CSS
+document.getElementById('an-usar-css').addEventListener('click', function(){
+  var txt = (document.getElementById('stat-css-vel').textContent||'').replace(/[^\d.]/g,'');
+  var v = parseFloat(txt);
+  if(isFinite(v) && v>0){ document.getElementById('an-vel').value = v.toFixed(2); calcAntro(); }
+});
+// Mantener la edad sincronizada con la de FC
+document.getElementById('fc-edad').addEventListener('input', function(){
+  var e=document.getElementById('an-edad'); if(e){ e.value = document.getElementById('fc-edad').value; calcAntro(); }
+});
+
 /* ============================= INIT ============================= */
 buildFcTable();
 buildSwimTable();
@@ -1434,6 +1654,7 @@ calcSwim();
 calcSprint();
 renderBanco();
 renderMesociclo();
+calcAntro();
 initTabs();
 
 /* ============================= EXPORTACIÓN (solo sección CSS) ============================= */
@@ -1960,6 +2181,9 @@ function exportarSprintXLS(){
       sprint:{ r1:val('sp-r1'), r2:val('sp-r2'), r3:val('sp-r3'), r4:val('sp-r4'),
                txt:textosEditables('tabla-sprint',[5,6]) },
       nadador: val('fc-nombre') || val('exp-nadador') || val('exp-nadador-sprint'),
+      antro:{ peso:val('an-peso'), altura:val('an-altura'), env:val('an-envergadura'),
+              sexo:val('an-sexo'), edad:val('an-edad'), met:val('an-met'), dur:val('an-dur'),
+              vel:val('an-vel'), cd:val('an-cd'), area:val('an-area') },
       filtro: val('banco-filtro-fase'),
       banco: JSON.parse(JSON.stringify(bancoSeries)),
       meso: JSON.parse(JSON.stringify(mesociclo))
@@ -1974,11 +2198,16 @@ function exportarSprintXLS(){
     if(est.sprint){ setVal('sp-r1',est.sprint.r1); setVal('sp-r2',est.sprint.r2); setVal('sp-r3',est.sprint.r3); setVal('sp-r4',est.sprint.r4); }
     if(est.nadador!=null){ setVal('fc-nombre',est.nadador); setVal('exp-nadador',est.nadador); setVal('exp-nadador-sprint',est.nadador); }
     if(est.filtro){ setVal('banco-filtro-fase',est.filtro); }
+    if(est.antro){ var a=est.antro;
+      setVal('an-peso',a.peso); setVal('an-altura',a.altura); setVal('an-envergadura',a.env);
+      setVal('an-sexo',a.sexo); setVal('an-edad',a.edad); setVal('an-met',a.met); setVal('an-dur',a.dur);
+      setVal('an-vel',a.vel); setVal('an-cd',a.cd); setVal('an-area',a.area);
+    }
     if(Array.isArray(est.banco)){ bancoSeries.length=0; est.banco.forEach(function(s){ bancoSeries.push(s); }); }
     if(est.meso){ diasSemana.forEach(function(d){ mesociclo[d] = Array.isArray(est.meso[d]) ? est.meso[d] : []; }); }
 
     // Recalcular todo
-    calcFc(); calcSwim(); calcSprint(); renderBanco(); renderMesociclo();
+    calcFc(); calcSwim(); calcSprint(); renderBanco(); renderMesociclo(); calcAntro();
 
     // Rangos de % de FC editables + textos de celdas
     if(est.fc && est.fc.pct){
