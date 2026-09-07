@@ -540,13 +540,13 @@
         </div>
         <div class="field">
           <label for="an-altura">Altura</label>
-          <input type="number" id="an-altura" value="175" min="100" max="230" step="0.5">
-          <span class="hint">cm</span>
+          <input type="number" id="an-altura" value="175" min="1" max="230" step="0.5">
+          <span class="hint">cm (acepta metros, ej. 1.75)</span>
         </div>
         <div class="field">
           <label for="an-envergadura">Envergadura (brazada)</label>
-          <input type="number" id="an-envergadura" value="180" min="100" max="250" step="0.5">
-          <span class="hint">cm, punta a punta de dedos</span>
+          <input type="number" id="an-envergadura" value="180" min="1" max="250" step="0.5">
+          <span class="hint">cm, punta a punta (acepta metros)</span>
         </div>
       </div>
     </div>
@@ -1712,6 +1712,9 @@ function calcAntro(){
   var peso = clampNum(document.getElementById('an-peso').value, NaN);   // kg
   var alturaCm = clampNum(document.getElementById('an-altura').value, NaN); // cm
   var envCm = clampNum(document.getElementById('an-envergadura').value, NaN);
+  // Tolerancia de unidades: si viene en metros (ej. 1.50), lo paso a cm.
+  if(isFinite(alturaCm) && alturaCm > 0 && alturaCm < 3) alturaCm *= 100;
+  if(isFinite(envCm) && envCm > 0 && envCm < 3) envCm *= 100;
   var sexo = parseInt(document.getElementById('an-sexo').value, 10);    // 1 = M, 0 = F
   var edad = clampNum(document.getElementById('fc-edad').value, NaN);   // edad única del perfil
   var alturaM = alturaCm/100;
