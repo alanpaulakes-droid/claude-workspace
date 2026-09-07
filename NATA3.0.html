@@ -134,28 +134,44 @@
   .tab-btn.active.antro{background:#1F7A6D; color:#fff;}
   .tab-btn.active.perfil{background:var(--navy-900); color:#fff;}
   .panel.perfil .stat{background:linear-gradient(160deg,#062A3F,var(--navy-800));}
-  .tab-btn.active.video{background:#B45309; color:#fff;}
-  .panel.video .stat{background:linear-gradient(160deg,#5A2A05,#B45309);}
-  .vid-toolbar{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;}
-  .vid-name{font-size:13px; color:var(--muted); font-family:'JetBrains Mono',monospace;}
-  .vid-wrap{position:relative; width:100%; background:#000; border-radius:12px; overflow:hidden; line-height:0;}
-  .vid-wrap video{width:100%; height:auto; display:block; max-height:70vh;}
-  .vid-wrap canvas{position:absolute; inset:0; width:100%; height:100%; touch-action:none; cursor:crosshair;}
-  .vid-controls{display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap; margin:12px 0;}
-  .vid-controls .cb-group{display:flex; flex-direction:column; gap:5px;}
-  .vid-controls label{font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
-  .vid-controls select, .vid-controls input{font-family:'Inter',sans-serif; font-size:14px; padding:9px 11px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);}
-  .vid-seek{width:100%; margin:4px 0 2px; accent-color:#B45309;}
-  .vid-time{font-size:12.5px; color:var(--muted); margin-bottom:12px;}
-  .vid-tools{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
-  .vid-tools .cb-btn.active{background:#B45309; color:#fff; border-color:#B45309;}
-  .vid-hint{font-size:12px; color:var(--muted);}
-  .vid-check{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-  .vid-check label{display:flex; align-items:flex-start; gap:9px; font-size:13.5px; line-height:1.4; cursor:pointer;}
-  .vid-check input{margin-top:2px; width:17px; height:17px; accent-color:#B45309; flex:none;}
-  @media(max-width:640px){ .vid-check{grid-template-columns:1fr;} }
-  @media print{ .panel.video{display:none !important;} }
+  .tab-btn.active.db{background:#2E7D5B; color:#fff;}
   .tab-btn:not(.active):hover{background:var(--bg); color:var(--ink);}
+
+  /* ---------- Base de datos de nadadores ---------- */
+  .db-toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px;}
+  .db-search{flex:1; min-width:180px; font-family:'Inter',sans-serif; font-size:14px; padding:10px 13px; border:1px solid var(--line); border-radius:10px;}
+  .db-empty{color:var(--muted); font-size:14px; padding:18px; text-align:center; background:#F7FBF9; border:1px dashed #BEE3D3; border-radius:12px;}
+  .db-acc{display:flex; flex-direction:column; gap:10px;}
+  .db-item{border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--card);}
+  .db-head{display:flex; align-items:center; gap:12px; padding:13px 15px; cursor:pointer; user-select:none;}
+  .db-head:hover{background:#F5FAF8;}
+  .db-avatar{width:34px; height:34px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; background:linear-gradient(160deg,#2E7D5B,#1F7A6D); font-size:14px;}
+  .db-hname{font-weight:700; font-size:15px; color:var(--ink);}
+  .db-chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:3px;}
+  .db-chip{font-size:11px; color:var(--muted); background:#EFF4F2; border:1px solid var(--line); border-radius:20px; padding:2px 9px; font-family:'JetBrains Mono',monospace;}
+  .db-caret{margin-left:auto; transition:transform .18s ease; color:var(--muted); flex:none;}
+  .db-item.open .db-caret{transform:rotate(90deg);}
+  .db-body{display:none; padding:0 15px 16px; border-top:1px solid var(--line);}
+  .db-item.open .db-body{display:block;}
+  .db-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin:14px 0;}
+  .db-field{background:#FAFCFB; border:1px solid var(--line); border-radius:9px; padding:8px 11px;}
+  .db-field .k{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:600;}
+  .db-field .v{font-size:15px; font-weight:700; color:var(--ink); margin-top:2px;}
+  .db-sec-title{font-family:'Space Grotesk',sans-serif; font-size:14px; font-weight:600; color:#2E7D5B; margin:16px 0 8px;}
+  .db-times{width:100%; border-collapse:collapse; min-width:0;}
+  .db-times th{background:#2E7D5B; color:#fff; font-size:11px; text-transform:uppercase; letter-spacing:.03em; padding:8px 9px; text-align:left;}
+  .db-times td{border-bottom:1px solid var(--line); padding:7px 9px; font-size:13px; vertical-align:middle;}
+  .db-times td.mono{font-family:'JetBrains Mono',monospace;}
+  .db-times tr.best td{background:#EAF7F0;}
+  .db-best-badge{display:inline-block; font-size:10px; font-weight:700; color:#1B7F5C; background:#D4F0E2; border-radius:20px; padding:1px 8px; margin-left:6px;}
+  .db-addrow{display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end; margin-top:12px; background:#F7FBF9; border:1px solid #D9EEE5; border-radius:10px; padding:12px;}
+  .db-addrow .f{display:flex; flex-direction:column; gap:4px;}
+  .db-addrow label{font-size:10.5px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;}
+  .db-addrow input{font-family:'Inter',sans-serif; font-size:14px; padding:8px 10px; border:1px solid var(--line); border-radius:8px;}
+  .db-addrow input.t-prueba{width:150px;} .db-addrow input.t-tiempo{width:120px;} .db-addrow input.t-fecha{width:145px;}
+  .db-del{border:none; background:#FBE9E4; color:var(--danger); cursor:pointer; border-radius:7px; padding:5px 9px; font-size:12px; font-weight:700;}
+  .db-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;}
+  @media(max-width:640px){ .db-addrow input.t-prueba,.db-addrow input.t-tiempo,.db-addrow input.t-fecha{width:100%;} .db-addrow .f{flex:1 1 100%;} }
 
   .panel{display:none; animation:fade .3s ease;}
   .panel.active{display:block;}
@@ -494,7 +510,7 @@
     <button class="tab-btn sprint" id="btn-sprint" role="tab" aria-selected="false" aria-controls="panel-sprint" data-tab="sprint" tabindex="-1" onclick="showPanel('sprint')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 3h5"/><path d="M12 3v2.6"/><circle cx="12" cy="13.5" r="6.6"/><path d="M12 13.5V9.7"/><path d="M18.6 7.4l1.3-1.3"/></svg> Natación · Sprinter</button>
     <button class="tab-btn banco" id="btn-banco" role="tab" aria-selected="false" aria-controls="panel-banco" data-tab="banco" tabindex="-1" onclick="showPanel('banco')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.2" y="5" width="13.6" height="16" rx="2.2"/><rect x="9" y="3" width="6" height="3.4" rx="1.1"/><path d="M8.6 11h6.8M8.6 14.3h6.8M8.6 17.6h4.2"/></svg> Banco / Prescriptor</button>
     <button class="tab-btn antro" id="btn-antro" role="tab" aria-selected="false" aria-controls="panel-antro" data-tab="antro" tabindex="-1" onclick="showPanel('antro')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.2 3.5v17"/><path d="M4.2 7.5h2.4M4.2 12h3.2M4.2 16.5h2.4"/><path d="M14 3.2l-4.2 9.4H13l-1 7.9 6.2-11.2H15l1-6.1z"/></svg> Antropometría / Potencia</button>
-    <button class="tab-btn video" id="btn-video" role="tab" aria-selected="false" aria-controls="panel-video" data-tab="video" tabindex="-1" onclick="showPanel('video')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg> Video / Técnica</button>
+    <button class="tab-btn db" id="btn-db" role="tab" aria-selected="false" aria-controls="panel-db" data-tab="db" tabindex="-1" onclick="showPanel('db')"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="7" ry="2.8"/><path d="M5 5.5v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-6"/><path d="M5 11.5v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-6"/></svg> Base de datos</button>
   </div>
 
   <div class="control-bar" id="control-bar" hidden>
@@ -1001,99 +1017,34 @@
   </section>
 
   <!-- ============================================================ -->
-  <!-- PANEL 6: VIDEO / ANÁLISIS DE TÉCNICA (manual) -->
+  <!-- PANEL: BASE DE DATOS DE NADADORES -->
   <!-- ============================================================ -->
-  <section class="panel video" id="panel-video" role="tabpanel" aria-labelledby="btn-video">
-
+  <section class="panel db" id="panel-db" role="tabpanel" aria-labelledby="btn-db">
     <div class="card">
       <div class="card-head">
-        <h2>Video de técnica</h2>
-        <span class="tag" style="color:#B45309">CÁMARA LENTA · FRAME A FRAME · ÁNGULOS</span>
+        <h2>Base de datos de nadadores</h2>
+        <span class="tag" style="color:#2E7D5B">PERFILES GRABADOS · TIEMPOS Y MEJORES MARCAS</span>
       </div>
-      <p style="font-size:12.5px;color:var(--muted);margin:-6px 0 12px;line-height:1.6;">
-        El video se abre solo en tu dispositivo (no se sube a internet). Cargá un clip lateral, con buena luz y cámara fija, para medir mejor.
+      <p style="font-size:12.5px;color:var(--muted);margin:-6px 0 14px;line-height:1.6;">
+        Cada nadador que grabás en la pestaña <strong>Perfil del atleta</strong> aparece acá. Tocá una tarjeta para desplegar todos sus datos y cargar sus tiempos por prueba (la mejor marca se resalta automáticamente).
       </p>
-
-      <div class="vid-toolbar">
-        <label class="cb-btn" for="vid-file"><span aria-hidden="true">📂</span> Cargar video</label>
-        <input type="file" id="vid-file" accept="video/*" hidden>
-        <span class="vid-name" id="vid-name">Ningún video cargado</span>
+      <div class="db-toolbar">
+        <input type="text" id="db-search" class="db-search" placeholder="🔎 Buscar nadador…">
+        <button class="cb-btn" id="db-expandir" type="button">Expandir todo</button>
+        <button class="cb-btn" id="db-colapsar" type="button">Colapsar todo</button>
       </div>
-
-      <div class="vid-stage" id="vid-stage" hidden>
-        <div class="vid-wrap" id="vid-wrap">
-          <video id="vid-player" playsinline preload="metadata"></video>
-          <canvas id="vid-canvas"></canvas>
-        </div>
-
-        <div class="vid-controls">
-          <button class="cb-btn" id="vid-play" type="button"><span aria-hidden="true">▶️</span> Play</button>
-          <button class="cb-btn" id="vid-back1" type="button" title="Un frame atrás">⏮ frame</button>
-          <button class="cb-btn" id="vid-fwd1" type="button" title="Un frame adelante">frame ⏭</button>
-          <div class="cb-group">
-            <label for="vid-rate">Velocidad</label>
-            <select id="vid-rate">
-              <option value="0.1">0.1× (muy lento)</option>
-              <option value="0.25">0.25×</option>
-              <option value="0.5" selected>0.5×</option>
-              <option value="1">1× (normal)</option>
-            </select>
-          </div>
-          <div class="cb-group">
-            <label for="vid-fps">FPS del video</label>
-            <input type="number" id="vid-fps" value="30" min="15" max="240" step="1" style="width:80px;">
-          </div>
-        </div>
-
-        <input type="range" id="vid-seek" min="0" max="100" value="0" step="0.1" class="vid-seek" aria-label="Posición del video">
-        <div class="vid-time mono" id="vid-time">0.00 s / 0.00 s</div>
-
-        <div class="vid-tools">
-          <button class="cb-btn" id="tool-angulo" type="button"><span aria-hidden="true">📐</span> Medir ángulo</button>
-          <button class="cb-btn" id="tool-linea" type="button"><span aria-hidden="true">📏</span> Línea</button>
-          <button class="cb-btn" id="tool-deshacer" type="button"><span aria-hidden="true">↩️</span> Deshacer</button>
-          <button class="cb-btn active" id="tool-seguir" type="button"><span aria-hidden="true">🎯</span> Seguir: ON</button>
-          <button class="cb-btn danger" id="tool-limpiar" type="button"><span aria-hidden="true">🧽</span> Borrar todo</button>
-          <span class="vid-hint" id="tool-hint">Elegí una herramienta y tocá el video.</span>
-        </div>
-      </div>
+      <div class="db-acc" id="db-acc"></div>
     </div>
 
-    <div class="card">
-      <div class="card-head">
-        <h2>Frecuencia de brazada</h2>
-        <span class="tag" style="color:#B45309">TOCÁ EN CADA BRAZADA</span>
-      </div>
-      <div class="vid-tools">
-        <button class="cb-btn primary" id="sr-tap" type="button"><span aria-hidden="true">👏</span> Marcar brazada</button>
-        <button class="cb-btn" id="sr-reset" type="button">↺ Reiniciar</button>
-      </div>
-      <div class="stat-strip">
-        <div class="stat"><div class="k">Brazadas/min</div><div class="v" id="sr-spm">—</div></div>
-        <div class="stat"><div class="k">Ciclos/min (2 brazadas)</div><div class="v" id="sr-cpm">—</div></div>
-        <div class="stat"><div class="k">Tempo</div><div class="v" id="sr-tempo">—<span class="u">s/brazada</span></div></div>
-        <div class="stat"><div class="k">Marcas</div><div class="v" id="sr-count">0</div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <h2>Checklist de técnica y notas</h2>
-        <span class="tag" style="color:#B45309">SE GUARDA EN EL PERFIL DEL ATLETA</span>
-      </div>
-      <div class="vid-check" id="vid-check">
-        <label><input type="checkbox" data-vk="entrada"> Entrada de mano alineada (sin cruzar)</label>
-        <label><input type="checkbox" data-vk="agarre"> Agarre con codo alto (EVF)</label>
-        <label><input type="checkbox" data-vk="rolido"> Rolido de cadera y hombro</label>
-        <label><input type="checkbox" data-vk="empuje"> Empuje completo hasta la cadera</label>
-        <label><input type="checkbox" data-vk="patada"> Patada continua desde la cadera</label>
-        <label><input type="checkbox" data-vk="respiracion"> Respiración sin levantar la cabeza</label>
-        <label><input type="checkbox" data-vk="alineacion"> Alineación horizontal (caderas altas)</label>
-        <label><input type="checkbox" data-vk="simetria"> Simetría izquierda/derecha</label>
-      </div>
-      <label for="vid-notas" style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px;">Observaciones</label>
-      <textarea id="vid-notas" rows="4" placeholder="Notas de la corrección técnica…" style="width:100%;font-family:'Inter',sans-serif;font-size:14px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;resize:vertical;"></textarea>
-    </div>
+    <!-- opciones de prueba para el datalist -->
+    <datalist id="db-pruebas">
+      <option value="50 Libre"><option value="100 Libre"><option value="200 Libre"><option value="400 Libre">
+      <option value="800 Libre"><option value="1500 Libre">
+      <option value="50 Espalda"><option value="100 Espalda"><option value="200 Espalda">
+      <option value="50 Pecho"><option value="100 Pecho"><option value="200 Pecho">
+      <option value="50 Mariposa"><option value="100 Mariposa"><option value="200 Mariposa">
+      <option value="100 Combinado"><option value="200 Combinado"><option value="400 Combinado">
+    </datalist>
   </section>
 
   <div class="divider">todos los campos son editables — click y escribí</div>
@@ -1136,7 +1087,7 @@ function formatTime(totalSeconds){
   return sign + m + ':' + String(s).padStart(2,'0');
 }
 
-var TABS = ['perfil','fc','swim','sprint','banco','antro','video'];
+var TABS = ['perfil','fc','swim','sprint','banco','antro','db'];
 function showPanel(which){
   if(TABS.indexOf(which) === -1){ which = 'perfil'; }
   TABS.forEach(function(t){
@@ -1152,6 +1103,7 @@ function showPanel(which){
   var ab = document.getElementById('athlete-banner');
   if(ab){ ab.hidden = (which === 'perfil'); }
   actualizarBannerAtleta();
+  if(which==='db' && typeof window.renderDB === 'function'){ window.renderDB(); }
   try{ localStorage.setItem('nata-tab', which); }catch(e){}
 }
 
@@ -2439,8 +2391,7 @@ function exportarSprintXLS(){
               vel:val('an-vel'), cd:val('an-cd'), area:val('an-area') },
       filtro: val('banco-filtro-fase'),
       banco: JSON.parse(JSON.stringify(bancoSeries)),
-      meso: JSON.parse(JSON.stringify(mesociclo)),
-      video: (typeof window.serializarVideo==='function' ? window.serializarVideo() : null)
+      meso: JSON.parse(JSON.stringify(mesociclo))
     };
   }
 
@@ -2478,8 +2429,6 @@ function exportarSprintXLS(){
     cargando = false;
     validarTodo();
     if(typeof actualizarBannerAtleta === 'function') actualizarBannerAtleta();
-    try{ window.__ultimoEstado = est; }catch(e){}
-    if(typeof window.aplicarVideo === 'function') window.aplicarVideo(est.video);
   }
 
   /* ---------- Perfiles ----------
@@ -2806,6 +2755,22 @@ function exportarSprintXLS(){
   var _rb=renderBanco; renderBanco=function(){ _rb.apply(this,arguments); autosave(); };
   var _rm=renderMesociclo; renderMesociclo=function(){ _rm.apply(this,arguments); autosave(); };
 
+  // API expuesta para la Base de datos de nadadores
+  window.PerfilesDB = {
+    leer: leerPerfiles,
+    guardar: guardarPerfiles,
+    activo: perfilActivo,
+    cargar: function(nombre){
+      var est=leerPerfiles()[nombre]; if(!est) return false;
+      lsSet(KEY_ACTIVO, nombre); aplicar(est); lsSet(KEY_WORKING, JSON.stringify(est));
+      refrescarSelectorPerfiles();
+      if(typeof actualizarBannerAtleta==='function') actualizarBannerAtleta();
+      return true;
+    },
+    get: function(k){ return lsGet(k); },
+    set: function(k,v){ return lsSet(k,v); }
+  };
+
   /* ---------- Arranque ---------- */
   crearCajaValidacion('panel-perfil','val-fc');
   crearCajaValidacion('panel-perfil','val-swim');
@@ -2826,319 +2791,149 @@ function exportarSprintXLS(){
 })();
 
 /* ==================================================================== */
-/* ============ MÓDULO: Video / análisis de técnica (manual) ========== */
+/* ============ MÓDULO: Base de datos de nadadores ==================== */
 /* ==================================================================== */
 (function(){
   'use strict';
-  var file   = document.getElementById('vid-file');
-  if(!file) return;
-  var stage  = document.getElementById('vid-stage');
-  var nameEl = document.getElementById('vid-name');
-  var video  = document.getElementById('vid-player');
-  var canvas = document.getElementById('vid-canvas');
-  var ctx    = canvas.getContext('2d');
-  var seek   = document.getElementById('vid-seek');
-  var timeEl = document.getElementById('vid-time');
-  var rate   = document.getElementById('vid-rate');
-  var fpsEl  = document.getElementById('vid-fps');
-  var playBtn= document.getElementById('vid-play');
-  var urlActual = null;
+  var acc = document.getElementById('db-acc');
+  if(!acc) return;
+  var KEY_TIEMPOS = 'nata-tiempos';
+  var abiertos = {};   // nombres desplegados
+  var filtro = '';
 
-  /* ---- carga del archivo ---- */
-  file.addEventListener('change', function(){
-    var f = file.files && file.files[0];
-    if(!f) return;
-    if(urlActual) URL.revokeObjectURL(urlActual);
-    urlActual = URL.createObjectURL(f);
-    video.src = urlActual;
-    nameEl.textContent = f.name;
-    stage.hidden = false;
-    shapes = []; puntos = [];
-  });
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function api(){ return window.PerfilesDB; }
+  function leerTiempos(){ try{ return JSON.parse(api().get(KEY_TIEMPOS)) || {}; }catch(e){ return {}; } }
+  function guardarTiempos(t){ api().set(KEY_TIEMPOS, JSON.stringify(t)); }
 
-  video.addEventListener('loadedmetadata', function(){ ajustarCanvas(); redraw(); });
-  video.addEventListener('play',  function(){ playBtn.innerHTML='⏸️ Pausa'; });
-  video.addEventListener('pause', function(){ playBtn.innerHTML='▶️ Play'; });
-  video.addEventListener('timeupdate', function(){
-    if(video.duration){ seek.value = (video.currentTime/video.duration)*100; }
-    timeEl.textContent = video.currentTime.toFixed(2)+' s / '+(video.duration||0).toFixed(2)+' s';
-  });
-  window.addEventListener('resize', function(){ ajustarCanvas(); redraw(); });
-
-  playBtn.addEventListener('click', function(){ if(video.paused) video.play(); else video.pause(); });
-  rate.addEventListener('change', function(){ video.playbackRate = parseFloat(rate.value); });
-  function paso(dir){
-    var fps = parseFloat(fpsEl.value) || 30;
-    video.pause();
-    video.currentTime = Math.max(0, Math.min(video.duration||0, video.currentTime + dir/fps));
+  function segDe(str){  // "mm:ss.cc" o "ss.cc" -> segundos
+    if(!str) return NaN;
+    str=String(str).trim().replace(',', '.');
+    if(str.indexOf(':')===-1) return parseFloat(str);
+    var p=str.split(':').map(parseFloat);
+    if(p.some(isNaN)) return NaN;
+    return p.length===2 ? p[0]*60+p[1] : (p.length===3 ? p[0]*3600+p[1]*60+p[2] : NaN);
   }
-  document.getElementById('vid-back1').addEventListener('click', function(){ paso(-1); });
-  document.getElementById('vid-fwd1').addEventListener('click', function(){ paso(1); });
-  seek.addEventListener('input', function(){
-    if(video.duration){ video.pause(); video.currentTime = (parseFloat(seek.value)/100)*video.duration; }
-  });
 
-  /* ---- canvas / dibujo (coordenadas normalizadas 0..1) ---- */
-  function ajustarCanvas(){
-    var r = video.getBoundingClientRect();
-    canvas.width = Math.max(1, Math.round(r.width));
-    canvas.height = Math.max(1, Math.round(r.height));
-  }
-  var shapes = [];   // {tipo:'angulo'|'linea', pts:[{x,y}...], color} normalizado
-  var puntos = [];   // puntos en curso
-  var herramienta = null;
-  var PALETA = ['#FF8A3D','#42A5F5','#66BB6A','#EC407A','#AB47BC','#FFCA28','#26C6DA','#EF5350'];
-  var colorIdx = 0;
-  function siguienteColor(){ return PALETA[(colorIdx++) % PALETA.length]; }
-
-  function setHerramienta(t){
-    herramienta = (herramienta===t) ? null : t;
-    puntos = [];
-    ['tool-angulo','tool-linea'].forEach(function(id){
-      document.getElementById(id).classList.toggle('active',
-        (id==='tool-angulo'&&herramienta==='angulo')||(id==='tool-linea'&&herramienta==='linea'));
-    });
-    document.getElementById('tool-hint').textContent = herramienta==='angulo'
-      ? 'Tocá 3 puntos: extremo, vértice y extremo.'
-      : herramienta==='linea' ? 'Tocá 2 puntos.' : 'Sin herramienta: arrastrá un punto para corregir su posición.';
-    canvas.style.cursor = herramienta ? 'crosshair' : 'grab';
-  }
-  document.getElementById('tool-angulo').addEventListener('click', function(){ setHerramienta('angulo'); });
-  document.getElementById('tool-linea').addEventListener('click', function(){ setHerramienta('linea'); });
-  document.getElementById('tool-deshacer').addEventListener('click', function(){
-    if(puntos.length){ puntos.pop(); }   // cancela el punto a medio marcar
-    else if(shapes.length){ shapes.pop(); } // borra el último vector dibujado
-    redraw();
-  });
-  document.getElementById('tool-limpiar').addEventListener('click', function(){ shapes=[]; puntos=[]; colorIdx=0; redraw(); });
-
-  var arrastrando = null;
-  function puntoCercano(nx,ny,w,h,thrPx){
-    var best=null, bd=thrPx*thrPx;
-    function consider(p){ var dx=(p.x-nx)*w, dy=(p.y-ny)*h; var d=dx*dx+dy*dy; if(d<bd){bd=d;best=p;} }
-    shapes.forEach(function(s){ s.pts.forEach(consider); }); puntos.forEach(consider);
-    return best;
-  }
-  canvas.addEventListener('pointerdown', function(e){
-    var r = canvas.getBoundingClientRect();
-    var nx=(e.clientX-r.left)/r.width, ny=(e.clientY-r.top)/r.height;
-    if(herramienta){
-      var pt={x:nx,y:ny}; puntos.push(pt);
-      var g=grayNow(); if(g) capturarTpl(g, pt);   // plantilla de referencia del punto
-      var need = herramienta==='angulo' ? 3 : 2;
-      if(puntos.length===need){ shapes.push({tipo:herramienta, pts:puntos.slice(), color:siguienteColor()}); puntos=[]; }
-      redraw(); return;
+  function derivados(est){
+    est = est || {};
+    var fc=est.fc||{}, an=est.antro||{}, sw=est.swim||{};
+    var d={ edad:fc.edad||'—', sexo:(an.sexo==='0'?'F':(an.sexo==='1'?'M':'—')),
+            peso:an.peso||'—', altura:an.altura||'—', env:an.env||'—',
+            fcmax:fc.max||'—', fcrep:fc.reposo||'—' };
+    // CSS pace si es calculable
+    var d1=parseFloat(sw.d1), d2=parseFloat(sw.d2), t1=segDe(sw.t1), t2=segDe(sw.t2);
+    if(isFinite(d1)&&isFinite(d2)&&isFinite(t1)&&isFinite(t2)&&(t1-t2)!==0){
+      var v=(d1-d2)/(t1-t2);
+      if(v>0&&v<5){ var pace=100/v; var m=Math.floor(pace/60), s=Math.round(pace-m*60); d.css=m+':'+(s<10?'0':'')+s+' /100m'; }
     }
-    // sin herramienta activa: arrastrar un punto existente para corregirlo
-    var hit = puntoCercano(nx,ny, r.width, r.height, 20);
-    if(hit){ arrastrando=hit; try{ canvas.setPointerCapture(e.pointerId); }catch(_){} }
-  });
-  canvas.addEventListener('pointermove', function(e){
-    if(!arrastrando) return;
-    var r = canvas.getBoundingClientRect();
-    arrastrando.x=(e.clientX-r.left)/r.width; arrastrando.y=(e.clientY-r.top)/r.height;
-    redraw();
-  });
-  canvas.addEventListener('pointerup', function(){
-    if(arrastrando){ var g=grayNow(); if(g) capturarTpl(g, arrastrando); arrastrando=null; }
-  });
+    return d;
+  }
+  function fmtSeg(x){ if(!isFinite(x)) return '—'; var m=Math.floor(x/60), s=x-m*60; return (m>0? m+':'+(s<10?'0':''):'')+s.toFixed(2); }
 
-  function P(pt){ return { x:pt.x*canvas.width, y:pt.y*canvas.height }; }
-  function anguloEntre(a,b,c){
-    var A=P(a),B=P(b),C=P(c);
-    var v1={x:A.x-B.x,y:A.y-B.y}, v2={x:C.x-B.x,y:C.y-B.y};
-    var d=v1.x*v2.x+v1.y*v2.y;
-    var m=Math.hypot(v1.x,v1.y)*Math.hypot(v2.x,v2.y)||1;
-    return Math.acos(Math.max(-1,Math.min(1,d/m)))*180/Math.PI;
-  }
-  function dibujarPuntos(pts, color){
-    ctx.fillStyle=color;
-    pts.forEach(function(p){ var q=P(p); ctx.beginPath(); ctx.arc(q.x,q.y,4,0,7); ctx.fill(); });
-  }
-  function redraw(){
-    if(!canvas.width) return;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.lineWidth=2.5; ctx.font='bold 15px JetBrains Mono, monospace';
-    var naranja='#FF8A3D';
-    shapes.concat(puntos.length?[{tipo:herramienta,pts:puntos,parcial:true}]:[]).forEach(function(s){
-      var col = s.parcial ? '#FFD27F' : (s.color || naranja);
-      ctx.strokeStyle=col;
-      if(s.pts.length>=2){
-        ctx.beginPath();
-        s.pts.forEach(function(p,i){ var q=P(p); i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y); });
-        ctx.stroke();
-      }
-      dibujarPuntos(s.pts, col);
-      if(s.tipo==='angulo' && s.pts.length===3){
-        var ang=anguloEntre(s.pts[0],s.pts[1],s.pts[2]); var v=P(s.pts[1]);
-        ctx.fillStyle='#000'; ctx.globalAlpha=.55; ctx.fillRect(v.x+8,v.y-22,66,22); ctx.globalAlpha=1;
-        ctx.fillStyle='#fff'; ctx.fillText(ang.toFixed(0)+'°', v.x+12, v.y-6);
-      }
-      if(s.tipo==='linea' && s.pts.length===2){
-        var A=P(s.pts[0]),B=P(s.pts[1]); var mid={x:(A.x+B.x)/2,y:(A.y+B.y)/2};
-        var largoPx=Math.hypot(A.x-B.x,A.y-B.y);
-        var pct=(largoPx/canvas.width*100).toFixed(0);
-        ctx.fillStyle='#000'; ctx.globalAlpha=.55; ctx.fillRect(mid.x+6,mid.y-20,74,22); ctx.globalAlpha=1;
-        ctx.fillStyle='#fff'; ctx.fillText(pct+'% ancho', mid.x+10, mid.y-4);
-      }
-    });
+  function tablaTiempos(nombre){
+    var store=leerTiempos(); var lista=(store[nombre]||[]).slice();
+    // mejor marca por prueba
+    var mejor={};
+    lista.forEach(function(r){ var s=segDe(r.tiempo); if(!isFinite(s)) return; if(mejor[r.prueba]===undefined || s<mejor[r.prueba]) mejor[r.prueba]=s; });
+    // ordenar por prueba y luego tiempo
+    lista.sort(function(a,b){ if(a.prueba!==b.prueba) return a.prueba<b.prueba?-1:1; return (segDe(a.tiempo)||9e9)-(segDe(b.tiempo)||9e9); });
+    var filas = lista.map(function(r, i){
+      var s=segDe(r.tiempo); var esBest = isFinite(s) && Math.abs(s-mejor[r.prueba])<1e-6;
+      return '<tr class="'+(esBest?'best':'')+'" data-i="'+i+'">'+
+        '<td>'+esc(r.prueba)+(esBest?'<span class="db-best-badge">PB</span>':'')+'</td>'+
+        '<td class="mono">'+esc(r.tiempo)+'</td>'+
+        '<td class="mono">'+esc(r.fecha||'')+'</td>'+
+        '<td>'+esc(r.notas||'')+'</td>'+
+        '<td><button class="db-del" data-del="'+i+'" data-nombre="'+esc(nombre)+'">🗑</button></td>'+
+      '</tr>';
+    }).join('');
+    if(!filas) filas='<tr><td colspan="5" style="color:var(--muted);font-style:italic;">Sin tiempos cargados todavía.</td></tr>';
+    return '<div class="table-scroll"><table class="db-times"><thead><tr><th>Prueba</th><th>Tiempo</th><th>Fecha</th><th>Notas</th><th></th></tr></thead><tbody>'+filas+'</tbody></table></div>';
   }
 
-  /* ---- Seguimiento de puntos (estilo Kinovea) ----
-     Cada punto guarda una PLANTILLA de referencia (parche en gris) tomada al
-     colocarlo o al corregirlo arrastrándolo. En cada frame del video se busca
-     esa plantilla en una ventana alrededor de la última posición usando
-     correlación cruzada normalizada (NCC), robusta a cambios de luz. */
-  var off = document.createElement('canvas');
-  var offctx = off.getContext('2d', { willReadFrequently:true });
-  var procW = 0, procH = 0;
-  var trackId = null;
-  var seguir = true;
-  var R = 6;    // radio de la plantilla (parche (2R+1)^2)
-
-  function grayNow(){
-    if(!video.videoWidth) return null;
-    procW = Math.min(video.videoWidth, 480);
-    procH = Math.round(procW * video.videoHeight / video.videoWidth);
-    if(off.width!==procW){ off.width=procW; off.height=procH; }
-    try{ offctx.drawImage(video, 0, 0, procW, procH); }catch(e){ return null; }
-    var d; try{ d = offctx.getImageData(0,0,procW,procH).data; }catch(e){ return null; }
-    var g0 = new Float32Array(procW*procH);
-    for(var i=0,j=0;i<d.length;i+=4,j++){ g0[j]=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114; }
-    // desenfoque 3x3: ensancha el pico de correlación y reduce ruido (más robusto)
-    var g = new Float32Array(procW*procH), x, y, a, b;
-    for(y=0;y<procH;y++){ for(x=0;x<procW;x++){
-      var s=0,c=0;
-      for(b=-1;b<=1;b++){ for(a=-1;a<=1;a++){ var xx=x+a, yy=y+b; if(xx>=0&&yy>=0&&xx<procW&&yy<procH){ s+=g0[yy*procW+xx]; c++; } } }
-      g[y*procW+x]=s/c;
-    } }
-    return g;
-  }
-  function clampX(x){ return x<0?0:(x>=procW?procW-1:x); }
-  function clampY(y){ return y<0?0:(y>=procH?procH-1:y); }
-  // Captura la plantilla de referencia (media restada + norma) alrededor del punto
-  function capturarTpl(gray, p){
-    if(!procW){ if(!grayNow()) return; }
-    var cx=Math.round(p.x*procW), cy=Math.round(p.y*procH);
-    var n=(2*R+1)*(2*R+1), t=new Float32Array(n), k=0, sum=0, x,y,dx,dy;
-    for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(cx+dx); y=clampY(cy+dy); t[k]=gray[y*procW+x]; sum+=t[k]; k++; } }
-    var mean=sum/n, ss=0; for(k=0;k<n;k++){ t[k]-=mean; ss+=t[k]*t[k]; }
-    p._tpl=t; p._tnorm=Math.sqrt(ss)||1; p._vx=0; p._vy=0;  // reinicia velocidad al (re)anclar
-  }
-  // NCC de la plantilla t centrada en (sx,sy)
-  function nccAt(gray, sx, sy, t, tnorm, n){
-    var sum=0, dx,dy,x,y,k=0;
-    for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(sx+dx); y=clampY(sy+dy); sum+=gray[y*procW+x]; } }
-    var mean=sum/n, dot=0, ss=0, v; k=0;
-    for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(sx+dx); y=clampY(sy+dy); v=gray[y*procW+x]-mean; dot+=t[k]*v; ss+=v*v; k++; } }
-    return dot/(tnorm*(Math.sqrt(ss)||1));
-  }
-  // Refresco adaptativo leve de la plantilla (sigue cambios de apariencia)
-  function refrescarTpl(gray, p, cx, cy, alpha){
-    cx=Math.round(cx); cy=Math.round(cy);
-    var t=p._tpl, n=t.length, tmp=new Float32Array(n), k=0, sum=0, dx,dy,x,y;
-    for(dy=-R;dy<=R;dy++){ for(dx=-R;dx<=R;dx++){ x=clampX(cx+dx); y=clampY(cy+dy); tmp[k]=gray[y*procW+x]; sum+=tmp[k]; k++; } }
-    var mean=sum/n; for(k=0;k<n;k++){ tmp[k]-=mean; }
-    var ss=0; for(k=0;k<n;k++){ t[k]=(1-alpha)*t[k]+alpha*tmp[k]; ss+=t[k]*t[k]; }
-    p._tnorm=Math.sqrt(ss)||1;
-  }
-  // Busca la plantilla: predicción por velocidad + búsqueda exhaustiva (paso 1)
-  function matchNCC(gray, p){
-    if(!p._tpl) return;
-    var t=p._tpl, tnorm=p._tnorm, n=t.length;
-    var px=p.x*procW, py=p.y*procH;
-    var vx=p._vx||0, vy=p._vy||0;
-    var predx=Math.round(px+vx), predy=Math.round(py+vy);   // centro = donde debería estar
-    var big=Math.round(Math.max(16, procW*0.05));           // ventana adaptativa
-    var best=-2, bx=predx, by=predy, ox, oy, s;
-    for(oy=-big;oy<=big;oy++){ for(ox=-big;ox<=big;ox++){
-      s=nccAt(gray, predx+ox, predy+oy, t, tnorm, n);
-      if(s>best){ best=s; bx=predx+ox; by=predy+oy; }
-    } }
-    if(best>0.45){
-      p._vx=0.5*vx + 0.5*(bx-px); p._vy=0.5*vy + 0.5*(by-py);  // velocidad suavizada
-      p.x=Math.min(1,Math.max(0, bx/procW)); p.y=Math.min(1,Math.max(0, by/procH));
-      if(best>0.8) refrescarTpl(gray, p, bx, by, 0.10);        // adapta apariencia si el match es muy fuerte
-    } else {
-      p._vx=vx*0.5; p._vy=vy*0.5;   // sin buen match: inercia amortiguada, no se clava
-    }
-  }
-  // Una sola pasada de seguimiento sobre el frame actual (para stepping/seek)
-  var avisoLeer = false;
-  function trackOnce(){
-    if(!seguir) return;
-    var g = grayNow();
-    if(!g){
-      if(!avisoLeer){ avisoLeer=true; var h=document.getElementById('tool-hint'); if(h) h.textContent='⚠️ No puedo leer los frames del video para seguir (formato o seguridad). Probá otro archivo/navegador.'; }
+  window.renderDB = function(){
+    var perfiles = api() ? api().leer() : {};
+    var nombres = Object.keys(perfiles).sort(function(a,b){ return a.localeCompare(b); });
+    if(filtro) nombres = nombres.filter(function(n){ return n.toLowerCase().indexOf(filtro)!==-1; });
+    if(!nombres.length){
+      acc.innerHTML = '<div class="db-empty">No hay nadadores grabados. Andá a <strong>Perfil del atleta</strong>, cargá los datos y pulsá <strong>Grabar perfil de atleta</strong>.</div>';
       return;
     }
-    shapes.forEach(function(s){ s.pts.forEach(function(p){ matchNCC(g,p); }); });
-    puntos.forEach(function(p){ matchNCC(g,p); });
-    redraw();
-  }
-  function cadaFrame(){
-    if(video.paused || video.ended){ trackId=null; return; }
-    trackOnce();
-    programar();
-  }
-  function programar(){
-    if(video.requestVideoFrameCallback){ trackId = video.requestVideoFrameCallback(function(){ cadaFrame(); }); }
-    else { trackId = setTimeout(function(){ requestAnimationFrame(cadaFrame); }, 45); }
-  }
-  video.addEventListener('play', function(){ if(trackId===null) programar(); });
-  video.addEventListener('pause', function(){
-    if(trackId){ if(video.cancelVideoFrameCallback){ try{video.cancelVideoFrameCallback(trackId);}catch(_){}} clearTimeout(trackId); trackId=null; }
-  });
-  // Seguimiento al avanzar/retroceder frames o mover la barra (con el video en pausa)
-  var seekTracking=false;
-  video.addEventListener('seeked', function(){
-    if(video.paused && !arrastrando){
-      if(seekTracking) return; seekTracking=true;
-      // dar un instante a que el frame quede pintado antes de leerlo
-      requestAnimationFrame(function(){ trackOnce(); seekTracking=false; });
-    }
-  });
-  var segBtn = document.getElementById('tool-seguir');
-  if(segBtn){ segBtn.addEventListener('click', function(){
-    seguir = !seguir; segBtn.classList.toggle('active', seguir);
-    segBtn.innerHTML = seguir ? '<span aria-hidden="true">🎯</span> Seguir: ON' : '<span aria-hidden="true">🎯</span> Seguir: OFF';
-  }); }
+    acc.innerHTML = nombres.map(function(n){
+      var d=derivados(perfiles[n]); var abierto=!!abiertos[n]; var ini=(n.trim()[0]||'?').toUpperCase();
+      var chips=[
+        'Edad '+d.edad, d.sexo, d.peso+' kg', d.altura+' cm', 'FCmáx '+d.fcmax
+      ];
+      if(d.css) chips.push('CSS '+d.css);
+      var chipsHTML=chips.map(function(c){ return '<span class="db-chip">'+esc(c)+'</span>'; }).join('');
+      return '<div class="db-item'+(abierto?' open':'')+'" data-nombre="'+esc(n)+'">'+
+        '<div class="db-head" data-toggle="'+esc(n)+'">'+
+          '<span class="db-avatar">'+esc(ini)+'</span>'+
+          '<div><div class="db-hname">'+esc(n)+'</div><div class="db-chips">'+chipsHTML+'</div></div>'+
+          '<svg class="db-caret" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>'+
+        '</div>'+
+        '<div class="db-body">'+
+          '<div class="db-grid">'+
+            campo('Edad', d.edad+' años')+campo('Sexo', d.sexo==='F'?'Femenino':(d.sexo==='M'?'Masculino':'—'))+
+            campo('Peso', d.peso+' kg')+campo('Altura', d.altura+' cm')+campo('Envergadura', d.env+' cm')+
+            campo('FC máx', d.fcmax+' ppm')+campo('FC reposo', d.fcrep+' ppm')+campo('Ritmo CSS', d.css||'—')+
+          '</div>'+
+          '<div class="db-sec-title">Tiempos y mejores marcas</div>'+
+          tablaTiempos(n)+
+          '<div class="db-addrow" data-add="'+esc(n)+'">'+
+            '<div class="f"><label>Prueba</label><input class="t-prueba" list="db-pruebas" placeholder="Ej: 100 Libre"></div>'+
+            '<div class="f"><label>Tiempo (mm:ss.cc)</label><input class="t-tiempo" placeholder="1:02.35"></div>'+
+            '<div class="f"><label>Fecha</label><input class="t-fecha" type="date"></div>'+
+            '<div class="f" style="flex:1;min-width:120px;"><label>Notas</label><input class="t-notas" placeholder="Competencia, piscina…"></div>'+
+            '<button class="cb-btn primary" data-addbtn="'+esc(n)+'" type="button">➕ Agregar tiempo</button>'+
+          '</div>'+
+          '<div class="db-actions">'+
+            '<button class="cb-btn" data-cargar="'+esc(n)+'" type="button">📂 Cargar en Perfil del atleta</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  };
+  function campo(k,v){ return '<div class="db-field"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+'</div></div>'; }
 
-  /* ---- frecuencia de brazada ---- */
-  var taps=[];
-  function refrescarSR(){
-    document.getElementById('sr-count').textContent = taps.length;
-    if(taps.length<2){
-      document.getElementById('sr-spm').innerHTML='—';
-      document.getElementById('sr-cpm').innerHTML='—';
-      document.getElementById('sr-tempo').innerHTML='—<span class="u">s/brazada</span>';
+  // Delegación de eventos
+  acc.addEventListener('click', function(e){
+    var head=e.target.closest('[data-toggle]');
+    if(head){ var n=head.getAttribute('data-toggle'); abiertos[n]=!abiertos[n];
+      var item=head.closest('.db-item'); if(item) item.classList.toggle('open', !!abiertos[n]); return; }
+    var del=e.target.closest('[data-del]');
+    if(del){ var nom=del.getAttribute('data-nombre'); var idx=parseInt(del.getAttribute('data-del'),10);
+      var store=leerTiempos(); var lista=(store[nom]||[]).slice();
+      // recomputar el orden idéntico al render para borrar el correcto
+      lista.sort(function(a,b){ if(a.prueba!==b.prueba) return a.prueba<b.prueba?-1:1; return (segDe(a.tiempo)||9e9)-(segDe(b.tiempo)||9e9); });
+      lista.splice(idx,1); store[nom]=lista; guardarTiempos(store); window.renderDB(); return; }
+    var addb=e.target.closest('[data-addbtn]');
+    if(addb){
+      var nombre=addb.getAttribute('data-addbtn');
+      var row=addb.closest('.db-addrow');
+      var prueba=row.querySelector('.t-prueba').value.trim();
+      var tiempo=row.querySelector('.t-tiempo').value.trim();
+      var fecha=row.querySelector('.t-fecha').value;
+      var notas=row.querySelector('.t-notas').value.trim();
+      if(!prueba || !tiempo){ row.querySelector('.t-prueba').style.borderColor = prueba?'':'#B3432B'; row.querySelector('.t-tiempo').style.borderColor = tiempo?'':'#B3432B'; return; }
+      if(!isFinite(segDe(tiempo))){ row.querySelector('.t-tiempo').style.borderColor='#B3432B'; return; }
+      var store=leerTiempos(); if(!store[nombre]) store[nombre]=[];
+      store[nombre].push({prueba:prueba, tiempo:tiempo, fecha:fecha, notas:notas});
+      guardarTiempos(store); abiertos[nombre]=true; window.renderDB();
       return;
     }
-    var difs=[]; for(var i=1;i<taps.length;i++) difs.push(taps[i]-taps[i-1]);
-    var prom=difs.reduce(function(a,b){return a+b;},0)/difs.length/1000; // s
-    var spm=60/prom;
-    document.getElementById('sr-spm').innerHTML=spm.toFixed(0)+'<span class="u">br/min</span>';
-    document.getElementById('sr-cpm').innerHTML=(spm/2).toFixed(0)+'<span class="u">cic/min</span>';
-    document.getElementById('sr-tempo').innerHTML=prom.toFixed(2)+'<span class="u">s/brazada</span>';
-  }
-  document.getElementById('sr-tap').addEventListener('click', function(){ taps.push(performance.now()); refrescarSR(); });
-  document.getElementById('sr-reset').addEventListener('click', function(){ taps=[]; refrescarSR(); });
+    var carg=e.target.closest('[data-cargar]');
+    if(carg){ var nm=carg.getAttribute('data-cargar');
+      if(api().cargar(nm)){ showPanel('perfil'); }
+      return; }
+  });
 
-  /* ---- persistencia de checklist + notas (via perfil) ---- */
-  window.serializarVideo = function(){
-    var chk=[];
-    document.querySelectorAll('#vid-check input[type=checkbox]').forEach(function(c){ if(c.checked) chk.push(c.dataset.vk); });
-    var n=document.getElementById('vid-notas');
-    return { chk:chk, notas: n?n.value:'' };
-  };
-  window.aplicarVideo = function(v){
-    v = v || {chk:[], notas:''};
-    var set = v.chk || [];
-    document.querySelectorAll('#vid-check input[type=checkbox]').forEach(function(c){ c.checked = set.indexOf(c.dataset.vk)!==-1; });
-    var n=document.getElementById('vid-notas'); if(n) n.value = v.notas || '';
-  };
-  // Restaurar lo ya cargado por el módulo de perfiles (que corrió antes)
-  if(window.__ultimoEstado){ window.aplicarVideo(window.__ultimoEstado.video); }
+  var search=document.getElementById('db-search');
+  if(search) search.addEventListener('input', function(){ filtro=this.value.trim().toLowerCase(); window.renderDB(); });
+  var exp=document.getElementById('db-expandir'), col=document.getElementById('db-colapsar');
+  if(exp) exp.addEventListener('click', function(){ (api()?Object.keys(api().leer()):[]).forEach(function(n){ abiertos[n]=true; }); window.renderDB(); });
+  if(col) col.addEventListener('click', function(){ abiertos={}; window.renderDB(); });
 })();
 </script>
 </body>
