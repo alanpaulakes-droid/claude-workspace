@@ -128,6 +128,8 @@
   .tab-btn.active.sprint{background:var(--danger); color:#fff;}
   .tab-btn.active.banco{background:#6B4FA0; color:#fff;}
   .tab-btn.active.antro{background:#1F7A6D; color:#fff;}
+  .tab-btn.active.perfil{background:var(--navy-900); color:#fff;}
+  .panel.perfil .stat{background:linear-gradient(160deg,#062A3F,var(--navy-800));}
   .tab-btn:not(.active):hover{background:var(--bg); color:var(--ink);}
 
   .panel{display:none; animation:fade .3s ease;}
@@ -430,7 +432,8 @@
 
 <div class="wrap">
   <div class="tabbar" role="tablist" aria-label="Secciones de la planilla">
-    <button class="tab-btn fc active" id="btn-fc" role="tab" aria-selected="true" aria-controls="panel-fc" data-tab="fc" onclick="showPanel('fc')"><span aria-hidden="true">❤️</span> Frecuencia cardíaca</button>
+    <button class="tab-btn perfil active" id="btn-perfil" role="tab" aria-selected="true" aria-controls="panel-perfil" data-tab="perfil" onclick="showPanel('perfil')"><span aria-hidden="true">🧑‍💼</span> Perfil del atleta</button>
+    <button class="tab-btn fc" id="btn-fc" role="tab" aria-selected="false" aria-controls="panel-fc" data-tab="fc" tabindex="-1" onclick="showPanel('fc')"><span aria-hidden="true">❤️</span> Frecuencia cardíaca</button>
     <button class="tab-btn swim" id="btn-swim" role="tab" aria-selected="false" aria-controls="panel-swim" data-tab="swim" tabindex="-1" onclick="showPanel('swim')"><span aria-hidden="true">🏊</span> Natación · CSS</button>
     <button class="tab-btn sprint" id="btn-sprint" role="tab" aria-selected="false" aria-controls="panel-sprint" data-tab="sprint" tabindex="-1" onclick="showPanel('sprint')"><span aria-hidden="true">🏁</span> Natación · Sprinter</button>
     <button class="tab-btn banco" id="btn-banco" role="tab" aria-selected="false" aria-controls="panel-banco" data-tab="banco" tabindex="-1" onclick="showPanel('banco')"><span aria-hidden="true">🗂️</span> Banco / Prescriptor</button>
@@ -460,12 +463,15 @@
   <!-- ============================================================ -->
   <!-- PANEL 1: FRECUENCIA CARDIACA -->
   <!-- ============================================================ -->
-  <section class="panel fc active" id="panel-fc" role="tabpanel" aria-labelledby="btn-fc">
+  <!-- ============================================================ -->
+  <!-- PANEL 0: PERFIL DEL ATLETA (única entrada de datos) -->
+  <!-- ============================================================ -->
+  <section class="panel perfil active" id="panel-perfil" role="tabpanel" aria-labelledby="btn-perfil">
 
     <div class="card">
       <div class="card-head">
-        <h2>Perfil fisiológico del atleta</h2>
-        <span class="tag">MÉTODO KARVONEN — FCR</span>
+        <h2>Identidad y antropometría</h2>
+        <span class="tag">DATOS BASE · EL RESTO DE LAS PESTAÑAS SE CALCULA CON ESTO</span>
       </div>
       <div class="grid-inputs">
         <div class="field">
@@ -474,10 +480,42 @@
           <span class="hint">se usa en exportaciones y perfiles</span>
         </div>
         <div class="field">
-          <label for="fc-edad">Edad del atleta</label>
+          <label for="an-sexo">Sexo biológico</label>
+          <select id="an-sexo">
+            <option value="1">Masculino</option>
+            <option value="0">Femenino</option>
+          </select>
+          <span class="hint">para estimar % de grasa</span>
+        </div>
+        <div class="field">
+          <label for="fc-edad">Edad</label>
           <input type="number" id="fc-edad" value="20" min="5" max="99">
           <span class="hint">años cronológicos</span>
         </div>
+        <div class="field">
+          <label for="an-peso">Peso corporal</label>
+          <input type="number" id="an-peso" value="70" min="20" max="200" step="0.1">
+          <span class="hint">kg</span>
+        </div>
+        <div class="field">
+          <label for="an-altura">Altura</label>
+          <input type="number" id="an-altura" value="175" min="100" max="230" step="0.5">
+          <span class="hint">cm</span>
+        </div>
+        <div class="field">
+          <label for="an-envergadura">Envergadura (brazada)</label>
+          <input type="number" id="an-envergadura" value="180" min="100" max="250" step="0.5">
+          <span class="hint">cm, punta a punta de dedos</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Fisiología cardíaca</h2>
+        <span class="tag">MÉTODO KARVONEN — FCR</span>
+      </div>
+      <div class="grid-inputs">
         <div class="field">
           <label for="fc-max">FC máxima real</label>
           <input type="number" id="fc-max" value="200" min="60" max="240">
@@ -488,6 +526,76 @@
           <input type="number" id="fc-reposo" value="50" min="20" max="120">
           <span class="hint">ppm, promedio matutino 3–5 días</span>
         </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Test de Velocidad Crítica de Nado (CSS)</h2>
+        <span class="tag swim">TEST 400 M / 200 M · PISCINA</span>
+      </div>
+      <div class="grid-inputs">
+        <div class="field">
+          <label for="sw-d1">Distancia 1 (m)</label>
+          <input type="number" id="sw-d1" value="400" min="50" step="25">
+        </div>
+        <div class="field">
+          <label for="sw-t1">Tiempo 1 (mm:ss)</label>
+          <input type="text" id="sw-t1" value="6:40">
+          <span class="hint">tiempo del test más largo</span>
+        </div>
+        <div class="field">
+          <label for="sw-d2">Distancia 2 (m)</label>
+          <input type="number" id="sw-d2" value="200" min="25" step="25">
+        </div>
+        <div class="field">
+          <label for="sw-t2">Tiempo 2 (mm:ss)</label>
+          <input type="text" id="sw-t2" value="3:00">
+          <span class="hint">tiempo del test más corto</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Test de Sprint 4×50 m (desde pared)</h2>
+        <span class="tag swim" style="color:var(--danger)">TEST 4×50M · POTENCIA / TOLERANCIA LÁCTICA</span>
+      </div>
+      <div class="grid-inputs">
+        <div class="field">
+          <label for="sp-r1">Repetición 1 (seg)</label>
+          <input type="number" id="sp-r1" value="20" step="0.1" min="0">
+        </div>
+        <div class="field">
+          <label for="sp-r2">Repetición 2 (seg)</label>
+          <input type="number" id="sp-r2" value="27.2" step="0.1" min="0">
+        </div>
+        <div class="field">
+          <label for="sp-r3">Repetición 3 (seg)</label>
+          <input type="number" id="sp-r3" value="27.8" step="0.1" min="0">
+        </div>
+        <div class="field">
+          <label for="sp-r4">Repetición 4 (seg)</label>
+          <input type="number" id="sp-r4" value="28.1" step="0.1" min="0">
+        </div>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);margin:12px 0 0;line-height:1.6;">
+        Los resultados de cada test (CSS, sprint, zonas de FC, antropometría y potencia) se muestran en sus pestañas correspondientes y se recalculan automáticamente al editar estos datos.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PANEL 1: FRECUENCIA CARDIACA (solo resultados) -->
+  <!-- ============================================================ -->
+  <section class="panel fc" id="panel-fc" role="tabpanel" aria-labelledby="btn-fc">
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Resumen fisiológico</h2>
+        <span class="tag">DERIVADO DEL PERFIL DEL ATLETA</span>
+      </div>
+      <div class="grid-inputs">
         <div class="field">
           <label>Tanaka (estimada)</label>
           <input type="text" id="fc-tanaka" class="result" readonly>
@@ -548,28 +656,10 @@
 
     <div class="card">
       <div class="card-head">
-        <h2>Test de Velocidad Crítica de Nado (CSS)</h2>
-        <span class="tag swim">TEST 400 M / 200 M · PISCINA</span>
+        <h2>Resultado del test CSS</h2>
+        <span class="tag swim">DATOS CARGADOS EN LA PESTAÑA PERFIL DEL ATLETA</span>
       </div>
       <div class="grid-inputs">
-        <div class="field">
-          <label for="sw-d1">Distancia 1 (m)</label>
-          <input type="number" id="sw-d1" value="400" min="50" step="25">
-        </div>
-        <div class="field">
-          <label for="sw-t1">Tiempo 1 (mm:ss)</label>
-          <input type="text" id="sw-t1" value="6:40">
-          <span class="hint">tiempo del test más largo</span>
-        </div>
-        <div class="field">
-          <label for="sw-d2">Distancia 2 (m)</label>
-          <input type="number" id="sw-d2" value="200" min="25" step="25">
-        </div>
-        <div class="field">
-          <label for="sw-t2">Tiempo 2 (mm:ss)</label>
-          <input type="text" id="sw-t2" value="3:00">
-          <span class="hint">tiempo del test más corto</span>
-        </div>
         <div class="field">
           <label>CSS (velocidad)</label>
           <input type="text" id="sw-css-vel" class="result" readonly>
@@ -627,26 +717,10 @@
 
     <div class="card">
       <div class="card-head">
-        <h2>Test de Sprint 4×50 m (desde pared)</h2>
-        <span class="tag swim" style="color:var(--danger)">TEST 4×50M · POTENCIA / TOLERANCIA LÁCTICA</span>
+        <h2>Resultado del test de Sprint 4×50 m</h2>
+        <span class="tag swim" style="color:var(--danger)">DATOS CARGADOS EN LA PESTAÑA PERFIL DEL ATLETA</span>
       </div>
       <div class="grid-inputs">
-        <div class="field">
-          <label for="sp-r1">Repetición 1 (seg)</label>
-          <input type="number" id="sp-r1" value="20" step="0.1" min="0">
-        </div>
-        <div class="field">
-          <label for="sp-r2">Repetición 2 (seg)</label>
-          <input type="number" id="sp-r2" value="27.2" step="0.1" min="0">
-        </div>
-        <div class="field">
-          <label for="sp-r3">Repetición 3 (seg)</label>
-          <input type="number" id="sp-r3" value="27.8" step="0.1" min="0">
-        </div>
-        <div class="field">
-          <label for="sp-r4">Repetición 4 (seg)</label>
-          <input type="number" id="sp-r4" value="28.1" step="0.1" min="0">
-        </div>
         <div class="field">
           <label>Tiempo Promedio (TP)</label>
           <input type="text" id="sp-tp" class="result" readonly>
@@ -761,43 +835,6 @@
   <!-- PANEL 5: ANTROPOMETRÍA / POTENCIA / GASTO CALÓRICO -->
   <!-- ============================================================ -->
   <section class="panel antro" id="panel-antro" role="tabpanel" aria-labelledby="btn-antro">
-
-    <div class="card">
-      <div class="card-head">
-        <h2>Datos del atleta</h2>
-        <span class="tag" style="color:#1F7A6D">BASE PARA TODOS LOS CÁLCULOS DE ESTA PESTAÑA</span>
-      </div>
-      <div class="grid-inputs">
-        <div class="field">
-          <label for="an-peso">Peso corporal</label>
-          <input type="number" id="an-peso" value="70" min="20" max="200" step="0.1">
-          <span class="hint">kg</span>
-        </div>
-        <div class="field">
-          <label for="an-altura">Altura</label>
-          <input type="number" id="an-altura" value="175" min="100" max="230" step="0.5">
-          <span class="hint">cm</span>
-        </div>
-        <div class="field">
-          <label for="an-envergadura">Envergadura (brazada)</label>
-          <input type="number" id="an-envergadura" value="180" min="100" max="250" step="0.5">
-          <span class="hint">cm, punta a punta de dedos</span>
-        </div>
-        <div class="field">
-          <label for="an-sexo">Sexo biológico</label>
-          <select id="an-sexo">
-            <option value="1">Masculino</option>
-            <option value="0">Femenino</option>
-          </select>
-          <span class="hint">para estimar % de grasa</span>
-        </div>
-        <div class="field">
-          <label for="an-edad">Edad</label>
-          <input type="number" id="an-edad" value="20" min="5" max="99">
-          <span class="hint">años (se toma de FC si la editás allí)</span>
-        </div>
-      </div>
-    </div>
 
     <div class="card">
       <div class="card-head">
@@ -940,7 +977,7 @@ function formatTime(totalSeconds){
   return sign + m + ':' + String(s).padStart(2,'0');
 }
 
-var TABS = ['fc','swim','sprint','banco','antro'];
+var TABS = ['perfil','fc','swim','sprint','banco','antro'];
 function showPanel(which){
   if(TABS.indexOf(which) === -1){ which = 'fc'; }
   TABS.forEach(function(t){
@@ -1576,7 +1613,7 @@ function calcAntro(){
   var alturaCm = clampNum(document.getElementById('an-altura').value, NaN); // cm
   var envCm = clampNum(document.getElementById('an-envergadura').value, NaN);
   var sexo = parseInt(document.getElementById('an-sexo').value, 10);    // 1 = M, 0 = F
-  var edad = clampNum(document.getElementById('an-edad').value, NaN);
+  var edad = clampNum(document.getElementById('fc-edad').value, NaN);   // edad única del perfil
   var alturaM = alturaCm/100;
 
   // --- Índices ---
@@ -1623,7 +1660,7 @@ function calcAntro(){
   setStat('stat-area-est', isFinite(areaEst)?areaEst.toFixed(3):NaN, 'm²');
 }
 
-['an-peso','an-altura','an-envergadura','an-sexo','an-edad','an-met','an-dur','an-vel','an-cd','an-area'].forEach(function(id){
+['an-peso','an-altura','an-envergadura','an-sexo','fc-edad','fc-max','fc-reposo','an-met','an-dur','an-vel','an-cd','an-area'].forEach(function(id){
   var el=document.getElementById(id); if(el) el.addEventListener('input', calcAntro);
 });
 // Tomar la velocidad desde el test CSS
@@ -1631,10 +1668,6 @@ document.getElementById('an-usar-css').addEventListener('click', function(){
   var txt = (document.getElementById('stat-css-vel').textContent||'').replace(/[^\d.]/g,'');
   var v = parseFloat(txt);
   if(isFinite(v) && v>0){ document.getElementById('an-vel').value = v.toFixed(2); calcAntro(); }
-});
-// Mantener la edad sincronizada con la de FC
-document.getElementById('fc-edad').addEventListener('input', function(){
-  var e=document.getElementById('an-edad'); if(e){ e.value = document.getElementById('fc-edad').value; calcAntro(); }
 });
 
 /* ============================= INIT ============================= */
@@ -2173,7 +2206,7 @@ function exportarSprintXLS(){
                txt:textosEditables('tabla-sprint',[5,6]) },
       nadador: val('fc-nombre') || val('exp-nadador') || val('exp-nadador-sprint'),
       antro:{ peso:val('an-peso'), altura:val('an-altura'), env:val('an-envergadura'),
-              sexo:val('an-sexo'), edad:val('an-edad'), met:val('an-met'), dur:val('an-dur'),
+              sexo:val('an-sexo'), met:val('an-met'), dur:val('an-dur'),
               vel:val('an-vel'), cd:val('an-cd'), area:val('an-area') },
       filtro: val('banco-filtro-fase'),
       banco: JSON.parse(JSON.stringify(bancoSeries)),
@@ -2191,7 +2224,7 @@ function exportarSprintXLS(){
     if(est.filtro){ setVal('banco-filtro-fase',est.filtro); }
     if(est.antro){ var a=est.antro;
       setVal('an-peso',a.peso); setVal('an-altura',a.altura); setVal('an-envergadura',a.env);
-      setVal('an-sexo',a.sexo); setVal('an-edad',a.edad); setVal('an-met',a.met); setVal('an-dur',a.dur);
+      setVal('an-sexo',a.sexo); setVal('an-met',a.met); setVal('an-dur',a.dur);
       setVal('an-vel',a.vel); setVal('an-cd',a.cd); setVal('an-area',a.area);
     }
     if(Array.isArray(est.banco)){ bancoSeries.length=0; est.banco.forEach(function(s){ bancoSeries.push(s); }); }
@@ -2510,9 +2543,9 @@ function exportarSprintXLS(){
   var _rm=renderMesociclo; renderMesociclo=function(){ _rm.apply(this,arguments); autosave(); };
 
   /* ---------- Arranque ---------- */
-  crearCajaValidacion('panel-fc','val-fc');
-  crearCajaValidacion('panel-swim','val-swim');
-  crearCajaValidacion('panel-sprint','val-sprint');
+  crearCajaValidacion('panel-perfil','val-fc');
+  crearCajaValidacion('panel-perfil','val-swim');
+  crearCajaValidacion('panel-perfil','val-sprint');
   agregarBotonesCopiar();
   agregarBotonesBanco();
   refrescarSelectorPerfiles();
