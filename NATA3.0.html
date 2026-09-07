@@ -481,7 +481,7 @@
       <select id="perfil-select" aria-label="Seleccionar perfil de nadador"></select>
     </div>
     <div class="cb-actions">
-      <button class="cb-btn" id="cb-guardar" type="button"><span aria-hidden="true">💾</span> Guardar como…</button>
+      <button class="cb-btn" id="cb-guardar" type="button"><span aria-hidden="true">💾</span> Grabar perfil de atleta</button>
       <button class="cb-btn danger" id="cb-borrar-perfil" type="button"><span aria-hidden="true">🗑️</span> Borrar perfil</button>
       <button class="cb-btn" id="cb-compartir" type="button"><span aria-hidden="true">🔗</span> Copiar link</button>
       <button class="cb-btn" id="cb-imprimir" type="button"><span aria-hidden="true">🖨️</span> Imprimir</button>
@@ -2603,14 +2603,19 @@ function exportarSprintXLS(){
   document.getElementById('cb-imprimir').addEventListener('click', function(){ window.print(); });
   document.getElementById('cb-reiniciar').addEventListener('click', reiniciar);
   document.getElementById('cb-guardar').addEventListener('click', function(){
-    var nombre=prompt('Nombre del perfil (nadador):');
-    if(!nombre) return;
-    nombre=nombre.trim(); if(!nombre) return;
+    var campo=document.getElementById('fc-nombre');
+    var nombre=(campo && campo.value ? campo.value.trim() : '');
+    if(!nombre){
+      setStatus('⚠️ Escribí el nombre del atleta antes de grabar.');
+      if(campo){ campo.classList.add('invalid'); campo.focus(); }
+      return;
+    }
+    if(campo) campo.classList.remove('invalid');
     var perfiles=leerPerfiles(); perfiles[nombre]=serializar(); guardarPerfiles(perfiles);
     lsSet(KEY_ACTIVO, nombre);
-    setVal('fc-nombre',nombre); setVal('exp-nadador',nombre); setVal('exp-nadador-sprint',nombre);
     refrescarSelectorPerfiles(); autosave();
-    setStatus('Perfil "'+nombre+'" guardado');
+    if(typeof actualizarBannerAtleta === 'function') actualizarBannerAtleta();
+    setStatus('✅ Atleta: "'+nombre+'" grabado con éxito');
   });
   document.getElementById('cb-borrar-perfil').addEventListener('click', function(){
     var actual=perfilActivo();
