@@ -106,6 +106,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
       <div><label>Medio</label><select id="gMedio">
         <option value="Débito/Efectivo">Débito/Efectivo</option>
         <option value="Tarjeta crédito">Tarjeta crédito</option>
+        <option value="Planificado">Planificado</option>
       </select></div>
       <div><button id="addBtn">Agregar gasto</button></div>
     </div>
@@ -129,6 +130,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
     <div class="top">
       <div class="muted">Los datos se guardan en este navegador.</div>
       <div style="display:flex;gap:8px">
+        <button class="ghost mini" id="reset">Cargar datos Excel</button>
         <button class="ghost mini" id="exp">Exportar</button>
         <button class="ghost mini" id="impBtn">Importar</button>
         <input id="impFile" type="file" accept="application/json" hidden>
@@ -151,11 +153,11 @@ const $=id=>document.getElementById(id);
 let state=load();
 let cur=(new Date().getMonth()); // 0-11
 
+const SEED={"year":2026,"months":{"0":{"ingreso":0,"meta":100000,"gastos":[]},"1":{"ingreso":0,"meta":100000,"gastos":[]},"2":{"ingreso":0,"meta":100000,"gastos":[]},"3":{"ingreso":0,"meta":100000,"gastos":[]},"4":{"ingreso":0,"meta":100000,"gastos":[]},"5":{"ingreso":0,"meta":100000,"gastos":[]},"6":{"ingreso":0,"meta":100000,"gastos":[]},"7":{"ingreso":1080000,"meta":100000,"gastos":[{"id":"x1000","fecha":"2026-08-24","cat":"Otros gastos","desc":"manis","monto":5000,"medio":"Débito/Efectivo"},{"id":"x1001","fecha":"2026-08-24","cat":"Otros gastos","desc":"apoyo matamala","monto":5000,"medio":"Débito/Efectivo"},{"id":"x1002","fecha":"2026-08-24","cat":"Alimentación","desc":"churrasco","monto":5000,"medio":"Débito/Efectivo"},{"id":"x1003","fecha":"2026-08-22","cat":"Alimentación","desc":" asado cabros","monto":10000,"medio":"Débito/Efectivo"},{"id":"x1004","fecha":"2026-08-21","cat":"Otros gastos","desc":"oficina","monto":24680,"medio":"Débito/Efectivo"},{"id":"x1005","fecha":"2026-08-21","cat":"Alimentación","desc":"meriño","monto":5300,"medio":"Débito/Efectivo"},{"id":"x1006","fecha":"2026-08-21","cat":"Ocio y entretenimiento","desc":"trasferencia amor","monto":35000,"medio":"Débito/Efectivo"},{"id":"x1007","fecha":"2026-08-21","cat":"Educación","desc":"unab","monto":254000,"medio":"Débito/Efectivo"},{"id":"x1008","fecha":"2026-08-21","cat":"Transporte","desc":"auto","monto":50000,"medio":"Débito/Efectivo"},{"id":"x1009","fecha":"2026-08-21","cat":"Otros gastos","desc":"bateria","monto":17500,"medio":"Débito/Efectivo"},{"id":"x1010","fecha":"2026-08-21","cat":"Otros gastos","desc":"ahorro","monto":40000,"medio":"Débito/Efectivo"},{"id":"x1024","fecha":"2026-08-01","cat":"Servicios básicos","desc":"Planificado","monto":200000,"medio":"Planificado"},{"id":"x1033","fecha":"2026-08-01","cat":"Deudas / créditos","desc":"Planificado","monto":320000,"medio":"Planificado"}]},"8":{"ingreso":1080000,"meta":100000,"gastos":[{"id":"x1011","fecha":"2026-08-22","cat":"Transporte","desc":"bencina","monto":15000,"medio":"Tarjeta crédito"},{"id":"x1012","fecha":"2026-08-22","cat":"Alimentación","desc":"asado marzan","monto":43000,"medio":"Tarjeta crédito"},{"id":"x1013","fecha":"2026-08-22","cat":"Otros gastos","desc":"ida arica","monto":9300,"medio":"Tarjeta crédito"},{"id":"x1014","fecha":"2026-08-22","cat":"Otros gastos","desc":"dicom equifax","monto":9990,"medio":"Tarjeta crédito"},{"id":"x1015","fecha":"2026-08-22","cat":"Ocio y entretenimiento","desc":"cloude","monto":19990,"medio":"Tarjeta crédito"},{"id":"x1016","fecha":"2026-09-01","cat":"Ahorro","desc":"Planificado","monto":100000,"medio":"Planificado"},{"id":"x1020","fecha":"2026-09-01","cat":"Transporte","desc":"Planificado","monto":50000,"medio":"Planificado"},{"id":"x1025","fecha":"2026-09-01","cat":"Servicios básicos","desc":"Planificado","monto":200000,"medio":"Planificado"},{"id":"x1029","fecha":"2026-09-01","cat":"Educación","desc":"Planificado","monto":254000,"medio":"Planificado"},{"id":"x1034","fecha":"2026-09-01","cat":"Deudas / créditos","desc":"Planificado","monto":48332,"medio":"Planificado"},{"id":"x1038","fecha":"2026-09-01","cat":"Otros gastos","desc":"Planificado","monto":15000,"medio":"Planificado"}]},"9":{"ingreso":1080000,"meta":100000,"gastos":[{"id":"x1017","fecha":"2026-10-01","cat":"Ahorro","desc":"Planificado","monto":100000,"medio":"Planificado"},{"id":"x1021","fecha":"2026-10-01","cat":"Transporte","desc":"Planificado","monto":50000,"medio":"Planificado"},{"id":"x1026","fecha":"2026-10-01","cat":"Servicios básicos","desc":"Planificado","monto":200000,"medio":"Planificado"},{"id":"x1030","fecha":"2026-10-01","cat":"Educación","desc":"Planificado","monto":254000,"medio":"Planificado"},{"id":"x1035","fecha":"2026-10-01","cat":"Deudas / créditos","desc":"Planificado","monto":48332,"medio":"Planificado"},{"id":"x1039","fecha":"2026-10-01","cat":"Otros gastos","desc":"Planificado","monto":15000,"medio":"Planificado"}]},"10":{"ingreso":1080000,"meta":100000,"gastos":[{"id":"x1018","fecha":"2026-11-01","cat":"Ahorro","desc":"Planificado","monto":100000,"medio":"Planificado"},{"id":"x1022","fecha":"2026-11-01","cat":"Transporte","desc":"Planificado","monto":50000,"medio":"Planificado"},{"id":"x1027","fecha":"2026-11-01","cat":"Servicios básicos","desc":"Planificado","monto":200000,"medio":"Planificado"},{"id":"x1031","fecha":"2026-11-01","cat":"Educación","desc":"Planificado","monto":254000,"medio":"Planificado"},{"id":"x1036","fecha":"2026-11-01","cat":"Deudas / créditos","desc":"Planificado","monto":48332,"medio":"Planificado"},{"id":"x1040","fecha":"2026-11-01","cat":"Otros gastos","desc":"Planificado","monto":15000,"medio":"Planificado"}]},"11":{"ingreso":1080000,"meta":100000,"gastos":[{"id":"x1019","fecha":"2026-12-01","cat":"Ahorro","desc":"Planificado","monto":100000,"medio":"Planificado"},{"id":"x1023","fecha":"2026-12-01","cat":"Transporte","desc":"Planificado","monto":50000,"medio":"Planificado"},{"id":"x1028","fecha":"2026-12-01","cat":"Servicios básicos","desc":"Planificado","monto":200000,"medio":"Planificado"},{"id":"x1032","fecha":"2026-12-01","cat":"Educación","desc":"Planificado","monto":254000,"medio":"Planificado"},{"id":"x1037","fecha":"2026-12-01","cat":"Deudas / créditos","desc":"Planificado","monto":48332,"medio":"Planificado"},{"id":"x1041","fecha":"2026-12-01","cat":"Otros gastos","desc":"Planificado","monto":15000,"medio":"Planificado"}]}}};
+
 function load(){
   try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.months)return d;}catch(e){}
-  const months={};
-  MESES.forEach((_,i)=>months[i]={ingreso:0,meta:0,gastos:[]});
-  return {year:YEAR,months};
+  return JSON.parse(JSON.stringify(SEED));
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
 
@@ -258,6 +260,11 @@ $("exp").onclick=()=>{
   const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);
   a.download="presupuesto_"+YEAR+".json";a.click();URL.revokeObjectURL(a.href);
+};
+$("reset").onclick=()=>{
+  if(confirm("Reemplazar los datos actuales con los del Excel? Se perderá lo que hayas ingresado.")){
+    state=JSON.parse(JSON.stringify(SEED));save();render();
+  }
 };
 $("impBtn").onclick=()=>$("impFile").click();
 $("impFile").onchange=e=>{
