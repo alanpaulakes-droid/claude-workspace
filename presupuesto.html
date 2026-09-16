@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Presupuesto</title>
+<style>
+:root{
+  --bg:#0f1720; --panel:#18232f; --panel2:#1f2d3a; --line:#2b3c4c;
+  --txt:#e7eef5; --muted:#93a4b3; --accent:#3b9dff; --green:#37c281;
+  --red:#ff6b6b; --yellow:#ffd166;
+}
+:root:not([data-theme="dark"]){
+  --bg:#f4f6f9; --panel:#ffffff; --panel2:#eef2f6; --line:#dde5ec;
+  --txt:#16232e; --muted:#5f7182; --accent:#1f7ae0; --green:#1f9d63;
+  --red:#d64545; --yellow:#c9932a;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1720; --panel:#18232f; --panel2:#1f2d3a; --line:#2b3c4c;
+    --txt:#e7eef5; --muted:#93a4b3; --accent:#3b9dff; --green:#37c281;
+    --red:#ff6b6b; --yellow:#ffd166;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.4}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+h1{font-size:1.4rem;margin:.2rem 0}
+h2{font-size:1rem;margin:0 0 .6rem;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:14px;margin:14px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.kpi .lbl{font-size:.75rem;color:var(--muted)}
+.kpi .val{font-size:1.35rem;font-weight:700;margin-top:2px}
+.big .val{font-size:1.7rem}
+.pos{color:var(--green)} .neg{color:var(--red)}
+label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:3px}
+input,select,button{font:inherit;color:var(--txt);background:var(--panel2);
+  border:1px solid var(--line);border-radius:9px;padding:9px 10px;width:100%}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+button{cursor:pointer;background:var(--accent);color:#fff;border:none;font-weight:600}
+button.ghost{background:var(--panel2);color:var(--txt);border:1px solid var(--line);font-weight:500}
+button.mini{width:auto;padding:5px 10px;font-size:.8rem}
+.row{display:grid;gap:8px;grid-template-columns:1fr 1fr;align-items:end}
+.formgrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));align-items:end}
+.monthbar{display:flex;gap:8px;align-items:center}
+.monthbar select{width:auto;min-width:120px}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:.75rem;text-transform:uppercase}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tag{font-size:.72rem;padding:2px 7px;border-radius:20px;background:var(--panel2);
+  border:1px solid var(--line);color:var(--muted)}
+.del{background:none;border:none;color:var(--red);cursor:pointer;width:auto;padding:4px 6px;font-size:1rem}
+.muted{color:var(--muted);font-size:.85rem}
+.bar{height:10px;border-radius:6px;background:var(--panel2);overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:var(--accent)}
+.catrow{display:flex;justify-content:space-between;font-size:.85rem;padding:4px 0}
+.empty{text-align:center;color:var(--muted);padding:20px}
+.right{text-align:right}
+@media(max-width:520px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>💰 Mi Presupuesto</h1>
+    <div class="monthbar">
+      <button class="ghost mini" id="prev">‹</button>
+      <select id="month"></select>
+      <button class="ghost mini" id="next">›</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div class="kpi"><div class="lbl">Ingresos del mes</div><div class="val" id="kIng">$0</div></div>
+      <div class="kpi"><div class="lbl">Gastado</div><div class="val" id="kGas">$0</div></div>
+      <div class="kpi big"><div class="lbl">Me queda</div><div class="val" id="kResto">$0</div></div>
+      <div class="kpi"><div class="lbl">Ahorro acumulado (año)</div><div class="val" id="kAhorro">$0</div></div>
+    </div>
+    <div class="bar"><i id="progBar"></i></div>
+    <div class="muted right" id="progTxt" style="margin-top:6px"></div>
+  </div>
+
+  <div class="card">
+    <h2>Configurar mes</h2>
+    <div class="row">
+      <div><label>Ingreso mensual</label><input id="cfgIng" type="number" inputmode="numeric" placeholder="0"></div>
+      <div><label>Meta de ahorro</label><input id="cfgMeta" type="number" inputmode="numeric" placeholder="0"></div>
+    </div>
+    <div class="muted" style="margin-top:8px" id="cfgHint"></div>
+  </div>
+
+  <div class="card">
+    <h2>Registrar gasto</h2>
+    <div class="formgrid">
+      <div><label>Fecha</label><input id="gFecha" type="date"></div>
+      <div><label>Categoría</label><select id="gCat"></select></div>
+      <div><label>Descripción</label><input id="gDesc" placeholder="¿En qué?"></div>
+      <div><label>Monto</label><input id="gMonto" type="number" inputmode="numeric" placeholder="0"></div>
+      <div><label>Medio</label><select id="gMedio">
+        <option value="Débito/Efectivo">Débito/Efectivo</option>
+        <option value="Tarjeta crédito">Tarjeta crédito</option>
+      </select></div>
+      <div><button id="addBtn">Agregar gasto</button></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Gastos del mes</h2>
+    <table>
+      <thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Medio</th><th class="num">Monto</th><th></th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty">Sin gastos registrados este mes.</div>
+  </div>
+
+  <div class="card">
+    <h2>Por categoría (mes)</h2>
+    <div id="catBox"></div>
+  </div>
+
+  <div class="card">
+    <div class="top">
+      <div class="muted">Los datos se guardan en este navegador.</div>
+      <div style="display:flex;gap:8px">
+        <button class="ghost mini" id="exp">Exportar</button>
+        <button class="ghost mini" id="impBtn">Importar</button>
+        <input id="impFile" type="file" accept="application/json" hidden>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MESES=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+const CATS=["Vivienda (arriendo/dividendo)","Alimentación","Transporte","Servicios básicos",
+  "Salud","Educación","Deudas / créditos","Ocio y entretenimiento","Vestuario",
+  "Mascotas","Ahorro","Otros gastos"];
+const KEY="presupuesto2026";
+const YEAR=2026;
+
+const clp=n=>"$"+Math.round(n||0).toLocaleString("es-CL");
+const $=id=>document.getElementById(id);
+
+let state=load();
+let cur=(new Date().getMonth()); // 0-11
+
+function load(){
+  try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.months)return d;}catch(e){}
+  const months={};
+  MESES.forEach((_,i)=>months[i]={ingreso:0,meta:0,gastos:[]});
+  return {year:YEAR,months};
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+
+function monthTotal(i){return state.months[i].gastos.reduce((a,g)=>a+(+g.monto||0),0);}
+function monthResto(i){return (+state.months[i].ingreso||0)-monthTotal(i);}
+
+function initSelectors(){
+  MESES.forEach((m,i)=>{
+    const o=document.createElement("option");o.value=i;o.textContent=m+" "+YEAR;$("month").appendChild(o);
+  });
+  CATS.forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c;$("gCat").appendChild(o);});
+  $("month").value=cur;
+}
+
+function render(){
+  const m=state.months[cur];
+  $("month").value=cur;
+  $("cfgIng").value=m.ingreso||"";
+  $("cfgMeta").value=m.meta||"";
+
+  const ing=+m.ingreso||0, gas=monthTotal(cur), resto=ing-gas;
+  $("kIng").textContent=clp(ing);
+  $("kGas").textContent=clp(gas);
+  const kr=$("kResto");kr.textContent=clp(resto);
+  kr.className="val "+(resto<0?"neg":"pos");
+
+  // ahorro acumulado del año hasta el mes actual
+  let acc=0;for(let i=0;i<=cur;i++)acc+=monthResto(i);
+  $("kAhorro").textContent=clp(acc);
+
+  const pct=ing>0?Math.min(100,gas/ing*100):0;
+  $("progBar").style.width=pct+"%";
+  $("progBar").style.background=resto<0?"var(--red)":(pct>85?"var(--yellow)":"var(--accent)");
+  $("progTxt").textContent=ing>0?`Has usado ${pct.toFixed(0)}% de tus ingresos`:"Configura tu ingreso mensual";
+
+  const meta=+m.meta||0;
+  $("cfgHint").textContent=meta>0?(resto>=meta
+      ?`✅ Cumples tu meta de ahorro (${clp(meta)}). Sobran ${clp(resto-meta)}.`
+      :`Te faltan ${clp(meta-resto)} para tu meta de ${clp(meta)}.`):"";
+
+  // tabla
+  const tb=$("tbody");tb.innerHTML="";
+  const list=[...m.gastos].sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""));
+  list.forEach(g=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${g.fecha||"—"}</td><td>${esc(g.desc)||"—"}</td>
+      <td><span class="tag">${esc(g.cat)}</span></td><td class="muted">${esc(g.medio||"")}</td>
+      <td class="num">${clp(g.monto)}</td>
+      <td class="right"><button class="del" title="Eliminar">✕</button></td>`;
+    tr.querySelector(".del").onclick=()=>{del(g.id);};
+    tb.appendChild(tr);
+  });
+  $("empty").style.display=list.length?"none":"block";
+
+  // por categoría
+  const box=$("catBox");box.innerHTML="";
+  const agg={};m.gastos.forEach(g=>agg[g.cat]=(agg[g.cat]||0)+(+g.monto||0));
+  const rows=Object.entries(agg).sort((a,b)=>b[1]-a[1]);
+  if(!rows.length){box.innerHTML='<div class="muted">Sin gastos.</div>';}
+  rows.forEach(([c,v])=>{
+    const p=gas>0?v/gas*100:0;
+    const d=document.createElement("div");
+    d.innerHTML=`<div class="catrow"><span>${esc(c)}</span><b>${clp(v)} · ${p.toFixed(0)}%</b></div>
+      <div class="bar"><i style="width:${p}%"></i></div>`;
+    box.appendChild(d);
+  });
+}
+function esc(s){return String(s??"").replace(/[<>&]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));}
+
+function del(id){
+  const m=state.months[cur];
+  m.gastos=m.gastos.filter(g=>g.id!==id);
+  save();render();
+}
+
+function add(){
+  const monto=+$("gMonto").value;
+  if(!monto||monto<=0){$("gMonto").focus();return;}
+  const g={id:Date.now()+"_"+Math.random().toString(36).slice(2,6),
+    fecha:$("gFecha").value||todayStr(),
+    cat:$("gCat").value,desc:$("gDesc").value.trim(),
+    monto:monto,medio:$("gMedio").value};
+  state.months[cur].gastos.push(g);
+  save();
+  $("gDesc").value="";$("gMonto").value="";$("gDesc").focus();
+  render();
+}
+function todayStr(){const d=new Date();return `${YEAR}-${String(cur+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+
+// eventos
+$("addBtn").onclick=add;
+$("gMonto").addEventListener("keydown",e=>{if(e.key==="Enter")add();});
+$("month").onchange=e=>{cur=+e.target.value;render();};
+$("prev").onclick=()=>{cur=(cur+11)%12;render();};
+$("next").onclick=()=>{cur=(cur+1)%12;render();};
+$("cfgIng").oninput=e=>{state.months[cur].ingreso=+e.target.value||0;save();render();};
+$("cfgMeta").oninput=e=>{state.months[cur].meta=+e.target.value||0;save();render();};
+
+$("exp").onclick=()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="presupuesto_"+YEAR+".json";a.click();URL.revokeObjectURL(a.href);
+};
+$("impBtn").onclick=()=>$("impFile").click();
+$("impFile").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(d.months){state=d;save();render();}}catch(err){alert("Archivo inválido");}};
+  r.readAsText(f);
+};
+
+initSelectors();
+$("gFecha").value=todayStr();
+render();
+</script>
+</body>
+</html>
