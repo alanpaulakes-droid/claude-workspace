@@ -66,17 +66,17 @@ ol.obs{margin:0;padding-left:20px}ol.obs li{margin:4px 0}
 .tggrid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start;margin-bottom:18px}.tgside{position:static}@media (min-width:1500px){.tggrid{grid-template-columns:minmax(0,1fr) 300px}.tgside{position:sticky;top:76px}}@media (max-width:600px){.tglab,.tgtxt{display:none}#tgwrap .tgtool{gap:5px}.tgcols{gap:4px}.tgcol{padding:5px!important;gap:0}.tgcol i{width:24px;height:14px}.tgacts{gap:4px}.tgacts .btn{padding:5px 9px;font-size:13px}.tgst{font-size:12px!important;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
 #tgwrap:fullscreen{background:var(--bg);overflow:hidden}body.tgfsb{overflow:hidden}
 .tggrid.full{position:fixed;top:0;right:0;bottom:0;left:0;z-index:300;margin:0;background:var(--bg);padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));display:flex;flex-direction:column}
-.tggrid.full>div:first-child{flex:1;min-height:0;min-width:0;width:100%;display:flex;flex-direction:column}.tggrid.full .tgtool{position:static;margin:0 0 6px;box-shadow:none}.tggrid.full .tgbox{flex:1;min-height:0;max-height:none}
+.tggrid.full>div:first-child{flex:1;min-height:0;min-width:0;width:100%;display:flex;flex-direction:column}.tggrid.full .tgtool{position:static;margin:0 0 6px;box-shadow:none}.tggrid.full .tgbox{flex:1;min-height:0;height:auto;max-height:none}
 .tggrid.full .tgside{position:absolute;left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));max-height:46vh;overflow:auto;z-index:2;border-radius:12px;box-shadow:0 -6px 24px rgba(0,0,0,.35)}.tggrid.full .tgside .card{margin:0 0 8px}
 @media (min-width:900px){.tggrid.full .tgside{left:auto;width:360px;top:110px;bottom:12px;max-height:none}}.tgside .card{padding:14px;margin-bottom:12px}.tgside h3{font-size:15px;margin:0 0 6px}
 .tgtool{position:sticky;top:calc(env(safe-area-inset-top,0px) + 58px);z-index:4;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px;margin:0 0 6px;display:flex;flex-direction:column;gap:6px;box-shadow:0 4px 12px rgba(0,0,0,.08)}.tgacts{display:flex;flex-wrap:wrap;gap:6px}.tglab{font-weight:700;font-size:13px;align-self:center}.tgst{font-size:13.5px;font-weight:600;color:var(--ink);background:var(--blue-soft);border-radius:8px;padding:6px 10px}
-.tgbox{overflow:auto;border:1px solid var(--line);border-radius:12px;background:#cfd5db;-webkit-overflow-scrolling:touch;max-height:82vh}.tgsvg{display:block;width:100%;min-width:820px;height:auto;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}.tgbox.zoom .tgsvg{min-width:1150px}.tgsvg text{font-family:var(--f-body)}.tgsvg .tgt,.tgsvg .tgd,.tgsvg .tgw{cursor:pointer;outline:none}.tgsvg .tgt:focus-visible circle,.tgsvg .tgd:focus-visible rect{stroke:#e8823a}
+.tgbox{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#cfd5db;height:min(76vh,780px);touch-action:pan-y}.tgbox.zoomed,.tggrid.full .tgbox{touch-action:none}.tgsvg{display:block;width:100%;height:100%;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}.tgzm{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:6px;z-index:2}.tgzm button{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:700 21px var(--f-body);cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.25)}.tgsvg text{font-family:var(--f-body)}.tgsvg .tgt,.tgsvg .tgd,.tgsvg .tgw{cursor:pointer;outline:none}.tgsvg .tgt:focus-visible circle,.tgsvg .tgd:focus-visible rect{stroke:#e8823a}
 .tgcols{display:flex;flex-wrap:wrap;gap:5px}.tgcol{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 9px;font:700 12.5px var(--f-body);cursor:pointer}.tgcol small{font-weight:400;color:var(--muted)}.tgcol i{width:22px;height:10px;border-radius:5px;border:1px solid rgba(0,0,0,.5)}.tgcol[aria-pressed="true"]{border-color:var(--copper);box-shadow:0 0 0 2px var(--copper)}
 .tgsel{margin-top:10px;padding:10px;border:2px solid var(--copper);border-radius:10px;background:var(--copper-soft)}.tgfs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin:6px 0}.tgf{display:flex;flex-direction:column;gap:2px;font-size:12.5px;font-weight:700}.tgf select{font-size:14px;padding:6px 8px}
 .tgdev{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}.tgdc{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--surface2)}.tgdc.cur{border-color:var(--copper);box-shadow:0 0 0 2px var(--copper)}
 .tgstar{font-size:22px;letter-spacing:2px;color:#e0a100}.tgen{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:13.5px}.tgen .ok{color:var(--ok)}.tgen .bad{color:var(--bad)}.tgen .warn{color:var(--warn)}.whyl .tgwarn{background:var(--warn-soft)}.whyl .tgwarn>b{color:var(--warn)}
-@media (max-width:900px){.tgst{font-size:12.5px;padding:4px 8px}.tgcol{padding:4px 7px;font-size:12px}.tgtool{top:calc(env(safe-area-inset-top,0px) + 50px);padding:6px}.tgbox{max-height:70vh}}
-.tgslot{fill:rgba(46,158,68,.2);stroke:#2e7d32;stroke-width:2;stroke-dasharray:5 4;cursor:pointer}.tgslot:hover{fill:rgba(46,158,68,.45)}.tgkinds{display:flex;flex-wrap:wrap;gap:5px}.tgkc{border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:999px;padding:6px 10px;font:700 13px var(--f-body);cursor:pointer}.tgkc[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--surface)}.tgbuy{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}.tgcost{margin-left:auto;font:700 12.5px var(--f-mono);align-self:center;white-space:nowrap;color:var(--ink)}.tgbst{color:#e0a100;letter-spacing:1px}.tgord{margin-bottom:10px}.tgord .hand{font-size:14px}
+@media (max-width:900px){.tgst{font-size:12.5px;padding:4px 8px}.tgcol{padding:4px 7px;font-size:12px}.tgtool{top:calc(env(safe-area-inset-top,0px) + 50px);padding:6px}.tgbox{height:70vh}}
+.tgslot{fill:rgba(46,158,68,.2);stroke:#2e7d32;stroke-width:2;stroke-dasharray:5 4;cursor:pointer}.tgslot:hover{fill:rgba(46,158,68,.45)}.tgkinds{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:6px}.tgseg{margin:8px 0}.tgseg>span{display:block;font-size:13px;font-weight:700;margin-bottom:4px}.tgseg em{font-style:normal;font-weight:400}.tgseg>div{display:flex;flex-wrap:wrap;gap:6px}.tgch{min-width:46px;min-height:40px;border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:10px;padding:6px 10px;font:700 14.5px var(--f-body);cursor:pointer}.tgch[aria-pressed="true"]{background:var(--copper);border-color:var(--copper);color:#fff}.tgbtns{display:flex;flex-wrap:wrap;gap:6px}.tgkc{border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:10px;padding:9px 10px;text-align:left;min-height:44px;font:700 13px var(--f-body);cursor:pointer}.tgkc[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--surface)}.tgbuy{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}.tgcost{margin-left:auto;font:700 12.5px var(--f-mono);align-self:center;white-space:nowrap;color:var(--ink)}.tgbst{color:#e0a100;letter-spacing:1px}.tgord{margin-bottom:10px}.tgord .hand{font-size:14px}
 /* Layout: memoria de cálculo — menú lateral por secciones (proyecto, calculadoras, aprender); cada página = Datos → botón Calcular → Resultado con desarrollo numerado → Aprende más */
 :root{
   --bg:#EDF1F4; --surface:#FFFFFF; --surface2:#F5F7F9; --ink:#14202C; --muted:#56657A; --line:#D2DAE2;
@@ -5336,7 +5336,8 @@ tr.selrow td{background:var(--copper-soft)}
     tm: { n: "Disyuntor", pre: "TM", ic: "⚡", d: "Termomagn\xE9tico: protege el cable de un circuito contra sobrecarga y cortocircuito." },
     pl: { n: "Luz piloto", pre: "PL", ic: "●", d: "Indica que el tablero tiene tensi\xF3n. Necesita fase y neutro." },
     bn: { n: "Barra de neutro", pre: "BN", ic: "▭", d: "Bornera aislada para repartir el neutro de un diferencial a sus circuitos." },
-    pe: { n: "Barra de tierra", pre: "PE", ic: "⏚", d: "Bornera para repartir la tierra de protecci\xF3n a todos los circuitos." }
+    pe: { n: "Barra de tierra", pre: "PE", ic: "⏚", d: "Bornera para repartir la tierra de protecci\xF3n a todos los circuitos." },
+    rp: { n: "Repartidor L\u2013N", pre: "RP", ic: "\u2261", d: "Bornera de distribuci\xF3n modular: una barra de fase (L) y una de neutro (N) con varios bornes. Sirve para repartir sin poner m\xE1s de 2 cables en un borne." }
   };
   const TG_CV = [["B", "B \xB7 3–5 In"], ["C", "C \xB7 5–10 In"], ["D", "D \xB7 10–20 In"]];
   const TG_SPEC = {
@@ -5345,16 +5346,17 @@ tr.selrow td{background:var(--copper-soft)}
     tm: [["p", "Polos", [["1P", "1P \xB7 solo fase"], ["1P+N", "1P+N \xB7 fase y neutro"], ["2P", "2P \xB7 dos polos"]]], ["In", "Amperaje", [6, 10, 16, 20, 25, 32].map((x) => [x, x + " A"])], ["cv", "Curva", TG_CV]],
     pl: [],
     bn: [],
-    pe: []
+    pe: [],
+    rp: []
   };
-  let tgSel = null, tgWire = null, tgDev = null, tgHintT = [], tgHist = [], tgChecked = null, tgConfirm = false, tgZoom = false, tgMsg = "", tgFull = false, tgPanOpen = true, tgPlace = null, tgMove = null, tgCatOpen = false, tgCheckT = 0;
+  let tgSel = null, tgWire = null, tgDev = null, tgHintT = [], tgHist = [], tgChecked = null, tgConfirm = false, tgVB = null, tgDragged = false, tgMsg = "", tgFull = false, tgPanOpen = true, tgPlace = null, tgMove = null, tgCatOpen = false, tgCheckT = 0;
   const tgMoney = (x) => "$" + n0(x);
-  const tgWd = (k, sp) => k === "ig" || k === "tm" ? sp.p === "1P" ? 1 : 2 : k === "dr" ? 2 : k === "pl" ? 1 : 4;
+  const tgWd = (k, sp) => k === "ig" || k === "tm" ? sp.p === "1P" ? 1 : 2 : k === "dr" ? 2 : k === "pl" ? 1 : k === "rp" ? 2 : 4;
   function tgPrice(k, sp) {
     if (k === "ig") return (sp.p === "1P" ? 8e3 : +sp.In <= 32 ? 14e3 : +sp.In <= 40 ? 16e3 : 22e3) + (sp.cv === "D" ? 4e3 : 0);
     if (k === "dr") return ({ 25: 28e3, 40: 32e3, 63: 45e3 }[sp.In] || 32e3) + (+sp.s === 10 ? 6e3 : +sp.s === 300 ? -4e3 : 0) + ({ AC: -6e3, A: 0, F: 15e3, B: 9e4 }[sp.cl] || 0);
     if (k === "tm") return (sp.p === "1P" ? 4500 : sp.p === "1P+N" ? 9e3 : 11e3) + (+sp.In >= 25 ? 1e3 : 0) + (sp.cv === "D" ? 3e3 : 0);
-    return k === "pl" ? 6e3 : 4500;
+    return k === "pl" ? 6e3 : k === "rp" ? 12e3 : 4500;
   }
   const tgCost = (st) => st.parts.reduce((a, p) => a + tgPrice(p.k, p.spec), 0);
   function tgSpecTxt(k, sp) {
@@ -5412,6 +5414,7 @@ tr.selrow td{background:var(--copper-soft)}
     if (pre === "TM") return "Disyuntor D" + nn;
     if (pre === "PL") return "Luz piloto" + (nn !== "1" ? " " + nn : "");
     if (pre === "BN") return "Barra de neutro N" + nn;
+    if (pre === "RP") return "Repartidor R" + nn;
     if (pre === "PE") return "Barra de tierra" + (nn !== "1" ? " " + nn : "");
     return id;
   }
@@ -5446,6 +5449,12 @@ tr.selrow td{background:var(--copper-soft)}
     term("src.N", "src", 102, 174, "d", "N");
     st.parts.forEach((p) => {
       const w = tgWd(p.k, p.spec), x = TG_RX + p.m * MW, ry = TG_RY[p.r];
+      if (p.k === "rp") {
+        D[p.id] = { id: p.id, k: p.k, x: x + 2, y: ry - 40, w: w * MW - 4, h: 80 };
+        term(p.id + ".L", p.id, x + w * MW / 2, ry - 24, "b", "L", { bar: 1, x0: x + 8, x1: x + w * MW - 8 });
+        term(p.id + ".N", p.id, x + w * MW / 2, ry + 24, "b", "N", { bar: 1, x0: x + 8, x1: x + w * MW - 8 });
+        return;
+      }
       if (p.k === "bn" || p.k === "pe") {
         D[p.id] = { id: p.id, k: p.k, x: x + 4, y: ry - 7, w: w * MW - 8, h: 14 };
         term(p.id, p.id, x + w * MW / 2, ry, "b", "", { bar: 1, x0: x + 4, x1: x + w * MW - 4 });
@@ -5479,7 +5488,7 @@ tr.selrow td{background:var(--copper-soft)}
   function tgTN(tid, lv, L) {
     const t = L.T[tid];
     if (!t) return tid;
-    if (t.bar) return tgDN(t.dev, lv);
+    if (t.bar) return t.lab ? "".concat(tgDN(t.dev, lv), " (barra ").concat(t.lab, ")") : tgDN(t.dev, lv);
     return "".concat(tgDN(t.dev, lv), " (").concat(t.lab).concat(t.io === "i" ? " arriba" : t.io === "o" ? " abajo" : "", ")");
   }
   function tgReqs(lv) {
@@ -5697,6 +5706,15 @@ tr.selrow td{background:var(--copper-soft)}
       if (p.k === "bn" && s0 && s0.size && !s0.has("N")) add("bad", "".concat(tgDN(p.id, lv), " con ").concat(sg(s0)), "La barra de neutro (aislada, blanca) solo debe llevar neutro.", s0.has("L") ? "Con fase, todo lo que se conecte a ella queda con tensi\xF3n." : "La tierra va en su propia barra verde: mezclar usos confunde y es peligroso.", "Usa esta barra solo para los neutros.", [p.id]);
       if (p.k === "pe" && s0 && s0.size && !s0.has("PE")) add("bad", "".concat(tgDN(p.id, lv), " con ").concat(sg(s0)), "La barra de tierra solo lleva tierra, unida al electrodo.", "Si la barra verde lleva un activo, quien trabaje despu\xE9s la tocar\xE1 creyendo que es tierra.", "Une la barra de tierra con el conductor del electrodo y usa otra barra para el neutro.", [p.id]);
     });
+    of("rp").forEach((p) => {
+      const sL = sig[p.id + ".L"], sN = sig[p.id + ".N"];
+      if (!conn(p.id + ".L") && !conn(p.id + ".N")) {
+        if (ws.length) add("warn", "".concat(tgDN(p.id, lv), " sin usar"), "El repartidor no tiene cables.", "Una pieza que no se usa es dinero perdido.", "\xDAsalo o qu\xEDtalo.", [p.id]);
+        return;
+      }
+      if (sL && sL.size && !sL.has("L")) add("bad", "".concat(tgDN(p.id, lv), ": la barra L lleva ").concat(sg(sL)), "La barra marcada L del repartidor es para la fase.", "Si se usa para otra cosa, quien trabaje despu\xE9s confiar\xE1 en la marca y puede equivocarse.", "Usa la barra L para la fase y la barra N para el neutro.", [p.id + ".L"]);
+      if (sN && sN.size && !sN.has("N")) add("bad", "".concat(tgDN(p.id, lv), ": la barra N lleva ").concat(sg(sN)), "La barra marcada N del repartidor es para el neutro.", sN.has("L") ? "Con fase en la barra N, quien la toque creyendo que es neutro puede electrocutarse." : "La tierra va en su barra verde, nunca en el repartidor.", "Usa la barra N solo para el neutro.", [p.id + ".N"]);
+    });
     if (of("pe").length === 0) add("bad", "Falta la barra de tierra", "No hay barra de tierra en el tablero.", "La tierra del electrodo se reparte a cada circuito desde una barra de tierra (RIC N\xB006).", "Abre \u{1F9F0} Piezas y coloca una barra de tierra.", [], [], { miss: "pe" });
     let em = null;
     if (lv.emer >= 0) {
@@ -5780,7 +5798,7 @@ tr.selrow td{background:var(--copper-soft)}
   }
   function tgRoles(lv, st, A) {
     const by = (k) => st.parts.filter((p) => p.k === k).sort((a, b) => a.r - b.r || a.m - b.m), req = tgReqs(lv).req, nd = req.length;
-    const ig = by("ig")[0], pl = by("pl")[0], drs = by("dr"), tms = by("tm"), bns = by("bn"), pe = by("pe")[0], miss = [], ndr = Math.max(1, Math.ceil(nd / 3));
+    const ig = by("ig")[0], pl = by("pl")[0], drs = by("dr"), tms = by("tm"), bns = by("bn").concat(by("rp").map((p) => ({ id: p.id + ".N" }))), pe = by("pe")[0], miss = [], ndr = Math.max(1, Math.ceil(nd / 3));
     const n2 = (n, a, b) => n === 1 ? a : n + " " + b;
     if (!ig) miss.push(["ig", "el interruptor general"]);
     if (!pl) miss.push(["pl", "la luz piloto"]);
@@ -5918,7 +5936,7 @@ tr.selrow td{background:var(--copper-soft)}
   }
   function tgSVG(lv, st, A, shown) {
     const L = tgLayout(lv, st), bad = shown ? A.mark : new Set(), wbad = shown ? A.wmark : new Set(), hint = tgHintT || [], MW = TG_MW;
-    const tx2 = (x, y, t, o) => '<text x="'.concat(x, '" y="').concat(y, '" text-anchor="').concat(o && o.a || "middle", '" font-size="').concat(o && o.s || 13, '" font-weight="').concat(o && o.b ? 700 : 400, '" fill="').concat(o && o.c || "#1d2731", '" pointer-events="none">').concat(esc(t), "</text>");
+    const tx2 = (x, y, t, o) => '<text x="'.concat(x, '" y="').concat(y, '" text-anchor="').concat(o && o.a || "middle", '" font-size="').concat(o && o.s || 13, '" font-weight="').concat(o && o.b ? 700 : 400, '" fill="').concat(o && o.c || "#1d2731", '"').concat(o && o.h ? ' stroke="'.concat(o.h, '" stroke-width="4" stroke-linejoin="round" paint-order="stroke"') : "", ' pointer-events="none">').concat(esc(t), "</text>");
     let g = '<rect x="6" y="6" width="'.concat(L.W - 12, '" height="').concat(L.H - 12, '" rx="16" fill="#e2e6ea" stroke="#7b848d" stroke-width="4"/>');
     const RL = TG_RX + TG_MODS * MW;
     TG_RY.forEach((y, r) => {
@@ -5947,6 +5965,16 @@ tr.selrow td{background:var(--copper-soft)}
         return;
       }
       if (!p) return;
+      if (p.k === "rp") {
+        g += '<g class="tgd" data-tgd="'.concat(id, '" tabindex="0" role="button" aria-label="').concat(esc(tgDN(id, lv)), ': opciones"><rect x="').concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="6" fill="#f3efe6" stroke="').concat(stk, '" stroke-width="').concat(sw, '"/></g>');
+        [["L", -24, "#c8a165"], ["N", 24, "#dfe6ee"]].forEach(([q, dy, fc]) => {
+          const t = L.T[id + "." + q], sel = tgSel === t.id, hb = hint.includes(t.id), sk = sel ? "#e8823a" : bad.has(t.id) ? "#c0392b" : hb ? "#2e7d32" : "#6d7680";
+          g += '<g class="tgt" data-tgt="'.concat(t.id, '" tabindex="0" role="button" aria-label="').concat(esc(tgTN(t.id, lv, L)), '"><rect x="').concat(t.x0 - 4, '" y="').concat(t.y - 13, '" width="').concat(t.x1 - t.x0 + 8, '" height="26" fill="transparent"/><rect x="').concat(t.x0, '" y="').concat(t.y - 7, '" width="').concat(t.x1 - t.x0, '" height="14" rx="3" fill="').concat(fc, '" stroke="').concat(sk, '" stroke-width="').concat(sel || hb ? 4 : 2, '"/>');
+          for (let i = 0; i < 5; i++) g += '<circle cx="'.concat(t.x0 + 10 + i * (t.x1 - t.x0 - 20) / 4, '" cy="').concat(t.y, '" r="3" fill="#6d6455"/>');
+          g += "</g>";
+        });
+        return;
+      }
       if (p.k === "bn" || p.k === "pe") {
         const pe = p.k === "pe", sel = tgSel === id, hb = hint.includes(id), sk = sel || cur2 ? "#e8823a" : isBad ? "#c0392b" : hb ? "#2e7d32" : "#6d7680", n = Math.floor((d.w - 8) / 18);
         g += '<g class="tgd" data-tgd="'.concat(id, '" tabindex="0" role="button" aria-label="').concat(esc(tgDN(id, lv)), ': opciones"><rect x="').concat(d.x, '" y="').concat(d.y - 34, '" width="').concat(d.w, '" height="22" rx="5" fill="').concat(pe ? "#d7efdc" : "#f4f4f1", '" stroke="').concat(cur2 ? "#e8823a" : "#9aa3ab", '"/>').concat(tx2(cx, d.y - 19, (pe ? "⏚ " : "") + tgDN(id, lv).replace("Barra de ", "Barra "), { s: 11.5, b: 1, c: pe ? "#1d6b2f" : "#3d4651" }), "</g>");
@@ -5994,6 +6022,25 @@ tr.selrow td{background:var(--copper-soft)}
       if (w.c === "G") g += '<path d="'.concat(d, '" fill="none" stroke="#E8C300" stroke-width="4.6" stroke-dasharray="7 9"/>');
       g += '<path d="'.concat(d, '" fill="none" stroke="transparent" stroke-width="16"/></g>');
     });
+    st.parts.forEach((p) => {
+      const d = L.D[p.id], sp = p.spec, cx = d.x + d.w / 2, H = (x, y, t, o) => g += tx2(x, y, t, Object.assign({ h: p.k === "dr" ? "#eaf1f8" : p.k === "ig" ? "#fff6e8" : p.k === "pe" ? "#d7efdc" : "#fbfbf7" }, o));
+      if (p.k === "pl") H(cx, d.y + 70, "Piloto", { s: 11, b: 1 });
+      else if (p.k === "rp") {
+        H(cx, d.y + 44, "Repartidor", { s: 11, b: 1, h: "#f3efe6" });
+        H(d.x + 9, d.y + 21, "L", { s: 10, b: 1, c: "#8a5a1f", h: "#f3efe6" });
+        H(d.x + 9, d.y + 69, "N", { s: 10, b: 1, c: "#3d4651", h: "#f3efe6" });
+      } else if (p.k === "bn" || p.k === "pe") H(cx, d.y - 19, (p.k === "pe" ? "\u23DA " : "") + tgDN(p.id, lv).replace("Barra de ", "Barra "), { s: 11.5, b: 1, c: p.k === "pe" ? "#1d6b2f" : "#3d4651" });
+      else {
+        H(cx, d.y + 32, p.k === "ig" ? d.w < 60 ? "GRAL" : "GENERAL" : p.k === "dr" ? p.id : "D" + p.id.slice(2), { b: 1, s: 13.5 });
+        if (p.k === "dr") {
+          H(cx, d.y + 50, "".concat(sp.In, " A \xB7 ").concat(sp.s, " mA"), { s: 11.5 });
+          H(cx, d.y + 64, "clase " + sp.cl, { s: 10.5, c: "#4b5662" });
+        } else {
+          H(cx, d.y + 50, "".concat(sp.In, " A ").concat(sp.cv), { s: 11.5 });
+          H(cx, d.y + 64, sp.p, { s: 10.5, c: "#4b5662" });
+        }
+      }
+    });
     Object.values(L.T).forEach((t) => {
       if (t.bar) return;
       const sel = tgSel === t.id, hb = hint.includes(t.id), isB = bad.has(t.id), lyU = t.dir === "u";
@@ -6009,15 +6056,19 @@ tr.selrow td{background:var(--copper-soft)}
         for (let m = 0; m < TG_MODS; m++) if (!o[r][m]) g += '<rect class="tgslot" data-tgslot="'.concat(r, ":").concat(m, '" x="').concat(TG_RX + m * MW + 3, '" y="').concat(y - 44, '" width="').concat(MW - 6, '" height="88" rx="6"/>');
       });
     }
-    return '<svg class="tgsvg" viewBox="0 0 '.concat(L.W, " ").concat(L.H, '" role="img" aria-label="Interior del tablero para armar y cablear">').concat(g, "</svg>");
+    const vb = tgVB ? tgVBclamp(tgVB, L.W, L.H) : { x: 0, y: 0, w: L.W, h: L.H };
+    return '<svg class="tgsvg" data-w="'.concat(L.W, '" data-h="').concat(L.H, '" viewBox="').concat([vb.x, vb.y, vb.w, vb.h].map((v) => Math.round(v * 10) / 10).join(" "), '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Interior del tablero para armar y cablear">').concat(g, "</svg>");
   }
-  function tgSpecSel(k, sp, attr) {
-    return TG_SPEC[k].map(([f, lab, ops]) => '<label class="tgf"><span>'.concat(lab, "</span><select ").concat(attr(f), ' aria-label="').concat(esc(TG_K[k].n + ": " + lab), '">').concat(attr === tgCatAttr ? '<option value="">Elegir…</option>' : "").concat(ops.map(([v, l]) => '<option value="'.concat(v, '" ').concat(String(sp[f]) === String(v) ? "selected" : "", ">").concat(l, "</option>")).join(""), "</select></label>")).join("");
+  const TG_SHORT = { p: (v) => v, In: (v) => v + " A", cv: (v) => v, s: (v) => v + " mA", cl: (v) => v };
+  function tgSpecSel(k, sp, act) {
+    return TG_SPEC[k].map(([f, lab, ops]) => {
+      const cur3 = ops.find(([v]) => String(sp[f]) === String(v));
+      return '<div class="tgseg" role="group" aria-label="'.concat(esc(lab), '"><span>').concat(lab).concat(cur3 ? ' <em class="hint">\xB7 '.concat(esc(cur3[1]), "</em>") : "", "</span><div>").concat(ops.map(([v, l]) => '<button type="button" class="tgch" data-tg="'.concat(act, '" data-f="').concat(f, '" data-v="').concat(v, '" aria-pressed="').concat(String(sp[f]) === String(v), '" title="').concat(esc(l), '">').concat(TG_SHORT[f](v), "</button>")).join(""), "</div></div>");
+    }).join("");
   }
-  const tgCatAttr = (f) => 'data-tgc="'.concat(f, '"');
   function tgCatHTML() {
-    const c = S.tg.cat, k = c.k || "ig", sp = c[k] || {}, ready = TG_SPEC[k].every(([f]) => sp[f] != null && sp[f] !== "");
-    return '<section class="card tgp" id="tgcat"><h3>\u{1F9F0} Caja de piezas</h3><div class="tgkinds">'.concat(Object.keys(TG_K).map((kk) => '<button type="button" class="tgkc" data-tg="catk" data-k="'.concat(kk, '" aria-pressed="').concat(kk === k, '"><b>').concat(TG_K[kk].ic, "</b> ").concat(TG_K[kk].n, "</button>")).join(""), '</div><p class="hint" style="margin:8px 0 4px">').concat(TG_K[k].d, "</p>").concat(TG_SPEC[k].length ? '<div class="tgfs">'.concat(tgSpecSel(k, sp, tgCatAttr), "</div>") : "", '<div class="tgbuy"><span>').concat(ready ? "<b>".concat(tgMoney(tgPrice(k, sp)), "</b> \xB7 ").concat(tgWd(k, sp), " m\xF3dulo").concat(tgWd(k, sp) > 1 ? "s" : "") : '<span class="hint">Elige todos los datos</span>', '</span><button type="button" class="btn small" data-tg="place" ').concat(ready ? "" : "disabled", ">\u{1F4CD} Colocar en el tablero</button></div></section>");
+    const c = S.tg.cat, k = c.k || "ig", sp = c[k] || {}, ready = TG_SPEC[k].every(([f]) => sp[f] != null && sp[f] !== ""), w = tgWd(k, sp);
+    return '<section class="card tgp" id="tgcat"><h3>\u{1F9F0} Caja de piezas</h3><div class="tgkinds">'.concat(Object.keys(TG_K).map((kk) => '<button type="button" class="tgkc" data-tg="catk" data-k="'.concat(kk, '" aria-pressed="').concat(kk === k, '"><b>').concat(TG_K[kk].ic, "</b> ").concat(TG_K[kk].n, "</button>")).join(""), '</div><p class="hint" style="margin:8px 0 4px">').concat(TG_K[k].d, "</p>").concat(tgSpecSel(k, sp, "cspec"), '<div class="tgbuy"><span>').concat(ready ? "<b>".concat(tgMoney(tgPrice(k, sp)), "</b> \xB7 ").concat(w, " m\xF3dulo").concat(w > 1 ? "s" : "") : '<span class="hint">Toca un valor en cada fila</span>', '</span><span class="tgbtns"><button type="button" class="btn small" data-tg="autoplace" ').concat(ready ? "" : "disabled", '>\u26A1 Poner en el primer lugar libre</button><button type="button" class="btn ghost small" data-tg="place" ').concat(ready ? "" : "disabled", ">\u{1F4CD} Elegir el lugar</button></span></div></section>");
   }
   function tgStatus(lv, st, L) {
     if (tgMsg) return tgMsg;
@@ -6041,7 +6092,7 @@ tr.selrow td{background:var(--copper-soft)}
       h += '<section class="card tgp">'.concat(close, '<div class="tgsel"><b>Cable seleccionado</b><p class="hint" style="margin:2px 0 6px">').concat(esc(tgTN(w.a, lv, L)), " → ").concat(esc(tgTN(w.b, lv, L)), '</p><div class="tgcols">').concat(Object.keys(TG_COL).map((k) => '<button type="button" class="tgcol" data-tg="wcol" data-k="'.concat(k, '" aria-pressed="').concat(w.c === k, '">').concat(sw(k, TG_COL[k]), '<span class="tgtxt">').concat(TG_COL[k][0], "</span></button>")).join(""), '</div><div class="actions" style="border:0;padding:6px 0 0;margin:0"><button type="button" class="btn danger small" data-tg="wdel">✂ Quitar cable</button><button type="button" class="btn ghost small" data-tg="x">Listo</button></div></div></section>');
     } else if (tgDev && tgPart(st, tgDev)) {
       const p = tgPart(st, tgDev);
-      h += '<section class="card tgp">'.concat(close, '<div class="tgsel"><b>').concat(esc(tgDN(p.id, lv)), '</b> <span class="hint">\xB7 ').concat(tgMoney(tgPrice(p.k, p.spec)), " \xB7 riel ").concat(p.r + 1, "</span>").concat(TG_SPEC[p.k].length ? '<div class="tgfs">'.concat(tgSpecSel(p.k, p.spec, (f) => 'data-tgp="'.concat(p.id, ".").concat(f, '"')), "</div>") : '<p class="hint" style="margin:4px 0">'.concat(TG_K[p.k].d, "</p>"), '<div class="actions" style="border:0;padding:6px 0 0;margin:0"><button type="button" class="btn small" data-tg="move">↔ Mover</button><button type="button" class="btn ghost small" data-tg="dup">⧉ Otro igual</button><button type="button" class="btn danger small" data-tg="pdel">\u{1F5D1} Quitar</button><button type="button" class="btn ghost small" data-tg="x">Listo</button></div></div></section>');
+      h += '<section class="card tgp">'.concat(close, '<div class="tgsel"><b>').concat(esc(tgDN(p.id, lv)), '</b> <span class="hint">\xB7 ').concat(tgMoney(tgPrice(p.k, p.spec)), " \xB7 riel ").concat(p.r + 1, "</span>").concat(TG_SPEC[p.k].length ? tgSpecSel(p.k, p.spec, "pspec") : '<p class="hint" style="margin:4px 0">'.concat(TG_K[p.k].d, "</p>"), '<div class="actions" style="border:0;padding:6px 0 0;margin:0"><button type="button" class="btn small" data-tg="move">↔ Mover</button><button type="button" class="btn ghost small" data-tg="dup">⧉ Otro igual</button><button type="button" class="btn danger small" data-tg="pdel">\u{1F5D1} Quitar</button><button type="button" class="btn ghost small" data-tg="x">Listo</button></div></div></section>');
     }
     if (!tgFull || tgCatOpen) h += tgCatHTML();
     if (shown) {
@@ -6079,9 +6130,100 @@ tr.selrow td{background:var(--copper-soft)}
     }).join(""), '</div><p class="hint" style="margin:-4px 0 10px">').concat(esc(lv.d), "</p>");
     const col = T0.col || "R", sw = (k) => '<i style="background:'.concat(TG_COL[k][1]).concat(k === "G" ? ";background-image:repeating-linear-gradient(90deg,transparent 0 6px,#E8C300 6px 10px)" : "", '"></i>');
     const busy = tgPlace || tgMove;
-    const bar = '<div class="tgtool"><div class="tgcols" role="group" aria-label="Color del cable"><span class="tglab">Cable:</span>'.concat(Object.keys(TG_COL).map((k) => '<button type="button" class="tgcol" data-tg="col" data-k="'.concat(k, '" aria-pressed="').concat(col === k, '" aria-label="').concat(TG_COL[k][0], " (").concat(TG_COL[k][2], ')" title="').concat(TG_COL[k][0], " (").concat(TG_COL[k][2], ')">').concat(sw(k), '<span class="tgtxt">').concat(TG_COL[k][0], "</span></button>")).join(""), '<span class="tgcost" title="Gastado / presupuesto">\u{1F4B0} ').concat(tgMoney(A.cost), " / ").concat(tgMoney(A.budget), '</span></div><div class="tgacts"><button type="button" class="btn small" data-tg="cat" aria-pressed="').concat(tgCatOpen, '">\u{1F9F0} Piezas</button><button type="button" class="btn calc small" data-tg="check">✓ Comprobar</button><button type="button" class="btn ghost small" data-tg="hint" aria-label="Pista">\u{1F4A1}<span class="tgtxt"> Pista</span></button><button type="button" class="btn ghost small" data-tg="undo" aria-label="Deshacer" ').concat(tgHist.length ? "" : "disabled", '>↶<span class="tgtxt"> Deshacer</span></button><button type="button" class="btn ghost small" data-tg="zoom" aria-label="').concat(tgZoom ? "Achicar" : "Ampliar", '">').concat(tgZoom ? "−" : "\u{1F50D}", '<span class="tgtxt"> ').concat(tgZoom ? "Achicar" : "Ampliar", '</span></button><button type="button" class="btn ghost small" data-tg="full" aria-label="').concat(tgFull ? "Salir de pantalla completa" : "Pantalla completa", '">').concat(tgFull ? "✕ Salir" : '⛶<span class="tgtxt"> Pantalla completa</span>', "</button>").concat(busy ? '<button type="button" class="btn danger small" data-tg="x">✕ Terminar</button>' : "", '</div><div class="tgst" aria-live="polite">').concat(esc(tgStatus(lv, st, L)), "</div></div>");
+    const bar = '<div class="tgtool"><div class="tgcols" role="group" aria-label="Color del cable"><span class="tglab">Cable:</span>'.concat(Object.keys(TG_COL).map((k) => '<button type="button" class="tgcol" data-tg="col" data-k="'.concat(k, '" aria-pressed="').concat(col === k, '" aria-label="').concat(TG_COL[k][0], " (").concat(TG_COL[k][2], ')" title="').concat(TG_COL[k][0], " (").concat(TG_COL[k][2], ')">').concat(sw(k), '<span class="tgtxt">').concat(TG_COL[k][0], "</span></button>")).join(""), '<span class="tgcost" title="Gastado / presupuesto">\u{1F4B0} ').concat(tgMoney(A.cost), " / ").concat(tgMoney(A.budget), '</span></div><div class="tgacts"><button type="button" class="btn small" data-tg="cat" aria-pressed="').concat(tgCatOpen, '">\u{1F9F0} Piezas</button><button type="button" class="btn calc small" data-tg="check">✓ Comprobar</button><button type="button" class="btn ghost small" data-tg="hint" aria-label="Pista">\u{1F4A1}<span class="tgtxt"> Pista</span></button><button type="button" class="btn ghost small" data-tg="undo" aria-label="Deshacer" ').concat(tgHist.length ? "" : "disabled", '>↶<span class="tgtxt"> Deshacer</span></button><button type="button" class="btn ghost small" data-tg="full" aria-label="').concat(tgFull ? "Salir de pantalla completa" : "Pantalla completa", '">').concat(tgFull ? "✕ Salir" : '⛶<span class="tgtxt"> Pantalla completa</span>', "</button>").concat(busy ? '<button type="button" class="btn danger small" data-tg="x">✕ Terminar</button>' : "", '</div><div class="tgst" aria-live="polite">').concat(esc(tgStatus(lv, st, L)), "</div></div>");
     const side = !tgFull || tgPanOpen && (tgWire != null || tgDev || shown || tgCatOpen);
-    return chips + tgOrder(lv, A) + '<div class="tggrid'.concat(tgFull ? " full" : "", '"><div>').concat(bar, '<div class="tgbox').concat(tgZoom ? " zoom" : "", busy ? " placing" : "", '">').concat(tgSVG(lv, st, A, shown), '</div></div><div class="tgside" ').concat(side ? "" : "hidden", ">").concat(tgPanel(lv, st, A, shown, L), "</div></div>").concat(tgTable(lv, st, A, shown));
+    return chips + tgOrder(lv, A) + '<div class="tggrid'.concat(tgFull ? " full" : "", '"><div>').concat(bar, '<div class="tgbox').concat(tgVB ? " zoomed" : "", busy ? " placing" : "", '">').concat(tgSVG(lv, st, A, shown), '<div class="tgzm"><button type="button" data-tg="zin" aria-label="Acercar">+</button><button type="button" data-tg="zout" aria-label="Alejar">\u2212</button><button type="button" data-tg="zfit" aria-label="Ver todo el tablero" title="Ver todo">\u2922</button></div></div></div><div class="tgside" ').concat(side ? "" : "hidden", ">").concat(tgPanel(lv, st, A, shown, L), "</div></div>").concat(tgTable(lv, st, A, shown));
+  }
+  function tgVBclamp(v, W, H) {
+    const w = Math.max(W / 8, Math.min(W, v.w)), h = w * H / W;
+    return { x: Math.max(-w * 0.25, Math.min(W - w * 0.75, v.x)), y: Math.max(-h * 0.25, Math.min(H - h * 0.75, v.y)), w, h };
+  }
+  function tgZoomBy(f, cx, cy) {
+    const svg = document.querySelector("#tgwrap .tgsvg");
+    if (!svg) return;
+    const W = +svg.dataset.w, H = +svg.dataset.h, b = svg.viewBox.baseVal, v = { x: b.x, y: b.y, w: b.width, h: b.height }, r = svg.getBoundingClientRect(), sc = Math.max(v.w / r.width, v.h / r.height);
+    let px = v.x + v.w / 2, py = v.y + v.h / 2;
+    if (cx != null) {
+      px = v.x + (cx - (r.left + (r.width - v.w / sc) / 2)) * sc;
+      py = v.y + (cy - (r.top + (r.height - v.h / sc) / 2)) * sc;
+    }
+    const nw = Math.max(W / 8, Math.min(W, v.w * f)), k = nw / v.w;
+    tgSetVB(svg, { x: px - (px - v.x) * k, y: py - (py - v.y) * k, w: nw, h: nw * H / W });
+  }
+  function tgSetVB(svg, v) {
+    const W = +svg.dataset.w, H = +svg.dataset.h, c = tgVBclamp(v, W, H), fit = c.w >= W - 0.5;
+    tgVB = fit ? null : c;
+    const d = fit ? { x: 0, y: 0, w: W, h: H } : c;
+    svg.setAttribute("viewBox", [d.x, d.y, d.w, d.h].join(" "));
+    const bx = svg.closest(".tgbox");
+    if (bx) bx.classList.toggle("zoomed", !fit);
+  }
+  {
+    const P = new Map();
+    let pinch = 0, moved = 0;
+    document.addEventListener("pointerdown", (e) => {
+      if (cur !== "tg" || !e.target.closest || !e.target.closest("#tgwrap .tgsvg")) return;
+      if (P.size === 0) {
+        moved = 0;
+        tgDragged = false;
+      }
+      P.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (P.size === 2) {
+        const a = [...P.values()];
+        pinch = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
+      }
+    });
+    document.addEventListener("pointermove", (e) => {
+      const p = P.get(e.pointerId);
+      if (!p || cur !== "tg") return;
+      const svg = document.querySelector("#tgwrap .tgsvg");
+      if (!svg) return;
+      const dx = e.clientX - p.x, dy = e.clientY - p.y;
+      p.x = e.clientX;
+      p.y = e.clientY;
+      if (P.size === 2) {
+        const a = [...P.values()], d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
+        if (pinch && d) tgZoomBy(pinch / d, (a[0].x + a[1].x) / 2, (a[0].y + a[1].y) / 2);
+        pinch = d;
+        tgDragged = true;
+        return;
+      }
+      moved += Math.abs(dx) + Math.abs(dy);
+      if (moved < 8 || !tgVB) return;
+      tgDragged = true;
+      const b = svg.viewBox.baseVal, r = svg.getBoundingClientRect(), sc = Math.max(b.width / r.width, b.height / r.height);
+      tgSetVB(svg, { x: b.x - dx * sc, y: b.y - dy * sc, w: b.width, h: b.height });
+    });
+    const up = (e) => {
+      P.delete(e.pointerId);
+      if (P.size < 2) pinch = 0;
+    };
+    document.addEventListener("pointerup", up);
+    document.addEventListener("pointercancel", up);
+    document.addEventListener("wheel", (e) => {
+      if (cur !== "tg" || !e.target.closest || !e.target.closest("#tgwrap .tgsvg") || !(e.ctrlKey || tgVB || tgFull)) return;
+      e.preventDefault();
+      tgZoomBy(e.deltaY > 0 ? 1.15 : 0.87, e.clientX, e.clientY);
+    }, { passive: false });
+  }
+  function tgPSpec(id, f, v) {
+    const st = tgSt(), p = tgPart(st, id);
+    if (!p) return;
+    const nv = f === "In" || f === "s" ? +v : v, sp2 = Object.assign({}, p.spec, { [f]: nv }), w = tgWd(p.k, sp2);
+    if (w !== tgWd(p.k, p.spec) && tgFit(st, p.r, p.m, w, p.id) !== p.m) {
+      const s0 = tgFit(st, p.r, p.m + w - 1, w, p.id);
+      if (s0 < 0) {
+        tgMsg = "No hay espacio al lado para un equipo de ".concat(w, " m\xF3dulos: mu\xE9velo primero a un lugar con m\xE1s espacio.");
+        tgRender();
+        return;
+      }
+      tgPush();
+      p.m = s0;
+    } else tgPush();
+    p.spec = sp2;
+    tgPrune(st);
+    save();
+    tgRender();
   }
   function tgRender() {
     const w = document.getElementById("tgwrap");
@@ -6179,6 +6321,11 @@ tr.selrow td{background:var(--copper-soft)}
     if (cur !== "tg") return;
     const el = e.target.closest && e.target.closest("[data-tgslot],[data-tgt],[data-tgw],[data-tgd],[data-tg]");
     if (!el) return;
+    if (tgDragged && el.closest(".tgsvg")) {
+      tgDragged = false;
+      return;
+    }
+    tgDragged = false;
     const lv = tgLvl(), st = tgSt();
     tgPanOpen = true;
     if (el.dataset.tgslot) {
@@ -6217,8 +6364,36 @@ tr.selrow td{background:var(--copper-soft)}
       save();
     } else if (a === "x") {
       tgSel = tgWire = tgDev = tgPlace = tgMove = null;
-    } else if (a === "zoom") tgZoom = !tgZoom;
-    else if (a === "full") tgSetFull(!tgFull);
+    } else if (a === "zin" || a === "zout") {
+      tgZoomBy(a === "zin" ? 0.7 : 1 / 0.7);
+      return;
+    } else if (a === "zfit") tgVB = null;
+    else if (a === "cspec") {
+      const c = S.tg.cat, sp = c[c.k] || (c[c.k] = {}), f = el.dataset.f;
+      sp[f] = f === "In" || f === "s" ? +el.dataset.v : el.dataset.v;
+      save();
+    } else if (a === "pspec" && tgDev) {
+      tgPSpec(tgDev, el.dataset.f, el.dataset.v);
+      return;
+    } else if (a === "autoplace") {
+      const k = S.tg.cat.k, sp = Object.assign({}, S.tg.cat[k] || {});
+      if (TG_SPEC[k].every(([f]) => sp[f] != null && sp[f] !== "")) {
+        const w = tgWd(k, sp), r0 = k === "tm" ? 1 : k === "bn" || k === "pe" || k === "rp" ? 2 : 0;
+        let at = null;
+        for (let i = 0; i < TG_RAILS && !at; i++) {
+          const r = (r0 + i) % TG_RAILS, o = tgOcc(st, null);
+          for (let m = 0; m + w <= TG_MODS && !at; m++) if (o[r].slice(m, m + w).every((x) => !x)) at = [r, m];
+        }
+        if (!at) tgMsg = "No queda espacio en los rieles: quita o mueve piezas.";
+        else {
+          tgPush();
+          const id = tgNewId(st, k);
+          st.parts.push({ id, k, r: at[0], m: at[1], spec: sp });
+          tgMsg = "\u2713 ".concat(tgDN(id, lv), " puesto en el riel ").concat(at[0] + 1, ". Si quieres otro lugar, t\xF3calo y usa \u2194 Mover.");
+          save();
+        }
+      }
+    } else if (a === "full") tgSetFull(!tgFull);
     else if (a === "pclose") {
       tgPanOpen = false;
       tgCatOpen = false;
