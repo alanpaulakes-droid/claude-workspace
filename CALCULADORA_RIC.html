@@ -76,6 +76,7 @@ ol.obs{margin:0;padding-left:20px}ol.obs li{margin:4px 0}
 .tgdev{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}.tgdc{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--surface2)}.tgdc.cur{border-color:var(--copper);box-shadow:0 0 0 2px var(--copper)}
 .tgstar{font-size:22px;letter-spacing:2px;color:#e0a100}.tgen{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:13.5px}.tgen .ok{color:var(--ok)}.tgen .bad{color:var(--bad)}.tgen .warn{color:var(--warn)}.whyl .tgwarn{background:var(--warn-soft)}.whyl .tgwarn>b{color:var(--warn)}
 @media (max-width:900px){.tgst{font-size:12.5px;padding:4px 8px}.tgcol{padding:4px 7px;font-size:12px}.tgtool{top:calc(env(safe-area-inset-top,0px) + 50px);padding:6px}.tgbox{max-height:70vh}}
+.tgslot{fill:rgba(46,158,68,.2);stroke:#2e7d32;stroke-width:2;stroke-dasharray:5 4;cursor:pointer}.tgslot:hover{fill:rgba(46,158,68,.45)}.tgkinds{display:flex;flex-wrap:wrap;gap:5px}.tgkc{border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:999px;padding:6px 10px;font:700 13px var(--f-body);cursor:pointer}.tgkc[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--surface)}.tgbuy{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}.tgcost{margin-left:auto;font:700 12.5px var(--f-mono);align-self:center;white-space:nowrap;color:var(--ink)}.tgbst{color:#e0a100;letter-spacing:1px}.tgord{margin-bottom:10px}.tgord .hand{font-size:14px}
 /* Layout: memoria de cálculo — menú lateral por secciones (proyecto, calculadoras, aprender); cada página = Datos → botón Calcular → Resultado con desarrollo numerado → Aprende más */
 :root{
   --bg:#EDF1F4; --surface:#FFFFFF; --surface2:#F5F7F9; --ink:#14202C; --muted:#56657A; --line:#D2DAE2;
@@ -5214,13 +5215,13 @@ tr.selrow td{background:var(--copper-soft)}
     }
     ["n1", "n2", "n3"].forEach((k) => ["1P", "1P+N"].forEach((p) => {
       try {
-        const lv = TG_LV[k], st = { wires: [], dev: {} };
-        lv.circ.forEach((c, i) => st.dev["TM" + (i + 1)] = { p });
-        const so = tgSolution(lv, st), A = tgCheck(lv, so);
+        const lv = TG_LV[k], so = tgFresh(lv, p), A = tgCheck(lv, so);
         chk("Tablero \xAB".concat(k, "\xBB (").concat(p, "): la soluci\xF3n no tiene errores"), A.errs.length + A.warns.length === 0, A.errs.concat(A.warns).map((x) => x.t).join("; ") || "0", "0");
         const bad = JSON.parse(JSON.stringify(so));
-        bad.wires.push({ a: "BN1", b: "BPE", c: "W" });
+        bad.wires.push({ a: "BN1", b: "PE1", c: "W" });
         chk("Tablero \xAB".concat(k, "\xBB (").concat(p, "): neutro unido a tierra se detecta"), tgCheck(lv, bad).errs.some((x) => /Neutro unido a tierra/.test(x.t)), "", "error");
+        const em = { parts: [], wires: [], t0: 0 }, h = tgHintOf(lv, em);
+        chk("Tablero \xAB".concat(k, "\xBB (").concat(p, "): la pista pide colocar el general"), h.cat === "ig", h.msg.slice(0, 40), "ig");
       } catch (e) {
         chk("Tablero " + k, false, String(e), "");
       }
@@ -5324,14 +5325,47 @@ tr.selrow td{background:var(--copper-soft)}
   const TG_COL = { R: ["Rojo", "#D32F2F", "fase"], K: ["Negro", "#1B1B1B", "fase"], A: ["Azul", "#1F5FBF", "fase"], W: ["Blanco", "#F4F4F4", "neutro"], G: ["Verde/amarillo", "#2E9E44", "tierra"] };
   const TG_SIG = { L: "fase", N: "neutro", PE: "tierra" };
   const TG_LV = {
-    n1: { t: "Nivel 1 \xB7 Primer tablero", d: "General, un diferencial, dos disyuntores y la luz piloto. Alimentador de 6 mm\xB2.", alimS: 6, ndr: 1, emer: -1, circ: [["Alumbrado", 1.5, 1200, "B", 0], ["Enchufes", 2.5, 2500, "C", 0]] },
+    n1: { t: "Nivel 1 \xB7 Primer tablero", d: "Una casa peque\xF1a: alumbrado y enchufes. Alimentador de 6 mm\xB2.", alimS: 6, ndr: 1, emer: -1, circ: [["Alumbrado", 1.5, 1200, "B", 0], ["Enchufes", 2.5, 2500, "C", 0]] },
     n2: { t: "Nivel 2 \xB7 Luz de emergencia", d: "Se suma la cocina y una luz de emergencia aut\xF3noma que vigila el alumbrado. Alimentador de 6 mm\xB2.", alimS: 6, ndr: 1, emer: 0, circ: [["Alumbrado", 1.5, 1100, "B", 0], ["Enchufes", 2.5, 2250, "C", 0], ["Cocina y lavadero", 2.5, 3e3, "C", 16]] },
-    n3: { t: "Nivel 3 \xB7 Vivienda completa", d: "Dos diferenciales, cinco circuitos, horno, luz piloto y luz de emergencia. Alimentador de 10 mm\xB2.", alimS: 10, ndr: 2, emer: 0, circ: [["Alumbrado", 1.5, 1300, "B", 0], ["Enchufes dormitorios", 2.5, 2e3, "C", 0], ["Enchufes living", 2.5, 2500, "C", 0], ["Cocina y lavadero", 2.5, 3e3, "C", 16], ["Horno", 2.5, 2e3, "C", 16]] }
+    n3: { t: "Nivel 3 \xB7 Vivienda completa", d: "Cinco circuitos con horno, luz piloto y luz de emergencia: necesitar\xE1s m\xE1s de un diferencial. Alimentador de 10 mm\xB2.", alimS: 10, ndr: 2, emer: 0, circ: [["Alumbrado", 1.5, 1300, "B", 0], ["Enchufes dormitorios", 2.5, 2e3, "C", 0], ["Enchufes living", 2.5, 2500, "C", 0], ["Cocina y lavadero", 2.5, 3e3, "C", 16], ["Horno", 2.5, 2e3, "C", 16]] }
   };
-  let tgSel = null, tgWire = null, tgDev = null, tgHintT = [], tgHist = [], tgChecked = null, tgConfirm = false, tgZoom = false, tgMsg = "", tgFull = false, tgPanOpen = true;
+  const TG_RAILS = 4, TG_MODS = 14, TG_RX = 150, TG_MW = 52, TG_RY = [122, 292, 462, 632], TG_OY = 790;
+  const TG_K = {
+    ig: { n: "Interruptor general", pre: "IG", ic: "⏻", d: "Corta toda la casa de una vez y protege el alimentador." },
+    dr: { n: "Diferencial", pre: "DR", ic: "Δ", d: "Protege a las personas: compara la corriente de fase y neutro y corta si hay una fuga." },
+    tm: { n: "Disyuntor", pre: "TM", ic: "⚡", d: "Termomagn\xE9tico: protege el cable de un circuito contra sobrecarga y cortocircuito." },
+    pl: { n: "Luz piloto", pre: "PL", ic: "●", d: "Indica que el tablero tiene tensi\xF3n. Necesita fase y neutro." },
+    bn: { n: "Barra de neutro", pre: "BN", ic: "▭", d: "Bornera aislada para repartir el neutro de un diferencial a sus circuitos." },
+    pe: { n: "Barra de tierra", pre: "PE", ic: "⏚", d: "Bornera para repartir la tierra de protecci\xF3n a todos los circuitos." }
+  };
+  const TG_CV = [["B", "B \xB7 3–5 In"], ["C", "C \xB7 5–10 In"], ["D", "D \xB7 10–20 In"]];
+  const TG_SPEC = {
+    ig: [["p", "Polos", [["1P", "1 polo"], ["2P", "2 polos (omnipolar)"]]], ["In", "Amperaje", [25, 32, 40, 50, 63].map((x) => [x, x + " A"])], ["cv", "Curva", TG_CV]],
+    dr: [["In", "Amperaje", [25, 40, 63].map((x) => [x, x + " A"])], ["s", "Sensibilidad", [[10, "10 mA"], [30, "30 mA"], [300, "300 mA"]]], ["cl", "Clase", [["AC", "AC \xB7 solo senoidal"], ["A", "A \xB7 electr\xF3nica"], ["F", "F \xB7 inverter"], ["B", "B \xB7 CC (auto el\xE9ctrico, solar)"]]]],
+    tm: [["p", "Polos", [["1P", "1P \xB7 solo fase"], ["1P+N", "1P+N \xB7 fase y neutro"], ["2P", "2P \xB7 dos polos"]]], ["In", "Amperaje", [6, 10, 16, 20, 25, 32].map((x) => [x, x + " A"])], ["cv", "Curva", TG_CV]],
+    pl: [],
+    bn: [],
+    pe: []
+  };
+  let tgSel = null, tgWire = null, tgDev = null, tgHintT = [], tgHist = [], tgChecked = null, tgConfirm = false, tgZoom = false, tgMsg = "", tgFull = false, tgPanOpen = true, tgPlace = null, tgMove = null, tgCatOpen = false, tgCheckT = 0;
+  const tgMoney = (x) => "$" + n0(x);
+  const tgWd = (k, sp) => k === "ig" || k === "tm" ? sp.p === "1P" ? 1 : 2 : k === "dr" ? 2 : k === "pl" ? 1 : 4;
+  function tgPrice(k, sp) {
+    if (k === "ig") return (sp.p === "1P" ? 8e3 : +sp.In <= 32 ? 14e3 : +sp.In <= 40 ? 16e3 : 22e3) + (sp.cv === "D" ? 4e3 : 0);
+    if (k === "dr") return ({ 25: 28e3, 40: 32e3, 63: 45e3 }[sp.In] || 32e3) + (+sp.s === 10 ? 6e3 : +sp.s === 300 ? -4e3 : 0) + ({ AC: -6e3, A: 0, F: 15e3, B: 9e4 }[sp.cl] || 0);
+    if (k === "tm") return (sp.p === "1P" ? 4500 : sp.p === "1P+N" ? 9e3 : 11e3) + (+sp.In >= 25 ? 1e3 : 0) + (sp.cv === "D" ? 3e3 : 0);
+    return k === "pl" ? 6e3 : 4500;
+  }
+  const tgCost = (st) => st.parts.reduce((a, p) => a + tgPrice(p.k, p.spec), 0);
+  function tgSpecTxt(k, sp) {
+    if (k === "ig" || k === "tm") return "".concat(sp.p, " \xB7 ").concat(sp.In, " A \xB7 curva ").concat(sp.cv);
+    if (k === "dr") return "".concat(sp.In, " A \xB7 ").concat(sp.s, " mA \xB7 clase ").concat(sp.cl);
+    return "";
+  }
   function tgInit() {
-    if (!S.tg || !S.tg.st) S.tg = { lv: "n1", col: "R", st: {}, done: {} };
-    if (!S.tg.done) S.tg.done = {};
+    if (!S.tg || !S.tg.st || S.tg.v !== 2) S.tg = { v: 2, lv: S.tg && S.tg.lv || "n1", col: "R", st: {}, best: {}, cat: { k: "ig" } };
+    if (!S.tg.best) S.tg.best = {};
+    if (!S.tg.cat) S.tg.cat = { k: "ig" };
     return S.tg;
   }
   function tgSimLv() {
@@ -5356,84 +5390,91 @@ tr.selrow td{background:var(--copper-soft)}
   }
   function tgSt() {
     const T0 = tgInit();
-    return T0.st[T0.lv] || (T0.st[T0.lv] = { wires: [], dev: {} });
+    let st = T0.st[T0.lv];
+    if (!st || !Array.isArray(st.parts)) st = T0.st[T0.lv] = { parts: [], wires: [], t0: 0 };
+    return st;
   }
+  const tgPart = (st, id) => st.parts.find((p) => p.id === id);
   function tgPoles(st, id) {
-    const d = st.dev[id] || {};
-    if (id === "IG") return d.p === "1P" ? 1 : 2;
-    if (id.startsWith("TM")) return d.p === "1P+N" || d.p === "2P" ? 2 : 1;
-    if (id.startsWith("DR")) return 2;
-    return 0;
+    const p = tgPart(st, id);
+    if (!p) return 0;
+    if (p.k === "ig" || p.k === "tm") return p.spec.p === "1P" ? 1 : 2;
+    return p.k === "dr" ? 2 : 0;
   }
   function tgDN(id, lv) {
     if (id === "src") return "Llegada del medidor";
     if (id === "T") return "Tierra (electrodo)";
-    if (id === "IG") return "Interruptor general";
-    if (id === "PIL") return "Luz piloto";
-    if (id === "BPE") return "Barra de tierra";
     if (id === "OE") return "Luz de emergencia";
-    if (id.startsWith("DR")) return "Diferencial " + id;
-    if (id.startsWith("TM")) return "Disyuntor D" + id.slice(2);
-    if (id.startsWith("BN")) return "Barra N" + id.slice(2);
-    if (id.startsWith("O")) return "Salida " + ((lv.circ[+id.slice(1) - 1] || [])[0] || id);
+    if (/^O\d/.test(id)) return "Salida " + ((lv.circ[+id.slice(1) - 1] || [])[0] || id);
+    const pre = id.slice(0, 2), nn = id.slice(2);
+    if (pre === "IG") return "Interruptor general" + (nn !== "1" ? " " + nn : "");
+    if (pre === "DR") return "Diferencial " + id;
+    if (pre === "TM") return "Disyuntor D" + nn;
+    if (pre === "PL") return "Luz piloto" + (nn !== "1" ? " " + nn : "");
+    if (pre === "BN") return "Barra de neutro N" + nn;
+    if (pre === "PE") return "Barra de tierra" + (nn !== "1" ? " " + nn : "");
     return id;
   }
-  function tgLayout(lv, st) {
-    const D = {}, Tm = {}, MW = 52;
-    const dev = (id, x, y, w, h) => D[id] = { id, x, y, w, h };
-    const term = (id, dv, x, y, dir, lab, o) => Tm[id] = Object.assign({ id, dev: dv, x, y, dir, lab }, o || {});
-    const poles = (id, x, y0, y1, labs) => {
-      const n = tgPoles(st, id);
-      for (let p = 1; p <= n; p++) {
-        const x2 = x + MW * (p - 0.5);
-        term(id + ".i" + p, id, x2, y0, "u", labs[0][p - 1], { io: "i", pole: p });
-        term(id + ".o" + p, id, x2, y1, "d", labs[1][p - 1], { io: "o", pole: p });
-      }
-    };
-    dev("src", 24, 82, 104, 80);
-    term("src.L", "src", 50, 174, "d", "L");
-    term("src.N", "src", 102, 174, "d", "N");
-    const ig = tgPoles(st, "IG");
-    dev("IG", 170, 82, MW * ig, 80);
-    poles("IG", 170, 70, 174, ig === 2 ? [["1", "3"], ["2", "4"]] : [["1"], ["2"]]);
-    dev("PIL", 24, 252, MW, 80);
-    term("PIL.a", "PIL", 37, 240, "u", "L");
-    term("PIL.b", "PIL", 63, 240, "u", "N");
-    let x = 24 + MW + 22;
-    for (let j = 1; j <= lv.ndr; j++) {
-      dev("DR" + j, x, 252, MW * 2, 80);
-      poles("DR" + j, x, 240, 344, [["L", "N"], ["L", "N"]]);
-      x += MW * 2 + 22;
+  function tgNewId(st, k) {
+    const pre = TG_K[k].pre;
+    let n = 1;
+    while (st.parts.some((p) => p.id === pre + n)) n++;
+    return pre + n;
+  }
+  function tgOcc(st, skip) {
+    const o = Array.from({ length: TG_RAILS }, () => Array(TG_MODS).fill(null));
+    st.parts.forEach((p) => {
+      if (p.id === skip) return;
+      for (let i = 0; i < tgWd(p.k, p.spec); i++) if (p.m + i < TG_MODS) o[p.r][p.m + i] = p.id;
+    });
+    return o;
+  }
+  function tgFit(st, r, m, w, skip) {
+    const o = tgOcc(st, skip);
+    for (let s0 = Math.min(m, TG_MODS - w); s0 >= Math.max(0, m - w + 1); s0--) {
+      let ok = true;
+      for (let i = 0; i < w; i++) if (o[r][s0 + i]) ok = false;
+      if (ok) return s0;
     }
-    const xB = x;
-    x = 24;
-    lv.circ.forEach((c, k) => {
-      const id = "TM" + (k + 1), n = tgPoles(st, id), p = (st.dev[id] || {}).p;
-      dev(id, x, 422, MW * n, 80);
-      poles(id, x, 410, 514, n === 1 ? [["1"], ["2"]] : p === "1P+N" ? [["L", "N"], ["L", "N"]] : [["1", "3"], ["2", "4"]]);
-      x += MW * n + 14;
+    return -1;
+  }
+  function tgLayout(lv, st) {
+    const D = {}, Tm = {}, MW = TG_MW;
+    const term = (id, dv, x2, y, dir, lab, o) => Tm[id] = Object.assign({ id, dev: dv, x: x2, y, dir, lab }, o || {});
+    D.src = { id: "src", x: 20, y: 82, w: 110, h: 80 };
+    term("src.L", "src", 48, 174, "d", "L");
+    term("src.N", "src", 102, 174, "d", "N");
+    st.parts.forEach((p) => {
+      const w = tgWd(p.k, p.spec), x = TG_RX + p.m * MW, ry = TG_RY[p.r];
+      if (p.k === "bn" || p.k === "pe") {
+        D[p.id] = { id: p.id, k: p.k, x: x + 4, y: ry - 7, w: w * MW - 8, h: 14 };
+        term(p.id, p.id, x + w * MW / 2, ry, "b", "", { bar: 1, x0: x + 4, x1: x + w * MW - 4 });
+        return;
+      }
+      D[p.id] = { id: p.id, k: p.k, x: x + 2, y: ry - 40, w: w * MW - 4, h: 80 };
+      if (p.k === "pl") {
+        term(p.id + ".a", p.id, x + 14, ry - 52, "u", "L");
+        term(p.id + ".b", p.id, x + 38, ry - 52, "u", "N");
+        return;
+      }
+      const n = tgPoles(st, p.id), labs = p.k === "dr" || p.spec.p === "1P+N" ? [["L", "N"], ["L", "N"]] : n === 1 ? [["1"], ["2"]] : [["1", "3"], ["2", "4"]];
+      for (let q = 1; q <= n; q++) {
+        const x2 = x + MW * (q - 0.5);
+        term(p.id + ".i" + q, p.id, x2, ry - 52, "u", labs[0][q - 1], { io: "i", pole: q });
+        term(p.id + ".o" + q, p.id, x2, ry + 52, "d", labs[1][q - 1], { io: "o", pole: q });
+      }
     });
-    const xC = x, bars = [];
-    for (let j = 1; j <= lv.ndr + 1; j++) bars.push("BN" + j);
-    bars.push("BPE");
-    x = 24;
-    bars.forEach((id) => {
-      dev(id, x, 573, 170, 14);
-      term(id, id, x + 85, 580, "b", "", { bar: 1, x0: x, x1: x + 170 });
-      x += 188;
-    });
-    const xD = x;
-    dev("T", 24, 672, 74, 54);
-    term("T.PE", "T", 61, 660, "u", "PE");
-    x = 112;
+    D.T = { id: "T", x: 20, y: TG_OY + 12, w: 74, h: 54 };
+    term("T.PE", "T", 57, TG_OY, "u", "PE");
+    let x = 112;
     const outs = lv.circ.map((c, k) => "O" + (k + 1));
     if (lv.emer >= 0) outs.push("OE");
     outs.forEach((id) => {
-      dev(id, x, 672, 124, 54);
-      ["L", "N", "PE"].forEach((q, j) => term(id + "." + q, id, x + 22 + j * 40, 660, "u", q));
+      D[id] = { id, x, y: TG_OY + 12, w: 124, h: 54 };
+      ["L", "N", "PE"].forEach((q, j) => term(id + "." + q, id, x + 22 + j * 40, TG_OY, "u", q));
       x += 136;
     });
-    return { D, T: Tm, W: Math.max(760, xB, xC, xD, x) + 16, H: 748 };
+    return { D, T: Tm, W: Math.max(TG_RX + TG_MODS * MW + 24, x + 10), H: 880 };
   }
   function tgTN(tid, lv, L) {
     const t = L.T[tid];
@@ -5452,13 +5493,13 @@ tr.selrow td{background:var(--copper-soft)}
   const tgOkIn = (r) => COM.filter((x) => x >= r.min && x <= r.max);
   function tgCheck(lv, st) {
     const L = tgLayout(lv, st), { req, g } = tgReqs(lv), errs = [], warns = [], mark = new Set(), wmark = new Set(), seen = new Set();
-    const nm = (t) => tgTN(t, lv, L), D = (id) => st.dev[id] || {};
-    const add = (sev, t, d, w, fx, tm, wm) => {
+    const nm = (t) => tgTN(t, lv, L), of = (k) => st.parts.filter((p) => p.k === k).sort((a, b) => a.r - b.r || a.m - b.m), SP = (id) => (tgPart(st, id) || {}).spec || {};
+    const add = (sev, t, d, w, fx, tm, wm, x) => {
       if (seen.has(t)) return;
       seen.add(t);
-      (sev === "bad" ? errs : warns).push({ t, d, w, fx, sev });
-      (tm || []).forEach((x) => mark.add(x));
-      (wm || []).forEach((x) => wmark.add(x));
+      (sev === "bad" ? errs : warns).push(Object.assign({ t, d, w, fx, sev }, x || {}));
+      (tm || []).forEach((y) => mark.add(y));
+      (wm || []).forEach((y) => wmark.add(y));
     };
     const ws = st.wires.map((w, i) => Object.assign({ i }, w)).filter((w) => L.T[w.a] && L.T[w.b]);
     const adj = {}, deg = {}, link = (a, b, k) => (adj[a] = adj[a] || []).push(Object.assign({ to: b }, k));
@@ -5529,37 +5570,40 @@ tr.selrow td{background:var(--copper-soft)}
       return ch;
     };
     const cL = chainFrom("src.L"), cN = chainFrom("src.N"), revs = new Set();
-    const ig = D("IG");
-    if (!ig.p || !ig.In || !ig.cv) add("bad", "Elige el interruptor general", "Faltan sus polos, su amperaje o su curva.", "Cada equipo del tablero se elige seg\xFAn la instalaci\xF3n que protege.", "Toca el general en el tablero y completa sus datos.", ["IG"]);
+    const igs = of("ig"), drs = of("dr"), tms = of("tm"), pls = of("pl"), ig = igs[0] ? igs[0].spec : {};
+    if (!igs.length) add("bad", "Falta el interruptor general", "No hay interruptor general en el tablero.", "Protege el alimentador y permite cortar toda la casa de una vez en una emergencia.", "Abre \u{1F9F0} Piezas, elige un interruptor general y col\xF3calo en un riel.", [], [], { miss: "ig" });
     else {
-      if (ig.p === "1P") add("bad", "General de 1 polo", "Elegiste un general unipolar: solo corta la fase.", "El general debe cortar fase y neutro a la vez (corte omnipolar, RIC N\xB010). As\xED, al bajarlo, nada queda unido a la red.", "Usa un general de 2 polos.", ["IG"]);
-      if (+ig.In < g.min) add("bad", "General de ".concat(ig.In, " A: es chico"), "Potencia instalada ".concat(n0(g.Pi), " W → demanda ").concat(n0(g.Pd), " W (RIC N\xB003) = ").concat(nf(g.Id, 1), " A. M\xEDnimo ").concat(g.min, " A, y nunca menos de 25 A en una vivienda."), "Si es chico, corta cuando la casa usa varios equipos a la vez.", "Usa ".concat(g.min, " A."), ["IG"]);
-      else if (+ig.In > g.max) add("bad", "General de ".concat(ig.In, " A para un alimentador de ").concat(sStr(lv.alimS), " mm\xB2"), "El alimentador soporta ".concat(g.max, " A (Iz) y el general deja pasar ").concat(ig.In, " A."), "El general tambi\xE9n protege el alimentador: debe cumplirse In ≤ Iz, o el cable se recalienta sin que nada corte.", "Usa ".concat(COM.filter((x) => x >= g.min && x <= g.max).join(" o ") || g.min, " A."), ["IG"]);
-      if (ig.cv !== "C") add("warn", "General curva ".concat(ig.cv), "Lo habitual para el general de una vivienda es curva C.", ig.cv === "B" ? "Con curva B, el arranque de varios equipos a la vez puede hacerlo disparar." : "La curva D es para motores grandes: tarda m\xE1s en cortar un cortocircuito.", "Usa curva C.", ["IG"]);
+      const id = igs[0].id, X = { spec: 1, dev: id };
+      if (igs.length > 1) add("bad", "Hay ".concat(igs.length, " interruptores generales"), "Un tablero de vivienda lleva un solo interruptor general.", "Con dos, ninguno corta toda la casa y en una emergencia no se sabe cu\xE1l bajar.", "Quita los que sobran.", igs.slice(1).map((p) => p.id));
+      if (ig.p === "1P") add("bad", "General de 1 polo", "Elegiste un general unipolar: solo corta la fase.", "El general debe cortar fase y neutro a la vez (corte omnipolar, RIC N\xB010). As\xED, al bajarlo, nada queda unido a la red.", "T\xF3calo y c\xE1mbialo a 2 polos.", [id], [], X);
+      if (+ig.In < g.min) add("bad", "General de ".concat(ig.In, " A: es chico"), "Potencia instalada ".concat(n0(g.Pi), " W → demanda ").concat(n0(g.Pd), " W (RIC N\xB003) = ").concat(nf(g.Id, 1), " A. M\xEDnimo ").concat(g.min, " A, y nunca menos de 25 A en una vivienda."), "Si es chico, corta cuando la casa usa varios equipos a la vez.", "T\xF3calo y usa ".concat(g.min, " A."), [id], [], X);
+      else if (+ig.In > g.max) add("bad", "General de ".concat(ig.In, " A para un alimentador de ").concat(sStr(lv.alimS), " mm\xB2"), "El alimentador soporta ".concat(g.max, " A (Iz) y el general deja pasar ").concat(ig.In, " A."), "El general tambi\xE9n protege el alimentador: debe cumplirse In ≤ Iz, o el cable se recalienta sin que nada corte.", "T\xF3calo y usa ".concat(COM.filter((x) => x >= g.min && x <= g.max).join(" o ") || g.min, " A."), [id], [], X);
+      if (ig.cv !== "C") add("warn", "General curva ".concat(ig.cv), "Lo habitual para el general de una vivienda es curva C.", ig.cv === "B" ? "Con curva B, el arranque de varios equipos a la vez puede hacerlo disparar." : "La curva D es para motores grandes: tarda m\xE1s en cortar un cortocircuito.", "T\xF3calo y usa curva C.", [id], [], X);
     }
-    for (let j = 1; j <= lv.ndr; j++) {
-      const id = "DR" + j, d = D(id);
-      if (!d.In || !d.s || !d.cl) {
-        add("bad", "Elige el diferencial ".concat(id), "Faltan su amperaje, su sensibilidad o su clase.", "El diferencial protege a las personas: hay que elegirlo bien.", "Toca ".concat(id, " en el tablero."), [id]);
-        continue;
-      }
-      if (+d.s > 30) add("bad", "".concat(id, " de ").concat(d.s, " mA"), "Un diferencial de ".concat(d.s, " mA solo protege contra incendio."), "Sobre unos 30 mA a trav\xE9s del cuerpo hay riesgo de paro card\xEDaco. En viviendas se exige 30 mA (RIC N\xB010, 5.1.3.5).", "Usa 30 mA.", [id]);
-      if (d.cl === "AC") add("bad", "".concat(id, " clase AC"), "La clase AC solo detecta fugas de corriente alterna pura.", "Computadores, cargadores y equipos inverter producen fugas pulsantes que un AC no detecta bien (RIC N\xB005).", "Usa clase A (o F o B si hay equipos inverter, cargador de auto o paneles).", [id]);
-      if (ig.In && +d.In < +ig.In) add("bad", "".concat(id, " de ").concat(d.In, " A con general de ").concat(ig.In, " A"), "El diferencial (".concat(d.In, " A) es menor que el general que lo antecede (").concat(ig.In, " A)."), "El diferencial no se protege solo contra sobrecarga: el autom\xE1tico que lo antecede no puede ser mayor que su calibre (RIC N\xB002).", "Usa ".concat([25, 40, 63].find((x) => x >= +ig.In) || 63, " A o m\xE1s."), [id]);
-    }
+    if (!drs.length) add("bad", "Falta el diferencial", "No hay ning\xFAn diferencial en el tablero.", "RIC N\xB010: todos los circuitos de una vivienda llevan diferencial de 30 mA, que protege a las personas de una descarga.", "Abre \u{1F9F0} Piezas y coloca al menos un diferencial (m\xE1ximo 3 circuitos por cada uno).", [], [], { miss: "dr" });
+    drs.forEach((p) => {
+      const id = p.id, d = p.spec, X = { spec: 1, dev: id };
+      if (+d.s > 30) add("bad", "".concat(id, " de ").concat(d.s, " mA"), "Un diferencial de ".concat(d.s, " mA solo protege contra incendio."), "Sobre unos 30 mA a trav\xE9s del cuerpo hay riesgo de paro card\xEDaco. En viviendas se exige 30 mA (RIC N\xB010, 5.1.3.5).", "T\xF3calo y usa 30 mA.", [id], [], X);
+      if (d.cl === "AC") add("bad", "".concat(id, " clase AC"), "La clase AC solo detecta fugas de corriente alterna pura.", "Computadores, cargadores y equipos inverter producen fugas pulsantes que un AC no detecta bien (RIC N\xB005).", "T\xF3calo y usa clase A (o F o B si hay inverter, cargador de auto o paneles).", [id], [], X);
+      else if (d.cl === "B") add("warn", "".concat(id, " clase B"), "La clase B es para fugas de corriente continua (cargador de auto, paneles solares).", "Funciona, pero cuesta varias veces m\xE1s que una clase A y esta casa no lo necesita.", "Usa clase A.", [id], [], X);
+      if (igs.length && +d.In < +ig.In) add("bad", "".concat(id, " de ").concat(d.In, " A con general de ").concat(ig.In, " A"), "El diferencial (".concat(d.In, " A) es menor que el general que lo antecede (").concat(ig.In, " A)."), "El diferencial no se protege solo contra sobrecarga: el autom\xE1tico que lo antecede no puede ser mayor que su calibre (RIC N\xB002).", "T\xF3calo y usa ".concat([25, 40, 63].find((x) => x >= +ig.In) || 63, " A o m\xE1s."), [id], [], X);
+    });
     if (!conn("src.L") && !conn("src.N")) add("bad", "El tablero no recibe energ\xEDa", "La llegada del medidor (L y N) no est\xE1 conectada.", "Todo parte en la llegada: la fase y el neutro del alimentador entran por arriba del general.", "Une L de la llegada con el borne 1 del general y N con el borne 3.", ["src.L", "src.N"]);
     else if (!conn("src.L") || !conn("src.N")) add("bad", "Falta conectar ".concat(conn("src.L") ? "el neutro" : "la fase", " de la llegada"), "La llegada tiene un solo conductor conectado.", "Sin fase y neutro no hay tensi\xF3n en el tablero.", "Conecta los dos bornes de la llegada al general.", [conn("src.L") ? "src.N" : "src.L"]);
-    const noIG = (ch) => ch && !ch.some((c) => c.d === "IG");
-    const pa = sig["PIL.a"], pb = sig["PIL.b"];
+    const noIG = (ch) => ch && !ch.some((c) => c.d.startsWith("IG"));
     let pil = false;
-    if (!conn("PIL.a") && !conn("PIL.b")) add("bad", "Luz piloto sin conectar", "La luz piloto indica que el tablero tiene tensi\xF3n.", "Permite ver de un vistazo si llega energ\xEDa al tablero, sin abrirlo ni medir.", "Une su borne L con la salida de fase del general y su borne N con la salida de neutro.", ["PIL.a", "PIL.b"]);
-    else if (!(one(pa, "L") && one(pb, "N") || one(pa, "N") && one(pb, "L"))) add("bad", "La luz piloto no enciende", "Le llega ".concat(sg(pa), " por un borne y ").concat(sg(pb), " por el otro."), "Una ampolleta necesita fase por un borne y neutro por el otro.", "Une un borne con la fase y el otro con el neutro, despu\xE9s del general.", ["PIL.a", "PIL.b"]);
+    if (!pls.length) add("bad", "Falta la luz piloto", "La orden de trabajo pide una luz piloto en el tablero.", "Permite ver de un vistazo si llega energ\xEDa al tablero, sin abrirlo ni medir.", "Abre \u{1F9F0} Piezas y coloca una luz piloto.", [], [], { miss: "pl" });
     else {
-      pil = !hasShort;
-      const pL = one(pa, "L") ? "PIL.a" : "PIL.b";
-      (cL[pL] || []).forEach((c) => c.rev && revs.add(c.d));
-      if (noIG(cL[pL])) add("warn", "Luz piloto antes del general", "La piloto toma la fase antes del interruptor general.", "Debe ir despu\xE9s del general: as\xED se apaga al bajarlo y muestra si el tablero qued\xF3 sin tensi\xF3n.", "Alim\xE9ntala desde la salida (abajo) del general.", ["PIL.a", "PIL.b"]);
-      else if (pL === "PIL.b") add("warn", "Luz piloto con L y N cruzados", "La fase lleg\xF3 al borne marcado N.", "La ampolleta enciende igual, pero se respeta lo rotulado para no confundir a quien trabaje despu\xE9s.", "Cruza los dos cables de la piloto.", ["PIL.a", "PIL.b"]);
+      const pid = pls[0].id, ta = pid + ".a", tb = pid + ".b", pa = sig[ta], pb = sig[tb];
+      if (!conn(ta) && !conn(tb)) add("bad", "Luz piloto sin conectar", "La luz piloto no tiene cables.", "Permite ver de un vistazo si llega energ\xEDa al tablero, sin abrirlo ni medir.", "Une su borne L con la salida de fase del general y su borne N con la salida de neutro.", [ta, tb]);
+      else if (!(one(pa, "L") && one(pb, "N") || one(pa, "N") && one(pb, "L"))) add("bad", "La luz piloto no enciende", "Le llega ".concat(sg(pa), " por un borne y ").concat(sg(pb), " por el otro."), "Una ampolleta necesita fase por un borne y neutro por el otro.", "Une un borne con la fase y el otro con el neutro, despu\xE9s del general.", [ta, tb]);
+      else {
+        pil = !hasShort;
+        const pL = one(pa, "L") ? ta : tb;
+        (cL[pL] || []).forEach((c) => c.rev && revs.add(c.d));
+        if (noIG(cL[pL])) add("warn", "Luz piloto antes del general", "La piloto toma la fase antes del interruptor general.", "Debe ir despu\xE9s del general: as\xED se apaga al bajarlo y muestra si el tablero qued\xF3 sin tensi\xF3n.", "Alim\xE9ntala desde la salida (abajo) del general.", [ta, tb]);
+        else if (pL === tb) add("warn", "Luz piloto con L y N cruzados", "La fase lleg\xF3 al borne marcado N.", "La ampolleta enciende igual, pero se respeta lo rotulado para no confundir a quien trabaje despu\xE9s.", "Cruza los dos cables de la piloto.", [ta, tb]);
+      }
     }
     const outCheck = (o, nmO) => {
       const tL = sig[o + ".L"], tN = sig[o + ".N"], tP = sig[o + ".PE"], r = { tm: null, dr: null, works: false, ok: false, nTrip: null };
@@ -5571,40 +5615,40 @@ tr.selrow td{background:var(--copper-soft)}
       if (!tL) add("bad", "".concat(nmO, ": no le llega la fase"), "El borne L no est\xE1 unido con la salida de un disyuntor.", "Sin fase el circuito no funciona.", "Une la salida (abajo) de su disyuntor con el borne L.", [o + ".L"]);
       else if (!one(tL, "L")) add("bad", "".concat(nmO, ": al borne L le llega ").concat(sg(tL)), "Por el conductor de fase del circuito llega otra cosa.", tL.has("N") ? "Fase y neutro invertidos (polaridad cambiada): los interruptores cortar\xEDan el neutro y los equipos quedar\xEDan con fase aunque est\xE9n apagados." : "La tierra nunca se usa como conductor activo.", "Revisa de d\xF3nde viene el cable del borne L.", [o + ".L"]);
       else {
-        const ch = cL[o + ".L"] || [], tms = ch.filter((c) => c.d.startsWith("TM")), drs = ch.filter((c) => c.d.startsWith("DR"));
+        const ch = cL[o + ".L"] || [], tmc = ch.filter((c) => c.d.startsWith("TM")), drc = ch.filter((c) => c.d.startsWith("DR"));
         ch.forEach((c) => c.rev && revs.add(c.d));
         okL = true;
         if (noIG(ch)) add("bad", "".concat(nmO, ": la fase se salta el general"), "La fase llega a la salida sin pasar por el interruptor general.", "Al bajar el general este circuito seguir\xEDa con tensi\xF3n: quien trabaje en \xE9l puede electrocutarse.", "Toma la fase desde la salida (abajo) del general.", [o + ".L"]);
-        if (!tms.length) {
+        if (!tmc.length) {
           okL = false;
           add("bad", "".concat(nmO, ": la fase no pasa por un disyuntor"), "La fase llega a la salida sin pasar por un disyuntor (termomagn\xE9tico).", "El disyuntor protege el cable del circuito contra sobrecarga y cortocircuito. Sin \xE9l, una falla quema el cable.", "Pasa la fase por la entrada (arriba) y la salida (abajo) de un disyuntor.", [o + ".L"]);
-        } else tm = tms[tms.length - 1];
-        if (tms.length > 1) add("warn", "".concat(nmO, ": dos disyuntores en serie"), "La fase pasa por ".concat(tms.map((c) => tgDN(c.d, lv)).join(" y "), "."), "Cada circuito lleva un solo disyuntor; dos en serie no protegen mejor y confunden.", "Alimenta el disyuntor directo desde el diferencial.", [o + ".L"]);
-        if (!drs.length) {
+        } else tm = tmc[tmc.length - 1];
+        if (tmc.length > 1) add("warn", "".concat(nmO, ": dos disyuntores en serie"), "La fase pasa por ".concat(tmc.map((c) => tgDN(c.d, lv)).join(" y "), "."), "Cada circuito lleva un solo disyuntor; dos en serie no protegen mejor y confunden.", "Alimenta el disyuntor directo desde el diferencial.", [o + ".L"]);
+        if (!drc.length) {
           okL = false;
           add("bad", "".concat(nmO, ": sin diferencial"), "La fase no pasa por ning\xFAn diferencial.", "RIC N\xB010: todos los circuitos de una vivienda llevan diferencial de 30 mA, que protege a las personas de una descarga.", "Alimenta su disyuntor desde la salida (abajo) de un diferencial.", [o + ".L"]);
-        } else dr = drs[0];
+        } else dr = drc[0];
         if (dr && dr.p === 2) add("warn", "".concat(dr.d, ": fase por el polo N"), "La fase pasa por el polo marcado N de ".concat(dr.d, "."), "Funciona, pero el borne N debe llevar el neutro: as\xED se respeta lo rotulado y nadie se confunde despu\xE9s.", "Cruza los cables: fase al polo L y neutro al polo N.", [dr.d + ".i2", dr.d + ".o2"]);
-        if (tm && tm.p === 2 && D(tm.d).p === "1P+N") add("warn", "".concat(tgDN(tm.d, lv), ": fase por el polo N"), "La fase pasa por el polo N del disyuntor 1P+N.", "En un 1P+N solo el polo de fase tiene protecci\xF3n t\xE9rmica y magn\xE9tica: por el polo N no se detecta la sobrecarga.", "Pasa la fase por el polo L.", [tm.d + ".i2", tm.d + ".o2"]);
+        if (tm && tm.p === 2 && SP(tm.d).p === "1P+N") add("warn", "".concat(tgDN(tm.d, lv), ": fase por el polo N"), "La fase pasa por el polo N del disyuntor 1P+N.", "En un 1P+N solo el polo de fase tiene protecci\xF3n t\xE9rmica y magn\xE9tica: por el polo N no se detecta la sobrecarga.", "Pasa la fase por el polo L.", [tm.d + ".i2", tm.d + ".o2"]);
       }
       if (!tN) add("bad", "".concat(nmO, ": no le llega el neutro"), "El borne N no est\xE1 unido al neutro.", "Sin neutro la corriente no puede volver: nada funciona.", "Une el borne N con la barra de neutro de su diferencial.", [o + ".N"]);
       else if (!one(tN, "N")) add("bad", "".concat(nmO, ": al borne N le llega ").concat(sg(tN)), "Por el conductor de neutro llega otra cosa.", tN.has("L") ? "Polaridad cambiada: el neutro quedar\xEDa con tensi\xF3n." : "La tierra nunca se usa como neutro.", "Revisa de d\xF3nde viene el cable del borne N.", [o + ".N"]);
       else {
-        const ch = cN[o + ".N"] || [], drs = ch.filter((c) => c.d.startsWith("DR"));
+        const ch = cN[o + ".N"] || [], drc = ch.filter((c) => c.d.startsWith("DR"));
         ch.forEach((c) => c.rev && revs.add(c.d));
         okN = true;
-        if (dr && !drs.length) {
+        if (dr && !drc.length) {
           okN = false;
           r.nTrip = [dr.d];
           add("bad", "".concat(nmO, ": el neutro no pasa por el diferencial"), "La fase pasa por ".concat(dr.d, ", pero el neutro llega sin pasar por \xE9l (desde la salida del general o una barra que no es la suya)."), "El diferencial compara la corriente que sale por su fase con la que vuelve por su neutro. Si el neutro vuelve por fuera, ve una \xABfuga\xBB y dispara apenas se enciende algo.", "Une el neutro con la salida N de ".concat(dr.d, " o con una barra alimentada solo por ella."), [o + ".N"]);
-        } else if (dr && drs[0].d !== dr.d) {
+        } else if (dr && drc[0].d !== dr.d) {
           okN = false;
-          r.nTrip = [dr.d, drs[0].d];
-          add("bad", "".concat(nmO, ": fase por ").concat(dr.d, " y neutro por ").concat(drs[0].d), "La fase y el neutro del circuito pasan por diferenciales distintos.", "Cada diferencial ve que lo que entra no vuelve: los dos disparan al usar el circuito.", "El neutro debe salir de ".concat(dr.d, "."), [o + ".N"]);
-        } else if (drs[0] && drs[0].p === 1) add("warn", "".concat(drs[0].d, ": neutro por el polo L"), "El neutro pasa por el polo L del diferencial.", "Funciona, pero se respeta lo rotulado: fase por L y neutro por N.", "Cruza los cables del diferencial.", [drs[0].d + ".i1", drs[0].d + ".o1"]);
+          r.nTrip = [dr.d, drc[0].d];
+          add("bad", "".concat(nmO, ": fase por ").concat(dr.d, " y neutro por ").concat(drc[0].d), "La fase y el neutro del circuito pasan por diferenciales distintos.", "Cada diferencial ve que lo que entra no vuelve: los dos disparan al usar el circuito.", "El neutro debe salir de ".concat(dr.d, "."), [o + ".N"]);
+        } else if (drc[0] && drc[0].p === 1) add("warn", "".concat(drc[0].d, ": neutro por el polo L"), "El neutro pasa por el polo L del diferencial.", "Funciona, pero se respeta lo rotulado: fase por L y neutro por N.", "Cruza los cables del diferencial.", [drc[0].d + ".i1", drc[0].d + ".o1"]);
       }
       if (!tP) add("bad", "".concat(nmO, ": sin tierra"), "El borne PE no est\xE1 unido a la barra de tierra.", "Sin tierra, si un equipo tiene una falla de aislaci\xF3n su carcasa queda con tensi\xF3n y nadie lo detecta hasta que alguien la toca (RIC N\xB006).", "Une PE con la barra de tierra usando cable verde/amarillo.", [o + ".PE"]);
-      else if (!one(tP, "PE")) add("bad", "".concat(nmO, ": al borne PE le llega ").concat(sg(tP)), "Por el conductor de tierra llega un activo.", "La carcasa de los equipos quedar\xEDa con tensi\xF3n: muy peligroso.", "La tierra va solo a la barra PE.", [o + ".PE"]);
+      else if (!one(tP, "PE")) add("bad", "".concat(nmO, ": al borne PE le llega ").concat(sg(tP)), "Por el conductor de tierra llega un activo.", "La carcasa de los equipos quedar\xEDa con tensi\xF3n: muy peligroso.", "La tierra va solo a la barra de tierra.", [o + ".PE"]);
       else okP = true;
       r.tm = tm && tm.d;
       r.dr = dr && dr.d;
@@ -5615,24 +5659,19 @@ tr.selrow td{background:var(--copper-soft)}
     const res = req.map((r, k) => {
       const x = outCheck("O" + (k + 1), r.n);
       if (x.tm) {
-        const d = D(x.tm), dn = tgDN(x.tm, lv);
-        if (!d.In || !d.cv) {
-          add("bad", "Elige el ".concat(dn.charAt(0).toLowerCase() + dn.slice(1)), "Faltan su amperaje o su curva (alimenta ".concat(r.n, ")."), "El disyuntor se elige seg\xFAn la carga y el cable del circuito.", "T\xF3calo en el tablero.", [x.tm]);
+        const d = SP(x.tm), dn = tgDN(x.tm, lv), X = { spec: 1, dev: x.tm };
+        if (+d.In < r.min) {
           x.ok = false;
-        } else {
-          if (+d.In < r.min) {
-            x.ok = false;
-            x.over = true;
-            add("bad", "".concat(r.n, ": ").concat(dn, " de ").concat(d.In, " A es chico"), "Carga ".concat(n0(r.P), " W = ").concat(nf(r.I), " A. Se exige In ≥ 1,1 \xD7 I").concat(r.mn ? ", m\xEDnimo ".concat(r.mn, " A para este tipo de circuito,") : "", " y P ≤ 90 % \xD7 V \xD7 In → m\xEDnimo ").concat(r.min, " A."), "Si es chico, corta sin falla cuando el circuito se usa normalmente.", "Usa ".concat(tgOkIn(r).join(" o ") || r.min, " A."), [x.tm]);
-          } else if (+d.In > r.max) {
-            x.ok = false;
-            add("bad", "".concat(r.n, ": ").concat(dn, " de ").concat(d.In, " A para cable de ").concat(sStr(r.S), " mm\xB2"), "El cable soporta ".concat(r.max, " A (Iz) y el disyuntor deja pasar ").concat(d.In, " A."), "El cable se recalentar\xEDa antes de que el disyuntor corte: riesgo de incendio. Debe cumplirse In ≤ Iz.", "Usa ".concat(tgOkIn(r).join(" o ") || "un disyuntor menor", " A."), [x.tm]);
-          }
-          if (d.cv === "D") {
-            x.ok = false;
-            add("bad", "".concat(r.n, ": curva D"), "La curva D (10–20 \xD7 In) es para motores grandes.", "En una vivienda tardar\xEDa demasiado en cortar un cortocircuito en un cable delgado.", "Usa curva ".concat(r.cv, "."), [x.tm]);
-          } else if (d.cv !== r.cv) add("warn", "".concat(r.n, ": curva ").concat(d.cv), r.cv === "C" ? "Circuito con enchufes protegido con curva B." : "Circuito de alumbrado protegido con curva C.", r.cv === "C" ? "Los equipos enchufados tienen picos de arranque de 5 a 10 veces su corriente: la curva B (3–5 \xD7 In) disparar\xEDa sin falla." : "Funciona, pero la curva B corta m\xE1s r\xE1pido y es la recomendada para alumbrado.", "Usa curva ".concat(r.cv, "."), [x.tm]);
+          x.over = true;
+          add("bad", "".concat(r.n, ": ").concat(dn, " de ").concat(d.In, " A es chico"), "Carga ".concat(n0(r.P), " W = ").concat(nf(r.I), " A. Se exige In ≥ 1,1 \xD7 I").concat(r.mn ? ", m\xEDnimo ".concat(r.mn, " A para este tipo de circuito,") : "", " y P ≤ 90 % \xD7 V \xD7 In → m\xEDnimo ").concat(r.min, " A."), "Si es chico, corta sin falla cuando el circuito se usa normalmente.", "T\xF3calo y usa ".concat(tgOkIn(r).join(" o ") || r.min, " A."), [x.tm], [], X);
+        } else if (+d.In > r.max) {
+          x.ok = false;
+          add("bad", "".concat(r.n, ": ").concat(dn, " de ").concat(d.In, " A para cable de ").concat(sStr(r.S), " mm\xB2"), "El cable soporta ".concat(r.max, " A (Iz) y el disyuntor deja pasar ").concat(d.In, " A."), "El cable se recalentar\xEDa antes de que el disyuntor corte: riesgo de incendio. Debe cumplirse In ≤ Iz.", "T\xF3calo y usa ".concat(tgOkIn(r).join(" o ") || "un disyuntor menor", " A."), [x.tm], [], X);
         }
+        if (d.cv === "D") {
+          x.ok = false;
+          add("bad", "".concat(r.n, ": curva D"), "La curva D (10–20 \xD7 In) es para motores grandes.", "En una vivienda tardar\xEDa demasiado en cortar un cortocircuito en un cable delgado.", "T\xF3calo y usa curva ".concat(r.cv, "."), [x.tm], [], X);
+        } else if (d.cv !== r.cv) add("warn", "".concat(r.n, ": curva ").concat(d.cv), r.cv === "C" ? "Circuito con enchufes protegido con curva B." : "Circuito de alumbrado protegido con curva C.", r.cv === "C" ? "Los equipos enchufados tienen picos de arranque de 5 a 10 veces su corriente: la curva B (3–5 \xD7 In) disparar\xEDa sin falla." : "Funciona, pero la curva B corta m\xE1s r\xE1pido y es la recomendada para alumbrado.", "T\xF3calo y usa curva ".concat(r.cv, "."), [x.tm], [], X);
       }
       return x;
     });
@@ -5641,15 +5680,24 @@ tr.selrow td{background:var(--copper-soft)}
       const k2 = tmOf.indexOf(t);
       if (t && k2 !== k) add("bad", "".concat(tgDN(t, lv), " alimenta dos circuitos"), "".concat(req[k2].n, " y ").concat(req[k].n, " salen del mismo disyuntor."), "Cada circuito lleva su propio disyuntor: as\xED una falla deja sin energ\xEDa solo esa parte y cada cable queda protegido seg\xFAn su secci\xF3n.", "Usa un disyuntor distinto para cada salida.", [t]);
     });
-    for (let j = 1; j <= lv.ndr; j++) {
-      const id = "DR" + j, n = drOf.filter((x) => x === id).length;
-      if (n > 3) add("bad", "".concat(id, " protege ").concat(n, " circuitos"), "Un diferencial protege como m\xE1ximo 3 circuitos.", "Las peque\xF1as fugas normales de cada circuito se suman y har\xEDan disparar el diferencial sin falla (RIC N\xB010, 5.1.3.7).", "Pasa algunos circuitos al otro diferencial.", [id]);
-      else if (!n && ws.length) add("warn", "".concat(id, " no protege ning\xFAn circuito"), "Ninguna salida pasa por ".concat(id, "."), "Reparte los circuitos entre los diferenciales: as\xED una fuga deja sin luz solo una parte de la casa.", "Alimenta algunos disyuntores desde ".concat(id, "."), [id]);
-    }
-    lv.circ.forEach((c, k) => {
-      const id = "TM" + (k + 1);
-      if (!tmOf.includes(id)) add("warn", "".concat(tgDN(id, lv), " no alimenta ninguna salida"), "Su salida no llega a ning\xFAn circuito.", "Un disyuntor sin circuito ocupa lugar y confunde al rotular.", "Usa cada disyuntor para un circuito.", [id]);
+    drs.forEach((p) => {
+      const n = drOf.filter((x) => x === p.id).length;
+      if (n > 3) add("bad", "".concat(p.id, " protege ").concat(n, " circuitos"), "Un diferencial protege como m\xE1ximo 3 circuitos.", "Las peque\xF1as fugas normales de cada circuito se suman y har\xEDan disparar el diferencial sin falla (RIC N\xB010, 5.1.3.7).", "Coloca otro diferencial y pasa algunos circuitos a \xE9l.", [p.id]);
+      else if (!n && ws.length) add("warn", "".concat(p.id, " no protege ning\xFAn circuito"), "Ninguna salida pasa por ".concat(p.id, "."), "Una pieza que no se usa es dinero perdido; si sobra, qu\xEDtala.", "\xDAsalo o qu\xEDtalo.", [p.id]);
     });
+    tms.forEach((p) => {
+      if (!tmOf.includes(p.id) && ws.length) add("warn", "".concat(tgDN(p.id, lv), " no alimenta ninguna salida"), "Su salida no llega a ning\xFAn circuito.", "Un disyuntor sin circuito ocupa lugar, cuesta dinero y confunde al rotular.", "\xDAsalo para un circuito o qu\xEDtalo.", [p.id]);
+    });
+    st.parts.filter((p) => p.k === "bn" || p.k === "pe").forEach((p) => {
+      const s0 = sig[p.id];
+      if (!conn(p.id)) {
+        if (ws.length && (p.k === "bn" || !of("pe").some((q) => conn(q.id)))) add("warn", "".concat(tgDN(p.id, lv), " sin usar"), "La barra no tiene cables.", "Una pieza que no se usa es dinero perdido.", "\xDAsala o qu\xEDtala.", [p.id]);
+        if (p.k === "bn") return;
+      }
+      if (p.k === "bn" && s0 && s0.size && !s0.has("N")) add("bad", "".concat(tgDN(p.id, lv), " con ").concat(sg(s0)), "La barra de neutro (aislada, blanca) solo debe llevar neutro.", s0.has("L") ? "Con fase, todo lo que se conecte a ella queda con tensi\xF3n." : "La tierra va en su propia barra verde: mezclar usos confunde y es peligroso.", "Usa esta barra solo para los neutros.", [p.id]);
+      if (p.k === "pe" && s0 && s0.size && !s0.has("PE")) add("bad", "".concat(tgDN(p.id, lv), " con ").concat(sg(s0)), "La barra de tierra solo lleva tierra, unida al electrodo.", "Si la barra verde lleva un activo, quien trabaje despu\xE9s la tocar\xE1 creyendo que es tierra.", "Une la barra de tierra con el conductor del electrodo y usa otra barra para el neutro.", [p.id]);
+    });
+    if (of("pe").length === 0) add("bad", "Falta la barra de tierra", "No hay barra de tierra en el tablero.", "La tierra del electrodo se reparte a cada circuito desde una barra de tierra (RIC N\xB006).", "Abre \u{1F9F0} Piezas y coloca una barra de tierra.", [], [], { miss: "pe" });
     let em = null;
     if (lv.emer >= 0) {
       em = outCheck("OE", "Luz de emergencia");
@@ -5670,10 +5718,10 @@ tr.selrow td{background:var(--copper-soft)}
     Object.keys(badCol).forEach((k) => {
       const arr = badCol[k];
       if (!arr.length) return;
-      add("bad", "".concat(arr.length, " cable").concat(arr.length > 1 ? "s" : "", " de ").concat(TG_SIG[k], " con color equivocado"), arr.slice(0, 3).map((w) => "".concat(nm(w.a), " → ").concat(nm(w.b), ": ").concat(TG_COL[w.c][0].toLowerCase())).join(" \xB7 ") + (arr.length > 3 ? " …" : ""), "Los colores dicen qu\xE9 es cada cable sin medir (RIC N\xB004, 5.32): fases azul, negro o rojo; neutro blanco; tierra verde o verde/amarillo. Un color cambiado enga\xF1a a quien trabaje despu\xE9s.", k === "L" ? "Usa rojo, negro o azul para la fase." : k === "N" ? "Usa blanco para el neutro." : "Usa verde/amarillo para la tierra.", [], arr.map((w) => w.i));
+      add("bad", "".concat(arr.length, " cable").concat(arr.length > 1 ? "s" : "", " de ").concat(TG_SIG[k], " con color equivocado"), arr.slice(0, 3).map((w) => "".concat(nm(w.a), " → ").concat(nm(w.b), ": ").concat(TG_COL[w.c][0].toLowerCase())).join(" \xB7 ") + (arr.length > 3 ? " …" : ""), "Los colores dicen qu\xE9 es cada cable sin medir (RIC N\xB004, 5.32): fases azul, negro o rojo; neutro blanco; tierra verde o verde/amarillo. Un color cambiado enga\xF1a a quien trabaje despu\xE9s.", "Toca el cable y c\xE1mbiale el color: " + (k === "L" ? "rojo, negro o azul para la fase." : k === "N" ? "blanco para el neutro." : "verde/amarillo para la tierra."), [], arr.map((w) => w.i));
     });
     const over = Object.keys(deg).filter((t) => L.T[t] && !L.T[t].bar && deg[t] > (L.T[t].io ? 2 : 1));
-    if (over.length) add("bad", "Demasiados cables en un borne", over.map((t) => "".concat(nm(t), ": ").concat(deg[t], " cables")).join(" \xB7 "), "El borne de un equipo modular aprieta bien hasta 2 conductores; los de llegada, piloto y salidas, 1. Si hay m\xE1s, quedan flojos, se calientan y pueden provocar un incendio.", "Usa una barra de la tabla de distribuci\xF3n o un puente desde otro borne.", over);
+    if (over.length) add("bad", "Demasiados cables en un borne", over.map((t) => "".concat(nm(t), ": ").concat(deg[t], " cables")).join(" \xB7 "), "El borne de un equipo modular aprieta bien hasta 2 conductores; los de llegada, piloto y salidas, 1. Si hay m\xE1s, quedan flojos, se calientan y pueden provocar un incendio.", "Usa una barra o un puente desde otro borne.", over);
     const uf = {}, fnd = (x) => {
       while (uf[x] != null && uf[x] !== x) x = uf[x];
       return x;
@@ -5684,7 +5732,7 @@ tr.selrow td{background:var(--copper-soft)}
     });
     const outsBy = {};
     Object.values(L.T).forEach((t) => {
-      if (t.io === "o" && (t.dev === "IG" || t.dev.startsWith("DR")) && conn(t.id)) (outsBy[fnd(t.id)] = outsBy[fnd(t.id)] || []).push(t);
+      if (t.io === "o" && (t.dev.startsWith("IG") || t.dev.startsWith("DR")) && conn(t.id)) (outsBy[fnd(t.id)] = outsBy[fnd(t.id)] || []).push(t);
     });
     Object.values(outsBy).forEach((arr) => {
       const dv = [...new Set(arr.map((t) => t.dev))];
@@ -5695,13 +5743,15 @@ tr.selrow td{background:var(--copper-soft)}
       }));
     });
     revs.forEach((d) => add("warn", "".concat(tgDN(d, lv), " conectado al rev\xE9s"), "La energ\xEDa le entra por los bornes de abajo.", "La llegada va arriba y las salidas abajo: as\xED, al abrirlo, los bornes de abajo quedan sin tensi\xF3n y el sentido coincide con lo rotulado (algunos diferenciales solo funcionan bien en ese sentido).", "Invierte sus cables: entrada arriba, salida abajo.", [d]));
+    const cost = tgCost(st), budget = tgBudget(lv);
+    if (cost > budget) add("warn", "Te pasaste del presupuesto", "Gastaste ".concat(tgMoney(cost), " y el presupuesto de la obra es ").concat(tgMoney(budget), "."), "En una obra real el cliente paga lo presupuestado: elegir bien, ni de m\xE1s ni de menos, tambi\xE9n es parte del trabajo.", "Revisa piezas que sobran o equipos m\xE1s caros de lo necesario (diferencial clase B, disyuntores 2P donde basta 1P…).", []);
     const energ = [], lit = req.map(() => false), trip = new Set();
     let emOn = false;
     if (!conn("src.L") || !conn("src.N")) energ.push(["warn", "La llegada del medidor no est\xE1 conectada: el tablero queda sin tensi\xF3n."]);
     else if (hasShort) energ.push(["bad", "Al subir el general: \xA1cortocircuito! El general dispara al instante."]);
     else {
       if (leak) {
-        for (let j = 1; j <= lv.ndr; j++) trip.add("DR" + j);
+        drs.forEach((p) => trip.add(p.id));
         energ.push(["bad", "Al subir el general, los diferenciales disparan: hay una uni\xF3n entre ".concat(pairs["L+PE"] ? "fase y tierra" : "neutro y tierra", ".")]);
       }
       res.forEach((x) => (x.nTrip || []).forEach((d) => {
@@ -5726,135 +5776,196 @@ tr.selrow td{background:var(--copper-soft)}
         energ.push(emOn ? ["ok", "Luz de emergencia: carga su bater\xEDa. Si ".concat(tgDN(tmOf[lv.emer] || "", lv), " o ").concat(em.dr, " se abren, enciende sola.")] : ["bad", "Luz de emergencia: no recibe tensi\xF3n."]);
       }
     }
-    return { errs, warns, mark, wmark, lit, pil, emOn, energ, tmOf, drOf, res, em, req, g };
+    return { errs, warns, mark, wmark, lit, pil, emOn, energ, tmOf, drOf, res, em, req, g, cost, budget, wc: fnd };
   }
-  function tgSolution(lv, st) {
-    const { req, g } = tgReqs(lv), nd = req.length, ndr = lv.ndr, dev = {}, W = [], w = (a, b, c) => W.push({ a, b, c });
-    const igIn = COM.find((x) => x >= g.min && x <= g.max) || g.min;
-    dev.IG = { p: "2P", In: igIn, cv: "C" };
-    for (let j = 1; j <= ndr; j++) dev["DR" + j] = { In: [25, 40, 63].find((x) => x >= igIn) || 63, s: 30, cl: "A" };
+  function tgRoles(lv, st, A) {
+    const by = (k) => st.parts.filter((p) => p.k === k).sort((a, b) => a.r - b.r || a.m - b.m), req = tgReqs(lv).req, nd = req.length;
+    const ig = by("ig")[0], pl = by("pl")[0], drs = by("dr"), tms = by("tm"), bns = by("bn"), pe = by("pe")[0], miss = [], ndr = Math.max(1, Math.ceil(nd / 3));
+    const n2 = (n, a, b) => n === 1 ? a : n + " " + b;
+    if (!ig) miss.push(["ig", "el interruptor general"]);
+    if (!pl) miss.push(["pl", "la luz piloto"]);
+    if (drs.length < ndr) miss.push(["dr", n2(ndr - drs.length, "un diferencial", "diferenciales") + " (m\xE1ximo 3 circuitos por diferencial)"]);
+    if (tms.length < nd) miss.push(["tm", n2(nd - tms.length, "un disyuntor", "disyuntores") + " (uno por circuito)"]);
+    const drOf = [], tmOf = [], cnt = {};
     req.forEach((r, k) => {
-      dev["TM" + (k + 1)] = { p: (st.dev["TM" + (k + 1)] || {}).p || "1P", In: r.min, cv: r.cv };
+      const d = A && A.drOf[k];
+      if (d && drs.some((x) => x.id === d) && (cnt[d] || 0) < 3) {
+        drOf[k] = d;
+        cnt[d] = (cnt[d] || 0) + 1;
+      }
     });
-    const drk = (k) => Math.floor(k * ndr / nd) + 1, P2 = (k) => dev["TM" + (k + 1)].p !== "1P";
-    w("src.L", "IG.i1", "R");
-    w("src.N", "IG.i2", "W");
-    w("IG.o1", "PIL.a", "R");
-    w("IG.o2", "PIL.b", "W");
-    for (let j = 1; j <= ndr; j++) {
-      const pv = j === 1 ? "IG.o" : "DR" + (j - 1) + ".i";
-      w(pv + "1", "DR" + j + ".i1", "R");
-      w(pv + "2", "DR" + j + ".i2", "W");
+    req.forEach((r, k) => {
+      if (drOf[k]) return;
+      const c = [drs[Math.floor(k * drs.length / nd)]].concat(drs).find((x) => x && (cnt[x.id] || 0) < 3);
+      if (c) {
+        drOf[k] = c.id;
+        cnt[c.id] = (cnt[c.id] || 0) + 1;
+      }
+    });
+    const usedT = new Set();
+    req.forEach((r, k) => {
+      const t = A && A.tmOf[k];
+      if (t && !usedT.has(t) && tms.some((x) => x.id === t)) {
+        tmOf[k] = t;
+        usedT.add(t);
+      }
+    });
+    req.forEach((r, k) => {
+      if (tmOf[k]) return;
+      const t = tms.find((x) => !usedT.has(x.id));
+      if (t) {
+        tmOf[k] = t.id;
+        usedT.add(t.id);
+      }
+    });
+    const usedDR = drs.filter((d) => drOf.includes(d.id)).map((d) => d.id), bnOf = {}, usedB = new Set();
+    usedDR.forEach((d) => {
+      const b = A && bns.find((x) => !usedB.has(x.id) && A.wc(d + ".o2") === A.wc(x.id));
+      if (b) {
+        bnOf[d] = b.id;
+        usedB.add(b.id);
+      }
+    });
+    usedDR.forEach((d) => {
+      if (bnOf[d]) return;
+      const b = bns.find((x) => !usedB.has(x.id));
+      if (b) {
+        bnOf[d] = b.id;
+        usedB.add(b.id);
+      }
+    });
+    const nb = Math.max(usedDR.length, drs.length ? 0 : ndr) - bns.length;
+    if (nb > 0) miss.push(["bn", n2(nb, "una barra de neutro", "barras de neutro") + " (una por diferencial)"]);
+    if (!pe) miss.push(["pe", "la barra de tierra"]);
+    return { ig: ig && ig.id, pl: pl && pl.id, pe: pe && pe.id, drOf, tmOf, bnOf, usedDR, miss };
+  }
+  function tgRoleWires(lv, st, R) {
+    const W = [], w = (a, b, c) => {
+      if (a && b) W.push({ a, b, c });
+    }, req = tgReqs(lv).req, P = (id) => tgPoles(st, id);
+    const oL = R.ig ? R.ig + ".o1" : null, oN = R.ig && P(R.ig) === 2 ? R.ig + ".o2" : null;
+    if (R.ig) {
+      w("src.L", R.ig + ".i1", "R");
+      if (oN) w("src.N", R.ig + ".i2", "W");
     }
-    w("T.PE", "BPE", "G");
-    for (let j = 1; j <= ndr; j++) {
+    if (R.pl && oL) {
+      w(oL, R.pl + ".a", "R");
+      w(oN, R.pl + ".b", "W");
+    }
+    R.usedDR.forEach((d, j) => {
+      const pv = R.usedDR[j - 1];
+      w(j ? pv + ".i1" : oL, d + ".i1", "R");
+      w(j ? pv + ".i2" : oN, d + ".i2", "W");
+    });
+    if (R.pe) w("T.PE", R.pe, "G");
+    R.usedDR.forEach((d) => {
       let pv = null;
       req.forEach((r, k) => {
-        if (drk(k) !== j) return;
-        const t = "TM" + (k + 1);
-        w(pv ? pv + ".i1" : "DR" + j + ".o1", t + ".i1", "R");
+        const t = R.tmOf[k];
+        if (R.drOf[k] !== d || !t) return;
+        w(pv ? pv + ".i1" : d + ".o1", t + ".i1", "R");
         pv = t;
       });
-      w("DR" + j + ".o2", "BN" + j, "W");
-    }
+      w(d + ".o2", R.bnOf[d], "W");
+    });
     req.forEach((r, k) => {
-      const t = "TM" + (k + 1), o = "O" + (k + 1);
-      w(t + ".o1", o + ".L", "R");
-      if (P2(k)) {
-        w("BN" + drk(k), t + ".i2", "W");
+      const t = R.tmOf[k], o = "O" + (k + 1), bn = R.bnOf[R.drOf[k]];
+      if (t) w(t + ".o1", o + ".L", "R");
+      if (t && P(t) === 2) {
+        w(bn, t + ".i2", "W");
         w(t + ".o2", o + ".N", "W");
-      } else w("BN" + drk(k), o + ".N", "W");
-      w("BPE", o + ".PE", "G");
+      } else w(bn, o + ".N", "W");
+      w(R.pe, o + ".PE", "G");
     });
     if (lv.emer >= 0) {
-      const k = lv.emer, t = "TM" + (k + 1);
-      w(t + ".o1", "OE.L", "R");
-      w(P2(k) ? t + ".o2" : "BN" + drk(k), "OE.N", "W");
-      w("BPE", "OE.PE", "G");
+      const t = R.tmOf[lv.emer], bn = R.bnOf[R.drOf[lv.emer]];
+      if (t) w(t + ".o1", "OE.L", "R");
+      w(t && P(t) === 2 ? t + ".o2" : bn, "OE.N", "W");
+      w(R.pe, "OE.PE", "G");
     }
-    return { dev, wires: W };
+    return W;
+  }
+  function tgFresh(lv, tmP) {
+    const { req, g } = tgReqs(lv), nd = req.length, ndr = Math.max(lv.ndr, Math.ceil(nd / 3)), igIn = COM.find((x) => x >= g.min && x <= g.max) || g.min, drIn2 = [25, 40, 63].find((x) => x >= igIn) || 63;
+    const items = [[0, "ig", { p: "2P", In: igIn, cv: "C" }], [0, "pl", {}]];
+    for (let j = 0; j < ndr; j++) items.push([0, "dr", { In: drIn2, s: 30, cl: "A" }]);
+    req.forEach((r) => items.push([1, "tm", { p: tmP || "1P", In: r.min, cv: r.cv }]));
+    for (let j = 0; j < ndr; j++) items.push([2, "bn", {}]);
+    items.push([2, "pe", {}]);
+    const st = { parts: [], wires: [], t0: 0 }, cur2 = [0, 0, 0, 0];
+    items.forEach(([r0, k, sp]) => {
+      const w = tgWd(k, sp);
+      let r = Math.max(r0, cur2.findIndex((c, i) => i >= r0 && c + w <= TG_MODS));
+      if (r < r0) r = TG_RAILS - 1;
+      st.parts.push({ id: tgNewId(st, k), k, r, m: cur2[r], spec: Object.assign({}, sp) });
+      cur2[r] += w;
+    });
+    st.wires = tgRoleWires(lv, st, tgRoles(lv, st, null));
+    return st;
+  }
+  function tgBudget(lv) {
+    return Math.ceil(tgCost(tgFresh(lv, "1P")) * 1.25 / 1e3) * 1e3;
   }
   function tgHintOf(lv, st) {
-    const L = tgLayout(lv, st), so = tgSolution(lv, st), D = (id) => st.dev[id] || {};
-    const need = ["IG"].concat(Array.from({ length: lv.ndr }, (_, j) => "DR" + (j + 1)));
-    for (const id of need) {
-      const d = D(id);
-      if (id === "IG" ? !d.p || !d.In || !d.cv : !d.In || !d.s || !d.cl) return { msg: "Pista: primero elige el ".concat(tgDN(id, lv).toLowerCase(), ". Sus opciones quedaron abiertas en \xABDetalle\xBB."), dev: id };
+    const L = tgLayout(lv, st), A = tgCheck(lv, st), R = tgRoles(lv, st, A);
+    if (R.miss.length) return { msg: "Pista: falta colocar ".concat(R.miss[0][1], ". Abre \u{1F9F0} Piezas, elige \xAB").concat(TG_K[R.miss[0][0]].n, "\xBB con sus datos y t\xF3calo en un espacio libre de un riel."), cat: R.miss[0][0] };
+    const se = A.errs.find((e) => e.spec);
+    if (se) return { msg: "Pista: ".concat(se.t, ". ").concat(se.fx), dev: se.dev };
+    for (const w of tgRoleWires(lv, st, R)) {
+      if (A.wc(w.a) !== A.wc(w.b)) return { msg: "Pista: une ".concat(tgTN(w.a, lv, L), " con ").concat(tgTN(w.b, lv, L), " usando cable ").concat(TG_COL[w.c][0].toLowerCase(), " (").concat(TG_COL[w.c][2], "). Los dos quedaron marcados en verde."), t: [w.a, w.b] };
     }
-    const uf = {}, fnd = (x) => {
-      while (uf[x] != null && uf[x] !== x) x = uf[x];
-      return x;
-    };
-    st.wires.forEach((w) => {
-      if (!L.T[w.a] || !L.T[w.b]) return;
-      const a = fnd(w.a), b = fnd(w.b);
-      if (a !== b) uf[a] = b;
-    });
-    for (const w of so.wires) {
-      if (fnd(w.a) !== fnd(w.b)) return { msg: "Pista: une ".concat(tgTN(w.a, lv, L), " con ").concat(tgTN(w.b, lv, L), " usando cable ").concat(TG_COL[w.c][0].toLowerCase(), " (").concat(TG_COL[w.c][2], "). Los dos bornes quedaron marcados en verde."), t: [w.a, w.b] };
-    }
-    for (let k = 0; k < lv.circ.length; k++) {
-      const d = D("TM" + (k + 1));
-      if (!d.In || !d.cv) return { msg: "Pista: falta elegir el amperaje y la curva del ".concat(tgDN("TM" + (k + 1), lv), "."), dev: "TM" + (k + 1) };
-    }
-    return { msg: "Pista: ya est\xE1n todas las conexiones necesarias. Si algo falla, hay un cable de m\xE1s o mal puesto, o un equipo mal elegido: toca \xABComprobar\xBB." };
+    return { msg: A.errs.length ? "Pista: ya est\xE1n las conexiones necesarias, pero hay algo mal puesto o de m\xE1s. Toca \xABComprobar\xBB para ver qu\xE9." : "Pista: \xA1parece listo! Toca \xABComprobar\xBB." };
   }
   function tgSVG(lv, st, A, shown) {
-    const L = tgLayout(lv, st), bad = shown ? A.mark : new Set(), wbad = shown ? A.wmark : new Set(), hint = tgHintT || [];
+    const L = tgLayout(lv, st), bad = shown ? A.mark : new Set(), wbad = shown ? A.wmark : new Set(), hint = tgHintT || [], MW = TG_MW;
     const tx2 = (x, y, t, o) => '<text x="'.concat(x, '" y="').concat(y, '" text-anchor="').concat(o && o.a || "middle", '" font-size="').concat(o && o.s || 13, '" font-weight="').concat(o && o.b ? 700 : 400, '" fill="').concat(o && o.c || "#1d2731", '" pointer-events="none">').concat(esc(t), "</text>");
     let g = '<rect x="6" y="6" width="'.concat(L.W - 12, '" height="').concat(L.H - 12, '" rx="16" fill="#e2e6ea" stroke="#7b848d" stroke-width="4"/>');
-    [122, 292, 462].forEach((y) => {
-      g += '<rect x="16" y="'.concat(y - 9, '" width="').concat(L.W - 32, '" height="18" fill="#b7bec5" stroke="#8d969f"/>');
+    const RL = TG_RX + TG_MODS * MW;
+    TG_RY.forEach((y, r) => {
+      g += '<rect x="'.concat(TG_RX - 10, '" y="').concat(y - 9, '" width="').concat(RL - TG_RX + 20, '" height="18" fill="#b7bec5" stroke="#8d969f"/>');
+      for (let m = 0; m <= TG_MODS; m++) g += '<line x1="'.concat(TG_RX + m * MW, '" y1="').concat(y - 9, '" x2="').concat(TG_RX + m * MW, '" y2="').concat(y + 9, '" stroke="#9aa3ab" stroke-width="1"/>');
+      g += tx2(TG_RX - 13, y + 4, "R" + (r + 1), { a: "end", s: 11, b: 1, c: "#6b7682" });
     });
-    [[170, 40, "1 \xB7 Llegada e interruptor general"], [24, 214, "2 \xB7 Luz piloto y diferenciales"], [24, 386, "3 \xB7 Disyuntores: uno por circuito"], [24, 546, "4 \xB7 Tabla de distribuci\xF3n: barras de neutro y de tierra"], [112, 636, "5 \xB7 Salidas a los circuitos"]].forEach(([x, y, t]) => {
-      g += tx2(x, y, t, { a: "start", s: 13, b: 1, c: "#5b6672" });
-    });
-    const dsum = (id) => {
-      const d = st.dev[id] || {};
-      if (id === "IG") return d.p && d.In && d.cv ? "".concat(d.p, " \xB7 ").concat(d.In, " A \xB7 ").concat(d.cv) : "";
-      if (id.startsWith("DR")) return d.In && d.s && d.cl ? ["".concat(d.In, " A \xB7 ").concat(d.s, " mA"), "clase " + d.cl] : "";
-      return d.In && d.cv ? ["".concat(d.In, " A ").concat(d.cv), d.p || "1P"] : "";
-    };
+    g += tx2(TG_RX + 4, TG_OY - 34, "Salidas a los circuitos (orden de trabajo)", { a: "start", s: 12.5, b: 1, c: "#5b6672" });
     Object.values(L.D).forEach((d) => {
-      const id = d.id, cur2 = tgDev === id, isBad = bad.has(id), st2 = cur2 ? "#e8823a" : isBad ? "#c0392b" : "#4b545d", sw = cur2 || isBad ? 4 : 2, cx = d.x + d.w / 2;
+      const id = d.id, p = tgPart(st, id), cur2 = tgDev === id || tgMove === id, isBad = bad.has(id), stk = cur2 ? "#e8823a" : isBad ? "#c0392b" : "#4b545d", sw = cur2 || isBad ? 4 : 2, cx = d.x + d.w / 2;
       if (id === "src") {
-        g += '<line x1="50" y1="14" x2="50" y2="82" stroke="#D32F2F" stroke-width="7"/><line x1="102" y1="14" x2="102" y2="82" stroke="#bbb" stroke-width="7"/><line x1="102" y1="14" x2="102" y2="82" stroke="#F4F4F4" stroke-width="5"/>';
-        g += '<rect x="'.concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="8" fill="#3b4650"/>') + tx2(cx, 112, "Llegada", { b: 1, c: "#fff", s: 14 }) + tx2(cx, 130, "desde el medidor", { c: "#dfe7ee", s: 11 }) + tx2(cx, 146, "alim. ".concat(sStr(lv.alimS), " mm\xB2"), { c: "#dfe7ee", s: 11 });
+        g += '<line x1="48" y1="14" x2="48" y2="82" stroke="#D32F2F" stroke-width="7"/><line x1="102" y1="14" x2="102" y2="82" stroke="#999" stroke-width="7"/><line x1="102" y1="14" x2="102" y2="82" stroke="#F4F4F4" stroke-width="5"/>';
+        g += '<rect x="'.concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="8" fill="#3b4650"/>') + tx2(cx, 110, "Llegada", { b: 1, c: "#fff", s: 14 }) + tx2(cx, 128, "desde el medidor", { c: "#dfe7ee", s: 11 }) + tx2(cx, 144, "alim. ".concat(sStr(lv.alimS), " mm\xB2"), { c: "#dfe7ee", s: 11 });
         return;
       }
       if (id === "T") {
-        g += '<rect x="'.concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="8" fill="#5c4a32"/>') + tx2(cx, 696, "Tierra", { b: 1, c: "#fff" }) + tx2(cx, 712, "electrodo", { c: "#eadfcf", s: 11 });
+        g += '<rect x="'.concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="8" fill="#5c4a32"/>') + tx2(cx, d.y + 24, "Tierra", { b: 1, c: "#fff" }) + tx2(cx, d.y + 40, "electrodo", { c: "#eadfcf", s: 11 });
         return;
       }
-      if (id.startsWith("BN") || id === "BPE") {
-        const pe = id === "BPE", sel = tgSel === id, hb = hint.includes(id), sk = sel ? "#e8823a" : bad.has(id) ? "#c0392b" : hb ? "#2e7d32" : "#6d7680";
-        g += tx2(d.x + 2, 566, pe ? "Barra de tierra (PE)" : "Barra de neutro N" + id.slice(2), { a: "start", b: 1, s: 12, c: pe ? "#1d6b2f" : "#3d4651" });
-        g += '<g class="tgt" data-tgt="'.concat(id, '" tabindex="0" role="button" aria-label="').concat(esc(tgDN(id, lv)), '"><rect x="').concat(d.x - 4, '" y="').concat(d.y - 12, '" width="').concat(d.w + 8, '" height="').concat(d.h + 24, '" fill="transparent"/><rect x="').concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="3" fill="').concat(pe ? "#2E9E44" : "#f1f1ee", '" stroke="').concat(sk, '" stroke-width="').concat(sel || hb ? 4 : 2, '"/>');
-        for (let i = 0; i < 9; i++) g += '<circle cx="'.concat(d.x + 13 + i * 18, '" cy="580" r="3.4" fill="').concat(pe ? "#cfe9d4" : "#9aa3ad", '"/>');
-        if (pe) for (let i = 0; i < 9; i++) g += '<rect x="'.concat(d.x + 4 + i * 18, '" y="').concat(d.y, '" width="5" height="').concat(d.h, '" fill="#E8C300" opacity=".55"/>');
-        g += "</g>";
-        return;
-      }
-      if (id === "OE" || id.startsWith("O")) {
+      if (/^O/.test(id)) {
         const k = id === "OE" ? -1 : +id.slice(1) - 1, on = shown && (k < 0 ? A.emOn : A.lit[k]), r = k >= 0 ? A.req[k] : null;
-        g += '<rect x="'.concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="7" fill="').concat(k < 0 ? "#eef8ef" : "#fbfbf7", '" stroke="').concat(st2, '" stroke-width="').concat(sw, '"/><rect x="').concat(d.x + 3, '" y="').concat(d.y + 3, '" width="').concat(d.w - 6, '" height="6" rx="3" fill="').concat(on ? "#f2c037" : "#c9cdd1", '"/>');
-        if (k < 0) g += '<rect x="'.concat(d.x + 8, '" y="').concat(d.y + 14, '" width="26" height="14" rx="3" fill="').concat(on ? "#3fbf5f" : "#2E7D32", '"/>').concat(tx2(d.x + 21, d.y + 25.5, "\u2192", { s: 13, b: 1, c: "#fff" })).concat(tx2(d.x + 74, d.y + 26, "Emergencia", { b: 1, s: 12 })).concat(tx2(cx, d.y + 44, "aut\xF3noma \xB7 ".concat(((lv.circ[lv.emer] || [])[0] || "").slice(0, 10)), { s: 10.5, c: "#4b5662" }));
+        g += '<rect x="'.concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="7" fill="').concat(k < 0 ? "#eef8ef" : "#fbfbf7", '" stroke="').concat(isBad ? "#c0392b" : "#4b545d", '" stroke-width="').concat(isBad ? 4 : 2, '"/><rect x="').concat(d.x + 3, '" y="').concat(d.y + 3, '" width="').concat(d.w - 6, '" height="6" rx="3" fill="').concat(on ? "#f2c037" : "#c9cdd1", '"/>');
+        if (k < 0) g += '<rect x="'.concat(d.x + 8, '" y="').concat(d.y + 14, '" width="26" height="14" rx="3" fill="').concat(on ? "#3fbf5f" : "#2E7D32", '"/>').concat(tx2(d.x + 21, d.y + 25.5, "→", { s: 13, b: 1, c: "#fff" })).concat(tx2(d.x + 74, d.y + 26, "Emergencia", { b: 1, s: 12 })).concat(tx2(cx, d.y + 44, "aut\xF3noma \xB7 ".concat(((lv.circ[lv.emer] || [])[0] || "").slice(0, 10)), { s: 10.5, c: "#4b5662" }));
         else g += tx2(cx, d.y + 26, r.n.length > 16 ? r.n.slice(0, 15) + "…" : r.n, { b: 1, s: 12 }) + tx2(cx, d.y + 43, "C".concat(k + 1, " \xB7 ").concat(n0(r.P), " W \xB7 ").concat(sStr(r.S), " mm\xB2"), { s: 10.5, c: "#4b5662" });
         if (on) g += '<circle cx="'.concat(d.x + d.w - 10, '" cy="').concat(d.y + 6, '" r="9" fill="#ffd54a" opacity=".55"/>');
         return;
       }
-      const k = id === "IG" ? "ig" : id === "PIL" ? "pil" : id.startsWith("DR") ? "dr" : "tm", sm = k === "pil" ? "" : dsum(id);
-      g += '<g class="tgd" data-tgd="'.concat(id, '" tabindex="0" role="button" aria-label="').concat(esc(tgDN(id, lv)), ': elegir tipo"><rect x="').concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="6" fill="').concat(k === "dr" ? "#eaf1f8" : "#fbfbf7", '" stroke="').concat(st2, '" stroke-width="').concat(sw, '"/>');
-      if (k === "pil") {
+      if (!p) return;
+      if (p.k === "bn" || p.k === "pe") {
+        const pe = p.k === "pe", sel = tgSel === id, hb = hint.includes(id), sk = sel || cur2 ? "#e8823a" : isBad ? "#c0392b" : hb ? "#2e7d32" : "#6d7680", n = Math.floor((d.w - 8) / 18);
+        g += '<g class="tgd" data-tgd="'.concat(id, '" tabindex="0" role="button" aria-label="').concat(esc(tgDN(id, lv)), ': opciones"><rect x="').concat(d.x, '" y="').concat(d.y - 34, '" width="').concat(d.w, '" height="22" rx="5" fill="').concat(pe ? "#d7efdc" : "#f4f4f1", '" stroke="').concat(cur2 ? "#e8823a" : "#9aa3ab", '"/>').concat(tx2(cx, d.y - 19, (pe ? "⏚ " : "") + tgDN(id, lv).replace("Barra de ", "Barra "), { s: 11.5, b: 1, c: pe ? "#1d6b2f" : "#3d4651" }), "</g>");
+        g += '<g class="tgt" data-tgt="'.concat(id, '" tabindex="0" role="button" aria-label="').concat(esc(tgDN(id, lv)), ': conectar"><rect x="').concat(d.x - 4, '" y="').concat(d.y - 10, '" width="').concat(d.w + 8, '" height="').concat(d.h + 20, '" fill="transparent"/><rect x="').concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="3" fill="').concat(pe ? "#2E9E44" : "#f1f1ee", '" stroke="').concat(sk, '" stroke-width="').concat(sel || hb || cur2 ? 4 : 2, '"/>');
+        for (let i = 0; i < n; i++) g += '<circle cx="'.concat(d.x + 13 + i * 18, '" cy="').concat(d.y + 7, '" r="3.4" fill="').concat(pe ? "#cfe9d4" : "#9aa3ad", '"/>');
+        if (pe) for (let i = 0; i < n; i++) g += '<rect x="'.concat(d.x + 4 + i * 18, '" y="').concat(d.y, '" width="5" height="').concat(d.h, '" fill="#E8C300" opacity=".55"/>');
+        g += "</g>";
+        return;
+      }
+      const sp = p.spec;
+      g += '<g class="tgd" data-tgd="'.concat(id, '" tabindex="0" role="button" aria-label="').concat(esc(tgDN(id, lv)), ': opciones"><rect x="').concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="6" fill="').concat(p.k === "dr" ? "#eaf1f8" : p.k === "ig" ? "#fff6e8" : "#fbfbf7", '" stroke="').concat(stk, '" stroke-width="').concat(sw, '"/>');
+      if (p.k === "pl") {
         const on = shown && A.pil;
         g += '<circle cx="'.concat(cx, '" cy="').concat(d.y + 40, '" r="13" fill="').concat(on ? "#ffd54a" : "#d6d9dc", '" stroke="#7a7f85" stroke-width="2"/>').concat(on ? '<circle cx="'.concat(cx, '" cy="').concat(d.y + 40, '" r="22" fill="#ffd54a" opacity=".35"/>') : "").concat(tx2(cx, d.y + 70, "Piloto", { s: 11, b: 1 }));
       } else {
-        const t1 = k === "ig" ? "GENERAL" : k === "dr" ? id : "D" + id.slice(2);
-        g += tx2(cx, d.y + 34, t1, { b: 1, s: d.w < 60 ? 13 : 14 });
-        if (!sm) g += tx2(cx, d.y + 52, "Elegir", { s: 11.5, b: 1, c: "#c0392b" }) + tx2(cx, d.y + 66, "tipo ▾", { s: 10.5, c: "#c0392b" });
-        else if (Array.isArray(sm)) g += tx2(cx, d.y + 52, sm[0], { s: d.w < 60 ? 11 : 11.5 }) + tx2(cx, d.y + 66, sm[1], { s: 10.5, c: "#4b5662" });
-        else g += tx2(cx, d.y + 56, sm, { s: 11.5 });
-        if (k === "dr") g += '<circle cx="'.concat(d.x + d.w - 12, '" cy="').concat(d.y + 18, '" r="6" fill="#f2d24a" stroke="#8a7a2a"/>').concat(tx2(d.x + d.w - 12, d.y + 21.5, "T", { s: 8, b: 1 }));
+        const narrow = d.w < 60, t1 = p.k === "ig" ? narrow ? "GRAL" : "GENERAL" : p.k === "dr" ? id : "D" + id.slice(2);
+        g += tx2(cx, d.y + 32, t1, { b: 1, s: 13.5 });
+        if (p.k === "dr") g += tx2(cx, d.y + 50, "".concat(sp.In, " A \xB7 ").concat(sp.s, " mA"), { s: 11.5 }) + tx2(cx, d.y + 64, "clase " + sp.cl, { s: 10.5, c: "#4b5662" }) + '<circle cx="'.concat(d.x + d.w - 12, '" cy="').concat(d.y + 18, '" r="6" fill="#f2d24a" stroke="#8a7a2a"/>').concat(tx2(d.x + d.w - 12, d.y + 21.5, "T", { s: 8, b: 1 }));
+        else g += tx2(cx, d.y + 50, "".concat(sp.In, " A ").concat(sp.cv), { s: 11.5 }) + tx2(cx, d.y + 64, sp.p, { s: 10.5, c: "#4b5662" });
       }
       g += "</g>";
     });
@@ -5890,68 +6001,87 @@ tr.selrow td{background:var(--copper-soft)}
       if (hb) g += '<circle cx="'.concat(t.x, '" cy="').concat(t.y, '" r="16" fill="#66bb6a" opacity=".55"/>');
       if (isB) g += '<circle cx="'.concat(t.x, '" cy="').concat(t.y, '" r="16" fill="none" stroke="#e53935" stroke-width="3"/>');
       g += '<circle cx="'.concat(t.x, '" cy="').concat(t.y, '" r="').concat(sel ? 12 : 10, '" fill="#cdd1d6" stroke="').concat(sel ? "#e8823a" : "#3a3f44", '" stroke-width="').concat(sel ? 4 : 2, '"/><line x1="').concat(t.x - 5, '" y1="').concat(t.y - 5, '" x2="').concat(t.x + 5, '" y2="').concat(t.y + 5, '" stroke="#5a6068" stroke-width="2"/></g>');
-      g += tx2(t.x, lyU ? t.y + 26 : t.y - 16, t.lab, { s: 11, b: 1, c: t.lab === "N" ? "#47515c" : t.lab === "PE" ? "#1d6b2f" : t.lab === "L" ? "#b71c1c" : "#47515c" });
+      g += tx2(t.x, lyU ? t.y + 26 : t.y - 16, t.lab, { s: 11, b: 1, c: t.lab === "PE" ? "#1d6b2f" : t.lab === "L" ? "#b71c1c" : "#47515c" });
     });
-    return '<svg class="tgsvg" viewBox="0 0 '.concat(L.W, " ").concat(L.H, '" role="img" aria-label="Interior del tablero para cablear">').concat(g, "</svg>");
+    if (tgPlace || tgMove) {
+      const o = tgOcc(st, tgMove);
+      TG_RY.forEach((y, r) => {
+        for (let m = 0; m < TG_MODS; m++) if (!o[r][m]) g += '<rect class="tgslot" data-tgslot="'.concat(r, ":").concat(m, '" x="').concat(TG_RX + m * MW + 3, '" y="').concat(y - 44, '" width="').concat(MW - 6, '" height="88" rx="6"/>');
+      });
+    }
+    return '<svg class="tgsvg" viewBox="0 0 '.concat(L.W, " ").concat(L.H, '" role="img" aria-label="Interior del tablero para armar y cablear">').concat(g, "</svg>");
   }
-  function tgCfg(lv, st, id) {
-    const d = st.dev[id] || {}, sl = (f, ops, lab) => '<label class="tgf"><span>'.concat(lab, '</span><select data-tgs="').concat(id, ".").concat(f, '" aria-label="').concat(esc(tgDN(id, lv) + ": " + lab), '"><option value="">Elegir…</option>').concat(ops.map(([v, l]) => '<option value="'.concat(v, '" ').concat(String(d[f]) === String(v) ? "selected" : "", ">").concat(l, "</option>")).join(""), "</select></label>");
-    if (id === "IG") return sl("p", [["1P", "1 polo"], ["2P", "2 polos (omnipolar)"]], "Polos") + sl("In", [25, 32, 40, 50, 63].map((x) => [x, x + " A"]), "Amperaje") + sl("cv", [["B", "B"], ["C", "C"], ["D", "D"]], "Curva");
-    if (id.startsWith("DR")) return sl("In", [25, 40, 63].map((x) => [x, x + " A"]), "Amperaje") + sl("s", [[10, "10 mA"], [30, "30 mA"], [300, "300 mA"]], "Sensibilidad") + sl("cl", [["AC", "AC \xB7 solo senoidal"], ["A", "A \xB7 electr\xF3nica"], ["F", "F \xB7 inverter"], ["B", "B \xB7 CC (auto el\xE9ctrico, solar)"]], "Clase");
-    if (id.startsWith("TM")) return sl("p", [["1P", "1P \xB7 solo fase"], ["1P+N", "1P+N \xB7 fase y neutro"], ["2P", "2P \xB7 dos polos"]], "Polos") + sl("In", [6, 10, 16, 20, 25, 32].map((x) => [x, x + " A"]), "Amperaje") + sl("cv", [["B", "B \xB7 3–5 In"], ["C", "C \xB7 5–10 In"], ["D", "D \xB7 10–20 In"]], "Curva");
-    return "";
+  function tgSpecSel(k, sp, attr) {
+    return TG_SPEC[k].map(([f, lab, ops]) => '<label class="tgf"><span>'.concat(lab, "</span><select ").concat(attr(f), ' aria-label="').concat(esc(TG_K[k].n + ": " + lab), '">').concat(attr === tgCatAttr ? '<option value="">Elegir…</option>' : "").concat(ops.map(([v, l]) => '<option value="'.concat(v, '" ').concat(String(sp[f]) === String(v) ? "selected" : "", ">").concat(l, "</option>")).join(""), "</select></label>")).join("");
+  }
+  const tgCatAttr = (f) => 'data-tgc="'.concat(f, '"');
+  function tgCatHTML() {
+    const c = S.tg.cat, k = c.k || "ig", sp = c[k] || {}, ready = TG_SPEC[k].every(([f]) => sp[f] != null && sp[f] !== "");
+    return '<section class="card tgp" id="tgcat"><h3>\u{1F9F0} Caja de piezas</h3><div class="tgkinds">'.concat(Object.keys(TG_K).map((kk) => '<button type="button" class="tgkc" data-tg="catk" data-k="'.concat(kk, '" aria-pressed="').concat(kk === k, '"><b>').concat(TG_K[kk].ic, "</b> ").concat(TG_K[kk].n, "</button>")).join(""), '</div><p class="hint" style="margin:8px 0 4px">').concat(TG_K[k].d, "</p>").concat(TG_SPEC[k].length ? '<div class="tgfs">'.concat(tgSpecSel(k, sp, tgCatAttr), "</div>") : "", '<div class="tgbuy"><span>').concat(ready ? "<b>".concat(tgMoney(tgPrice(k, sp)), "</b> \xB7 ").concat(tgWd(k, sp), " m\xF3dulo").concat(tgWd(k, sp) > 1 ? "s" : "") : '<span class="hint">Elige todos los datos</span>', '</span><button type="button" class="btn small" data-tg="place" ').concat(ready ? "" : "disabled", ">\u{1F4CD} Colocar en el tablero</button></div></section>");
   }
   function tgStatus(lv, st, L) {
     if (tgMsg) return tgMsg;
+    if (tgPlace) return "\u{1F4CD} Toca un espacio verde de un riel para colocar: ".concat(TG_K[tgPlace.k].n, " ").concat(tgSpecTxt(tgPlace.k, tgPlace.spec), ". Puedes poner varios; toca ✕ para terminar.");
+    if (tgMove) return "↔ Toca un espacio verde para mover ".concat(tgDN(tgMove, lv).toLowerCase(), ". Sus cables lo siguen.");
     if (tgWire != null && st.wires[tgWire]) {
       const w = st.wires[tgWire];
       return "Cable ".concat(TG_COL[w.c][0].toLowerCase(), ": ").concat(tgTN(w.a, lv, L), " → ").concat(tgTN(w.b, lv, L), ".");
     }
     if (tgSel) return "✋ ".concat(tgTN(tgSel, lv, L), ": ahora toca el otro extremo del cable ").concat(TG_COL[S.tg.col || "R"][0].toLowerCase(), ".");
-    if (tgDev) return "Elige el tipo de ".concat(tgDN(tgDev, lv).toLowerCase(), ".");
-    return "Toca un borne y luego otro para tender un cable. Toca un equipo para elegir su tipo.";
+    if (tgDev) return "".concat(tgDN(tgDev, lv), ": c\xE1mbiale los datos, mu\xE9velo o qu\xEDtalo.");
+    if (!st.parts.length) return "El tablero est\xE1 vac\xEDo. Abre \u{1F9F0} Piezas, elige qu\xE9 protecci\xF3n quieres y col\xF3cala donde quieras.";
+    return "Toca un borne y luego otro para tender un cable. Toca una pieza para cambiarla o moverla.";
   }
   function tgPanel(lv, st, A, shown, L) {
     const sw = (k, v) => '<i style="background:'.concat(v[1]).concat(k === "G" ? ";background-image:repeating-linear-gradient(90deg,transparent 0 6px,#E8C300 6px 10px)" : "", '"></i>');
-    let h = '<section class="card tgp">'.concat(tgFull ? '<button type="button" class="btn ghost small" data-tg="pclose" style="float:right">\u2715 Cerrar</button>' : "", "<h3>Detalle</h3>");
+    let h = "";
+    const close = tgFull ? '<button type="button" class="btn ghost small" data-tg="pclose" style="float:right">✕ Cerrar</button>' : "";
     if (tgWire != null && st.wires[tgWire]) {
       const w = st.wires[tgWire];
-      h += '<div class="tgsel"><b>Cable seleccionado</b><p class="hint" style="margin:2px 0 6px">'.concat(esc(tgTN(w.a, lv, L)), " → ").concat(esc(tgTN(w.b, lv, L)), '</p><div class="tgcols">').concat(Object.keys(TG_COL).map((k) => '<button type="button" class="tgcol" data-tg="wcol" data-k="'.concat(k, '" aria-pressed="').concat(w.c === k, '">').concat(sw(k, TG_COL[k])).concat(TG_COL[k][0], "</button>")).join(""), '</div><div class="actions" style="border:0;padding:6px 0 0;margin:0"><button type="button" class="btn danger small" data-tg="wdel">✂ Quitar cable</button><button type="button" class="btn ghost small" data-tg="x">Listo</button></div></div>');
-    } else if (tgSel) h += '<div class="tgsel"><b>Borne elegido</b><p class="hint" style="margin:2px 0 6px">'.concat(esc(tgTN(tgSel, lv, L)), '. Toca el otro extremo.</p><button type="button" class="btn ghost small" data-tg="x">Cancelar</button></div>');
-    else if (tgDev && L.D[tgDev]) h += '<div class="tgsel"><b>'.concat(esc(tgDN(tgDev, lv)), '</b><div class="tgfs">').concat(tgCfg(lv, st, tgDev), '</div><button type="button" class="btn ghost small" data-tg="x">Listo</button></div>');
-    else h += '<p class="hint" style="margin:0">Toca un equipo del tablero para elegir su tipo, o un cable para cambiarle el color o quitarlo.</p>';
-    h += '<div class="actions" style="margin-top:12px"><button type="button" class="btn ghost small" data-tg="sol">Ver soluci\xF3n</button><button type="button" class="btn danger small" data-tg="reset">'.concat(tgConfirm ? "\xBFSeguro? Toca otra vez" : "Empezar de nuevo", '</button></div><p class="hint" style="margin:6px 0 0">').concat(st.wires.length, " cable(s) tendidos.</p></section>");
+      h += '<section class="card tgp">'.concat(close, '<div class="tgsel"><b>Cable seleccionado</b><p class="hint" style="margin:2px 0 6px">').concat(esc(tgTN(w.a, lv, L)), " → ").concat(esc(tgTN(w.b, lv, L)), '</p><div class="tgcols">').concat(Object.keys(TG_COL).map((k) => '<button type="button" class="tgcol" data-tg="wcol" data-k="'.concat(k, '" aria-pressed="').concat(w.c === k, '">').concat(sw(k, TG_COL[k]), '<span class="tgtxt">').concat(TG_COL[k][0], "</span></button>")).join(""), '</div><div class="actions" style="border:0;padding:6px 0 0;margin:0"><button type="button" class="btn danger small" data-tg="wdel">✂ Quitar cable</button><button type="button" class="btn ghost small" data-tg="x">Listo</button></div></div></section>');
+    } else if (tgDev && tgPart(st, tgDev)) {
+      const p = tgPart(st, tgDev);
+      h += '<section class="card tgp">'.concat(close, '<div class="tgsel"><b>').concat(esc(tgDN(p.id, lv)), '</b> <span class="hint">\xB7 ').concat(tgMoney(tgPrice(p.k, p.spec)), " \xB7 riel ").concat(p.r + 1, "</span>").concat(TG_SPEC[p.k].length ? '<div class="tgfs">'.concat(tgSpecSel(p.k, p.spec, (f) => 'data-tgp="'.concat(p.id, ".").concat(f, '"')), "</div>") : '<p class="hint" style="margin:4px 0">'.concat(TG_K[p.k].d, "</p>"), '<div class="actions" style="border:0;padding:6px 0 0;margin:0"><button type="button" class="btn small" data-tg="move">↔ Mover</button><button type="button" class="btn ghost small" data-tg="dup">⧉ Otro igual</button><button type="button" class="btn danger small" data-tg="pdel">\u{1F5D1} Quitar</button><button type="button" class="btn ghost small" data-tg="x">Listo</button></div></div></section>');
+    }
+    if (!tgFull || tgCatOpen) h += tgCatHTML();
     if (shown) {
-      const nb = A.errs.length, nw = A.warns.length, star = nb ? "★☆☆" : nw ? "★★☆" : "★★★";
+      const nb = A.errs.length, nw = A.warns.length, star = nb ? "★☆☆" : nw ? "★★☆" : "★★★", secs = st.t0 ? Math.max(0, Math.round((tgCheckT - st.t0) / 1e3)) : 0;
       const item = (o) => '<li class="'.concat(o.sev === "bad" ? "badc" : "tgwarn", '"><b>').concat(o.sev === "bad" ? "✗" : "⚠", " ").concat(esc(o.t), "</b><br>").concat(esc(o.d), '<br><span class="fx">C\xF3mo corregir: ').concat(esc(o.fx), '</span><br><span class="hint">Por qu\xE9: ').concat(esc(o.w), "</span></li>");
-      h += '<section class="card tgp" id="tgres"><div class="sechead"><span class="tag">Resultado</span><span class="tgstar" aria-label="'.concat(nb ? 1 : nw ? 2 : 3, ' de 3 estrellas">').concat(star, "</span></div>").concat(nb ? note("<b>".concat(nb, " error(es)</b>").concat(nw ? " y ".concat(nw, " observaci\xF3n(es)") : "", ". Corr\xEDgelos y vuelve a comprobar."), "bad") : note(nw ? "✓ El tablero funciona y es seguro. Quedan ".concat(nw, " detalle(s) para dejarlo perfecto.") : "✓ \xA1Tablero perfecto! Bien conectado, bien elegido y con los colores correctos.", "ok"), '<p style="margin:8px 0 4px"><b>⚡ Al energizar</b></p><ul class="tgen">').concat(A.energ.map(([c, t]) => '<li class="'.concat(c, '">').concat(c === "ok" ? "✓" : c === "bad" ? "✗" : "•", " ").concat(esc(t), "</li>")).join(""), "</ul>").concat(nb + nw ? '<ul class="whyl" style="margin-top:10px">'.concat(A.errs.concat(A.warns).map(item).join(""), "</ul>") : "", "</section>");
-    } else if (tgChecked) h += note("Cambiaste el tablero despu\xE9s de comprobar. Toca \xABComprobar\xBB otra vez.", "info");
+      h += '<section class="card tgp" id="tgres">'.concat(close, '<div class="sechead"><span class="tag">Resultado</span><span class="tgstar" aria-label="').concat(nb ? 1 : nw ? 2 : 3, ' de 3 estrellas">').concat(star, '</span></div><p class="hint" style="margin:0 0 6px">⏱ ').concat(Math.floor(secs / 60), " min ").concat(secs % 60, " s \xB7 \u{1F4B0} ").concat(tgMoney(A.cost), " de ").concat(tgMoney(A.budget), "</p>").concat(nb ? note("<b>".concat(nb, " error(es)</b>").concat(nw ? " y ".concat(nw, " observaci\xF3n(es)") : "", ". Corr\xEDgelos y vuelve a comprobar."), "bad") : note(nw ? "✓ El tablero funciona y es seguro. Quedan ".concat(nw, " detalle(s) para la tercera estrella.") : "✓ \xA1Tablero perfecto! Bien elegido, bien ubicado, bien conectado y dentro del presupuesto.", "ok"), '<p style="margin:8px 0 4px"><b>⚡ Al energizar</b></p><ul class="tgen">').concat(A.energ.map(([c, t]) => '<li class="'.concat(c, '">').concat(c === "ok" ? "✓" : c === "bad" ? "✗" : "•", " ").concat(esc(t), "</li>")).join(""), "</ul>").concat(nb + nw ? '<ul class="whyl" style="margin-top:10px">'.concat(A.errs.concat(A.warns).map(item).join(""), "</ul>") : "", "</section>");
+    } else if (tgChecked && !tgFull) h += note("Cambiaste el tablero despu\xE9s de comprobar. Toca \xABComprobar\xBB otra vez.", "info");
+    h += '<section class="card tgp"><div class="actions" style="margin:0;padding:0;border:0"><button type="button" class="btn ghost small" data-tg="sol">Ver soluci\xF3n</button><button type="button" class="btn danger small" data-tg="reset">'.concat(tgConfirm ? "\xBFSeguro? Toca otra vez" : "Vaciar tablero", '</button></div><p class="hint" style="margin:6px 0 0">').concat(st.parts.length, " pieza(s) \xB7 ").concat(st.wires.length, " cable(s)</p></section>");
     return h;
   }
   function tgTable(lv, st, A, shown) {
-    const D = (id) => st.dev[id] || {}, dsum = (id) => {
+    const SP = (id) => (tgPart(st, id) || {}).spec || {}, dsum = (id) => {
       if (!id) return '<span class="hint">sin conectar</span>';
-      const d = D(id);
-      return id.startsWith("DR") ? "".concat(id, " \xB7 ").concat(d.In ? d.In + " A" : "?", " \xB7 ").concat(d.s ? d.s + " mA" : "?", " \xB7 ").concat(d.cl ? "clase " + d.cl : "?") : "D".concat(id.slice(2), " \xB7 ").concat(d.p || "1P", " \xB7 ").concat(d.In ? d.In + " A" : "?", " ").concat(d.cv || "");
+      const d = SP(id);
+      return id.startsWith("DR") ? "".concat(id, " \xB7 ").concat(d.In, " A \xB7 ").concat(d.s, " mA \xB7 clase ").concat(d.cl) : "D".concat(id.slice(2), " \xB7 ").concat(d.p, " \xB7 ").concat(d.In, " A ").concat(d.cv);
     };
     const stt = (ok) => shown ? ok ? pill("ok", "✓") : pill("bad", "✗") : '<span class="hint">—</span>';
-    const ig = D("IG"), rows = A.req.map((r, k) => {
+    const igp = st.parts.find((p) => p.k === "ig"), ig = igp ? igp.spec : null, rows = A.req.map((r, k) => {
       const x = A.res[k];
       return "<tr><td><b>C".concat(k + 1, "</b></td><td>").concat(esc(r.n), '</td><td class="num">').concat(n0(r.P), ' W</td><td class="num">').concat(nf(r.I), " A</td><td>").concat(sStr(r.S), " mm\xB2 \xB7 Iz ").concat(r.max, " A</td><td>").concat(shown ? tgOkIn(r).join(" / ") + " A \xB7 " + r.cv : '<span class="hint">al comprobar</span>', "</td><td>").concat(dsum(x.tm), "</td><td>").concat(dsum(x.dr), "</td><td>").concat(stt(x.ok && !A.errs.some((e) => e.t.startsWith(r.n + ":"))), "</td></tr>");
     }).join("");
     const em = lv.emer >= 0 ? '<tr><td><b>E</b></td><td>Luz de emergencia</td><td class="num">≈ 5 W</td><td></td><td>colgada de C'.concat(lv.emer + 1, "</td><td>la de C").concat(lv.emer + 1, "</td><td>").concat(dsum(A.em && A.em.tm), "</td><td>").concat(dsum(A.em && A.em.dr), "</td><td>").concat(stt(A.em && A.em.ok && A.emOn), "</td></tr>") : "";
-    return '<section class="card"><div class="sechead"><span class="tag">Rotulaci\xF3n</span><h2 style="margin:0">Tabla de distribuci\xF3n del tablero</h2></div><p class="hint" style="margin-top:0">Va pegada en la tapa del tablero: dice qu\xE9 protege cada disyuntor y diferencial. Las columnas \xABconectado\xBB se leen de tus cables, en vivo.</p><div class="tbl-wrap"><table class="pt"><thead><tr><th>Circ.</th><th>Uso</th><th class="num">Carga</th><th class="num">I</th><th>Cable</th><th>Disyuntor admisible</th><th>Disyuntor conectado</th><th>Diferencial</th><th>Estado</th></tr></thead><tbody><tr class="tot"><td><b>G</b></td><td>Interruptor general</td><td class="num">'.concat(n0(A.g.Pd), ' W</td><td class="num">').concat(nf(A.g.Id, 1), " A</td><td>alim. ").concat(sStr(lv.alimS), " mm\xB2 \xB7 Iz ").concat(A.g.max, " A</td><td>").concat(shown ? COM.filter((x) => x >= A.g.min && x <= A.g.max).join(" / ") + " A \xB7 2P \xB7 C" : '<span class="hint">al comprobar</span>', "</td><td>").concat(ig.p && ig.In ? "".concat(ig.p, " \xB7 ").concat(ig.In, " A ").concat(ig.cv || "") : '<span class="hint">sin elegir</span>', "</td><td>—</td><td>").concat(stt(!A.errs.some((e) => /general/i.test(e.t))), "</td></tr>").concat(rows).concat(em, '<tr><td><b>P</b></td><td>Luz piloto</td><td class="num">≈ 1 W</td><td></td><td colspan="4">Despu\xE9s del general: indica que el tablero tiene tensi\xF3n</td><td>').concat(stt(A.pil && !A.warns.some((e) => /piloto/i.test(e.t))), '</td></tr></tbody></table></div><p class="hint">Carga del general: demanda seg\xFAn RIC N\xB003 sobre ').concat(n0(A.g.Pi), " W instalados.</p></section>");
+    return '<section class="card"><div class="sechead"><span class="tag">Rotulaci\xF3n</span><h2 style="margin:0">Tabla de distribuci\xF3n del tablero</h2></div><p class="hint" style="margin-top:0">Va pegada en la tapa del tablero: dice qu\xE9 protege cada disyuntor y diferencial. Las columnas \xABconectado\xBB se leen de tus cables, en vivo.</p><div class="tbl-wrap"><table class="pt"><thead><tr><th>Circ.</th><th>Uso</th><th class="num">Carga</th><th class="num">I</th><th>Cable</th><th>Disyuntor admisible</th><th>Disyuntor conectado</th><th>Diferencial</th><th>Estado</th></tr></thead><tbody><tr class="tot"><td><b>G</b></td><td>Interruptor general</td><td class="num">'.concat(n0(A.g.Pd), ' W</td><td class="num">').concat(nf(A.g.Id, 1), " A</td><td>alim. ").concat(sStr(lv.alimS), " mm\xB2 \xB7 Iz ").concat(A.g.max, " A</td><td>").concat(shown ? COM.filter((x) => x >= A.g.min && x <= A.g.max).join(" / ") + " A \xB7 2P \xB7 C" : '<span class="hint">al comprobar</span>', "</td><td>").concat(ig ? "".concat(ig.p, " \xB7 ").concat(ig.In, " A ").concat(ig.cv) : '<span class="hint">sin colocar</span>', "</td><td>—</td><td>").concat(stt(ig && !A.errs.some((e) => /general/i.test(e.t))), "</td></tr>").concat(rows).concat(em, '<tr><td><b>P</b></td><td>Luz piloto</td><td class="num">≈ 1 W</td><td></td><td colspan="4">Despu\xE9s del general: indica que el tablero tiene tensi\xF3n</td><td>').concat(stt(A.pil && !A.warns.some((e) => /piloto/i.test(e.t))), '</td></tr></tbody></table></div><p class="hint">Carga del general: demanda seg\xFAn RIC N\xB003 sobre ').concat(n0(A.g.Pi), " W instalados.</p></section>");
+  }
+  function tgOrder(lv, A) {
+    const { req } = A;
+    return '<details class="item tgord" open><summary>\u{1F4CB} Orden de trabajo <span class="hint">\xB7 presupuesto '.concat(tgMoney(A.budget), '</span></summary><div class="body"><ul class="hand"><li>Arma el tablero desde cero: elige y coloca el <b>interruptor general</b>, los <b>diferenciales</b>, un <b>disyuntor por circuito</b>, la <b>luz piloto</b> y las <b>barras</b> de neutro y de tierra.</li><li>Alimentador de ').concat(sStr(lv.alimS), " mm\xB2 (soporta ").concat(A.g.max, " A).</li><li>Circuitos: ").concat(req.map((r, k) => "<b>C".concat(k + 1, "</b> ").concat(esc(r.n), " (").concat(n0(r.P), " W, cable ").concat(sStr(r.S), " mm\xB2)")).join(" \xB7 "), ".</li>").concat(lv.emer >= 0 ? "<li>Luz de emergencia aut\xF3noma que vigile <b>".concat(esc(req[lv.emer].n), "</b>.</li>") : "", "<li>Colores: fase rojo, negro o azul \xB7 neutro blanco \xB7 tierra verde/amarillo.</li><li>No te pases de <b>").concat(tgMoney(A.budget), "</b>. Gastado: <b>").concat(tgMoney(A.cost), "</b>.</li></ul></div></details>");
   }
   function tgHTML() {
     const lv = tgLvl(), st = tgSt(), L = tgLayout(lv, st), A = tgCheck(lv, st), shown = tgChecked === JSON.stringify(st), T0 = S.tg;
     const lvs = Object.keys(TG_LV).map((k) => [k, TG_LV[k].t]).concat(S.sim2 && S.sim2.circuits.length ? [["sim", "Mi casa del simulador 3D"]] : []);
-    const chips = '<div class="tglv" role="group" aria-label="Nivel">'.concat(lvs.map(([k, t]) => '<button type="button" data-tg="lv" data-k="'.concat(k, '" aria-pressed="').concat(T0.lv === k, '">').concat(T0.done[k] ? "✓ " : "").concat(esc(t), "</button>")).join(""), '</div><p class="hint" style="margin:-4px 0 10px">').concat(esc(lv.d), "</p>");
-    const devs = ["IG"].concat(Array.from({ length: lv.ndr }, (_, j) => "DR" + (j + 1)), lv.circ.map((c, k) => "TM" + (k + 1)));
-    const list = '<section class="card"><div class="sechead"><span class="tag">Equipos</span><h2 style="margin:0">Elige cada equipo del tablero</h2></div><p class="hint" style="margin-top:0">Tambi\xE9n puedes tocar el equipo en el dibujo. Cambiar los polos de un disyuntor agrega o quita bornes.</p><div class="tgdev">'.concat(devs.map((id) => '<div class="tgdc'.concat(tgDev === id ? " cur" : "", '"><b>').concat(esc(tgDN(id, lv)), '</b><div class="tgfs">').concat(tgCfg(lv, st, id), "</div></div>")).join(""), "</div></section>");
+    const chips = '<div class="tglv" role="group" aria-label="Nivel">'.concat(lvs.map(([k, t]) => {
+      const b = T0.best[k];
+      return '<button type="button" data-tg="lv" data-k="'.concat(k, '" aria-pressed="').concat(T0.lv === k, '">').concat(esc(t)).concat(b ? ' <span class="tgbst">'.concat("★".repeat(b.s)).concat("☆".repeat(3 - b.s), "</span>") : "", "</button>");
+    }).join(""), '</div><p class="hint" style="margin:-4px 0 10px">').concat(esc(lv.d), "</p>");
     const col = T0.col || "R", sw = (k) => '<i style="background:'.concat(TG_COL[k][1]).concat(k === "G" ? ";background-image:repeating-linear-gradient(90deg,transparent 0 6px,#E8C300 6px 10px)" : "", '"></i>');
-    const bar = '<div class="tgtool"><div class="tgcols" role="group" aria-label="Color del cable"><span class="tglab">Cable:</span>'.concat(Object.keys(TG_COL).map((k) => '<button type="button" class="tgcol" data-tg="col" data-k="'.concat(k, '" aria-pressed="').concat(col === k, '" aria-label="').concat(TG_COL[k][0], " (").concat(TG_COL[k][2], ')" title="').concat(TG_COL[k][0], " (").concat(TG_COL[k][2], ')">').concat(sw(k), '<span class="tgtxt">').concat(TG_COL[k][0], "</span></button>")).join(""), '</div><div class="tgacts"><button type="button" class="btn calc small" data-tg="check">\u2713 Comprobar</button><button type="button" class="btn ghost small" data-tg="hint" aria-label="Pista">\u{1F4A1}<span class="tgtxt"> Pista</span></button><button type="button" class="btn ghost small" data-tg="undo" aria-label="Deshacer" ').concat(tgHist.length ? "" : "disabled", '>\u21B6<span class="tgtxt"> Deshacer</span></button><button type="button" class="btn ghost small" data-tg="zoom" aria-label="').concat(tgZoom ? "Achicar" : "Ampliar", '">').concat(tgZoom ? "\u2212" : "\u{1F50D}", '<span class="tgtxt"> ').concat(tgZoom ? "Achicar" : "Ampliar", '</span></button><button type="button" class="btn small" data-tg="full" aria-label="').concat(tgFull ? "Salir de pantalla completa" : "Pantalla completa", '">').concat(tgFull ? "\u2715 Salir" : '\u26F6 <span class="tgtxt">Pantalla </span>completa', '</button></div><div class="tgst" aria-live="polite">').concat(esc(tgStatus(lv, st, L)), "</div></div>");
-    const side = !tgFull || tgPanOpen && (tgWire != null || tgDev || shown);
-    return chips + '<div class="tggrid'.concat(tgFull ? " full" : "", '"><div>').concat(bar, '<div class="tgbox').concat(tgZoom ? " zoom" : "", '">').concat(tgSVG(lv, st, A, shown), '</div></div><div class="tgside" ').concat(side ? "" : "hidden", ">").concat(tgPanel(lv, st, A, shown, L), "</div></div>").concat(list, tgTable(lv, st, A, shown));
+    const busy = tgPlace || tgMove;
+    const bar = '<div class="tgtool"><div class="tgcols" role="group" aria-label="Color del cable"><span class="tglab">Cable:</span>'.concat(Object.keys(TG_COL).map((k) => '<button type="button" class="tgcol" data-tg="col" data-k="'.concat(k, '" aria-pressed="').concat(col === k, '" aria-label="').concat(TG_COL[k][0], " (").concat(TG_COL[k][2], ')" title="').concat(TG_COL[k][0], " (").concat(TG_COL[k][2], ')">').concat(sw(k), '<span class="tgtxt">').concat(TG_COL[k][0], "</span></button>")).join(""), '<span class="tgcost" title="Gastado / presupuesto">\u{1F4B0} ').concat(tgMoney(A.cost), " / ").concat(tgMoney(A.budget), '</span></div><div class="tgacts"><button type="button" class="btn small" data-tg="cat" aria-pressed="').concat(tgCatOpen, '">\u{1F9F0} Piezas</button><button type="button" class="btn calc small" data-tg="check">✓ Comprobar</button><button type="button" class="btn ghost small" data-tg="hint" aria-label="Pista">\u{1F4A1}<span class="tgtxt"> Pista</span></button><button type="button" class="btn ghost small" data-tg="undo" aria-label="Deshacer" ').concat(tgHist.length ? "" : "disabled", '>↶<span class="tgtxt"> Deshacer</span></button><button type="button" class="btn ghost small" data-tg="zoom" aria-label="').concat(tgZoom ? "Achicar" : "Ampliar", '">').concat(tgZoom ? "−" : "\u{1F50D}", '<span class="tgtxt"> ').concat(tgZoom ? "Achicar" : "Ampliar", '</span></button><button type="button" class="btn ghost small" data-tg="full" aria-label="').concat(tgFull ? "Salir de pantalla completa" : "Pantalla completa", '">').concat(tgFull ? "✕ Salir" : '⛶<span class="tgtxt"> Pantalla completa</span>', "</button>").concat(busy ? '<button type="button" class="btn danger small" data-tg="x">✕ Terminar</button>' : "", '</div><div class="tgst" aria-live="polite">').concat(esc(tgStatus(lv, st, L)), "</div></div>");
+    const side = !tgFull || tgPanOpen && (tgWire != null || tgDev || shown || tgCatOpen);
+    return chips + tgOrder(lv, A) + '<div class="tggrid'.concat(tgFull ? " full" : "", '"><div>').concat(bar, '<div class="tgbox').concat(tgZoom ? " zoom" : "", busy ? " placing" : "", '">').concat(tgSVG(lv, st, A, shown), '</div></div><div class="tgside" ').concat(side ? "" : "hidden", ">").concat(tgPanel(lv, st, A, shown, L), "</div></div>").concat(tgTable(lv, st, A, shown));
   }
   function tgRender() {
     const w = document.getElementById("tgwrap");
@@ -5984,13 +6114,21 @@ tr.selrow td{background:var(--copper-soft)}
     }
   });
   function tgPush() {
-    tgHist.push(JSON.stringify(tgSt()));
-    if (tgHist.length > 60) tgHist.shift();
+    const st = tgSt();
+    tgHist.push(JSON.stringify(st));
+    if (tgHist.length > 80) tgHist.shift();
+    if (!st.t0) st.t0 = Date.now();
   }
+  const tgPrune = (st) => {
+    const L = tgLayout(tgLvl(), st);
+    st.wires = st.wires.filter((w) => L.T[w.a] && L.T[w.b]);
+  };
   function tgTerm(id) {
     const st = tgSt();
     tgWire = null;
     tgDev = null;
+    tgPlace = null;
+    tgMove = null;
     tgHintT = [];
     tgConfirm = false;
     if (!tgSel) tgSel = id;
@@ -6006,33 +6144,67 @@ tr.selrow td{background:var(--copper-soft)}
     }
     tgRender();
   }
+  function tgSlot(r, m) {
+    const st = tgSt(), lv = tgLvl();
+    if (tgPlace) {
+      const w = tgWd(tgPlace.k, tgPlace.spec), s0 = tgFit(st, r, m, w, null);
+      if (s0 < 0) tgMsg = "No cabe ah\xED: necesita ".concat(w, " m\xF3dulos libres seguidos en el riel.");
+      else {
+        tgPush();
+        const id = tgNewId(st, tgPlace.k);
+        st.parts.push({ id, k: tgPlace.k, r, m: s0, spec: Object.assign({}, tgPlace.spec) });
+        tgMsg = "✓ ".concat(tgDN(id, lv), " colocado en el riel ").concat(r + 1, ". Toca otro espacio para poner otro igual, o ✕ Terminar.");
+        save();
+      }
+    } else if (tgMove) {
+      const p = tgPart(st, tgMove), s0 = p ? tgFit(st, r, m, tgWd(p.k, p.spec), p.id) : -1;
+      if (!p) tgMove = null;
+      else if (s0 < 0) tgMsg = "No cabe ah\xED: necesita ".concat(tgWd(p.k, p.spec), " m\xF3dulos libres seguidos.");
+      else {
+        tgPush();
+        p.r = r;
+        p.m = s0;
+        tgMove = null;
+        tgDev = p.id;
+        save();
+      }
+    }
+    tgRender();
+  }
   function pgTG() {
     tgInit();
-    return '<p class="eyebrow">Juego did\xE1ctico \xB7 RIC N\xB002, N\xB004, N\xB005 y N\xB010</p><h1>Armar y cablear el tablero</h1>\n  <p class="lead">Elige el general, los diferenciales y los disyuntores, y conecta t\xFA cada fase, neutro y tierra: desde la llegada del medidor hasta la salida de cada circuito, pasando por las barras de la tabla de distribuci\xF3n. Incluye luz piloto y luz de emergencia. Al terminar toca \xABComprobar\xBB: la app energiza el tablero y te dice qu\xE9 est\xE1 mal y por qu\xE9.</p>\n  <div id="tgwrap">'.concat(tgHTML(), "</div>\n  ").concat(learn("C\xF3mo se cablea un tablero domiciliario", "".concat(ILL.tablero(), '<ol class="hand"><li><b>Llegada → general:</b> la fase y el neutro del alimentador entran por arriba del interruptor general de 2 polos (corta los dos a la vez).</li><li><b>Luz piloto:</b> se conecta a la salida del general, fase y neutro. Indica que el tablero tiene tensi\xF3n.</li><li><b>General → diferenciales:</b> la salida del general alimenta la entrada de cada diferencial (fase al polo L, neutro al polo N). Para pasar a otro diferencial se hace un puente desde la entrada del anterior.</li><li><b>Diferencial → disyuntores:</b> la salida de fase del diferencial va a la entrada de sus disyuntores (m\xE1ximo 3 por diferencial), con puentes de un disyuntor al siguiente.</li><li><b>Neutro de cada diferencial:</b> su salida N va a una barra de neutro propia; de ah\xED sale el neutro de cada circuito de ese diferencial. Nunca se mezclan neutros de distintos diferenciales.</li><li><b>Tierra:</b> el conductor del electrodo llega a la barra de tierra; de ella sale la tierra de cada circuito. La tierra no pasa por protecciones y no se une al neutro.</li><li><b>Salidas:</b> cada circuito sale con fase (desde la salida de su disyuntor), neutro y tierra.</li><li><b>Luz de emergencia aut\xF3noma:</b> se conecta al circuito de alumbrado que vigila, sin interruptor. Mientras hay tensi\xF3n carga su bater\xEDa; si ese circuito se corta, enciende sola.</li><li><b>Colores:</b> fase rojo, negro o azul; neutro blanco; tierra verde/amarillo (RIC N\xB004).</li><li><b>Bornes:</b> m\xE1ximo 2 cables por borne de equipo; si necesitas m\xE1s, usa una barra.</li></ol>').concat(ILL.colores())));
+    return '<p class="eyebrow">Juego did\xE1ctico \xB7 RIC N\xB002, N\xB004, N\xB005 y N\xB010</p><h1>Armar y cablear el tablero</h1>\n  <p class="lead">El tablero parte vac\xEDo. T\xFA eliges cada protecci\xF3n en la caja de piezas (general, diferenciales, disyuntores, luz piloto y barras), la colocas donde quieras en los rieles y conectas cada fase, neutro y tierra hasta las salidas, incluida la luz de emergencia. \xABComprobar\xBB energiza el tablero y te dice qu\xE9 est\xE1 mal y por qu\xE9; ganas estrellas por hacerlo bien, r\xE1pido y sin pasarte del presupuesto.</p>\n  <div id="tgwrap">'.concat(tgHTML(), "</div>\n  ").concat(learn("C\xF3mo se arma y cablea un tablero domiciliario", "".concat(ILL.tablero(), '<ol class="hand"><li><b>Elegir:</b> general de 2 polos curva C con amperaje entre la demanda y lo que soporta el alimentador; diferenciales de 30 mA clase A con calibre ≥ general (m\xE1ximo 3 circuitos cada uno); un disyuntor por circuito con In ≥ 1,1 \xD7 I y ≤ Iz del cable (curva B alumbrado, C enchufes).</li><li><b>Ubicar:</b> lo usual es el general arriba a la izquierda, despu\xE9s la piloto y los diferenciales, cada grupo de disyuntores bajo su diferencial y las barras abajo. Puedes ubicarlos donde quieras, pero un orden claro facilita el trabajo.</li><li><b>Llegada → general:</b> fase y neutro del alimentador entran por arriba del general.</li><li><b>Luz piloto:</b> a la salida del general (fase y neutro).</li><li><b>General → diferenciales:</b> la salida del general alimenta la entrada de cada diferencial (fase al polo L, neutro al polo N); al siguiente se pasa con un puente desde la entrada del anterior.</li><li><b>Diferencial → disyuntores:</b> la salida de fase del diferencial va a la entrada de sus disyuntores, con puentes de uno al siguiente.</li><li><b>Neutro:</b> la salida N de cada diferencial va a su propia barra de neutro; de ah\xED sale el neutro de cada circuito de ese diferencial. Nunca se mezclan neutros de distintos diferenciales.</li><li><b>Tierra:</b> el conductor del electrodo llega a la barra de tierra y de ella sale la tierra de cada circuito. No pasa por protecciones y no se une al neutro.</li><li><b>Luz de emergencia aut\xF3noma:</b> en el circuito de alumbrado que vigila, sin interruptor; si ese circuito se corta, enciende sola.</li><li><b>Colores:</b> fase rojo, negro o azul; neutro blanco; tierra verde/amarillo. M\xE1ximo 2 cables por borne.</li></ol>').concat(ILL.colores())));
   }
   document.addEventListener("click", (e) => {
     if (cur !== "tg") return;
-    const el = e.target.closest && e.target.closest("[data-tgt],[data-tgw],[data-tgd],[data-tg]");
+    const el = e.target.closest && e.target.closest("[data-tgslot],[data-tgt],[data-tgw],[data-tgd],[data-tg]");
     if (!el) return;
     const lv = tgLvl(), st = tgSt();
+    tgPanOpen = true;
+    if (el.dataset.tgslot) {
+      const [r, m] = el.dataset.tgslot.split(":").map(Number);
+      tgSlot(r, m);
+      return;
+    }
     if (el.dataset.tgt) {
       tgTerm(el.dataset.tgt);
       return;
     }
-    tgPanOpen = true;
     if (el.dataset.tgw != null) {
       tgWire = tgWire === +el.dataset.tgw ? null : +el.dataset.tgw;
-      tgSel = null;
-      tgDev = null;
+      tgSel = tgDev = tgPlace = tgMove = null;
       tgRender();
       return;
     }
     if (el.dataset.tgd) {
-      tgDev = tgDev === el.dataset.tgd ? null : el.dataset.tgd;
-      tgSel = null;
-      tgWire = null;
+      if (tgPlace || tgMove) tgMsg = "Ese lugar est\xE1 ocupado: toca un espacio verde.";
+      else {
+        tgDev = tgDev === el.dataset.tgd ? null : el.dataset.tgd;
+        tgSel = null;
+        tgWire = null;
+      }
       tgRender();
-      if (tgDev && window.innerWidth < 900) {
+      if (tgDev && window.innerWidth < 900 && !tgFull) {
         const p = document.querySelector(".tgsel");
         if (p) p.scrollIntoView({ block: "nearest" });
       }
@@ -6044,15 +6216,34 @@ tr.selrow td{background:var(--copper-soft)}
       S.tg.col = el.dataset.k;
       save();
     } else if (a === "x") {
-      tgSel = null;
-      tgWire = null;
-      tgDev = null;
+      tgSel = tgWire = tgDev = tgPlace = tgMove = null;
     } else if (a === "zoom") tgZoom = !tgZoom;
     else if (a === "full") tgSetFull(!tgFull);
-    else if (a === "pclose") tgPanOpen = false;
-    else if (a === "lv") {
+    else if (a === "pclose") {
+      tgPanOpen = false;
+      tgCatOpen = false;
+    } else if (a === "cat") {
+      tgCatOpen = !tgCatOpen;
+      tgPlace = tgMove = null;
+      tgRender();
+      const c = document.getElementById("tgcat");
+      if (tgCatOpen && c && !tgFull) c.scrollIntoView({ block: "nearest" });
+      return;
+    } else if (a === "catk") S.tg.cat.k = el.dataset.k;
+    else if (a === "place") {
+      const k = S.tg.cat.k, sp = Object.assign({}, S.tg.cat[k] || {});
+      if (TG_SPEC[k].every(([f]) => sp[f] != null && sp[f] !== "")) {
+        tgPlace = { k, spec: sp };
+        tgSel = tgWire = tgDev = tgMove = null;
+        if (tgFull) tgCatOpen = false;
+        tgRender();
+        const b = document.querySelector(".tgtool");
+        if (b && !tgFull) b.scrollIntoView({ block: "start" });
+        return;
+      }
+    } else if (a === "lv") {
       S.tg.lv = el.dataset.k;
-      tgSel = tgWire = tgDev = null;
+      tgSel = tgWire = tgDev = tgPlace = tgMove = null;
       tgHintT = [];
       tgHist = [];
       tgChecked = null;
@@ -6066,51 +6257,76 @@ tr.selrow td{background:var(--copper-soft)}
       st.wires.splice(tgWire, 1);
       tgWire = null;
       save();
+    } else if (a === "move" && tgDev) {
+      tgMove = tgDev;
+      tgPlace = null;
+    } else if (a === "dup" && tgDev) {
+      const p = tgPart(st, tgDev);
+      if (p) {
+        S.tg.cat.k = p.k;
+        S.tg.cat[p.k] = Object.assign({}, p.spec);
+        tgPlace = { k: p.k, spec: Object.assign({}, p.spec) };
+        tgDev = null;
+      }
+    } else if (a === "pdel" && tgDev) {
+      tgPush();
+      const id = tgDev;
+      st.parts = st.parts.filter((p) => p.id !== id);
+      st.wires = st.wires.filter((w) => w.a !== id && w.b !== id && !w.a.startsWith(id + ".") && !w.b.startsWith(id + "."));
+      tgMsg = "".concat(tgDN(id, lv), " quitado junto con sus cables.");
+      tgDev = null;
+      save();
     } else if (a === "undo") {
       if (tgHist.length) {
         S.tg.st[S.tg.lv] = JSON.parse(tgHist.pop());
-        tgSel = tgWire = tgDev = null;
+        tgSel = tgWire = tgDev = tgPlace = tgMove = null;
         save();
       }
     } else if (a === "hint") {
       const hx = tgHintOf(lv, st);
       tgHintT = hx.t || [];
-      tgSel = tgWire = null;
+      tgSel = tgWire = tgPlace = tgMove = null;
       tgDev = hx.dev || null;
+      if (hx.cat) {
+        S.tg.cat.k = hx.cat;
+        tgCatOpen = true;
+      }
       tgMsg = hx.msg;
     } else if (a === "sol") {
       tgPush();
-      const so = tgSolution(lv, st);
-      st.dev = so.dev;
+      const so = tgFresh(lv, "1P");
+      st.parts = so.parts;
       st.wires = so.wires;
-      tgSel = tgWire = tgDev = null;
+      tgSel = tgWire = tgDev = tgPlace = tgMove = null;
       tgHintT = [];
-      tgMsg = "Soluci\xF3n cargada: f\xEDjate en el recorrido de cada color. Usa \xAB↶ Deshacer\xBB para volver a tu tablero.";
+      tgMsg = "Soluci\xF3n cargada: f\xEDjate en las piezas elegidas y en el recorrido de cada color. \xAB↶\xBB vuelve a tu tablero.";
       save();
     } else if (a === "reset") {
       if (!tgConfirm) tgConfirm = true;
       else {
         tgConfirm = false;
         tgPush();
+        st.parts = [];
         st.wires = [];
-        st.dev = {};
-        tgSel = tgWire = tgDev = null;
+        st.t0 = 0;
+        tgSel = tgWire = tgDev = tgPlace = tgMove = null;
         tgHintT = [];
         tgChecked = null;
         save();
       }
     } else if (a === "check") {
-      tgSel = tgWire = null;
+      tgSel = tgWire = tgPlace = tgMove = null;
       tgHintT = [];
       tgChecked = JSON.stringify(st);
-      const A = tgCheck(lv, st);
-      if (!A.errs.length) {
-        S.tg.done[S.tg.lv] = 1;
+      tgCheckT = Date.now();
+      const A = tgCheck(lv, st), s0 = A.errs.length ? 1 : A.warns.length ? 2 : 3, secs = st.t0 ? Math.round((tgCheckT - st.t0) / 1e3) : 0, b = S.tg.best[S.tg.lv];
+      if (!A.errs.length && (!b || s0 > b.s || s0 === b.s && secs < b.t)) {
+        S.tg.best[S.tg.lv] = { s: s0, t: secs, c: A.cost };
         save();
       }
       tgRender();
       const r = document.getElementById("tgres");
-      if (r && window.innerWidth < 900) r.scrollIntoView({ block: "start" });
+      if (r && window.innerWidth < 900 && !tgFull) r.scrollIntoView({ block: "start" });
       return;
     }
     tgRender();
@@ -6118,13 +6334,31 @@ tr.selrow td{background:var(--copper-soft)}
   document.addEventListener("change", (e) => {
     if (cur !== "tg") return;
     const el = e.target;
-    if (!el.dataset || !el.dataset.tgs) return;
-    const [id, f] = el.dataset.tgs.split("."), st = tgSt(), d = st.dev[id] || (st.dev[id] = {});
-    tgPush();
-    if (el.value === "") delete d[f];
-    else d[f] = f === "In" || f === "s" ? +el.value : el.value;
-    const L = tgLayout(tgLvl(), st);
-    st.wires = st.wires.filter((w) => L.T[w.a] && L.T[w.b]);
+    if (!el.dataset) return;
+    if (el.dataset.tgc) {
+      const c = S.tg.cat, k = c.k, f = el.dataset.tgc, sp = c[k] || (c[k] = {});
+      if (el.value === "") delete sp[f];
+      else sp[f] = f === "In" || f === "s" ? +el.value : el.value;
+      save();
+      tgRender();
+      return;
+    }
+    if (!el.dataset.tgp) return;
+    const [id, f] = el.dataset.tgp.split("."), st = tgSt(), p = tgPart(st, id);
+    if (!p) return;
+    const nv = f === "In" || f === "s" ? +el.value : el.value, sp2 = Object.assign({}, p.spec, { [f]: nv }), w = tgWd(p.k, sp2);
+    if (w !== tgWd(p.k, p.spec) && tgFit(st, p.r, p.m, w, p.id) !== p.m) {
+      const s0 = tgFit(st, p.r, p.m + w - 1, w, p.id);
+      if (s0 < 0) {
+        tgMsg = "No hay espacio al lado para un equipo de ".concat(w, " m\xF3dulos: mu\xE9velo primero a un lugar con m\xE1s espacio.");
+        tgRender();
+        return;
+      }
+      tgPush();
+      p.m = s0;
+    } else tgPush();
+    p.spec = sp2;
+    tgPrune(st);
     save();
     tgRender();
   });
