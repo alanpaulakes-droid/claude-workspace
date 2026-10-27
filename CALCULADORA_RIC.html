@@ -41,6 +41,15 @@
 .mod .mt{font-family:var(--f-display);font-weight:800;font-size:17px}.mod .md{font-size:13px;color:var(--muted)}
 .sh{font-size:18px;margin:18px 0 8px}
 .resume{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--copper);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 14px;font:600 14px var(--f-body);cursor:pointer;margin:0 0 12px}
+.chip.on{background:var(--copper);color:#fff;border-color:var(--copper)}
+.casaplan{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fbfcfd;margin:4px 0 10px}
+.casaplan svg{display:block;width:100%;height:auto;max-height:64vh;touch-action:none;user-select:none;-webkit-user-select:none}
+.casat input,.casat select{width:100%;min-width:64px;padding:4px 6px;font:inherit;font-size:13px}
+.casat tr.csel td{background:var(--copper-soft)}
+.pin{width:96px;text-align:right;padding:3px 6px;font:inherit;font-size:13px}
+.only-print{display:none}
+@media print{.only-print{display:inline}}
+table.bom tfoot td{border-top:1px solid var(--line);font-weight:600}
 .tpls{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:6px 0}
 .tpl{display:grid;grid-template-columns:40px minmax(0,1fr);gap:0 10px;align-items:center;text-align:left;border:1px dashed var(--line);background:var(--surface2);border-radius:12px;padding:10px 12px;cursor:pointer;font:inherit;color:inherit}
 .tpl:hover{border-style:solid;border-color:var(--copper)}.tpl .ti{grid-row:1/3;font-size:24px;text-align:center}.tpl .tt{font-weight:700;font-size:14.5px}.tpl .td{font-size:12.5px;color:var(--muted)}
@@ -678,7 +687,7 @@ tr.selrow td{background:var(--copper-soft)}
     return out;
   }
   function pgHome() {
-    const M = [["hub_proy", "\u2460", "Proyecto paso a paso", "Datos \u2192 recintos \u2192 circuitos \u2192 protecciones \u2192 tablero \u2192 tierra \u2192 ensayos"], ["hub_calc", "\u0192", "C\xE1lculos", "Corriente, ca\xEDda, conductor, protecci\xF3n, curvas, demanda"], ["cuadro", "\u25A6", "Tableros y cuadro de carga", "Planilla con disyuntor, diferencial y ducto"], ["tg", "\u26A1", "Armar tablero (juego)", "Conecta fase, neutro y tierra; luz piloto y de emergencia; comprueba"], ["sim", "\u25C8", "Simulador 3D", "Arma, cablea, empalma y mide una casa"], ["rep", "\u2399", "Reportes", "Cuadro, unilineal, materiales \xB7 PDF y Excel"], ["curso", "\u{1F393}", "Curso RIC completo", "Lecciones, juegos y examen: conductores, ductos, empalmes, planos y seguridad"], ["hub_learn", "\xA7", "Normativa y aprender", "Conceptos, componentes, glosario y tablas RIC"]];
+    const M = [["hub_proy", "\u2460", "Proyecto paso a paso", "Datos \u2192 recintos \u2192 circuitos \u2192 protecciones \u2192 tablero \u2192 tierra \u2192 ensayos"], ["hub_calc", "\u0192", "C\xE1lculos", "Corriente, ca\xEDda, conductor, protecci\xF3n, curvas, demanda"], ["cuadro", "\u25A6", "Tableros y cuadro de carga", "Planilla con disyuntor, diferencial y ducto"], ["tg", "\u26A1", "Armar tablero (juego)", "Conecta fase, neutro y tierra; luz piloto y de emergencia; comprueba"], ["casa", "\u{1F4D0}", "Dise\xF1ar mi vivienda", "Plano con medidas reales \u2192 materiales y costos \u2192 Simulador 3D"], ["sim", "\u25C8", "Simulador 3D", "Arma, cablea, empalma y mide una casa"], ["rep", "\u2399", "Reportes", "Cuadro, unilineal, materiales \xB7 PDF y Excel"], ["curso", "\u{1F393}", "Curso RIC completo", "Lecciones, juegos y examen: conductores, ductos, empalmes, planos y seguridad"], ["hub_learn", "\xA7", "Normativa y aprender", "Conceptos, componentes, glosario y tablas RIC"]];
     const last = (() => {
       try {
         return localStorage.getItem(KEY + "-last");
@@ -1401,9 +1410,10 @@ tr.selrow td{background:var(--copper-soft)}
     l_glosario: "Todas las abreviaturas",
     l_tablas: "Tablas RIC usadas",
     curso: "17 lecciones, juegos y examen",
+    casa: "Plano, medidas y costos",
     l_comp: "Una imagen por componente"
   };
-  const ICON = { t_curvas: "\u2307", t_corriente: "A", t_potencias: "\u03A3", t_caida: "\u0394V", t_conductor: "mm\xB2", t_proteccion: "In", t_cargas: "\u2630", t_demanda: "Pd", t_puntos: "N", t_tierra: "\u23DA", t_ohm: "\u03A9", l_conceptos: "?", l_comp: "\u25E7", l_glosario: "Aa", l_tablas: "\u25A6", curso: "\u{1F393}" };
+  const ICON = { casa: "\u{1F4D0}", t_curvas: "\u2307", t_corriente: "A", t_potencias: "\u03A3", t_caida: "\u0394V", t_conductor: "mm\xB2", t_proteccion: "In", t_cargas: "\u2630", t_demanda: "Pd", t_puntos: "N", t_tierra: "\u23DA", t_ohm: "\u03A9", l_conceptos: "?", l_comp: "\u25E7", l_glosario: "Aa", l_tablas: "\u25A6", curso: "\u{1F393}" };
   function pgHubProy() {
     return hub("Instalaci\xF3n paso a paso", "Sigue los 9 pasos en orden. Cada paso usa los datos de los anteriores.", PAGES.filter((p) => p.g === "proy").map((p) => Object.assign({ d: DESC[p.id] }, p)));
   }
@@ -1580,9 +1590,56 @@ tr.selrow td{background:var(--copper-soft)}
   };
   const APPL = { none: ["Nada conectado", 0], tv: ["Televisor", 120], pc: ["Computador", 300], lav: ["Lavadora", 500], plancha: ["Plancha", 1e3], micro: ["Microondas", 1200], estufa: ["Estufa", 1500], hervidor: ["Hervidor", 2e3], clima: ["Aire acondicionado", 2500] };
   const APPC = { tv: 2238513, pc: 5595246, lav: 15330800, plancha: 10181046, micro: 14014684, estufa: 12075823, hervidor: 3049153, clima: 16054007 };
-  const ROOMS = [{ id: "liv", n: "Living-comedor", x0: 0, x1: 5, z0: 0, z1: 4, t: "living", col: 14074530 }, { id: "coc", n: "Cocina", x0: 5, x1: 8, z0: 0, z1: 3, t: "cocina", col: 13883340 }, { id: "lav", n: "Lavadero", x0: 8, x1: 10, z0: 0, z1: 3, t: "lavadero", col: 13358296 }, { id: "pas", n: "Pasillo", x0: 5, x1: 8, z0: 3, z1: 4.5, t: "pasillo", col: 13681842 }, { id: "ban", n: "Ba\xF1o", x0: 8, x1: 10, z0: 3, z1: 4.5, t: "bano", col: 13031902 }, { id: "d1", n: "Dormitorio 1", x0: 0, x1: 5, z0: 4, z1: 7, t: "dormitorio", col: 14273202 }, { id: "d2", n: "Dormitorio 2", x0: 5, x1: 10, z0: 4.5, z1: 7, t: "dormitorio", col: 13812651 }];
-  const WALLS = [[0, 0, 3, 0], [3.9, 0, 10, 0], [0, 7, 10, 7], [0, 0, 0, 7], [10, 0, 10, 7], [5, 0, 5, 1.5], [5, 2.4, 5, 3], [5, 3, 5, 3.1], [5, 3.9, 5, 4.5], [5, 4.5, 5, 7], [0, 4, 3.8, 4], [4.6, 4, 5, 4], [5, 3, 6, 3], [6.8, 3, 8, 3], [8, 0, 8, 1.8], [8, 2.6, 8, 3], [8, 3, 8, 3.2], [8, 4, 8, 4.5], [8, 3, 10, 3], [5, 4.5, 6.2, 4.5], [7, 4.5, 10, 4.5]];
-  const WH = 2.5, TX = 1.7, V0 = 220, RHO = 0.018, YC = 2.64, MAXI = 60;
+  const ROOMS0 = [{ id: "liv", n: "Living-comedor", x0: 0, x1: 5, z0: 0, z1: 4, t: "living", col: 14074530 }, { id: "coc", n: "Cocina", x0: 5, x1: 8, z0: 0, z1: 3, t: "cocina", col: 13883340 }, { id: "lav", n: "Lavadero", x0: 8, x1: 10, z0: 0, z1: 3, t: "lavadero", col: 13358296 }, { id: "pas", n: "Pasillo", x0: 5, x1: 8, z0: 3, z1: 4.5, t: "pasillo", col: 13681842 }, { id: "ban", n: "Ba\xF1o", x0: 8, x1: 10, z0: 3, z1: 4.5, t: "bano", col: 13031902 }, { id: "d1", n: "Dormitorio 1", x0: 0, x1: 5, z0: 4, z1: 7, t: "dormitorio", col: 14273202 }, { id: "d2", n: "Dormitorio 2", x0: 5, x1: 10, z0: 4.5, z1: 7, t: "dormitorio", col: 13812651 }];
+  const DOORS0 = [["z", 0, 3, 3.9], ["x", 5, 1.5, 2.4], ["x", 5, 3.1, 3.9], ["z", 4, 3.8, 4.6], ["z", 3, 6, 6.8], ["x", 8, 1.8, 2.6], ["x", 8, 3.2, 4], ["z", 4.5, 6.2, 7]];
+  let ROOMS = ROOMS0, DOORS = DOORS0, WALLS = [], HW = 10, HD = 7, TX = 1.7, HNAME = "", houseKey = null;
+  function deriveWalls(R, D) {
+    const L = /* @__PURE__ */ new Map(), put = (ax, v, a, b) => {
+      const k = ax + Math.round(v * 100);
+      if (!L.has(k)) L.set(k, { ax, v, s: [] });
+      L.get(k).s.push([a, b]);
+    };
+    R.forEach((r) => {
+      put("z", r.z0, r.x0, r.x1);
+      put("z", r.z1, r.x0, r.x1);
+      put("x", r.x0, r.z0, r.z1);
+      put("x", r.x1, r.z0, r.z1);
+    });
+    const W = [];
+    L.forEach(({ ax, v, s }) => {
+      s.sort((p, q) => p[0] - q[0]);
+      let m = [];
+      s.forEach(([a, b]) => {
+        const l = m[m.length - 1];
+        if (l && a <= l[1] + 1e-6) l[1] = Math.max(l[1], b);
+        else m.push([a, b]);
+      });
+      D.filter((d) => d[0] === ax && Math.abs(d[1] - v) < 0.05).forEach((d) => {
+        m = m.flatMap(([a, b]) => d[3] <= a || d[2] >= b ? [[a, b]] : [[a, d[2]], [d[3], b]].filter(([p, q]) => q - p > 0.02));
+      });
+      m.forEach(([a, b]) => W.push(ax === "z" ? [a, v, b, v] : [v, a, v, b]));
+    });
+    return W;
+  }
+  function setHouse(h) {
+    const ok = h && Array.isArray(h.rooms) && h.rooms.length;
+    ROOMS = ok ? h.rooms.map((r) => ({ id: String(r.id), n: String(r.n || "Recinto"), t: r.t || "otro", x0: +r.x0, x1: +r.x1, z0: +r.z0, z1: +r.z1 })) : ROOMS0;
+    DOORS = ok ? (h.doors || []).map((d) => [d[0], +d[1], +d[2], +d[3]]) : DOORS0;
+    HW = Math.max(...ROOMS.map((r) => r.x1));
+    HD = Math.max(...ROOMS.map((r) => r.z1));
+    TX = ok && isFinite(+h.tx) ? +h.tx : 1.7;
+    HNAME = ok ? String(h.n || "Mi vivienda") : "";
+    WALLS = deriveWalls(ROOMS, DOORS);
+  }
+  function syncHouse() {
+    const h = S && S.sim2 && S.sim2.house || null, k = h ? JSON.stringify(h) : "";
+    if (k === houseKey) return false;
+    houseKey = k;
+    setHouse(h);
+    return true;
+  }
+  setHouse(null);
+  const WH = 2.5, V0 = 220, RHO = 0.018, YC = 2.64, MAXI = 60;
   const T_NAME = { lamp: "Luz", sw: "Interruptor", out: "Enchufe", box: "Caja", horno: "Horno" };
   const T_Y = { sw: 1.1, box: 2.3, out: 0.3, horno: 0.3 };
   const CNAME = { F: ["Fase", "rojo", "#D32F2F", 13840175], N: ["Neutro", "blanco", "#F4F4F4", 15921906], PE: ["Tierra de protecci\xF3n", "verde/amarillo", "#2E9E44", 3055172], R: ["Retorno", "rojo oscuro con franja", "#8E1B1B", 9313051] };
@@ -1702,6 +1759,7 @@ tr.selrow td{background:var(--copper-soft)}
   }
   if (!S.sim2) S.sim2 = sim2Blank();
   if (S.sim) delete S.sim;
+  syncHouse();
   function simSanitize(s) {
     const cid = new Set(s.circuits.map((c) => c.id));
     s.items = s.items.filter((i) => cid.has(i.c));
@@ -2147,7 +2205,6 @@ tr.selrow td{background:var(--copper-soft)}
       return '<button type="button" class="dst'.concat(here ? " here" : "").concat(r.sug ? " sug" : "", '" data-sa="row" data-b="').concat(b.id, '" data-g="').concat(r.i, '" style="--c:').concat(col(r.dom), '" ').concat(here ? "disabled" : "", "><i></i>").concat(esc(nm), " <small>").concat(r.g.length).concat(here ? " \xB7 aqu\xED" : "", "</small></button>");
     }).join(""), '<button type="button" class="dst" data-sa="newrow" data-b="').concat(b.id, '">\uFF0B Regleta nueva</button></div><div class="dsts"><button type="button" class="btn ghost small" data-sa="hint">\u{1F4A1} \xBFD\xF3nde va?</button><button type="button" class="btn ghost small" data-sa="cut">\u2702 Dejar suelto</button><button type="button" class="btn ghost small" data-sa="tsx">Cancelar</button></div>') : '<span class="hint">Toca un <b>cable</b> (c\xEDrculo de color) y elige en los botones a qu\xE9 <b>regleta</b> va. Tambi\xE9n puedes tocar la regleta en el dibujo. \u2702 suelta una regleta completa.'.concat(man ? "" : " Al tocar pasas a empalmes manuales.", "</span>"), "</div>\n   ").concat(errs.length ? '<div class="note bad" style="margin:8px 0"><b>'.concat(errs.length, ' error(es) en esta caja</b><ul class="whyl" style="margin-top:6px">').concat(errs.map((o) => '<li class="badc"><b>\u2717 '.concat(esc(o.t.replace(b.name + ": ", "")), "</b><br>").concat(esc(o.d), '<br><span class="hint">Por qu\xE9: ').concat(esc(o.w), "</span></li>")).join(""), "</ul></div>") : note(man ? "\u2713 Los empalmes de esta caja est\xE1n correctos." : "Empalmes autom\xE1ticos: la app los hace bien. Elige \xABLos hago yo\xBB para practicar.", "ok"), '\n   <div class="chips">').concat(st, '</div>\n   <div class="actions" style="border:0;padding:4px 0 0"><button type="button" class="btn ghost small" data-sa="undo" ').concat(simUndo.length ? "" : "disabled", ">\u21B6 Deshacer</button>").concat(man ? '<button type="button" class="btn ghost small" data-sa="empsol" data-b="'.concat(b.id, '">Ver soluci\xF3n</button><button type="button" class="btn ghost small" data-sa="empclr" data-b="').concat(b.id, '">Soltar todos</button><button type="button" class="btn ghost small" data-sa="wm" data-v="man0">Todas las cajas desde cero</button>') : "", '</div>\n   <div class="legend">').concat(leg, '<span class="lg">\u25CF = conexi\xF3n \xB7 cruce sin punto = no se tocan</span></div>\n   <details class="hud-d"><summary>\xBFC\xF3mo se empalma una caja?</summary><div class="hud-e">Cada regleta es un empalme (conector). En una caja van: una regleta de <b>fase</b> con la fase de la entrada y la de cada salida (tambi\xE9n la que va al interruptor); una de <b>neutro</b> con todos los neutros; una de <b>tierra</b> con todas las tierras; y una de <b>retorno</b> por cada interruptor, que une su retorno con el de la luz que controla. Nunca se une fase con neutro ni con tierra. La fase se muestra en rojo (la norma permite azul, negro o rojo para las fases) y el retorno en rojo oscuro con franja: es la misma fase que vuelve desde el interruptor.</div></details></div></div>');
   }
-  const DOORS = [["z", 0, 3, 3.9], ["x", 5, 1.5, 2.4], ["x", 5, 3.1, 3.9], ["z", 4, 3.8, 4.6], ["z", 3, 6, 6.8], ["x", 8, 1.8, 2.6], ["x", 8, 3.2, 4], ["z", 4.5, 6.2, 7]];
   const ODIAM = { 1.5: 3, 2.5: 3.6, 4: 4.2, 6: 4.8, 10: 6.2, 16: 7.4 };
   function tubeOf(c, e) {
     const d = +c.S >= 4 || e.cond.length > 3 ? 20 : 16;
@@ -2780,7 +2837,7 @@ tr.selrow td{background:var(--copper-soft)}
     return "".concat(s.circuits.length ? '<select data-sx="pc" aria-label="Circuito">'.concat(s.circuits.map((c, k) => '<option value="'.concat(c.id, '" ').concat(c.id === simPC ? "selected" : "", ">C").concat(k + 1, " ").concat(esc(c.n || ""), "</option>")).join(""), "</select>") : '<span class="pb-w">Primero agrega un disyuntor \u2192</span>', '<button type="button" class="pb-tab" data-sa="tabsheet">\u26A1 + Disyuntor / DR</button><button type="button" class="pb-tab" data-sa="pconn" title="C\xF3mo se conectan los puntos nuevos">').concat(s.mconn === false ? "\u{1F517} Cable: autom\xE1tico" : "\u{1F517} Cable: lo tiro yo", '</button><div class="pb-t">').concat([["lamp", "Luz"], ["sw", "Interruptor"], ["out", "Enchufe"], ["box", "Caja de distribuci\xF3n"], ["horno", "Horno"]].map(([k, l]) => '<button type="button" data-sa="ptype" data-k="'.concat(k, '" aria-pressed="').concat(simPT === k, '">').concat(l, "</button>")).join(""), "</div>");
   }
   function pgSim() {
-    return '<p class="eyebrow">Simulador</p><button class="btn calc" type="button" data-go="tg" style="float:right;margin:0 0 8px 8px">⚡ Juego: armar tablero</button><h1>Taller 3D de instalaci\xF3n domiciliaria</h1>\n  <p class="lead">Una casa de 70 m\xB2 con 7 recintos. Coloca luces, interruptores, enchufes, cajas de derivaci\xF3n y horno donde quieras, con\xE9ctalos, energiza y mide con instrumentos.</p>\n  <div class="simwrap" id="simwrap" tabindex="0" aria-label="Vista 3D. Arrastra para girar, dos dedos o clic derecho para desplazar, rueda o pellizco para acercar. Flechas y W A S D tambi\xE9n mueven la vista."><canvas id="simcv"></canvas>\n   <div class="sim-hud" id="simhud"></div><div class="sim-fade" id="simfade"></div><div class="sim-legend" id="simleg" hidden></div><div class="sim-cut" id="simcut" '.concat(simCut == null ? "hidden" : "", '><span>Corte a</span><input type="range" id="simcutr" min="0.3" max="2.6" step="0.05" value="').concat(simCut == null ? 1.2 : simCut, '" aria-label="Altura de corte de los muros"><b id="simcutv">').concat(nf(simCut == null ? 1.2 : simCut, 2), ' m</b></div>\n   <div class="sim-joy" id="simjoy" ').concat(simMode === "walk" ? "" : "hidden", ' aria-label="Joystick: arrastra para caminar"><div class="jk"></div></div><div class="sim-toast" id="simtoast" aria-live="polite"></div>\n   <div class="sim-nav"><select data-sx="go" aria-label="Ir a"><option value="">Ir a\u2026</option><option value="g">Toda la casa</option><option value="p">Planta</option><option value="t">Tablero</option>').concat(ROOMS.map((r) => '<option value="'.concat(r.id, '">').concat(r.n, "</option>")).join(""), '</select>\n    <div class="nb"><button type="button" data-sa="zin" aria-label="Acercar">+</button><button type="button" data-sa="zout" aria-label="Alejar">\u2212</button><button type="button" data-sa="rl" aria-label="Girar a la izquierda">\u27F2</button><button type="button" data-sa="rr" aria-label="Girar a la derecha">\u27F3</button><button type="button" data-sa="up" aria-label="Ver m\xE1s desde arriba">\u2912</button><button type="button" data-sa="dn" aria-label="Ver m\xE1s de lado">\u2913</button></div>\n    <div class="nb nbq"><button type="button" data-sa="mode" id="simmode" aria-pressed="').concat(simMode === "walk", '" title="Modo libre / caminar">').concat(simMode === "walk" ? '<span class="ic">\u{1F6B6}</span><small>Andar</small>' : '<span class="ic">\u2725</span><small>Libre</small>', '</button><button type="button" data-sa="fs" id="simfs" title="Pantalla completa"><span class="ic">\u26F6</span><small>Grande</small></button><button type="button" data-sa="undo" id="simundo" ').concat(simUndo.length ? "" : "disabled", ' title="Deshacer"><span class="ic">\u21B6</span><small>Atr\xE1s</small></button><button type="button" data-sa="conn" aria-pressed="').concat(simConn, '" title="Ver conexiones del tablero"><span class="ic">\u26A1</span><small>Cables</small></button><button type="button" data-sa="vista" id="simvbtn" title="Opciones de vista"><span class="ic">\u2630</span><small>Vista</small></button><button type="button" data-sa="errs" id="simerr" class="eb" title="Errores">\u26A0</button></div>\n    <div class="sim-vista" id="simvista" hidden><button type="button" data-sa="walls">Muros: ').concat(["tenues", "medios", "s\xF3lidos"][simWall], '</button><button type="button" data-sa="ceil">Techo: ').concat(["oculto", "tenue", "medio", "s\xF3lido"][simCeil], '</button><button type="button" data-sa="dsolid">Tubos: ').concat(simDuctSolid ? "s\xF3lidos" : "transp.", '</button><button type="button" data-sa="heat" id="simheat">\u{1F321} Calor: ').concat(["no", "carga", "ca\xEDda"][simHeat], '</button><button type="button" data-sa="xray" aria-pressed="').concat(simCut != null, '">\u2702 Corte</button><button type="button" data-sa="labels" aria-pressed="false">Nombres</button></div></div>\n   <div class="sim-sheet" id="simsheet" hidden><div class="sh-h"><b id="shtitle"></b><button type="button" data-sa="shx" aria-label="Cerrar">\u2715</button></div><div class="sh-b" id="shbody"></div></div>\n   <div class="sim-place" id="simplace" ').concat(simTool === "place" ? "" : "hidden", ">").concat(placeBar(), '</div>\n   <div class="sim-place sim-meas" id="simmeas" ').concat(INSTR.includes(simTool) ? "" : "hidden", '><div class="pb-t">').concat(INSTR.map((k) => {
+    return '<p class="eyebrow">Simulador</p><button class="btn calc" type="button" data-go="tg" style="float:right;margin:0 0 8px 8px">⚡ Juego: armar tablero</button><h1>Taller 3D de instalaci\xF3n domiciliaria</h1>\n  <p class="lead">'.concat(HNAME ? esc(HNAME) + ":" : "Una casa de", " ").concat(n0(ROOMS.reduce((a, r) => a + rArea(r), 0)), " m\xB2 con ").concat(ROOMS.length) + ' recintos. Coloca luces, interruptores, enchufes, cajas de derivaci\xF3n y horno donde quieras, con\xE9ctalos, energiza y mide con instrumentos.</p>\n  <div class="simwrap" id="simwrap" tabindex="0" aria-label="Vista 3D. Arrastra para girar, dos dedos o clic derecho para desplazar, rueda o pellizco para acercar. Flechas y W A S D tambi\xE9n mueven la vista."><canvas id="simcv"></canvas>\n   <div class="sim-hud" id="simhud"></div><div class="sim-fade" id="simfade"></div><div class="sim-legend" id="simleg" hidden></div><div class="sim-cut" id="simcut" '.concat(simCut == null ? "hidden" : "", '><span>Corte a</span><input type="range" id="simcutr" min="0.3" max="2.6" step="0.05" value="').concat(simCut == null ? 1.2 : simCut, '" aria-label="Altura de corte de los muros"><b id="simcutv">').concat(nf(simCut == null ? 1.2 : simCut, 2), ' m</b></div>\n   <div class="sim-joy" id="simjoy" ').concat(simMode === "walk" ? "" : "hidden", ' aria-label="Joystick: arrastra para caminar"><div class="jk"></div></div><div class="sim-toast" id="simtoast" aria-live="polite"></div>\n   <div class="sim-nav"><select data-sx="go" aria-label="Ir a"><option value="">Ir a\u2026</option><option value="g">Toda la casa</option><option value="p">Planta</option><option value="t">Tablero</option>').concat(ROOMS.map((r) => '<option value="'.concat(r.id, '">').concat(r.n, "</option>")).join(""), '</select>\n    <div class="nb"><button type="button" data-sa="zin" aria-label="Acercar">+</button><button type="button" data-sa="zout" aria-label="Alejar">\u2212</button><button type="button" data-sa="rl" aria-label="Girar a la izquierda">\u27F2</button><button type="button" data-sa="rr" aria-label="Girar a la derecha">\u27F3</button><button type="button" data-sa="up" aria-label="Ver m\xE1s desde arriba">\u2912</button><button type="button" data-sa="dn" aria-label="Ver m\xE1s de lado">\u2913</button></div>\n    <div class="nb nbq"><button type="button" data-sa="mode" id="simmode" aria-pressed="').concat(simMode === "walk", '" title="Modo libre / caminar">').concat(simMode === "walk" ? '<span class="ic">\u{1F6B6}</span><small>Andar</small>' : '<span class="ic">\u2725</span><small>Libre</small>', '</button><button type="button" data-sa="fs" id="simfs" title="Pantalla completa"><span class="ic">\u26F6</span><small>Grande</small></button><button type="button" data-sa="undo" id="simundo" ').concat(simUndo.length ? "" : "disabled", ' title="Deshacer"><span class="ic">\u21B6</span><small>Atr\xE1s</small></button><button type="button" data-sa="conn" aria-pressed="').concat(simConn, '" title="Ver conexiones del tablero"><span class="ic">\u26A1</span><small>Cables</small></button><button type="button" data-sa="vista" id="simvbtn" title="Opciones de vista"><span class="ic">\u2630</span><small>Vista</small></button><button type="button" data-sa="errs" id="simerr" class="eb" title="Errores">\u26A0</button></div>\n    <div class="sim-vista" id="simvista" hidden><button type="button" data-sa="walls">Muros: ').concat(["tenues", "medios", "s\xF3lidos"][simWall], '</button><button type="button" data-sa="ceil">Techo: ').concat(["oculto", "tenue", "medio", "s\xF3lido"][simCeil], '</button><button type="button" data-sa="dsolid">Tubos: ').concat(simDuctSolid ? "s\xF3lidos" : "transp.", '</button><button type="button" data-sa="heat" id="simheat">\u{1F321} Calor: ').concat(["no", "carga", "ca\xEDda"][simHeat], '</button><button type="button" data-sa="xray" aria-pressed="').concat(simCut != null, '">\u2702 Corte</button><button type="button" data-sa="labels" aria-pressed="false">Nombres</button></div></div>\n   <div class="sim-sheet" id="simsheet" hidden><div class="sh-h"><b id="shtitle"></b><button type="button" data-sa="shx" aria-label="Cerrar">\u2715</button></div><div class="sh-b" id="shbody"></div></div>\n   <div class="sim-place" id="simplace" ').concat(simTool === "place" ? "" : "hidden", ">").concat(placeBar(), '</div>\n   <div class="sim-place sim-meas" id="simmeas" ').concat(INSTR.includes(simTool) ? "" : "hidden", '><div class="pb-t">').concat(INSTR.map((k) => {
       const t = TOOLS3D.find((x) => x[0] === k);
       return '<button type="button" data-sa="tool" data-k="'.concat(k, '" aria-pressed="').concat(k === simTool, '"><b>').concat(t[1], "</b> ").concat(t[2], "</button>");
     }).join(""), '</div></div>\n   <div class="sim-tools" id="simtools">').concat(MAINT.map((k) => {
@@ -3196,9 +3253,9 @@ tr.selrow td{background:var(--copper-soft)}
     const G = { duct: new THREE.CylinderGeometry(0.03, 0.03, 1, 8), wire: new THREE.CylinderGeometry(68e-4, 68e-4, 1, 6), hit: new THREE.CylinderGeometry(0.065, 0.065, 1, 6), joint: new THREE.SphereGeometry(0.03, 8, 6), cord: new THREE.CylinderGeometry(5e-3, 5e-3, 1, 5) };
     const MAT = { F: M(13840175), N: M(15921906), PE: M(3055172), R: M(9313051), duct: M(11187389, { transparent: true, opacity: 0.3, depthWrite: false }), sel: M(15237690, { transparent: true, opacity: 0.55, depthWrite: false, emissive: 11555370, emissiveIntensity: 0.4 }), hot: M(16757504, { emissive: 16748288, emissiveIntensity: 1 }), hit: new THREE.MeshBasicMaterial({ visible: false }), white: M(16250871), dark: M(2236962), box: M(13686234), cord: M(2236962) };
     const box = (w, h, d, m) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
-    const stat = [], place = [], ground = new THREE.Mesh(new THREE.PlaneGeometry(18, 14), M(10465418));
+    const stat = [], place = [], ground = new THREE.Mesh(new THREE.PlaneGeometry(HW + 8, HD + 7), M(10465418));
     ground.rotation.x = -Math.PI / 2;
-    ground.position.set(5, -0.01, 3.5);
+    ground.position.set(HW / 2, -0.01, HD / 2);
     sc.add(ground);
     const ftex = (kind) => {
       const c = document.createElement("canvas");
@@ -3292,25 +3349,25 @@ tr.selrow td{background:var(--copper-soft)}
       });
     });
     const med = box(0.34, 0.48, 0.16, M(14014684));
-    med.position.set(0.7, 1.5, -0.14);
+    med.position.set(TX - 1, 1.5, -0.14);
     med.userData = { k: "medidor" };
     sc.add(med);
     stat.push(med);
     const lm = txtSprite("Medidor", { fixed: true, h: 0.03 });
-    lm.position.set(0.7, 1.86, -0.2);
+    lm.position.set(TX - 1, 1.86, -0.2);
     sc.add(lm);
     const cam2 = box(0.36, 0.04, 0.36, M(9410204));
-    cam2.position.set(0.3, 0.02, -0.9);
+    cam2.position.set(TX - 1.4, 0.02, -0.9);
     cam2.userData = { k: "rod" };
     sc.add(cam2);
     stat.push(cam2);
     const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.28, 10), M(13137203, { metalness: 0.6, roughness: 0.4 }));
-    rod.position.set(0.3, 0.14, -0.9);
+    rod.position.set(TX - 1.4, 0.14, -0.9);
     rod.userData = { k: "rod" };
     sc.add(rod);
     stat.push(rod);
     const lr = txtSprite("Tierra", { fixed: true, h: 0.03 });
-    lr.position.set(0.3, 0.45, -0.9);
+    lr.position.set(TX - 1.4, 0.45, -0.9);
     sc.add(lr);
     const mk = new THREE.Mesh(new THREE.SphereGeometry(0.03, 12, 12), new THREE.MeshBasicMaterial({ color: 14826797, depthTest: false }));
     mk.renderOrder = 12;
@@ -3340,10 +3397,10 @@ tr.selrow td{background:var(--copper-soft)}
         o.sp.visible = far || o.r === inr || o.err;
       });
     };
-    V.c = { th: 0.55, ph: 0.85, rad: 15, x: 5, y: 0.6, z: 3.5 };
+    V.c = { th: 0.55, ph: 0.85, rad: 15 * Math.max(1, Math.max(HW, HD) / 10), x: HW / 2, y: 0.6, z: HD / 2 };
     V.g = Object.assign({}, V.c);
     V.mode = "orbit";
-    V.w = { x: 2.5, z: 2, yaw: Math.PI, pit: -0.08 };
+    V.w = { x: TX + 0.8, z: 2, yaw: Math.PI, pit: -0.08 };
     V.wg = Object.assign({}, V.w);
     V.joy = { x: 0, y: 0 };
     V.keys = /* @__PURE__ */ new Set();
@@ -3381,7 +3438,7 @@ tr.selrow td{background:var(--copper-soft)}
       t = Math.max(0, Math.min(1, t));
       return Math.hypot(x - a[0] - t * dx, z - a[1] - t * dz);
     };
-    const okAt = (x, z) => x > 0.2 && x < 9.8 && z > 0.2 && z < 6.8 && WALLS.every((a) => segD(x, z, a) > 0.22);
+    const okAt = (x, z) => x > 0.2 && x < HW - 0.2 && z > 0.2 && z < HD - 0.2 && !!roomOf(x, z) && WALLS.every((a) => segD(x, z, a) > 0.22);
     const wMove = (o, dx, dz) => {
       const n = Math.max(1, Math.ceil(Math.hypot(dx, dz) / 0.05));
       for (let i = 0; i < n; i++) {
@@ -3421,8 +3478,9 @@ tr.selrow td{background:var(--copper-soft)}
         let x = V.c.x, z = V.c.z, yaw = V.c.th + Math.PI;
         const rm = roomOf(x, z);
         if (V.c.rad > 8 || !rm || !okAt(x, z)) {
-          x = 2.6;
-          z = 2.6;
+          const r0 = roomOf(TX, 0.5) || ROOMS[0];
+          x = (r0.x0 + r0.x1) / 2;
+          z = (r0.z0 + r0.z1) / 2;
           yaw = Math.PI + 0.25;
         }
         V.w = { x, z, yaw, pit: -0.1 };
@@ -3444,9 +3502,9 @@ tr.selrow td{background:var(--copper-soft)}
     const clampG = () => {
       const g = V.g;
       g.ph = Math.min(1.52, Math.max(0.04, g.ph));
-      g.rad = Math.min(32, Math.max(1, g.rad));
-      g.x = Math.min(13, Math.max(-3, g.x));
-      g.z = Math.min(10, Math.max(-3, g.z));
+      g.rad = Math.min(32 * Math.max(1, Math.max(HW, HD) / 10), Math.max(1, g.rad));
+      g.x = Math.min(HW + 3, Math.max(-3, g.x));
+      g.z = Math.min(HD + 3, Math.max(-3, g.z));
       g.y = Math.min(3, Math.max(0, g.y));
     };
     V.set = (o, instant) => {
@@ -3476,8 +3534,8 @@ tr.selrow td{background:var(--copper-soft)}
       }
       const fit = Math.max(1, Math.min(1.7, 1.3 / (cam.aspect || 1.5)));
       if (k === "t") V.set({ x: TX, y: simConn ? 1.42 : 1.5, z: 0.1, th: 0, ph: 1.5, rad: (simConn ? 1.8 : 1.55) * fit });
-      else if (k === "p") V.set({ x: 5, y: 0, z: 3.5, th: 0, ph: 0.05, rad: 14 * fit });
-      else if (k === "g") V.set({ x: 5, y: 0.6, z: 3.5, th: 0.55, ph: 0.85, rad: 15 * fit });
+      else if (k === "p") V.set({ x: HW / 2, y: 0, z: HD / 2, th: 0, ph: 0.05, rad: 14 * fit * Math.max(0.7, Math.max(HW / 10, HD / 7)) });
+      else if (k === "g") V.set({ x: HW / 2, y: 0.6, z: HD / 2, th: 0.55, ph: 0.85, rad: 15 * fit * Math.max(0.7, Math.max(HW / 10, HD / 7)) });
       else {
         const r = ROOMS.find((q) => q.id === k);
         if (r) V.set({ x: (r.x0 + r.x1) / 2, y: 0.6, z: (r.z0 + r.z1) / 2, th: 0.35, ph: 0.5, rad: (Math.max(r.x1 - r.x0, r.z1 - r.z0) * 1.1 + 3.2) * fit });
@@ -4102,8 +4160,8 @@ tr.selrow td{background:var(--copper-soft)}
       V.pick.push(grp);
       return grp;
     };
-    run([[0.7, 1.5, -0.06], [0.7, 1.5, 0.13], [TX - W / 2 - 0.02, 1.5, 0.13]], ["F", "N"], { k: "alim" }, [0, 0, 1], false, false);
-    const pe = [[TX - W / 2 + 0.05, 1.02, 0.1], [TX - W / 2 + 0.05, 0.04, 0.1], [TX - W / 2 + 0.05, 0.04, -0.9], [0.3, 0.04, -0.9]];
+    run([[TX - 1, 1.5, -0.06], [TX - 1, 1.5, 0.13], [TX - W / 2 - 0.02, 1.5, 0.13]], ["F", "N"], { k: "alim" }, [0, 0, 1], false, false);
+    const pe = [[TX - W / 2 + 0.05, 1.02, 0.1], [TX - W / 2 + 0.05, 0.04, 0.1], [TX - W / 2 + 0.05, 0.04, -0.9], [TX - 1.4, 0.04, -0.9]];
     for (let i = 0; i < pe.length - 1; i++) g.add(seg(v(pe[i]), v(pe[i + 1]), G.wire, MAT.PE));
     {
       const DT = { pvc: [11187389, 0, 0.85], emt: [13620698, 0.85, 0.3], flex: [15239471, 0, 0.7] }[s.duct || "pvc"], dm = MAT.duct;
@@ -4292,6 +4350,11 @@ tr.selrow td{background:var(--copper-soft)}
     }, 7e3);
   }
   function simRefresh(msgs) {
+    if (syncHouse() && cur === "sim") {
+      render();
+      if (msgs && msgs.length) simToast(msgs);
+      return;
+    }
     const p = document.getElementById("simpanel");
     if (p) {
       const op = [...p.querySelectorAll("details.item")].map((d) => d.open);
@@ -4779,7 +4842,7 @@ tr.selrow td{background:var(--copper-soft)}
         return;
       }
       simConfirm = "";
-      S.sim2 = Object.assign(sim2Blank(), { done: s.done, score: s.score });
+      S.sim2 = Object.assign(sim2Blank(), { done: s.done, score: s.score }, s.house ? { house: s.house } : {});
       simInsp = null;
       simSel = null;
       simPC = null;
@@ -4947,11 +5010,12 @@ tr.selrow td{background:var(--copper-soft)}
       { t: "Zona de la curva " + t.cv, f: "t\xE9rmica 1,13\u2013".concat(m1, " In \xB7 magn\xE9tica \u2265 ").concat(m2, " In"), s: "".concat(nf(k, 2), " \xD7 In \u2192 ").concat(z.z), r: z.t, why: z.d }
     ]);
   }
-  const TPLS = [["casa", "\u{1F3E0}", "Vivienda completa", "70 m\xB2 \xB7 4 circuitos"], ["cocina", "\u{1F373}", "Remodelaci\xF3n cocina y logia", "Circuito exclusivo + horno"], ["clima", "\u2744", "Climatizaci\xF3n", "2 aires acondicionados"], ["vacia", "\u25A2", "Casa vac\xEDa", "Parte desde cero"]];
+  const TPLS = [["casa", "\u{1F3E0}", "Vivienda completa", "70 m\xB2 \xB7 4 circuitos"], ["cocina", "\u{1F373}", "Remodelaci\xF3n cocina y logia", "Circuito exclusivo + horno"], ["clima", "\u2744", "Climatizaci\xF3n", "2 aires acondicionados"], ["vacia", "\u25A2", "Casa vac\xEDa", "Parte desde cero"], ["mia", "\u270F", "Mi vivienda", "La que dise\xF1aste, vac\xEDa"]];
   function simTemplate(k) {
     if (k === "casa") return sim2Example();
     const s = sim2Blank();
     if (k === "vacia") return s;
+    if (k === "mia") return Object.assign(s, { house: casaToHouse(S.casa || casaDef()) });
     const C = (n, In, cv, Sx, dr) => {
       const c = { id: s.nid++, n, In, cv, pc: 6, S: Sx, dr, ds: 30, cl: "A", nc: "dr", pe: true, on: true };
       s.circuits.push(c);
@@ -5014,14 +5078,19 @@ tr.selrow td{background:var(--copper-soft)}
     return { ev, errs, rows, Pi, Pd: ev.fd.Pd, Id: ev.Idm, dva };
   }
   function simBOM(s) {
-    const ev = simEval(s), cond = {}, tubo = {}, add = (o, k, v) => o[k] = (o[k] || 0) + v, COLN = { F: "rojo (fase)", N: "blanco (neutro)", PE: "verde/amarillo (tierra)", R: "rojo oscuro (retorno)" };
+    const ev = simEval(s), cond = {}, tubo = {}, cK = {}, tK = {}, add = (o, k, v) => o[k] = (o[k] || 0) + v, COLN = { F: "rojo (fase)", N: "blanco (neutro)", PE: "verde/amarillo (tierra)", R: "rojo oscuro (retorno)" };
     let curvas = 0;
     ev.E.forEach((e) => {
       const c = s.circuits[e.ci];
       if (!c) return;
-      e.cond.forEach((q) => add(cond, "".concat(sStr(+c.S), " mm\xB2 \xB7 ").concat(COLN[q]), e.L));
-      const d = +c.S >= 4 || e.cond.length > 3 ? 20 : 16;
-      add(tubo, "Tubo ".concat({ pvc: "PVC conduit", emt: "met\xE1lico EMT", flex: "flexible corrugado" }[s.duct || "pvc"], " ").concat(d, " mm").concat(s.inst === "vista" ? " (a la vista)" : " (embutido)"), e.L);
+      e.cond.forEach((q) => {
+        const k = "".concat(sStr(+c.S), " mm\xB2 \xB7 ").concat(COLN[q]);
+        add(cond, k, e.L);
+        cK[k] = "cab:" + +c.S;
+      });
+      const d = +c.S >= 4 || e.cond.length > 3 ? 20 : 16, tk = "Tubo ".concat({ pvc: "PVC conduit", emt: "met\xE1lico EMT", flex: "flexible corrugado" }[s.duct || "pvc"], " ").concat(d, " mm").concat(s.inst === "vista" ? " (a la vista)" : " (embutido)");
+      add(tubo, tk, e.L);
+      tK[tk] = "tub:" + (s.duct || "pvc") + d;
       curvas += Math.max(0, e.pts.length - 2);
     });
     const La = +s.alim.L || 0;
@@ -5037,31 +5106,32 @@ tr.selrow td{background:var(--copper-soft)}
       regl += boxExpected(s, b).length;
     });
     const R = [];
-    const P = (g, d, q, u) => R.push({ g, d, q, u });
-    Object.entries(cond).sort().forEach(([k, v]) => P("Conductores", "Cable ".concat(k), Math.ceil(v * 1.1), "m"));
-    Object.entries(tubo).forEach(([k, v]) => P("Canalizaci\xF3n", k, Math.ceil(v * 1.1), "m"));
-    P("Canalizaci\xF3n", "Curvas y uniones", curvas, "u");
-    if (s.inst === "vista") P("Canalizaci\xF3n", "Abrazaderas de fijaci\xF3n (\u2248 1 cada metro)", Math.ceil(Object.values(tubo).reduce((a, v) => a + v, 0)), "u");
-    P("Cajas", "Cajas de derivaci\xF3n", it("box"), "u");
-    P("Cajas", "Cajas de embutir (interruptores y enchufes)", it("sw") + it("out") + it("horno"), "u");
-    P("Cajas", "Cajas de centro (luces)", it("lamp"), "u");
-    P("Aparatos", "Interruptores 9/12", it("sw"), "u");
-    P("Aparatos", "Enchufes 2P+T 10/16 A", it("out"), "u");
-    P("Aparatos", "Salida de fuerza para horno", it("horno"), "u");
-    P("Aparatos", "Portal\xE1mparas / centros de luz", it("lamp"), "u");
-    P("Empalmes", "Conectores para empalmes (uno por regleta)", regl, "u");
-    P("Tablero", "Interruptor general ".concat(s.sys === "tri" ? "4P" : "2P", " ").concat(s.gen.In, " A curva C 6 kA"), 1, "u");
+    const P = (g, d, q, u, k) => R.push({ g, d, q, u, k });
+    Object.entries(cond).sort().forEach(([k, v]) => P("Conductores", "Cable ".concat(k), Math.ceil(v * 1.1), "m", cK[k] || "cab:" + +s.alim.S));
+    Object.entries(tubo).forEach(([k, v]) => P("Canalizaci\xF3n", k, Math.ceil(v * 1.1), "m", tK[k]));
+    P("Canalizaci\xF3n", "Curvas y uniones", curvas, "u", "curva");
+    if (s.inst === "vista") P("Canalizaci\xF3n", "Abrazaderas de fijaci\xF3n (\u2248 1 cada metro)", Math.ceil(Object.values(tubo).reduce((a, v) => a + v, 0)), "u", "abraz");
+    P("Cajas", "Cajas de derivaci\xF3n", it("box"), "u", "cdev");
+    P("Cajas", "Cajas de embutir (interruptores y enchufes)", it("sw") + it("out") + it("horno"), "u", "cemb");
+    P("Cajas", "Cajas de centro (luces)", it("lamp"), "u", "ccen");
+    P("Aparatos", "Interruptores 9/12", it("sw"), "u", "sw");
+    P("Aparatos", "Enchufes 2P+T 10/16 A", it("out"), "u", "out");
+    P("Aparatos", "Salida de fuerza para horno", it("horno"), "u", "horno");
+    P("Aparatos", "Portal\xE1mparas / centros de luz", it("lamp"), "u", "lamp");
+    P("Empalmes", "Conectores para empalmes (uno por regleta)", regl, "u", "conec");
+    P("Tablero", "Interruptor general ".concat(s.sys === "tri" ? "4P" : "2P", " ").concat(s.gen.In, " A curva C 6 kA"), 1, "u", s.sys === "tri" ? "ig4" : "ig2");
     drs.forEach((d) => {
       const cc = s.circuits.filter((c) => c.dr === d);
-      P("Tablero", "Diferencial 2P ".concat(drIn(s), " A ").concat(Math.max(...cc.map((c) => +c.ds)), " mA clase ").concat(cc[0].cl), 1, "u");
+      P("Tablero", "Diferencial 2P ".concat(drIn(s), " A ").concat(Math.max(...cc.map((c) => +c.ds)), " mA clase ").concat(cc[0].cl), 1, "u", PREC0["dr:" + cc[0].cl] ? "dr:" + cc[0].cl : "dr:A");
     });
     const tm = {};
     s.circuits.forEach((c) => add(tm, "Autom\xE1tico 1P+N ".concat(c.In, " A curva ").concat(c.cv, " ").concat(c.pc, " kA"), 1));
-    Object.entries(tm).forEach(([k, v]) => P("Tablero", k, v, "u"));
-    P("Tablero", "Tablero embutido de ".concat(modT, " m\xF3dulos DIN (usa ").concat(mods, ", +20 % reserva)"), 1, "u");
-    P("Tablero", "Barra de neutro y barra de tierra", 2, "u");
-    P("Puesta a tierra", 'Barra Copperweld 5/8" \xD7 1,5 m con c\xE1mara de registro', 1, "u");
-    P("Puesta a tierra", "Conductor de tierra al electrodo (secci\xF3n seg\xFAn RIC N\xB006)", 5, "m");
+    Object.entries(tm).forEach(([k, v]) => P("Tablero", k, v, "u", "tm"));
+    P("Tablero", "Tablero embutido de ".concat(modT, " m\xF3dulos DIN (usa ").concat(mods, ", +20 % reserva)"), 1, "u", "tab" + modT);
+    P("Tablero", "Barra de neutro y barra de tierra", 2, "u", "barra");
+    P("Puesta a tierra", 'Barra Copperweld 5/8" \xD7 1,5 m con c\xE1mara de registro', 1, "u", "copper");
+    P("Puesta a tierra", "Conductor de tierra al electrodo (secci\xF3n seg\xFAn RIC N\xB006)", 5, "m", "tierra");
+    P("Mano de obra", "Instalaci\xF3n por punto (referencial)", it("lamp") + it("sw") + it("out") + it("horno"), "u", "mo");
     return R;
   }
   function repHTML() {
@@ -5069,17 +5139,15 @@ tr.selrow td{background:var(--copper-soft)}
     if (!s || !s.circuits.length) return '<h1>Reportes</h1><div class="empty">A\xFAn no hay instalaci\xF3n en el simulador. Elige una plantilla para empezar.</div>'.concat(tplButtons());
     const r = simReport(s), B = simBOM(s), ok = !r.errs.length;
     const cq = '<div class="tbl-wrap"><table class="pt rep"><thead><tr><th>Circ.</th>'.concat(s.sys === "tri" ? "<th>Fase</th>" : "", "<th>Nombre</th><th>Luces</th><th>Enchufes</th><th>P proy. (W)</th><th>Is (A)</th><th>Autom\xE1tico</th><th>Diferencial</th><th>Cable</th><th>Iz (A)</th><th>Largo (m)</th><th>\u0394V total</th><th></th></tr></thead><tbody>").concat(r.rows.map((x) => "<tr><td><b>".concat(x.n, "</b></td>").concat(s.sys === "tri" ? "<td>".concat(x.ph, "</td>") : "", "<td>").concat(esc(x.nom), '</td><td class="num">').concat(x.luces, '</td><td class="num">').concat(x.enchufes, '</td><td class="num">').concat(n0(x.P), '</td><td class="num">').concat(nf(x.Is, 2), "</td><td>").concat(x.In, " A \xB7 ").concat(x.cv, " \xB7 ").concat(x.pc, " kA</td><td>").concat(x.dr, "</td><td>").concat(sStr(x.S), ' mm\xB2</td><td class="num">').concat(x.Iz, '</td><td class="num">').concat(n1(x.L), '</td><td class="num ').concat(x.dv > 5 ? "bad" : "", '">').concat(nf(x.dv, 2), " %</td><td>").concat(x.err ? '<span class="pill bad">\u2717 '.concat(x.err, "</span>") : '<span class="pill ok">\u2713</span>', "</td></tr>")).join(""), '\n   <tr class="tot"><td colspan="').concat(s.sys === "tri" ? 5 : 4, '"><b>Total instalado</b></td><td class="num"><b>').concat(n0(r.Pi), '</b></td><td class="num">').concat(nf(r.Pi / V0, 2), '</td><td colspan="7">Demanda ').concat(n0(r.Pd), " W (").concat(nf(r.Id, 1), " A) \xB7 General ").concat(s.gen.In, " A \xB7 Alimentador ").concat(sStr(+s.alim.S), " mm\xB2, ").concat(n1(+s.alim.L), " m, \u0394V ").concat(nf(r.dva, 2), " %</td></tr></tbody></table></div>");
-    const grp = [...new Set(B.map((b) => b.g))];
-    const bom = grp.map((g) => '<tr class="grp"><td colspan="3">'.concat(g, "</td></tr>") + B.filter((b) => b.g === g && b.q > 0).map((b) => "<tr><td>".concat(esc(b.d), '</td><td class="num"><b>').concat(b.q, "</b></td><td>").concat(b.u, "</td></tr>")).join("")).join("");
     return '<p class="eyebrow no-print">Reportes y entregables</p><h1>'.concat(esc(S.proj && S.proj.nombre || "Instalaci\xF3n del simulador"), '</h1>\n  <div class="rep-act no-print"><button class="btn" type="button" data-act="rpdf">\u{1F5A8} PDF / Imprimir</button><button class="btn" type="button" data-act="rxls">\u2B07 Excel</button><button class="btn ghost" type="button" data-act="rcopy">\u29C9 Copiar cuadro</button><button class="btn ghost" type="button" data-act="rjson">\u{1F4BE} Guardar proyecto</button><label class="btn ghost" style="cursor:pointer">\u{1F4C2} Abrir proyecto<input type="file" accept=".json,application/json" id="rjsonin" hidden></label><span class="hint" id="rmsg"></span></div>\n  ').concat(kpis([kpi("Circuitos", s.circuits.length), kpi("P instalada", n0(r.Pi), "W"), kpi("Demanda", n0(r.Pd), "W"), kpi("General", s.gen.In, "A", r.Id > s.gen.In ? "bad" : "ok"), kpi("\u0394V m\xE1x.", nf(Math.max(0, ...r.rows.map((x) => x.dv)), 2), "%", Math.max(0, ...r.rows.map((x) => x.dv)) > 5 ? "bad" : "ok"), kpi("Observaciones", r.errs.length, "", ok ? "ok" : "bad")]), '\n  <section class="card rep-s"><h2>1 \xB7 Cuadro de carga</h2>').concat(cq, '<p class="hint">Proyecci\xF3n: 100 W por centro de luz, 250 W por enchufe; equipos de 1.500 W o m\xE1s con su potencia. Demanda seg\xFAn RIC N\xB003, Tabla 3.1.</p></section>\n  ').concat(s.sys === "tri" ? '<section class="card rep-s"><h2>Balance de fases</h2><div class="phb">'.concat(["R", "S", "T"].map((f) => {
       const mx = Math.max(1, r.ev.Pph.R, r.ev.Pph.S, r.ev.Pph.T);
       return "<div><b>".concat(f, '</b><span style="width:').concat(r.ev.Pph[f] / mx * 100, "%;background:").concat({ R: "#1F5FBF", S: "#333", T: "#C0392B" }[f], '"></span><em>').concat(n0(r.ev.Pph[f]), " W \xB7 ").concat(nf(r.ev.Pph[f] / V0, 1), " A</em></div>");
-    }).join(""), "</div></section>") : "", '\n  <section class="card rep-s"><h2>2 \xB7 Diagrama unilineal del tablero</h2>').concat(simConnSVG(s), '</section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">3 \xB7 Plano de planta</h2><button class="btn ghost small no-print" type="button" data-act="rsvg">\u2B07 Plano (.svg)</button></div><div class="plan">').concat(planSVG(s), '</div><p class="hint">L\xEDnea punteada: recorrido autom\xE1tico por el entretecho. L\xEDnea continua: tubo que trazaste con la herramienta Trazar.</p></section>\n  <section class="card rep-s"><h2>4 \xB7 Listado de materiales</h2><div class="tbl-wrap"><table class="pt bom"><thead><tr><th>Material</th><th>Cantidad</th><th>Unidad</th></tr></thead><tbody>').concat(bom, '</tbody></table></div><p class="hint">Metros con 10 % de holgura, medidos sobre los recorridos del simulador.</p></section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">5 \xB7 Memoria explicativa</h2><button class="btn ghost small no-print" type="button" data-act="rmem">\u2B07 Memoria (.html, abre en Word)</button></div><details class="memd" open><summary class="no-print">Ver / ocultar</summary><div class="memo">').concat(memoriaHTML(s, false), '</div></details></section>\n  <section class="card rep-s"><h2>6 \xB7 Observaciones del inspector</h2>').concat(ok ? note("\u2713 La instalaci\xF3n cumple todo lo que revisa la app.", "ok") : '<ol class="obs">'.concat(r.errs.map((o) => "<li><b>".concat(esc(o.t), "</b> \u2014 ").concat(esc(o.d), ' <span class="hint">').concat(esc(o.w), "</span></li>")).join(""), "</ol>"), '</section>\n  <p class="hint no-print">Los datos salen del <button class="linkb" type="button" data-go="sim">Simulador 3D</button>. Cambia la instalaci\xF3n all\xED y este reporte se actualiza solo.</p><div class="no-print">').concat(testsHTML(), "</div>");
+    }).join(""), "</div></section>") : "", '\n  <section class="card rep-s"><h2>2 \xB7 Diagrama unilineal del tablero</h2>').concat(simConnSVG(s), '</section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">3 \xB7 Plano de planta</h2><button class="btn ghost small no-print" type="button" data-act="rsvg">\u2B07 Plano (.svg)</button></div><div class="plan">').concat(planSVG(s), '</div><p class="hint">L\xEDnea punteada: recorrido autom\xE1tico por el entretecho. L\xEDnea continua: tubo que trazaste con la herramienta Trazar.</p></section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">4 \xB7 Materiales y costos</h2><button class="btn ghost small no-print" type="button" data-cs="prst">\u21BA Restaurar precios</button></div>').concat(bomTable(B, true), '<p class="hint">Metros con 10 % de holgura, medidos sobre los recorridos del simulador. Precios unitarios referenciales en pesos chilenos, netos: c\xE1mbialos por los de tu proveedor y el total se recalcula (se guardan con el proyecto).</p></section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">5 \xB7 Memoria explicativa</h2><button class="btn ghost small no-print" type="button" data-act="rmem">\u2B07 Memoria (.html, abre en Word)</button></div><details class="memd" open><summary class="no-print">Ver / ocultar</summary><div class="memo">').concat(memoriaHTML(s, false), '</div></details></section>\n  <section class="card rep-s"><h2>6 \xB7 Observaciones del inspector</h2>').concat(ok ? note("\u2713 La instalaci\xF3n cumple todo lo que revisa la app.", "ok") : '<ol class="obs">'.concat(r.errs.map((o) => "<li><b>".concat(esc(o.t), "</b> \u2014 ").concat(esc(o.d), ' <span class="hint">').concat(esc(o.w), "</span></li>")).join(""), "</ol>"), '</section>\n  <p class="hint no-print">Los datos salen del <button class="linkb" type="button" data-go="sim">Simulador 3D</button>. Cambia la instalaci\xF3n all\xED y este reporte se actualiza solo.</p><div class="no-print">').concat(testsHTML(), "</div>");
   }
   const CCOL = ["#1f77b4", "#d62728", "#2ca02c", "#9467bd", "#ff7f0e", "#8c564b", "#e377c2", "#17becf"];
   function planSVG(s, opt) {
     opt = opt || {};
-    const K = 62, M = 40, W = 10 * K + M * 2 + 170, H = 7 * K + M * 2, X = (x) => M + x * K, Z = (z) => M + z * K, ev = simEval(s);
+    const K = Math.min(62, 620 / Math.max(HW, 1)), M = 40, W = HW * K + M * 2 + 170, H = Math.max(HD * K + M * 2, 474 + 18 * s.circuits.length), X = (x) => M + x * K, Z = (z) => M + z * K, ev = simEval(s);
     let g = '<rect x="0" y="0" width="'.concat(W, '" height="').concat(H, '" fill="#fff"/>');
     ROOMS.forEach((r) => {
       g += '<rect x="'.concat(X(r.x0), '" y="').concat(Z(r.z0), '" width="').concat((r.x1 - r.x0) * K, '" height="').concat((r.z1 - r.z0) * K, '" fill="#f6f3ec"/><text x="').concat(X(r.x0) + 8, '" y="').concat(Z(r.z1) - 20, '" font-size="11" fill="#8a8170" font-weight="700">').concat(esc(r.n.toUpperCase()), '</text><text x="').concat(X(r.x0) + 8, '" y="').concat(Z(r.z1) - 8, '" font-size="10" fill="#a39a88">').concat(n1(rArea(r)), " m\xB2</text>");
@@ -5111,7 +5179,7 @@ tr.selrow td{background:var(--copper-soft)}
       g += sym(it);
     });
     g += '<rect x="'.concat(X(TX) - tabW(s) * K / 2, '" y="').concat(Z(0) + 3, '" width="').concat(tabW(s) * K, '" height="9" fill="#333"/><text x="').concat(X(TX), '" y="').concat(Z(0) + 24, '" text-anchor="middle" font-size="10" font-weight="700">TABLERO</text>');
-    const lx = 10 * K + M * 2 + 10;
+    const lx = HW * K + M * 2 + 10;
     let ly = M;
     g += '<text x="'.concat(lx, '" y="').concat(ly, '" font-size="12" font-weight="800">SIMBOLOG\xCDA</text>');
     const L = (svg, t) => {
@@ -5132,7 +5200,7 @@ tr.selrow td{background:var(--copper-soft)}
       ly += 18;
       g += '<line x1="'.concat(lx, '" y1="').concat(ly - 4, '" x2="').concat(lx + 20, '" y2="').concat(ly - 4, '" stroke="').concat(CCOL[k % CCOL.length], '" stroke-width="3"/><text x="').concat(lx + 26, '" y="').concat(ly, '" font-size="10.5">C').concat(k + 1).concat(s.sys === "tri" ? " (" + (c.ph || "R") + ")" : "", " ").concat(esc((c.n || "").slice(0, 16)), "</text>");
     });
-    g += '<text x="'.concat(M, '" y="').concat(H - 10, '" font-size="10" fill="#666">Plano de planta \xB7 instalaci\xF3n el\xE9ctrica \xB7 escala gr\xE1fica: 1 m = ').concat(K, ' px \xB7 generado por la Calculadora RIC</text><line x1="').concat(X(8), '" y1="').concat(H - 24, '" x2="').concat(X(9), '" y2="').concat(H - 24, '" stroke="#333" stroke-width="2"/><text x="').concat(X(8.5), '" y="').concat(H - 28, '" text-anchor="middle" font-size="9">1 m</text>');
+    g += '<text x="'.concat(M, '" y="').concat(H - 10, '" font-size="10" fill="#666">Plano de planta \xB7 instalaci\xF3n el\xE9ctrica \xB7 escala gr\xE1fica: 1 m = ').concat(Math.round(K), ' px \xB7 generado por la Calculadora RIC</text><line x1="').concat(X(HW - 2), '" y1="').concat(H - 24, '" x2="').concat(X(HW - 1), '" y2="').concat(H - 24, '" stroke="#333" stroke-width="2"/><text x="').concat(X(HW - 1.5), '" y="').concat(H - 28, '" text-anchor="middle" font-size="9">1 m</text>');
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '.concat(W, " ").concat(H, '" font-family="Arial,Helvetica,sans-serif" role="img" aria-label="Plano de planta">').concat(g, "</svg>");
   }
   function memoriaHTML(s, standalone) {
@@ -5243,7 +5311,7 @@ tr.selrow td{background:var(--copper-soft)}
     return repHTML();
   }
   function tplButtons() {
-    return '<div class="tpls">'.concat(TPLS.map(([k, ic, t, d]) => '<button type="button" class="tpl" data-act="tpl" data-k="'.concat(k, '"><span class="ti">').concat(ic, '</span><span class="tt">').concat(t, '</span><span class="td">').concat(d, "</span></button>")).join(""), "</div>");
+    return '<div class="tpls"><button type="button" class="tpl" data-go="casa" style="border:1.5px solid var(--copper);background:var(--copper-soft)"><span class="ti">\u{1F4D0}</span><span class="tt">Dise\xF1ar mi vivienda</span><span class="td">Medidas, recintos, puertas \u2192 3D y costos</span></button>'.concat(TPLS.map(([k, ic, t, d]) => '<button type="button" class="tpl" data-act="tpl" data-k="'.concat(k, '"><span class="ti">').concat(ic, '</span><span class="tt">').concat(t, '</span><span class="td">').concat(d, "</span></button>")).join(""), "</div>");
   }
   async function dlFile(name, blob) {
     let d = null;
@@ -5277,8 +5345,8 @@ tr.selrow td{background:var(--copper-soft)}
   }
   const dlMsg = (r, okTxt) => r === "ok" ? okTxt : r === "declined" ? "Descarga cancelada." : "No se pudo descargar aqu\xED: usa \xABCopiar cuadro\xBB.";
   function repCSV() {
-    const r = simReport(S.sim2), B = simBOM(S.sim2), t = (a) => a.map((v) => String(v).replace(/\t/g, " ")).join("	");
-    return [t(["Circuito", "Nombre", "Luces", "Enchufes", "P proyectada (W)", "Is (A)", "In (A)", "Curva", "Icu (kA)", "Diferencial", "Secci\xF3n (mm\xB2)", "Iz (A)", "Largo (m)", "\u0394V total (%)", "Observaciones"])].concat(r.rows.map((x) => t([x.n, x.nom, x.luces, x.enchufes, Math.round(x.P), x.Is.toFixed(2).replace(".", ","), x.In, x.cv, x.pc, x.dr, String(x.S).replace(".", ","), x.Iz, x.L.toFixed(1).replace(".", ","), x.dv.toFixed(2).replace(".", ","), x.err]))).concat(["", t(["Material", "Cantidad", "Unidad"])]).concat(B.filter((b) => b.q > 0).map((b) => t([b.d, b.q, b.u]))).join("\n");
+    const r = simReport(S.sim2), B = simBOM(S.sim2), cst = bomCost(B), t = (a) => a.map((v) => String(v).replace(/\t/g, " ")).join("	");
+    return [t(["Circuito", "Nombre", "Luces", "Enchufes", "P proyectada (W)", "Is (A)", "In (A)", "Curva", "Icu (kA)", "Diferencial", "Secci\xF3n (mm\xB2)", "Iz (A)", "Largo (m)", "\u0394V total (%)", "Observaciones"])].concat(r.rows.map((x) => t([x.n, x.nom, x.luces, x.enchufes, Math.round(x.P), x.Is.toFixed(2).replace(".", ","), x.In, x.cv, x.pc, x.dr, String(x.S).replace(".", ","), x.Iz, x.L.toFixed(1).replace(".", ","), x.dv.toFixed(2).replace(".", ","), x.err]))).concat(["", t(["Material", "Cantidad", "Unidad", "Precio unitario (CLP)", "Subtotal (CLP)"])]).concat(B.filter((b) => b.q > 0).map((b) => t([b.d, b.q, b.u, b.pu, b.st]))).concat([t(["Neto", "", "", "", Math.round(cst.net)]), t(["IVA 19 %", "", "", "", Math.round(cst.iva)]), t(["Total", "", "", "", Math.round(cst.tot)])]).join("\n");
   }
   let XLSX_P = null;
   function loadXLSX() {
@@ -5302,7 +5370,8 @@ tr.selrow td{background:var(--copper-soft)}
       const cq = [["Circuito", "Nombre", "Luces", "Enchufes", "P proyectada (W)", "Is (A)", "In (A)", "Curva", "Icu (kA)", "Diferencial", "Secci\xF3n (mm\xB2)", "Iz (A)", "Largo (m)", "\u0394V total (%)", "Observaciones"]].concat(r.rows.map((x) => [x.n, x.nom, x.luces, x.enchufes, Math.round(x.P), +x.Is.toFixed(2), x.In, x.cv, x.pc, x.dr, x.S, x.Iz, +x.L.toFixed(1), +x.dv.toFixed(2), x.err]));
       cq.push([], ["Total instalado (W)", Math.round(r.Pi)], ["Demanda RIC N\xB003 (W)", Math.round(r.Pd)], ["Corriente de demanda (A)", +r.Id.toFixed(1)], ["Interruptor general (A)", +s.gen.In], ["Alimentador (mm\xB2)", +s.alim.S], ["\u0394V alimentador (%)", +r.dva.toFixed(2)]);
       X.utils.book_append_sheet(wb, X.utils.aoa_to_sheet(cq), "Cuadro de carga");
-      X.utils.book_append_sheet(wb, X.utils.aoa_to_sheet([["Grupo", "Material", "Cantidad", "Unidad"]].concat(B.filter((b) => b.q > 0).map((b) => [b.g, b.d, b.q, b.u]))), "Materiales");
+      const cst = bomCost(B);
+      X.utils.book_append_sheet(wb, X.utils.aoa_to_sheet([["Grupo", "Material", "Cantidad", "Unidad", "Precio unitario (CLP)", "Subtotal (CLP)"]].concat(B.filter((b) => b.q > 0).map((b) => [b.g, b.d, b.q, b.u, b.pu, b.st])).concat([[], ["", "Neto", "", "", "", Math.round(cst.net)], ["", "IVA 19 %", "", "", "", Math.round(cst.iva)], ["", "Total", "", "", "", Math.round(cst.tot)]])), "Materiales y costos");
       X.utils.book_append_sheet(wb, X.utils.aoa_to_sheet([["Observaci\xF3n", "Detalle", "Por qu\xE9"]].concat(r.errs.map((o) => [o.t, o.d, o.w]))), "Observaciones");
       const out = X.write(wb, { bookType: "xlsx", type: "array" });
       return dlFile("instalacion-ric.xlsx", new Blob([out], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })).then((rr) => {
@@ -7027,6 +7096,558 @@ tr.selrow td{background:var(--copper-soft)}
     save();
     render(true);
   });
+  const PREC0 = { "cab:1.5": 450, "cab:2.5": 650, "cab:4": 1e3, "cab:6": 1500, "cab:10": 2500, "cab:16": 3900, "cab:25": 6e3, "tub:pvc16": 450, "tub:pvc20": 600, "tub:emt16": 1800, "tub:emt20": 2300, "tub:flex16": 350, "tub:flex20": 450, curva: 350, abraz: 120, cdev: 900, cemb: 450, ccen: 500, sw: 3500, out: 3800, horno: 6500, lamp: 1500, conec: 250, ig2: 12e3, ig4: 32e3, "dr:AC": 28e3, "dr:A": 42e3, "dr:F": 6e4, "dr:B": 18e4, tm: 6500, tab8: 15e3, tab12: 2e4, tab18: 28e3, tab24: 35e3, tab36: 55e3, tab48: 75e3, barra: 4500, copper: 28e3, tierra: 1600, mo: 15e3 };
+  const precio = (k) => {
+    const v = S.precios && S.precios[k];
+    return v != null && v !== "" && isFinite(+v) ? +v : PREC0[k] || 0;
+  };
+  const clp = (v) => "$" + n0(v);
+  function bomCost(B) {
+    let net = 0;
+    B.forEach((b) => {
+      b.pu = b.k ? precio(b.k) : 0;
+      b.st = b.pu * b.q;
+      net += b.st;
+    });
+    return { net, iva: net * 0.19, tot: net * 1.19 };
+  }
+  function pInput(k) {
+    return '<input class="pin" type="number" min="0" step="10" inputmode="numeric" data-pk="' + k + '" value="' + precio(k) + '" aria-label="Precio unitario">';
+  }
+  function bomTable(B, edit) {
+    const c = bomCost(B), grp = [...new Set(B.map((b) => b.g))];
+    const rows = grp.map((g) => {
+      const its = B.filter((b) => b.g === g && b.q > 0);
+      if (!its.length) return "";
+      return '<tr class="grp"><td colspan="5">' + g + "</td></tr>" + its.map((b) => "<tr><td>" + esc(b.d) + '</td><td class="num"><b>' + b.q + "</b></td><td>" + b.u + '</td><td class="num">' + (edit && b.k ? '<span class="no-print">' + pInput(b.k) + '</span><span class="only-print">' + clp(b.pu) + "</span>" : clp(b.pu)) + '</td><td class="num">' + clp(b.st) + "</td></tr>").join("");
+    }).join("");
+    return '<div class="tbl-wrap"><table class="pt bom"><thead><tr><th>Material</th><th>Cant.</th><th>Unid.</th><th>Precio unit.</th><th>Subtotal</th></tr></thead><tbody>' + rows + '</tbody><tfoot><tr><td colspan="4">Neto</td><td class="num">' + clp(c.net) + '</td></tr><tr><td colspan="4">IVA 19 %</td><td class="num">' + clp(c.iva) + '</td></tr><tr class="tot"><td colspan="4"><b>Total</b></td><td class="num"><b>' + clp(c.tot) + "</b></td></tr></tfoot></table></div>";
+  }
+  const CASA_COL = { dormitorio: "#dbe6f2", living: "#efe4cf", comedor: "#efe4cf", estar: "#efe4cf", cocina: "#f4dfc8", lavadero: "#dcebee", bano: "#d4ebe2", pasillo: "#e6e6e6", otro: "#ececec" };
+  const CIRC = ["pasillo", "living", "comedor", "estar"];
+  const rd = (v) => Math.round(v * 100) / 100;
+  let casaMode = "mover", casaSel = null, casaConf = "", casaDrag = null, casaMsg = "", casaDragged = false;
+  const casaR = (id, n, t, x, z, w, l) => ({ id, n, t, x, z, w, l });
+  function casaDef() {
+    return { n: "Casa base 70 m\xB2", tx: 1.7, rooms: ROOMS0.map((r) => casaR(r.id, r.n, r.t, r.x0, r.z0, r.x1 - r.x0, r.z1 - r.z0)), doors: DOORS0.map((d) => d.slice()) };
+  }
+  const CASA_TPL = [
+    ["base", "Casa base 70 m\xB2", "La del simulador", casaDef],
+    ["depto", "Departamento ≈ 50 m\xB2", "1 dormitorio", () => casaAuto({ n: "Departamento 50 m\xB2", tx: 1.2, rooms: [casaR("r1", "Living-comedor", "living", 0, 0, 4.5, 3.2), casaR("r2", "Dormitorio", "dormitorio", 0, 3.2, 4.5, 3), casaR("r3", "Cocina", "cocina", 4.5, 0, 3.5, 2.4), casaR("r4", "Hall", "pasillo", 4.5, 2.4, 1.2, 3.8), casaR("r5", "Ba\xF1o", "bano", 5.7, 2.4, 2.3, 2), casaR("r6", "Logia", "lavadero", 5.7, 4.4, 2.3, 1.8)], doors: [] })],
+    ["casa3", "Casa ≈ 90 m\xB2", "3 dormitorios, 2 ba\xF1os", () => casaAuto({ n: "Casa 3 dormitorios 90 m\xB2", tx: 1.5, rooms: [casaR("r1", "Living-comedor", "living", 0, 0, 5.5, 4), casaR("r2", "Cocina", "cocina", 5.5, 0, 3.5, 4), casaR("r3", "Logia", "lavadero", 9, 0, 3, 2.2), casaR("r4", "Ba\xF1o 2", "bano", 9, 2.2, 3, 1.8), casaR("r5", "Pasillo", "pasillo", 3.5, 4, 8.5, 1.1), casaR("r6", "Dormitorio 1", "dormitorio", 0, 4, 3.5, 3.5), casaR("r7", "Dormitorio 2", "dormitorio", 3.5, 5.1, 3.5, 2.4), casaR("r8", "Ba\xF1o", "bano", 7, 5.1, 2, 2.4), casaR("r9", "Dormitorio 3", "dormitorio", 9, 5.1, 3, 2.4)], doors: [] })],
+    ["cero", "Desde cero", "Un recinto para empezar", () => casaAuto({ n: "Mi vivienda", tx: 1, rooms: [casaR("r1", "Living", "living", 0, 0, 4, 4)], doors: [] })]
+  ];
+  const cBox = (r) => ({ x0: r.x, x1: r.x + r.w, z0: r.z, z1: r.z + r.l });
+  function casaShared(a, b) {
+    const A = cBox(a), B = cBox(b), e = 0.02;
+    for (const [p0, p1, q0, q1, ax] of [[A.x1, B.x0, 0, 0, "x"], [A.x0, B.x1, 0, 0, "x"], [A.z1, B.z0, 0, 0, "z"], [A.z0, B.z1, 0, 0, "z"]]) {
+      if (Math.abs(p0 - p1) > e) continue;
+      const m0 = ax === "x" ? Math.max(A.z0, B.z0) : Math.max(A.x0, B.x0), m1 = ax === "x" ? Math.min(A.z1, B.z1) : Math.min(A.x1, B.x1);
+      if (m1 - m0 > e) return [ax, p0, m0, m1];
+    }
+    return null;
+  }
+  const doorOn = (sh, w) => {
+    const c = (sh[2] + sh[3]) / 2;
+    w = Math.min(w, sh[3] - sh[2] - 0.2);
+    return [sh[0], rd(sh[1]), rd(c - w / 2), rd(c + w / 2)];
+  };
+  function casaRoot(c) {
+    const z0 = Math.min(...c.rooms.map((r) => r.z));
+    return c.rooms.filter((r) => Math.abs(r.z - z0) < 0.02).sort((a, b) => CIRC.includes(b.t) - CIRC.includes(a.t) || b.w * b.l - a.w * a.l)[0];
+  }
+  function casaAuto(c) {
+    const R = c.rooms, D = [];
+    c.doors = D;
+    if (!R.length) return c;
+    const root = casaRoot(c), z0 = root.z, lo = root.x + 0.6, hi = root.x + root.w - 0.6;
+    if (hi >= lo) {
+      let cx = [c.tx + 1.4, c.tx - 1.4].find((v) => v >= lo && v <= hi);
+      if (cx == null) cx = Math.abs(lo - c.tx) > Math.abs(hi - c.tx) ? lo : hi;
+      D.push(["z", rd(z0), rd(cx - 0.45), rd(cx + 0.45)]);
+    }
+    const inT = /* @__PURE__ */ new Set([root.id]);
+    for (; ; ) {
+      let best = null;
+      R.forEach((a) => {
+        if (!inT.has(a.id)) return;
+        R.forEach((b) => {
+          if (inT.has(b.id)) return;
+          const sh = casaShared(a, b);
+          if (!sh || sh[3] - sh[2] < 1) return;
+          const sc = (CIRC.includes(a.t) ? 0 : 2) + (a.t === "bano" ? 4 : 0) + (b.t === "bano" && !CIRC.includes(a.t) ? 3 : 0) - Math.min(sh[3] - sh[2], 3) * 0.1;
+          if (!best || sc < best.sc) best = { sc, sh, b };
+        });
+      });
+      if (!best) break;
+      inT.add(best.b.id);
+      D.push(doorOn(best.sh, 0.8));
+    }
+    return c;
+  }
+  function casaNorm(c) {
+    if (!c.rooms.length) return;
+    const mx = Math.min(...c.rooms.map((r) => r.x)), mz = Math.min(...c.rooms.map((r) => r.z));
+    if (Math.abs(mx) < 1e-9 && Math.abs(mz) < 1e-9) return;
+    c.rooms.forEach((r) => {
+      r.x = rd(r.x - mx);
+      r.z = rd(r.z - mz);
+    });
+    c.doors = c.doors.map((d) => d[0] === "x" ? ["x", rd(d[1] - mx), rd(d[2] - mz), rd(d[3] - mz)] : ["z", rd(d[1] - mz), rd(d[2] - mx), rd(d[3] - mx)]);
+    c.tx = rd(c.tx - mx);
+  }
+  function casaPrune(c) {
+    const n = c.doors.length;
+    c.doors = c.doors.filter((d) => c.rooms.some((r) => {
+      const b = cBox(r);
+      return d[0] === "x" ? (Math.abs(b.x0 - d[1]) < 0.02 || Math.abs(b.x1 - d[1]) < 0.02) && d[2] >= b.z0 - 0.02 && d[3] <= b.z1 + 0.02 : (Math.abs(b.z0 - d[1]) < 0.02 || Math.abs(b.z1 - d[1]) < 0.02) && d[2] >= b.x0 - 0.02 && d[3] <= b.x1 + 0.02;
+    }));
+    return n - c.doors.length;
+  }
+  function casaToHouse(c) {
+    const k = JSON.parse(JSON.stringify(c));
+    casaNorm(k);
+    return { n: k.n || "Mi vivienda", tx: rd(k.tx), rooms: k.rooms.map((r) => ({ id: r.id, n: r.n, t: r.t, x0: rd(r.x), x1: rd(r.x + r.w), z0: rd(r.z), z1: rd(r.z + r.l) })), doors: k.doors.map((d) => d.slice()) };
+  }
+  const cArea = (r) => r.w * r.l;
+  const cMinC = (r) => minCentros({ area: cArea(r) });
+  const cMinE = (r) => minEnchufes({ tipo: r.t, perim: 2 * (r.w + r.l) });
+  function casaFront(c) {
+    const z0 = Math.min(...c.rooms.map((r) => r.z));
+    return c.rooms.filter((r) => Math.abs(r.z - z0) < 0.02);
+  }
+  function casaCheck(c) {
+    const E = [], Wn = [], R = c.rooms;
+    R.forEach((r) => {
+      if (!(r.w >= 0.9 && r.l >= 0.9)) E.push(r.n + ": cada lado debe medir al menos 0,9 m.");
+      if (r.w > 30 || r.l > 30) E.push(r.n + ": m\xE1ximo 30 m por lado.");
+    });
+    for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++) {
+      const a = cBox(R[i]), b = cBox(R[j]), ox = Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0), oz = Math.min(a.z1, b.z1) - Math.max(a.z0, b.z0);
+      if (ox > 0.02 && oz > 0.02) E.push(R[i].n + " y " + R[j].n + " se superponen (" + n1(ox * oz) + " m\xB2).");
+    }
+    if (!R.length) E.push("Agrega al menos un recinto.");
+    if (!R.length) return { E, Wn };
+    const fr = casaFront(c), onF = fr.find((r) => c.tx >= r.x + 0.5 && c.tx <= r.x + r.w - 0.5);
+    if (!onF) E.push("El tablero debe ir en el muro del frente (arriba en el plano), a 0,5 m o m\xE1s de una esquina.");
+    const z0 = fr[0].z;
+    const ext = c.doors.filter((d) => d[0] === "z" && Math.abs(d[1] - z0) < 0.02);
+    if (!ext.length) Wn.push("No hay puerta de entrada en el frente.");
+    if (ext.some((d) => c.tx + 0.55 > d[2] && c.tx - 0.55 < d[3])) E.push("El tablero queda sobre el vano de la puerta de entrada: mu\xE9velo.");
+    const adj = (a, b) => {
+      const sh = casaShared(a, b);
+      return sh && c.doors.some((d) => d[0] === sh[0] && Math.abs(d[1] - sh[1]) < 0.02 && d[2] >= sh[2] - 0.02 && d[3] <= sh[3] + 0.02);
+    };
+    const seen = new Set(fr.filter((r) => ext.some((d) => d[2] >= r.x - 0.02 && d[3] <= r.x + r.w + 0.02)).map((r) => r.id)), q = [...seen];
+    while (q.length) {
+      const id = q.shift(), a = R.find((r) => r.id === id);
+      R.forEach((b) => {
+        if (!seen.has(b.id) && adj(a, b)) {
+          seen.add(b.id);
+          q.push(b.id);
+        }
+      });
+    }
+    const off = R.filter((r) => !seen.has(r.id));
+    if (ext.length && off.length) Wn.push("Sin acceso por puertas: " + off.map((r) => r.n).join(", ") + ". Usa \xAB\u{1F6AA} Puertas autom\xE1ticas\xBB o agrega una en modo Puertas.");
+    if (R.length > 1) {
+      const lone = R.filter((a) => !R.some((b) => b !== a && casaShared(a, b)));
+      if (lone.length) Wn.push("Recintos sueltos (no tocan a ning\xFAn otro): " + lone.map((r) => r.n).join(", ") + ".");
+    }
+    return { E, Wn };
+  }
+  function casaEst(c) {
+    const R = c.rooms, z0 = R.length ? Math.min(...R.map((r) => r.z)) : 0;
+    let cen = 0, enc = 0, sw = 0, hor = 0, La = 0, Le = 0, wet = 0;
+    R.forEach((r) => {
+      const d = Math.abs(r.x + r.w / 2 - c.tx) + (r.z + r.l / 2 - z0) + 0.6, mc = cMinC(r), me = cMinE(r);
+      cen += mc;
+      enc += me;
+      sw++;
+      if (r.t === "cocina") hor++;
+      if (["cocina", "lavadero"].includes(r.t)) wet += me;
+      La += d + 1.6 * (mc - 1) + (WH - 1.1);
+      if (me) Le += d + (r.w + r.l) * 0.6 + (WH - 0.3) * me;
+    });
+    Le += hor * 6;
+    const nA = Math.max(1, Math.ceil(cen / 12)), nE = Math.max(1, Math.ceil((enc - wet) / 12)), nC = (wet ? 1 : 0) + hor, nTot = nA + nE + nC;
+    const nDR = Math.max(1, Math.ceil(nTot / 4)), mods = 2 + nDR * 2 + nTot, modT = [8, 12, 18, 24, 36, 48].find((m) => m >= Math.ceil(mods * 1.2)) || 48;
+    const B = [], P = (g, d, q, u, k) => B.push({ g, d, q: Math.ceil(q), u, k });
+    P("Conductores", "Cable 1,5 mm\xB2 (alumbrado: fase, neutro, tierra y retornos)", (La * 3 + sw * (WH - 1.1)) * 1.1, "m", "cab:1.5");
+    P("Conductores", "Cable 2,5 mm\xB2 (enchufes y horno: fase, neutro y tierra)", Le * 3 * 1.1, "m", "cab:2.5");
+    P("Conductores", "Cable 6 mm\xB2 alimentador (fase y neutro, 12 m)", 24, "m", "cab:6");
+    P("Canalizaci\xF3n", "Tubo PVC conduit 16 mm", (La + Le) * 1.1, "m", "tub:pvc16");
+    P("Canalizaci\xF3n", "Curvas y uniones", (cen + enc + sw) * 1.5, "u", "curva");
+    P("Cajas", "Cajas de derivaci\xF3n", R.length + nTot, "u", "cdev");
+    P("Cajas", "Cajas de embutir", sw + enc + hor, "u", "cemb");
+    P("Cajas", "Cajas de centro", cen, "u", "ccen");
+    P("Aparatos", "Interruptores", sw, "u", "sw");
+    P("Aparatos", "Enchufes 2P+T 10/16 A", enc, "u", "out");
+    P("Aparatos", "Salida de fuerza para horno", hor, "u", "horno");
+    P("Aparatos", "Portal\xE1mparas / centros", cen, "u", "lamp");
+    P("Empalmes", "Conectores para empalmes", (R.length + nTot) * 4, "u", "conec");
+    P("Tablero", "Interruptor general 2P 25 A curva C", 1, "u", "ig2");
+    P("Tablero", "Diferenciales 2P 25 A 30 mA", nDR, "u", "dr:A");
+    P("Tablero", "Autom\xE1ticos 1P+N (" + nA + " alumbrado, " + nE + " enchufes" + (nC ? ", " + nC + " cocina/horno" : "") + ")", nTot, "u", "tm");
+    P("Tablero", "Tablero de " + modT + " m\xF3dulos DIN", 1, "u", "tab" + modT);
+    P("Tablero", "Barra de neutro y barra de tierra", 2, "u", "barra");
+    P("Puesta a tierra", 'Barra Copperweld 5/8" con c\xE1mara', 1, "u", "copper");
+    P("Puesta a tierra", "Conductor de tierra al electrodo", 5, "m", "tierra");
+    P("Mano de obra", "Instalaci\xF3n por punto (referencial)", cen + enc + sw + hor, "u", "mo");
+    return { B, cen, enc, sw, hor, nTot };
+  }
+  function casaSVG(c, fr) {
+    const R = c.rooms, K = 46, M = 48;
+    const b = fr || { x0: Math.min(0, ...R.map((r) => r.x)), z0: Math.min(0, ...R.map((r) => r.z)), x1: Math.max(4, ...R.map((r) => r.x + r.w)), z1: Math.max(4, ...R.map((r) => r.z + r.l)) };
+    const W = (b.x1 - b.x0) * K + M * 2, H = (b.z1 - b.z0) * K + M * 2, X = (x) => M + (x - b.x0) * K, Z = (z) => M + (z - b.z0) * K;
+    let g = '<defs><pattern id="cgrid" width="' + K + '" height="' + K + '" patternUnits="userSpaceOnUse" x="' + X(0) + '" y="' + Z(0) + '"><path d="M' + K + " 0H0V" + K + '" fill="none" stroke="#c9d3dc" stroke-width=".6"/></pattern></defs><rect width="' + W + '" height="' + H + '" fill="#fbfcfd"/><rect width="' + W + '" height="' + H + '" fill="url(#cgrid)"/>';
+    R.forEach((r) => {
+      const sel = r.id === casaSel;
+      g += '<rect data-r="' + r.id + '" x="' + X(r.x) + '" y="' + Z(r.z) + '" width="' + r.w * K + '" height="' + r.l * K + '" fill="' + (CASA_COL[r.t] || "#eee") + '" stroke="' + (sel ? "#b8621b" : "#9aa5ae") + '" stroke-width="' + (sel ? 3 : 1) + '" style="cursor:' + (casaMode === "mover" ? "move" : "crosshair") + '"/>';
+    });
+    if (R.length) {
+      const z0 = Math.min(...R.map((r) => r.z));
+      deriveWalls(R.map(cBox), c.doors).forEach(([a, bb, cc, d]) => {
+        g += '<line x1="' + X(a) + '" y1="' + Z(bb) + '" x2="' + X(cc) + '" y2="' + Z(d) + '" stroke="#2b2f33" stroke-width="5" stroke-linecap="square" pointer-events="none"/>';
+      });
+      c.doors.forEach((d, i) => {
+        const [ax, v, m0, m1] = d, L = (m1 - m0) * K;
+        const p = ax === "x" ? "M" + X(v) + " " + Z(m0) + " A " + L + " " + L + " 0 0 1 " + (X(v) + L) + " " + (Z(m0) + L) + " L" + X(v) + " " + Z(m0) : "M" + X(m0) + " " + Z(v) + " A " + L + " " + L + " 0 0 0 " + (X(m0) + L) + " " + (Z(v) + L) + " L" + X(m0) + " " + Z(v);
+        g += '<path d="' + p + '" fill="rgba(184,98,27,.08)" stroke="#b8621b" stroke-width="1.2" pointer-events="none"/>';
+        g += '<line data-d="' + i + '" x1="' + (ax === "x" ? X(v) : X(m0)) + '" y1="' + (ax === "x" ? Z(m0) : Z(v)) + '" x2="' + (ax === "x" ? X(v) : X(m1)) + '" y2="' + (ax === "x" ? Z(m1) : Z(v)) + '" stroke="' + (casaMode === "puertas" ? "rgba(174,42,33,.55)" : "transparent") + '" stroke-width="12"/>';
+      });
+      R.forEach((r) => {
+        const cx = X(r.x + r.w / 2), cz = Z(r.z + r.l / 2), fs = Math.max(8, Math.min(12, r.w * K / 9));
+        g += '<g pointer-events="none" text-anchor="middle" fill="#25313b"><text x="' + cx + '" y="' + (cz - 4) + '" font-size="' + fs + '" font-weight="800">' + esc(r.n) + '</text><text x="' + cx + '" y="' + (cz + fs + 1) + '" font-size="' + (fs - 1) + '">' + nf(r.w, 2) + " \xD7 " + nf(r.l, 2) + " m \xB7 " + n1(cArea(r)) + " m\xB2</text></g>";
+        if (r.id === casaSel && casaMode === "mover") g += '<rect data-h="' + r.id + '" x="' + (X(r.x + r.w) - 11) + '" y="' + (Z(r.z + r.l) - 11) + '" width="16" height="16" rx="3" fill="#b8621b" stroke="#fff" stroke-width="1.5" style="cursor:nwse-resize"/>';
+      });
+      const ex = Math.max(...R.map((r) => r.x + r.w)), mx = Math.min(...R.map((r) => r.x)), ez = Math.max(...R.map((r) => r.z + r.l));
+      g += '<g font-size="11" fill="#5a6772" text-anchor="middle" pointer-events="none"><line x1="' + X(mx) + '" y1="' + (Z(z0) - 26) + '" x2="' + X(ex) + '" y2="' + (Z(z0) - 26) + '" stroke="#7c8790" marker-start="url(#ca)" marker-end="url(#ca)"/><text x="' + (X(mx) + X(ex)) / 2 + '" y="' + (Z(z0) - 31) + '" font-weight="700">' + nf(ex - mx, 2) + ' m \xB7 frente (calle)</text><text transform="translate(' + (X(mx) - 30) + " " + (Z(z0) + Z(ez)) / 2 + ') rotate(-90)" font-weight="700">' + nf(ez - z0, 2) + " m</text></g>";
+      g += '<line x1="' + (X(mx) - 24) + '" y1="' + Z(z0) + '" x2="' + (X(mx) - 24) + '" y2="' + Z(ez) + '" stroke="#7c8790" pointer-events="none"/>';
+      g += '<g pointer-events="none"><rect x="' + (X(c.tx) - 0.45 * K) + '" y="' + (Z(z0) + 3) + '" width="' + 0.9 * K + '" height="9" fill="#1d2329"/><text x="' + X(c.tx) + '" y="' + (Z(z0) + 24) + '" text-anchor="middle" font-size="10" font-weight="800" fill="#1d2329">TABLERO</text><rect x="' + (X(c.tx - 1) - 6) + '" y="' + (Z(z0) - 14) + '" width="12" height="10" fill="#ddd" stroke="#555"/><text x="' + X(c.tx - 1) + '" y="' + (Z(z0) - 17) + '" text-anchor="middle" font-size="8" fill="#555">medidor</text></g>';
+      if (casaMode === "tablero") g += '<line data-front="1" x1="' + X(mx) + '" y1="' + Z(z0) + '" x2="' + X(ex) + '" y2="' + Z(z0) + '" stroke="rgba(31,95,191,.35)" stroke-width="16"/>';
+    }
+    return '<svg id="casasvg" viewBox="0 0 ' + W + " " + H + '" data-b="' + [b.x0, b.z0, b.x1, b.z1].join(",") + '" role="img" aria-label="Plano de la vivienda"><defs><marker id="ca" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7c8790"/></marker></defs>' + g + "</svg>";
+  }
+  function casaPt(e) {
+    const sv = document.getElementById("casasvg");
+    if (!sv) return null;
+    const rc = sv.getBoundingClientRect(), vb = sv.viewBox.baseVal, b = sv.dataset.b.split(",").map(Number);
+    const sc = Math.min(rc.width / vb.width, rc.height / vb.height), ox = rc.left + (rc.width - vb.width * sc) / 2, oy = rc.top + (rc.height - vb.height * sc) / 2;
+    return { x: b[0] + ((e.clientX - ox) / sc - 48) / 46, z: b[1] + ((e.clientY - oy) / sc - 48) / 46, b };
+  }
+  function pgCasa() {
+    if (!S.casa) S.casa = casaDef();
+    const c = S.casa, ck = casaCheck(c), A = c.rooms.reduce((a, r) => a + cArea(r), 0), est = casaEst(c), sel = c.rooms.find((r) => r.id === casaSel);
+    const tsel = (r, i) => '<select data-cf="t" data-i="' + i + '" aria-label="Tipo">' + Object.entries(TIPOS_REC).map(([k, v]) => '<option value="' + k + '"' + (k === r.t ? " selected" : "") + ">" + v + "</option>").join("") + "</select>";
+    const num = (f, i, v, lab) => '<input type="number" step="0.05" min="' + (f === "x" || f === "z" ? -50 : 0.9) + '" max="50" data-cf="' + f + '" data-i="' + i + '" value="' + rd(v) + '" aria-label="' + lab + '">';
+    const rows = c.rooms.map((r, i) => '<tr class="' + (r.id === casaSel ? "csel" : "") + '"><td><input type="text" data-cf="n" data-i="' + i + '" value="' + esc(r.n) + '" aria-label="Nombre" style="min-width:110px"></td><td>' + tsel(r, i) + "</td><td>" + num("x", i, r.x, "X") + "</td><td>" + num("z", i, r.z, "Z") + "</td><td>" + num("w", i, r.w, "Ancho") + "</td><td>" + num("l", i, r.l, "Largo") + '</td><td class="num">' + n1(cArea(r)) + '</td><td class="num">' + cMinC(r) + " / " + cMinE(r) + '</td><td style="white-space:nowrap"><button type="button" class="btn ghost small" data-cs="dup" data-i="' + i + '" title="Duplicar al lado">⧉</button><button type="button" class="btn ghost small" data-cs="del" data-i="' + i + '" title="Quitar">✕</button></td></tr>').join("");
+    const modes = [["mover", "✋ Mover y medir"], ["puertas", "\u{1F6AA} Puertas"], ["tablero", "▣ Tablero"]].map(([k, t]) => '<button type="button" class="chip' + (casaMode === k ? " on" : "") + '" data-cs="mode" data-k="' + k + '" aria-pressed="' + (casaMode === k) + '">' + t + "</button>").join("");
+    const hint = { mover: "Arrastra un recinto para moverlo (se pega a los muros vecinos). Toca uno para elegirlo y arrastra el cuadrito naranjo para cambiar su tama\xF1o. Las medidas exactas se escriben en la tabla.", puertas: "Toca un muro para poner una puerta de 0,8 m (0,9 m en el frente). Toca una puerta (roja) para quitarla.", tablero: "Toca el muro del frente (azul) donde ir\xE1 el tablero. El medidor y la puesta a tierra quedan por fuera, junto a \xE9l." }[casaMode];
+    const tpl = CASA_TPL.map(([k, t, d]) => '<button type="button" class="tpl" data-cs="tpl" data-k="' + k + '"><span class="ti">\u{1F4D0}</span><span class="tt">' + (casaConf === "tpl:" + k ? "\xBFReemplazar el plano? Toca otra vez" : t) + '</span><span class="td">' + d + "</span></button>").join("");
+    const msgs = (casaMsg ? note(esc(casaMsg), "ok") : "") + (ck.E.length ? note("<b>Corrige antes de usar el plano:</b><ul class=\"whyl\">" + ck.E.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>", "bad") : "") + (ck.Wn.length ? note("<ul class=\"whyl\" style=\"margin:0\">" + ck.Wn.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>", "warn") : "") + (!ck.E.length && !ck.Wn.length ? note("✓ Plano listo: recintos sin superposiciones, todos con acceso y tablero en el frente.", "ok") : "");
+    casaMsg = "";
+    const cs = s2HasWork() ? casaConf === "sim" ? "\xBFReemplazar la instalaci\xF3n actual del 3D? Toca otra vez" : "▶ Usar en el Simulador 3D" : "▶ Usar en el Simulador 3D";
+    return '<p class="eyebrow">Simulador \xB7 proyecto real</p><h1>Dise\xF1ar mi vivienda</h1><p class="lead">Dibuja el plano con las medidas reales: recintos, puertas y ubicaci\xF3n del tablero. La app calcula superficies, los puntos m\xEDnimos RIC N\xB010 por recinto y un presupuesto preliminar. Despu\xE9s p\xE1salo al Simulador 3D para instalar punto por punto y obtener el listado exacto de materiales y costos en Reportes.</p>' +
+      '<section class="card"><h2>1 \xB7 Partir de</h2><div class="tpls">' + tpl + "</div></section>" +
+      '<section class="card"><div class="sechead"><h2 style="margin:0">2 \xB7 Plano</h2><div class="field" style="margin:0;min-width:180px"><input type="text" data-cf="hn" value="' + esc(c.n || "") + '" aria-label="Nombre del proyecto" placeholder="Nombre del proyecto"></div></div>' +
+      '<div class="chips" style="margin:8px 0">' + modes + '<button type="button" class="chip" data-cs="add">＋ Recinto</button><button type="button" class="chip" data-cs="auto">\u{1F6AA} Puertas autom\xE1ticas</button></div><p class="hint" style="margin:0 0 6px">' + hint + '</p><div class="casaplan" id="casaplan">' + casaSVG(c) + "</div>" + msgs +
+      kpis([kpi("Superficie", n1(A), "m\xB2"), kpi("Recintos", c.rooms.length), kpi("Puertas", c.doors.length), kpi("Centros m\xEDn.", est.cen), kpi("Enchufes m\xEDn.", est.enc), kpi("Circuitos m\xEDn.", A >= 30 ? Math.max(3, est.nTot) : est.nTot)]) + "</section>" +
+      '<section class="card"><h2>3 \xB7 Recintos y medidas</h2><p class="hint">X y Z: esquina superior izquierda del recinto en el plano (m). Ancho: hacia la derecha. Largo: hacia abajo. M\xEDn. RIC: centros / enchufes seg\xFAn RIC N\xB010 (5.2.2 y 5.2.3).</p><div class="tbl-wrap"><table class="pt casat"><thead><tr><th>Nombre</th><th>Tipo</th><th>X</th><th>Z</th><th>Ancho</th><th>Largo</th><th>m\xB2</th><th>M\xEDn. RIC</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div><div class="field" style="max-width:260px;margin-top:10px"><label>Tablero: distancia desde la esquina izquierda del frente (m)</label><input type="number" step="0.05" data-cf="tx" value="' + rd(c.tx - Math.min(0, ...c.rooms.map((r) => r.x))) + '"></div></section>' +
+      '<section class="card"><h2>4 \xB7 Presupuesto preliminar</h2><p class="hint">Estimaci\xF3n con los puntos m\xEDnimos RIC y recorridos aproximados desde el tablero. Los precios son referenciales (CLP) y puedes cambiarlos aqu\xED o en Reportes; se guardan para todo el proyecto. El listado exacto sale al instalar en el 3D.</p>' + bomTable(est.B, true) + '<div class="chips" style="margin-top:8px"><button type="button" class="chip" data-cs="prst">↺ Restaurar precios</button></div></section>' +
+      '<section class="card"><h2>5 \xB7 Usar el plano</h2><div class="chips"><button type="button" class="btn calc" data-cs="sim"' + (ck.E.length ? " disabled" : "") + ">" + cs + '</button><button type="button" class="btn ghost" data-cs="p2"' + (ck.E.length ? " disabled" : "") + ">" + (casaConf === "p2" ? "\xBFReemplazar los recintos del paso 2? Toca otra vez" : "→ Enviar recintos al paso 2") + "</button></div>" +
+      learn("Qu\xE9 revisa la RIC en el plano", '<ul class="hand"><li><b>Centros de luz (RIC N\xB010, 5.2.2):</b> 1 por recinto hasta 10 m\xB2 y 2 sobre 10 m\xB2.</li><li><b>Enchufes (RIC N\xB010, 5.2.3):</b> dormitorios y living 1 cada 8 m de per\xEDmetro (o fracci\xF3n); cocina 3; lavadero 1.</li><li><b>Circuitos:</b> una vivienda de 30 m\xB2 o m\xE1s necesita al menos 3 (alumbrado, enchufes y cocina/lavadero), cada uno con diferencial de 30 mA.</li><li><b>Tablero:</b> en un lugar accesible, cerca del acceso y del medidor, nunca en ba\xF1os ni sobre el vano de una puerta.</li><li><b>Ba\xF1os:</b> respeta los vol\xFAmenes de seguridad: nada de enchufes cerca de la tina o ducha.</li></ul>') + "</section>";
+  }
+  function s2HasWork() {
+    return !!(S.sim2 && (S.sim2.items.length || S.sim2.circuits.length));
+  }
+  function casaEdgeAt(c, p) {
+    let best = null;
+    c.rooms.forEach((r) => {
+      const b = cBox(r);
+      [["z", b.z0, b.x0, b.x1, p.x, p.z], ["z", b.z1, b.x0, b.x1, p.x, p.z], ["x", b.x0, b.z0, b.z1, p.z, p.x], ["x", b.x1, b.z0, b.z1, p.z, p.x]].forEach(([ax, v, a, bb, t, o]) => {
+        if (t < a || t > bb) return;
+        const d = Math.abs(o - v);
+        if (d < 0.35 && (!best || d < best.d)) best = { d, ax, v, a, b: bb, t, r };
+      });
+    });
+    if (!best) return null;
+    let segs = [[best.a, best.b]], shared = null;
+    c.rooms.forEach((o) => {
+      if (o === best.r) return;
+      const sh = casaShared(best.r, o);
+      if (!sh || sh[0] !== best.ax || Math.abs(sh[1] - best.v) > 0.02) return;
+      if (best.t >= sh[2] && best.t <= sh[3]) shared = [sh[2], sh[3]];
+      segs = segs.flatMap(([a, b]) => sh[3] <= a || sh[2] >= b ? [[a, b]] : [[a, sh[2]], [sh[3], b]].filter(([x, y]) => y - x > 0.02));
+    });
+    const iv = shared || segs.find(([a, b]) => best.t >= a && best.t <= b);
+    return iv ? { ax: best.ax, v: best.v, a: iv[0], b: iv[1], t: best.t, ext: !shared } : null;
+  }
+  function casaCommit(msg) {
+    const c = S.casa;
+    casaNorm(c);
+    const k = casaPrune(c);
+    casaMsg = (msg || "") + (k ? (msg ? " " : "") + "Se quit" + (k > 1 ? "aron " + k + " puertas que quedaron" : "\xF3 1 puerta que qued\xF3") + " fuera de un muro." : "");
+    save();
+    render(true);
+  }
+  function casaNewId(c) {
+    let i = 1;
+    while (c.rooms.some((r) => r.id === "r" + i)) i++;
+    return "r" + i;
+  }
+  document.addEventListener("click", (e) => {
+    if (cur !== "casa" && cur !== "rep") return;
+    const b = e.target.closest && e.target.closest("[data-cs]");
+    if (!b || b.disabled) return;
+    const a = b.dataset.cs, c = S.casa;
+    if (a === "prst") {
+      S.precios = {};
+      save();
+      render();
+      return;
+    }
+    if (!c) return;
+    const i = +b.dataset.i;
+    if (a !== "tpl" && a !== "sim" && a !== "p2") casaConf = "";
+    if (a === "tpl") {
+      const k = b.dataset.k;
+      if (casaConf !== "tpl:" + k) {
+        casaConf = "tpl:" + k;
+        render(true);
+        return;
+      }
+      casaConf = "";
+      S.casa = CASA_TPL.find((t) => t[0] === k)[3]();
+      casaSel = null;
+      casaCommit("Plano cargado.");
+      return;
+    }
+    if (a === "mode") {
+      casaMode = b.dataset.k;
+      render(true);
+      return;
+    }
+    if (a === "add") {
+      const ex = c.rooms.length ? Math.max(...c.rooms.map((r) => r.x + r.w)) : 0, id = casaNewId(c);
+      c.rooms.push(casaR(id, "Recinto " + (c.rooms.length + 1), "dormitorio", rd(ex), 0, 3, 3));
+      casaSel = id;
+      casaMode = "mover";
+      casaCommit("Recinto agregado a la derecha: arr\xE1stralo o escribe sus medidas.");
+      return;
+    }
+    if (a === "auto") {
+      casaAuto(c);
+      casaCommit("Puertas recalculadas: una de entrada y una por recinto, de preferencia desde pasillos y living.");
+      return;
+    }
+    if (a === "dup" && c.rooms[i]) {
+      const r = c.rooms[i], ex = Math.max(...c.rooms.map((q) => q.x + q.w)), id = casaNewId(c);
+      c.rooms.push(casaR(id, r.n + " (copia)", r.t, rd(ex), r.z, r.w, r.l));
+      casaSel = id;
+      casaCommit("Copia agregada a la derecha.");
+      return;
+    }
+    if (a === "del" && c.rooms[i]) {
+      if (c.rooms.length < 2) {
+        casaMsg = "Debe quedar al menos un recinto.";
+        render(true);
+        return;
+      }
+      c.rooms.splice(i, 1);
+      casaCommit("Recinto quitado.");
+      return;
+    }
+    if (a === "p2") {
+      if (S.rooms && S.rooms.length && casaConf !== "p2") {
+        casaConf = "p2";
+        render(true);
+        return;
+      }
+      casaConf = "";
+      S.rooms = c.rooms.map((r) => {
+        const o = { nombre: r.n, tipo: r.t, area: rd(cArea(r)), perim: rd(2 * (r.w + r.l)), horno: r.t === "cocina" };
+        o.centros = cMinC(r);
+        o.enchufes = cMinE(r);
+        return o;
+      });
+      if (S.proj && !S.proj.nombre) S.proj.nombre = c.n || "";
+      save();
+      go("p2");
+      return;
+    }
+    if (a === "sim") {
+      if (s2HasWork() && casaConf !== "sim") {
+        casaConf = "sim";
+        render(true);
+        return;
+      }
+      casaConf = "";
+      const o = S.sim2 || {};
+      S.sim2 = Object.assign(sim2Blank(), { done: o.done || {}, score: o.score || 0, log: o.log || [], house: casaToHouse(c) });
+      simInsp = null;
+      simSel = null;
+      simPC = null;
+      save();
+      go("sim");
+      return;
+    }
+  });
+  document.addEventListener("change", (e) => {
+    const el = e.target;
+    if (!el || !el.dataset) return;
+    if (el.dataset.pk && (cur === "casa" || cur === "rep")) {
+      if (!S.precios) S.precios = {};
+      const v = Math.max(0, +el.value || 0);
+      S.precios[el.dataset.pk] = v;
+      save();
+      render(true);
+      return;
+    }
+    if (cur !== "casa" || !el.dataset.cf || !S.casa) return;
+    const c = S.casa, f = el.dataset.cf, r = c.rooms[+el.dataset.i];
+    if (f === "hn") {
+      c.n = el.value.slice(0, 80);
+      save();
+      return;
+    }
+    if (f === "tx") {
+      c.tx = rd((+el.value || 0) + Math.min(0, ...c.rooms.map((q) => q.x)));
+      casaCommit();
+      return;
+    }
+    if (!r) return;
+    if (f === "n") {
+      r.n = el.value.slice(0, 40) || "Recinto";
+      save();
+      render(true);
+      return;
+    }
+    if (f === "t") {
+      r.t = el.value;
+      casaCommit();
+      return;
+    }
+    let v = +String(el.value).replace(",", ".");
+    if (!isFinite(v)) return render(true);
+    if (f === "w" || f === "l") v = Math.max(0.9, Math.min(30, v));
+    r[f] = rd(v);
+    casaSel = r.id;
+    casaCommit();
+  });
+  document.addEventListener("pointerdown", (e) => {
+    if (cur !== "casa" || !S.casa) return;
+    const t = e.target;
+    if (!t.closest || !t.closest("#casasvg")) return;
+    const c = S.casa, p = casaPt(e);
+    if (!p) return;
+    if (casaMode === "mover") {
+      const h = t.dataset && t.dataset.h, rid = h || t.dataset && t.dataset.r;
+      const r = c.rooms.find((q) => q.id === rid);
+      if (!r) {
+        if (casaSel) {
+          casaSel = null;
+          render(true);
+        }
+        return;
+      }
+      e.preventDefault();
+      casaDragged = false;
+      casaDrag = { id: r.id, size: !!h, p0: p, r0: Object.assign({}, r), fr: { x0: p.b[0], z0: p.b[1], x1: p.b[2], z1: p.b[3] } };
+      return;
+    }
+    if (casaMode === "puertas") {
+      e.preventDefault();
+      if (t.dataset && t.dataset.d != null) {
+        c.doors.splice(+t.dataset.d, 1);
+        casaCommit("Puerta quitada.");
+        return;
+      }
+      const ed = casaEdgeAt(c, p);
+      if (!ed) {
+        casaMsg = "Toca justo sobre un muro.";
+        render(true);
+        return;
+      }
+      const w = ed.ext ? 0.9 : 0.8;
+      if (ed.b - ed.a < w + 0.2) {
+        casaMsg = "Ese tramo de muro mide " + nf(ed.b - ed.a, 2) + " m: no cabe una puerta de " + nf(w, 1) + " m.";
+        render(true);
+        return;
+      }
+      const m = Math.max(ed.a + 0.1 + w / 2, Math.min(ed.b - 0.1 - w / 2, ed.t));
+      c.doors = c.doors.filter((d) => !(d[0] === ed.ax && Math.abs(d[1] - ed.v) < 0.02 && d[3] > m - w / 2 && d[2] < m + w / 2));
+      c.doors.push([ed.ax, rd(ed.v), rd(m - w / 2), rd(m + w / 2)]);
+      casaCommit(ed.ext ? "Puerta exterior agregada." : "Puerta agregada.");
+      return;
+    }
+    if (casaMode === "tablero") {
+      e.preventDefault();
+      const fr = casaFront(c), z0 = fr.length ? fr[0].z : 0, r = fr.find((q) => p.x >= q.x && p.x <= q.x + q.w);
+      if (!r || Math.abs(p.z - z0) > 0.6) {
+        casaMsg = "El tablero va en el muro del frente (l\xEDnea azul).";
+        render(true);
+        return;
+      }
+      c.tx = rd(Math.max(r.x + 0.5, Math.min(r.x + r.w - 0.5, Math.round(p.x * 20) / 20)));
+      casaCommit("Tablero en " + nf(c.tx - Math.min(...c.rooms.map((q) => q.x)), 2) + " m desde la esquina izquierda del frente.");
+    }
+  });
+  document.addEventListener("pointermove", (e) => {
+    if (!casaDrag || cur !== "casa") return;
+    const c = S.casa, r = c.rooms.find((q) => q.id === casaDrag.id), p = casaPt(e);
+    if (!r || !p) return;
+    const dx = p.x - casaDrag.p0.x, dz = p.z - casaDrag.p0.z, r0 = casaDrag.r0, sn = (v) => Math.round(v * 20) / 20;
+    if (!casaDragged && Math.hypot(dx, dz) < 0.08) return;
+    casaDragged = true;
+    const ox = c.rooms.filter((q) => q !== r).flatMap((q) => [q.x, q.x + q.w]), oz = c.rooms.filter((q) => q !== r).flatMap((q) => [q.z, q.z + q.l]);
+    const near = (v, L) => {
+      let b = null;
+      L.forEach((u) => {
+        if (Math.abs(u - v) < 0.18 && (b == null || Math.abs(u - v) < Math.abs(b - v))) b = u;
+      });
+      return b;
+    };
+    if (casaDrag.size) {
+      let x1 = sn(r0.x + r0.w + dx), z1 = sn(r0.z + r0.l + dz);
+      const sx = near(x1, ox), sz = near(z1, oz);
+      if (sx != null) x1 = sx;
+      if (sz != null) z1 = sz;
+      r.w = rd(Math.max(0.9, x1 - r.x));
+      r.l = rd(Math.max(0.9, z1 - r.z));
+    } else {
+      let x = sn(r0.x + dx), z = sn(r0.z + dz);
+      const a1 = near(x, ox), a2 = near(x + r.w, ox), b1 = near(z, oz), b2 = near(z + r.l, oz);
+      if (a1 != null) x = a1;
+      else if (a2 != null) x = a2 - r.w;
+      if (b1 != null) z = b1;
+      else if (b2 != null) z = b2 - r.l;
+      r.x = rd(x);
+      r.z = rd(z);
+    }
+    const fr = casaDrag.fr, f2 = { x0: Math.min(fr.x0, r.x), z0: Math.min(fr.z0, r.z), x1: Math.max(fr.x1, r.x + r.w), z1: Math.max(fr.z1, r.z + r.l) };
+    const pl = document.getElementById("casaplan");
+    if (pl) pl.innerHTML = casaSVG(c, f2);
+  });
+  document.addEventListener("pointerup", () => {
+    if (!casaDrag) return;
+    const d = casaDrag;
+    casaDrag = null;
+    if (cur !== "casa") return;
+    if (!casaDragged) {
+      casaSel = d.id;
+      render(true);
+      return;
+    }
+    casaSel = d.id;
+    casaCommit();
+  });
+  document.addEventListener("pointercancel", () => {
+    if (casaDrag && cur === "casa") {
+      casaDrag = null;
+      casaCommit();
+    }
+  });
   const PAGES = [
     { id: "home", g: "", t: "Inicio", r: pgHome },
     { id: "hub_proy", g: "hub", t: "Instalaci\xF3n paso a paso", r: pgHubProy },
@@ -7035,6 +7656,7 @@ tr.selrow td{background:var(--copper-soft)}
     { id: "cuadro", g: "plan", t: "Cuadro de carga", r: pgCuadro },
     { id: "tg", g: "plan", t: "Armar tablero (juego)", r: pgTG },
     { id: "sim", g: "taller", t: "Simulador 3D", r: pgSim },
+    { id: "casa", g: "taller", t: "Dise\xF1ar mi vivienda", r: pgCasa },
     { id: "p1", g: "proy", n: "1", t: "Datos generales", r: pg1 },
     { id: "p2", g: "proy", n: "2", t: "Recintos", r: pg2, c: calc2 },
     { id: "p3", g: "proy", n: "3", t: "Circuitos", r: pg3, c: calc3 },
@@ -7102,6 +7724,7 @@ tr.selrow td{background:var(--copper-soft)}
   }
   function render(keepFocus) {
     simKill();
+    syncHouse();
     const ae = document.activeElement, fid = keepFocus && ae && ae.id;
     const p = pageOf(cur);
     let html = p.r();
