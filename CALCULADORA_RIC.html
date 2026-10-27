@@ -340,6 +340,35 @@ tr.selrow td{background:var(--copper-soft)}
 }
 @media (min-width:901px){.side[hidden]{display:block!important}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.casawrap{position:relative}
+.casabar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 4px}
+.casabar .chip{min-height:36px}.casabar .chip:disabled{opacity:.45}.cbsep{flex:0 0 1px;height:22px;background:var(--line)}
+.cstep{display:inline-flex;align-items:center;gap:4px}.cstep select{border:0;background:transparent;color:inherit;font:inherit;font-weight:700}
+.casahint{margin:0 0 6px}.casamsg .note{margin:0 0 6px}
+.casains{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface2);margin-top:6px}
+.cih{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-bottom:8px}.cih b{font-size:15px}.cih .chip{margin-left:auto}
+.cigrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:8px}
+.cif{display:flex;flex-direction:column;gap:3px;font-size:12px;font-weight:700;color:var(--muted)}
+.cif input,.cif select{font:inherit;font-size:15px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 8px;min-width:0;width:100%}
+.cif.cwide{grid-column:span 2}
+.cinud{display:flex;flex-wrap:wrap;gap:8px 16px;margin:10px 0 4px}.cinud>div{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.cinud .chip{min-width:40px;min-height:36px;font-size:16px}
+.casawrap.full{position:fixed;inset:0;z-index:300;margin:0;background:var(--bg);display:flex;flex-direction:column;gap:4px;padding:max(6px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+.casawrap.full .casabar{margin:0}.casawrap.full .casahint{font-size:12px;margin:0}
+.casawrap.full .casaplan{flex:1 1 auto;min-height:120px;margin:0;display:flex}
+.casawrap.full .casaplan svg{width:100%;height:100%;max-height:none}
+.casawrap.full .casamsg{max-height:12vh;overflow:auto}.casawrap.full .casamsg .note{padding:5px 10px;font-size:12.5px;margin:0 0 4px}
+.casawrap.full .casains{flex:0 0 auto;max-height:38vh;overflow:auto;margin:0}
+@media (min-width:900px){.casawrap.full{display:grid;grid-template-columns:minmax(0,1fr) 360px;grid-template-rows:auto auto minmax(0,1fr) auto;grid-template-areas:"bar bar" "hint ins" "plan ins" "msg ins";column-gap:10px}
+.casawrap.full .casabar{grid-area:bar}.casawrap.full .casahint{grid-area:hint}.casawrap.full .casaplan{grid-area:plan}.casawrap.full .casamsg{grid-area:msg}.casawrap.full .casains{grid-area:ins;max-height:none;align-self:start}}
+.chip.bad{color:var(--bad);border-color:var(--bad)}
+.tggrid.full .tgside{position:static;flex:0 0 auto;align-self:stretch;min-width:0;max-height:40vh;margin-top:6px;box-shadow:none}
+.tggrid.full .tgbox>.tgsvg{position:absolute;top:0;left:0;width:100%;height:100%}
+.tggrid.full #tgcat h3{font-size:15px;margin:0 0 6px}.tggrid.full #tgcat>.hint{display:none}
+.tggrid.full .tgkinds{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:thin}
+.tggrid.full .tgkc{flex:0 0 auto;white-space:nowrap;padding:7px 10px;font-size:13.5px}
+.tggrid.full .tgseg{margin:4px 0;display:flex;align-items:center;gap:8px}.tggrid.full .tgseg>span{flex:0 0 74px;font-size:12px;margin:0}.tggrid.full .tgseg>span em{display:none}.tggrid.full .tgseg>div{flex:1;min-width:0}.tggrid.full .tgch{padding:5px 9px;min-height:32px;white-space:nowrap;flex:0 0 auto}.tggrid.full .tgbuy{position:sticky;bottom:-12px;background:var(--surface);padding:6px 0 2px;margin-top:4px;z-index:1}.tggrid.full .tgseg>div{display:flex;flex-wrap:nowrap;overflow-x:auto}
+.tggrid.full .tgbuy .btn{padding:7px 10px;font-size:13.5px}
+@media (min-width:900px){.tggrid.full{flex-direction:row;align-items:stretch}.tggrid.full>div:first-child{min-height:0;max-height:100%;overflow:hidden}.tggrid.full .tgside{width:360px;max-height:none;margin:0 0 0 8px;overflow:auto}}
 </style>
 
 <header class="top"><div class="top-in">
@@ -5407,7 +5436,7 @@ tr.selrow td{background:var(--copper-soft)}
   };
   const TG_RAILS = 4, TG_MODS = 14, TG_RX = 150, TG_MW = 52, TG_RY = [122, 292, 462, 632], TG_OY = 790;
   const TG_K = {
-    ig: { n: "Interruptor general", pre: "IG", ic: "⏻", d: "Corta toda la casa de una vez y protege el alimentador." },
+    ig: { n: "Interruptor general", pre: "IG", ic: "\u{1F39A}", d: "Corta toda la casa de una vez y protege el alimentador." },
     dr: { n: "Diferencial", pre: "DR", ic: "Δ", d: "Protege a las personas: compara la corriente de fase y neutro y corta si hay una fuga." },
     tm: { n: "Disyuntor", pre: "TM", ic: "⚡", d: "Termomagn\xE9tico: protege el cable de un circuito contra sobrecarga y cortocircuito." },
     pl: { n: "Luz piloto", pre: "PL", ic: "●", d: "Indica que el tablero tiene tensi\xF3n. Necesita fase y neutro." },
@@ -7126,7 +7155,7 @@ tr.selrow td{background:var(--copper-soft)}
   const CASA_COL = { dormitorio: "#dbe6f2", living: "#efe4cf", comedor: "#efe4cf", estar: "#efe4cf", cocina: "#f4dfc8", lavadero: "#dcebee", bano: "#d4ebe2", pasillo: "#e6e6e6", otro: "#ececec" };
   const CIRC = ["pasillo", "living", "comedor", "estar"];
   const rd = (v) => Math.round(v * 100) / 100;
-  let casaMode = "mover", casaSel = null, casaConf = "", casaDrag = null, casaMsg = "", casaDragged = false;
+  let casaMode = "mover", casaSel = null, casaConf = "", casaDrag = null, casaMsg = "", casaDragged = false, casaFull = false, casaStep = 0.1, casaHist = [], casaNew = { t: "dormitorio", n: "", w: 3, l: 3, pos: "der", ref: "" };
   const casaR = (id, n, t, x, z, w, l) => ({ id, n, t, x, z, w, l });
   function casaDef() {
     return { n: "Casa base 70 m\xB2", tx: 1.7, rooms: ROOMS0.map((r) => casaR(r.id, r.n, r.t, r.x0, r.z0, r.x1 - r.x0, r.z1 - r.z0)), doors: DOORS0.map((d) => d.slice()) };
@@ -7296,14 +7325,26 @@ tr.selrow td{background:var(--copper-soft)}
     P("Mano de obra", "Instalaci\xF3n por punto (referencial)", cen + enc + sw + hor, "u", "mo");
     return { B, cen, enc, sw, hor, nTot };
   }
+  const CK = 46, CM = 48;
+  function casaOver(c) {
+    const R = c.rooms, o = /* @__PURE__ */ new Set();
+    for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++) {
+      const a = cBox(R[i]), b = cBox(R[j]);
+      if (Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0) > 0.02 && Math.min(a.z1, b.z1) - Math.max(a.z0, b.z0) > 0.02) {
+        o.add(R[i].id);
+        o.add(R[j].id);
+      }
+    }
+    return o;
+  }
   function casaSVG(c, fr) {
-    const R = c.rooms, K = 46, M = 48;
+    const R = c.rooms, K = CK, M = CM, ov = casaOver(c);
     const b = fr || { x0: Math.min(0, ...R.map((r) => r.x)), z0: Math.min(0, ...R.map((r) => r.z)), x1: Math.max(4, ...R.map((r) => r.x + r.w)), z1: Math.max(4, ...R.map((r) => r.z + r.l)) };
     const W = (b.x1 - b.x0) * K + M * 2, H = (b.z1 - b.z0) * K + M * 2, X = (x) => M + (x - b.x0) * K, Z = (z) => M + (z - b.z0) * K;
-    let g = '<defs><pattern id="cgrid" width="' + K + '" height="' + K + '" patternUnits="userSpaceOnUse" x="' + X(0) + '" y="' + Z(0) + '"><path d="M' + K + " 0H0V" + K + '" fill="none" stroke="#c9d3dc" stroke-width=".6"/></pattern></defs><rect width="' + W + '" height="' + H + '" fill="#fbfcfd"/><rect width="' + W + '" height="' + H + '" fill="url(#cgrid)"/>';
+    let g = '<defs><pattern id="cgrid" width="' + K + '" height="' + K + '" patternUnits="userSpaceOnUse" x="' + X(0) + '" y="' + Z(0) + '"><path d="M' + K + " 0H0V" + K + '" fill="none" stroke="#c9d3dc" stroke-width=".6"/></pattern><marker id="ca" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7c8790"/></marker></defs><rect width="' + W + '" height="' + H + '" fill="#fbfcfd"/><rect width="' + W + '" height="' + H + '" fill="url(#cgrid)"/>';
     R.forEach((r) => {
-      const sel = r.id === casaSel;
-      g += '<rect data-r="' + r.id + '" x="' + X(r.x) + '" y="' + Z(r.z) + '" width="' + r.w * K + '" height="' + r.l * K + '" fill="' + (CASA_COL[r.t] || "#eee") + '" stroke="' + (sel ? "#b8621b" : "#9aa5ae") + '" stroke-width="' + (sel ? 3 : 1) + '" style="cursor:' + (casaMode === "mover" ? "move" : "crosshair") + '"/>';
+      const sel = r.id === casaSel, bad = ov.has(r.id);
+      g += '<rect data-r="' + r.id + '" x="' + X(r.x) + '" y="' + Z(r.z) + '" width="' + r.w * K + '" height="' + r.l * K + '" fill="' + (bad ? "#f6d4d0" : CASA_COL[r.t] || "#eee") + '" stroke="' + (sel ? "#b8621b" : bad ? "#c0392b" : "#9aa5ae") + '" stroke-width="' + (sel ? 3 : bad ? 2 : 1) + '"' + (sel ? ' stroke-dasharray="7 4"' : "") + ' style="cursor:' + (casaMode === "mover" ? sel ? "move" : "pointer" : "crosshair") + '"/>';
     });
     if (R.length) {
       const z0 = Math.min(...R.map((r) => r.z));
@@ -7314,48 +7355,64 @@ tr.selrow td{background:var(--copper-soft)}
         const [ax, v, m0, m1] = d, L = (m1 - m0) * K;
         const p = ax === "x" ? "M" + X(v) + " " + Z(m0) + " A " + L + " " + L + " 0 0 1 " + (X(v) + L) + " " + (Z(m0) + L) + " L" + X(v) + " " + Z(m0) : "M" + X(m0) + " " + Z(v) + " A " + L + " " + L + " 0 0 0 " + (X(m0) + L) + " " + (Z(v) + L) + " L" + X(m0) + " " + Z(v);
         g += '<path d="' + p + '" fill="rgba(184,98,27,.08)" stroke="#b8621b" stroke-width="1.2" pointer-events="none"/>';
-        g += '<line data-d="' + i + '" x1="' + (ax === "x" ? X(v) : X(m0)) + '" y1="' + (ax === "x" ? Z(m0) : Z(v)) + '" x2="' + (ax === "x" ? X(v) : X(m1)) + '" y2="' + (ax === "x" ? Z(m1) : Z(v)) + '" stroke="' + (casaMode === "puertas" ? "rgba(174,42,33,.55)" : "transparent") + '" stroke-width="12"/>';
+        g += '<line data-d="' + i + '" x1="' + (ax === "x" ? X(v) : X(m0)) + '" y1="' + (ax === "x" ? Z(m0) : Z(v)) + '" x2="' + (ax === "x" ? X(v) : X(m1)) + '" y2="' + (ax === "x" ? Z(m1) : Z(v)) + '" stroke="' + (casaMode === "puertas" ? "rgba(174,42,33,.55)" : "transparent") + '" stroke-width="14"' + (casaMode === "puertas" ? "" : ' pointer-events="none"') + "/>";
       });
       R.forEach((r) => {
         const cx = X(r.x + r.w / 2), cz = Z(r.z + r.l / 2), fs = Math.max(8, Math.min(12, r.w * K / 9));
         g += '<g pointer-events="none" text-anchor="middle" fill="#25313b"><text x="' + cx + '" y="' + (cz - 4) + '" font-size="' + fs + '" font-weight="800">' + esc(r.n) + '</text><text x="' + cx + '" y="' + (cz + fs + 1) + '" font-size="' + (fs - 1) + '">' + nf(r.w, 2) + " \xD7 " + nf(r.l, 2) + " m \xB7 " + n1(cArea(r)) + " m\xB2</text></g>";
-        if (r.id === casaSel && casaMode === "mover") g += '<rect data-h="' + r.id + '" x="' + (X(r.x + r.w) - 11) + '" y="' + (Z(r.z + r.l) - 11) + '" width="16" height="16" rx="3" fill="#b8621b" stroke="#fff" stroke-width="1.5" style="cursor:nwse-resize"/>';
       });
+      const s = R.find((r) => r.id === casaSel);
+      if (s && casaMode === "mover") {
+        const x0 = X(s.x), x1 = X(s.x + s.w), y0 = Z(s.z), y1 = Z(s.z + s.l);
+        g += '<g pointer-events="none" font-size="11" font-weight="800" fill="#b8621b" text-anchor="middle"><line x1="' + x0 + '" y1="' + (y1 + 14) + '" x2="' + x1 + '" y2="' + (y1 + 14) + '" stroke="#b8621b" marker-start="url(#ca)" marker-end="url(#ca)"/><rect x="' + ((x0 + x1) / 2 - 26) + '" y="' + (y1 + 7) + '" width="52" height="14" rx="3" fill="#fff"/><text x="' + (x0 + x1) / 2 + '" y="' + (y1 + 18) + '">' + nf(s.w, 2) + ' m</text><line x1="' + (x1 + 14) + '" y1="' + y0 + '" x2="' + (x1 + 14) + '" y2="' + y1 + '" stroke="#b8621b" marker-start="url(#ca)" marker-end="url(#ca)"/><rect x="' + (x1 + 1) + '" y="' + ((y0 + y1) / 2 - 7) + '" width="52" height="14" rx="3" fill="#fff"/><text x="' + (x1 + 27) + '" y="' + ((y0 + y1) / 2 + 4) + '">' + nf(s.l, 2) + " m</text></g>";
+        g += '<g data-h="' + s.id + '" style="cursor:nwse-resize"><circle cx="' + x1 + '" cy="' + y1 + '" r="16" fill="transparent"/><circle cx="' + x1 + '" cy="' + y1 + '" r="9" fill="#b8621b" stroke="#fff" stroke-width="2" pointer-events="none"/><path d="M' + (x1 - 4) + " " + (y1 - 4) + "L" + (x1 + 4) + " " + (y1 + 4) + '" stroke="#fff" stroke-width="1.6" pointer-events="none"/></g>';
+      }
       const ex = Math.max(...R.map((r) => r.x + r.w)), mx = Math.min(...R.map((r) => r.x)), ez = Math.max(...R.map((r) => r.z + r.l));
-      g += '<g font-size="11" fill="#5a6772" text-anchor="middle" pointer-events="none"><line x1="' + X(mx) + '" y1="' + (Z(z0) - 26) + '" x2="' + X(ex) + '" y2="' + (Z(z0) - 26) + '" stroke="#7c8790" marker-start="url(#ca)" marker-end="url(#ca)"/><text x="' + (X(mx) + X(ex)) / 2 + '" y="' + (Z(z0) - 31) + '" font-weight="700">' + nf(ex - mx, 2) + ' m \xB7 frente (calle)</text><text transform="translate(' + (X(mx) - 30) + " " + (Z(z0) + Z(ez)) / 2 + ') rotate(-90)" font-weight="700">' + nf(ez - z0, 2) + " m</text></g>";
-      g += '<line x1="' + (X(mx) - 24) + '" y1="' + Z(z0) + '" x2="' + (X(mx) - 24) + '" y2="' + Z(ez) + '" stroke="#7c8790" pointer-events="none"/>';
-      g += '<g pointer-events="none"><rect x="' + (X(c.tx) - 0.45 * K) + '" y="' + (Z(z0) + 3) + '" width="' + 0.9 * K + '" height="9" fill="#1d2329"/><text x="' + X(c.tx) + '" y="' + (Z(z0) + 24) + '" text-anchor="middle" font-size="10" font-weight="800" fill="#1d2329">TABLERO</text><rect x="' + (X(c.tx - 1) - 6) + '" y="' + (Z(z0) - 14) + '" width="12" height="10" fill="#ddd" stroke="#555"/><text x="' + X(c.tx - 1) + '" y="' + (Z(z0) - 17) + '" text-anchor="middle" font-size="8" fill="#555">medidor</text></g>';
-      if (casaMode === "tablero") g += '<line data-front="1" x1="' + X(mx) + '" y1="' + Z(z0) + '" x2="' + X(ex) + '" y2="' + Z(z0) + '" stroke="rgba(31,95,191,.35)" stroke-width="16"/>';
+      g += '<g font-size="11" fill="#5a6772" text-anchor="middle" pointer-events="none"><line x1="' + X(mx) + '" y1="' + (Z(z0) - 26) + '" x2="' + X(ex) + '" y2="' + (Z(z0) - 26) + '" stroke="#7c8790" marker-start="url(#ca)" marker-end="url(#ca)"/><text x="' + (X(mx) + X(ex)) / 2 + '" y="' + (Z(z0) - 31) + '" font-weight="700">' + nf(ex - mx, 2) + ' m \xB7 frente (calle)</text><line x1="' + (X(mx) - 24) + '" y1="' + Z(z0) + '" x2="' + (X(mx) - 24) + '" y2="' + Z(ez) + '" stroke="#7c8790" marker-start="url(#ca)" marker-end="url(#ca)"/><text transform="translate(' + (X(mx) - 30) + " " + (Z(z0) + Z(ez)) / 2 + ') rotate(-90)" font-weight="700">' + nf(ez - z0, 2) + " m</text></g>";
+      g += '<g pointer-events="none"><rect x="' + (X(c.tx) - 0.45 * K) + '" y="' + (Z(z0) + 3) + '" width="' + 0.9 * K + '" height="9" fill="#1d2329"/><text x="' + X(c.tx) + '" y="' + (Z(z0) + 24) + '" text-anchor="middle" font-size="10" font-weight="800" fill="#1d2329">TABLERO</text><rect x="' + (X(c.tx - 1) - 6) + '" y="' + (Z(z0) - 14) + '" width="12" height="10" fill="#ddd" stroke="#555"/></g>';
+      if (casaMode === "tablero") g += '<line data-front="1" x1="' + X(mx) + '" y1="' + Z(z0) + '" x2="' + X(ex) + '" y2="' + Z(z0) + '" stroke="rgba(31,95,191,.35)" stroke-width="18"/>';
     }
-    return '<svg id="casasvg" viewBox="0 0 ' + W + " " + H + '" data-b="' + [b.x0, b.z0, b.x1, b.z1].join(",") + '" role="img" aria-label="Plano de la vivienda"><defs><marker id="ca" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7c8790"/></marker></defs>' + g + "</svg>";
+    return '<svg id="casasvg" viewBox="0 0 ' + W + " " + H + '" data-b="' + [b.x0, b.z0, b.x1, b.z1].join(",") + '" role="img" aria-label="Plano de la vivienda">' + g + "</svg>";
   }
   function casaPt(e) {
     const sv = document.getElementById("casasvg");
     if (!sv) return null;
     const rc = sv.getBoundingClientRect(), vb = sv.viewBox.baseVal, b = sv.dataset.b.split(",").map(Number);
     const sc = Math.min(rc.width / vb.width, rc.height / vb.height), ox = rc.left + (rc.width - vb.width * sc) / 2, oy = rc.top + (rc.height - vb.height * sc) / 2;
-    return { x: b[0] + ((e.clientX - ox) / sc - 48) / 46, z: b[1] + ((e.clientY - oy) / sc - 48) / 46, b };
+    return { x: b[0] + ((e.clientX - ox) / sc - CM) / CK, z: b[1] + ((e.clientY - oy) / sc - CM) / CK, b, px: sc * CK };
+  }
+  const STEPS = [0.05, 0.1, 0.25, 0.5];
+  const casaFld = (id, f, v, lab, extra) => '<label class="cif"><span>' + lab + '</span><input id="' + id + '" type="number" inputmode="decimal" step="' + casaStep + '" data-ci="' + f + '" value="' + rd(v) + '"' + (extra || "") + "></label>";
+  function casaInspector(c) {
+    const s = c.rooms.find((r) => r.id === casaSel), ts = (v, at) => '<select ' + at + ">" + Object.entries(TIPOS_REC).map(([k, t]) => '<option value="' + k + '"' + (k === v ? " selected" : "") + ">" + t + "</option>").join("") + "</select>";
+    const st = nf(casaStep, 2).replace(/0$/, "");
+    if (s) return '<div class="casains"><div class="cih"><b>✏ ' + esc(s.n) + '</b><span class="hint">' + n1(cArea(s)) + " m\xB2 \xB7 per\xEDmetro " + nf(2 * (s.w + s.l), 2) + " m \xB7 m\xEDn. RIC: " + cMinC(s) + " centro(s), " + cMinE(s) + ' enchufe(s)</span><button type="button" class="chip" data-cs="desel" aria-label="Cerrar">✕</button></div><div class="cigrid"><label class="cif cwide"><span>Nombre</span><input id="ci-n" type="text" data-ci="n" maxlength="40" value="' + esc(s.n) + '"></label><label class="cif"><span>Tipo</span>' + ts(s.t, 'id="ci-t" data-ci="t"') + "</label>" + casaFld("ci-w", "w", s.w, "Ancho (m)", ' min="0.9" max="30"') + casaFld("ci-l", "l", s.l, "Largo (m)", ' min="0.9" max="30"') + casaFld("ci-x", "x", s.x, "Posici\xF3n X (m)") + casaFld("ci-z", "z", s.z, "Posici\xF3n Z (m)") + '</div><div class="cinud"><div><span class="hint">Mover ' + st + ' m</span><button type="button" class="chip" data-cs="nud" data-k="-1,0" aria-label="Izquierda">←</button><button type="button" class="chip" data-cs="nud" data-k="0,-1" aria-label="Arriba">↑</button><button type="button" class="chip" data-cs="nud" data-k="0,1" aria-label="Abajo">↓</button><button type="button" class="chip" data-cs="nud" data-k="1,0" aria-label="Derecha">→</button></div><div><span class="hint">Ancho</span><button type="button" class="chip" data-cs="siz" data-k="w,-1">−</button><button type="button" class="chip" data-cs="siz" data-k="w,1">+</button><span class="hint">Largo</span><button type="button" class="chip" data-cs="siz" data-k="l,-1">−</button><button type="button" class="chip" data-cs="siz" data-k="l,1">+</button></div></div><div class="chips"><button type="button" class="chip" data-cs="dup">⧉ Duplicar al lado</button><button type="button" class="chip bad" data-cs="del">\u{1F5D1} Eliminar recinto</button></div></div>';
+    const nw = casaNew, refs = '<option value="">toda la casa</option>' + c.rooms.map((r) => '<option value="' + r.id + '"' + (r.id === nw.ref ? " selected" : "") + ">" + esc(r.n) + "</option>").join("");
+    const pos = [["der", "a la derecha de"], ["aba", "debajo de"], ["izq", "a la izquierda de"], ["arr", "arriba de"]].map(([k, t]) => '<option value="' + k + '"' + (k === nw.pos ? " selected" : "") + ">" + t + "</option>").join("");
+    return '<div class="casains"><div class="cih"><b>＋ Nuevo recinto</b><span class="hint">o toca un recinto del plano para editarlo</span></div><div class="cigrid"><label class="cif"><span>Tipo</span>' + ts(nw.t, 'id="cn-t" data-cn="t"') + '</label><label class="cif"><span>Nombre</span><input id="cn-n" type="text" data-cn="n" maxlength="40" placeholder="' + esc(TIPOS_REC[nw.t] || "Recinto") + '" value="' + esc(nw.n) + '"></label><label class="cif"><span>Ancho (m)</span><input id="cn-w" type="number" inputmode="decimal" step="0.05" min="0.9" max="30" data-cn="w" value="' + nw.w + '"></label><label class="cif"><span>Largo (m)</span><input id="cn-l" type="number" inputmode="decimal" step="0.05" min="0.9" max="30" data-cn="l" value="' + nw.l + '"></label><label class="cif"><span>Ubicar</span><select id="cn-p" data-cn="pos">' + pos + '</select></label><label class="cif"><span>De</span><select id="cn-r" data-cn="ref">' + refs + '</select></label></div><div class="chips"><button type="button" class="btn small" data-cs="addgo">＋ Agregar recinto</button></div></div>';
+  }
+  function casaWrap(c, ck) {
+    const modes = [["mover", "✋ Mover"], ["puertas", "\u{1F6AA} Puertas"], ["tablero", "▣ Tablero"]].map(([k, t]) => '<button type="button" class="chip' + (casaMode === k ? " on" : "") + '" data-cs="mode" data-k="' + k + '" aria-pressed="' + (casaMode === k) + '">' + t + "</button>").join("");
+    const hint = { mover: casaSel ? "Arrastra el recinto marcado para moverlo o el punto naranjo para cambiar su tama\xF1o. Se ajusta a la grilla y a los muros vecinos." : "Toca un recinto para seleccionarlo; despu\xE9s podr\xE1s arrastrarlo o escribir sus medidas.", puertas: "Toca un muro para poner una puerta (0,8 m; 0,9 m en el frente). Toca una puerta roja para quitarla.", tablero: "Toca el muro del frente (l\xEDnea azul) donde ir\xE1 el tablero." }[casaMode];
+    const msg = (casaMsg ? note(esc(casaMsg), "ok") : "") + (ck.E.length ? note("<b>Corrige:</b> " + ck.E.map(esc).join(" \xB7 "), "bad") : "") + (ck.Wn.length ? note(ck.Wn.map(esc).join(" \xB7 "), "warn") : "") + (!ck.E.length && !ck.Wn.length ? note("✓ Plano listo: sin superposiciones, todos con acceso y tablero en el frente.", "ok") : "");
+    casaMsg = "";
+    return '<div id="casawrap" class="casawrap' + (casaFull ? " full" : "") + '"><div class="casabar">' + modes + '<span class="cbsep"></span><button type="button" class="chip" data-cs="add" title="Nuevo recinto">＋ Recinto</button><button type="button" class="chip" data-cs="auto" title="Puertas autom\xE1ticas">\u{1F6AA} Auto</button><button type="button" class="chip" data-cs="undo"' + (casaHist.length ? "" : " disabled") + ' title="Deshacer">↶</button><label class="chip cstep" title="Im\xE1n de la grilla">Im\xE1n <select data-cf="step" aria-label="Im\xE1n">' + STEPS.map((v) => '<option value="' + v + '"' + (v === casaStep ? " selected" : "") + ">" + nf(v, 2) + " m</option>").join("") + '</select></label><button type="button" class="chip on" data-cs="full">' + (casaFull ? "✕ Salir" : "⛶ Pantalla completa") + '</button></div><p class="hint casahint">' + hint + '</p><div class="casaplan" id="casaplan">' + casaSVG(c) + '</div><div class="casamsg">' + msg + "</div>" + casaInspector(c) + "</div>";
   }
   function pgCasa() {
     if (!S.casa) S.casa = casaDef();
-    const c = S.casa, ck = casaCheck(c), A = c.rooms.reduce((a, r) => a + cArea(r), 0), est = casaEst(c), sel = c.rooms.find((r) => r.id === casaSel);
-    const tsel = (r, i) => '<select data-cf="t" data-i="' + i + '" aria-label="Tipo">' + Object.entries(TIPOS_REC).map(([k, v]) => '<option value="' + k + '"' + (k === r.t ? " selected" : "") + ">" + v + "</option>").join("") + "</select>";
-    const num = (f, i, v, lab) => '<input type="number" step="0.05" min="' + (f === "x" || f === "z" ? -50 : 0.9) + '" max="50" data-cf="' + f + '" data-i="' + i + '" value="' + rd(v) + '" aria-label="' + lab + '">';
-    const rows = c.rooms.map((r, i) => '<tr class="' + (r.id === casaSel ? "csel" : "") + '"><td><input type="text" data-cf="n" data-i="' + i + '" value="' + esc(r.n) + '" aria-label="Nombre" style="min-width:110px"></td><td>' + tsel(r, i) + "</td><td>" + num("x", i, r.x, "X") + "</td><td>" + num("z", i, r.z, "Z") + "</td><td>" + num("w", i, r.w, "Ancho") + "</td><td>" + num("l", i, r.l, "Largo") + '</td><td class="num">' + n1(cArea(r)) + '</td><td class="num">' + cMinC(r) + " / " + cMinE(r) + '</td><td style="white-space:nowrap"><button type="button" class="btn ghost small" data-cs="dup" data-i="' + i + '" title="Duplicar al lado">⧉</button><button type="button" class="btn ghost small" data-cs="del" data-i="' + i + '" title="Quitar">✕</button></td></tr>').join("");
-    const modes = [["mover", "✋ Mover y medir"], ["puertas", "\u{1F6AA} Puertas"], ["tablero", "▣ Tablero"]].map(([k, t]) => '<button type="button" class="chip' + (casaMode === k ? " on" : "") + '" data-cs="mode" data-k="' + k + '" aria-pressed="' + (casaMode === k) + '">' + t + "</button>").join("");
-    const hint = { mover: "Arrastra un recinto para moverlo (se pega a los muros vecinos). Toca uno para elegirlo y arrastra el cuadrito naranjo para cambiar su tama\xF1o. Las medidas exactas se escriben en la tabla.", puertas: "Toca un muro para poner una puerta de 0,8 m (0,9 m en el frente). Toca una puerta (roja) para quitarla.", tablero: "Toca el muro del frente (azul) donde ir\xE1 el tablero. El medidor y la puesta a tierra quedan por fuera, junto a \xE9l." }[casaMode];
+    const c = S.casa, ck = casaCheck(c), A = c.rooms.reduce((a, r) => a + cArea(r), 0), est = casaEst(c);
+    if (casaSel && !c.rooms.some((r) => r.id === casaSel)) casaSel = null;
+    const rows = c.rooms.map((r) => '<tr class="' + (r.id === casaSel ? "csel" : "") + '"><td><b>' + esc(r.n) + "</b></td><td>" + (TIPOS_REC[r.t] || r.t) + '</td><td class="num">' + nf(r.w, 2) + " \xD7 " + nf(r.l, 2) + '</td><td class="num">' + n1(cArea(r)) + '</td><td class="num">' + cMinC(r) + " / " + cMinE(r) + '</td><td style="white-space:nowrap"><button type="button" class="btn ghost small" data-cs="sel" data-id="' + r.id + '" title="Editar">✏</button><button type="button" class="btn ghost small" data-cs="delid" data-id="' + r.id + '" title="Eliminar">\u{1F5D1}</button></td></tr>').join("");
     const tpl = CASA_TPL.map(([k, t, d]) => '<button type="button" class="tpl" data-cs="tpl" data-k="' + k + '"><span class="ti">\u{1F4D0}</span><span class="tt">' + (casaConf === "tpl:" + k ? "\xBFReemplazar el plano? Toca otra vez" : t) + '</span><span class="td">' + d + "</span></button>").join("");
-    const msgs = (casaMsg ? note(esc(casaMsg), "ok") : "") + (ck.E.length ? note("<b>Corrige antes de usar el plano:</b><ul class=\"whyl\">" + ck.E.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>", "bad") : "") + (ck.Wn.length ? note("<ul class=\"whyl\" style=\"margin:0\">" + ck.Wn.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>", "warn") : "") + (!ck.E.length && !ck.Wn.length ? note("✓ Plano listo: recintos sin superposiciones, todos con acceso y tablero en el frente.", "ok") : "");
-    casaMsg = "";
-    const cs = s2HasWork() ? casaConf === "sim" ? "\xBFReemplazar la instalaci\xF3n actual del 3D? Toca otra vez" : "▶ Usar en el Simulador 3D" : "▶ Usar en el Simulador 3D";
+    const cs = s2HasWork() && casaConf === "sim" ? "\xBFReemplazar la instalaci\xF3n actual del 3D? Toca otra vez" : "▶ Usar en el Simulador 3D";
+    const front = c.rooms.length ? Math.min(...c.rooms.map((r) => r.x)) : 0;
     return '<p class="eyebrow">Simulador \xB7 proyecto real</p><h1>Dise\xF1ar mi vivienda</h1><p class="lead">Dibuja el plano con las medidas reales: recintos, puertas y ubicaci\xF3n del tablero. La app calcula superficies, los puntos m\xEDnimos RIC N\xB010 por recinto y un presupuesto preliminar. Despu\xE9s p\xE1salo al Simulador 3D para instalar punto por punto y obtener el listado exacto de materiales y costos en Reportes.</p>' +
       '<section class="card"><h2>1 \xB7 Partir de</h2><div class="tpls">' + tpl + "</div></section>" +
-      '<section class="card"><div class="sechead"><h2 style="margin:0">2 \xB7 Plano</h2><div class="field" style="margin:0;min-width:180px"><input type="text" data-cf="hn" value="' + esc(c.n || "") + '" aria-label="Nombre del proyecto" placeholder="Nombre del proyecto"></div></div>' +
-      '<div class="chips" style="margin:8px 0">' + modes + '<button type="button" class="chip" data-cs="add">＋ Recinto</button><button type="button" class="chip" data-cs="auto">\u{1F6AA} Puertas autom\xE1ticas</button></div><p class="hint" style="margin:0 0 6px">' + hint + '</p><div class="casaplan" id="casaplan">' + casaSVG(c) + "</div>" + msgs +
+      '<section class="card"><div class="sechead"><h2 style="margin:0">2 \xB7 Plano</h2><div class="field" style="margin:0;min-width:180px"><input type="text" data-cf="hn" value="' + esc(c.n || "") + '" aria-label="Nombre del proyecto" placeholder="Nombre del proyecto"></div></div>' + casaWrap(c, ck) +
       kpis([kpi("Superficie", n1(A), "m\xB2"), kpi("Recintos", c.rooms.length), kpi("Puertas", c.doors.length), kpi("Centros m\xEDn.", est.cen), kpi("Enchufes m\xEDn.", est.enc), kpi("Circuitos m\xEDn.", A >= 30 ? Math.max(3, est.nTot) : est.nTot)]) + "</section>" +
-      '<section class="card"><h2>3 \xB7 Recintos y medidas</h2><p class="hint">X y Z: esquina superior izquierda del recinto en el plano (m). Ancho: hacia la derecha. Largo: hacia abajo. M\xEDn. RIC: centros / enchufes seg\xFAn RIC N\xB010 (5.2.2 y 5.2.3).</p><div class="tbl-wrap"><table class="pt casat"><thead><tr><th>Nombre</th><th>Tipo</th><th>X</th><th>Z</th><th>Ancho</th><th>Largo</th><th>m\xB2</th><th>M\xEDn. RIC</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div><div class="field" style="max-width:260px;margin-top:10px"><label>Tablero: distancia desde la esquina izquierda del frente (m)</label><input type="number" step="0.05" data-cf="tx" value="' + rd(c.tx - Math.min(0, ...c.rooms.map((r) => r.x))) + '"></div></section>' +
+      '<section class="card"><h2>3 \xB7 Cuadro de recintos</h2><div class="tbl-wrap"><table class="pt casat"><thead><tr><th>Recinto</th><th>Tipo</th><th>Medidas (m)</th><th>m\xB2</th><th>M\xEDn. RIC</th><th></th></tr></thead><tbody>' + rows + '</tbody><tfoot><tr><td colspan="3"><b>Total</b></td><td class="num"><b>' + n1(A) + '</b></td><td class="num">' + est.cen + " / " + est.enc + '</td><td></td></tr></tfoot></table></div><p class="hint">M\xEDn. RIC: centros de luz / enchufes seg\xFAn RIC N\xB010 (5.2.2 y 5.2.3).</p><div class="field" style="max-width:300px;margin-top:10px"><label>Tablero: distancia desde la esquina izquierda del frente (m)</label><input type="number" inputmode="decimal" step="0.05" data-cf="tx" value="' + rd(c.tx - front) + '"></div></section>' +
       '<section class="card"><h2>4 \xB7 Presupuesto preliminar</h2><p class="hint">Estimaci\xF3n con los puntos m\xEDnimos RIC y recorridos aproximados desde el tablero. Los precios son referenciales (CLP) y puedes cambiarlos aqu\xED o en Reportes; se guardan para todo el proyecto. El listado exacto sale al instalar en el 3D.</p>' + bomTable(est.B, true) + '<div class="chips" style="margin-top:8px"><button type="button" class="chip" data-cs="prst">↺ Restaurar precios</button></div></section>' +
-      '<section class="card"><h2>5 \xB7 Usar el plano</h2><div class="chips"><button type="button" class="btn calc" data-cs="sim"' + (ck.E.length ? " disabled" : "") + ">" + cs + '</button><button type="button" class="btn ghost" data-cs="p2"' + (ck.E.length ? " disabled" : "") + ">" + (casaConf === "p2" ? "\xBFReemplazar los recintos del paso 2? Toca otra vez" : "→ Enviar recintos al paso 2") + "</button></div>" +
+      '<section class="card"><h2>5 \xB7 Usar el plano</h2><div class="chips"><button type="button" class="btn calc" data-cs="sim"' + (ck.E.length ? " disabled" : "") + ">" + cs + '</button><button type="button" class="btn ghost" data-cs="p2"' + (ck.E.length ? " disabled" : "") + ">" + (casaConf === "p2" ? "\xBFReemplazar los recintos del paso 2? Toca otra vez" : "→ Enviar recintos al paso 2") + "</button></div>" + (ck.E.length ? '<p class="hint">Corrige los errores del plano para continuar.</p>' : "") +
       learn("Qu\xE9 revisa la RIC en el plano", '<ul class="hand"><li><b>Centros de luz (RIC N\xB010, 5.2.2):</b> 1 por recinto hasta 10 m\xB2 y 2 sobre 10 m\xB2.</li><li><b>Enchufes (RIC N\xB010, 5.2.3):</b> dormitorios y living 1 cada 8 m de per\xEDmetro (o fracci\xF3n); cocina 3; lavadero 1.</li><li><b>Circuitos:</b> una vivienda de 30 m\xB2 o m\xE1s necesita al menos 3 (alumbrado, enchufes y cocina/lavadero), cada uno con diferencial de 30 mA.</li><li><b>Tablero:</b> en un lugar accesible, cerca del acceso y del medidor, nunca en ba\xF1os ni sobre el vano de una puerta.</li><li><b>Ba\xF1os:</b> respeta los vol\xFAmenes de seguridad: nada de enchufes cerca de la tina o ducha.</li></ul>') + "</section>";
   }
   function s2HasWork() {
@@ -7383,18 +7440,66 @@ tr.selrow td{background:var(--copper-soft)}
     const iv = shared || segs.find(([a, b]) => best.t >= a && best.t <= b);
     return iv ? { ax: best.ax, v: best.v, a: iv[0], b: iv[1], t: best.t, ext: !shared } : null;
   }
+  function casaPush() {
+    casaHist.push(JSON.stringify(S.casa));
+    if (casaHist.length > 50) casaHist.shift();
+  }
+  function casaRefresh() {
+    const w = document.getElementById("casawrap");
+    if (!w || cur !== "casa") return render(true);
+    render(true);
+  }
   function casaCommit(msg) {
     const c = S.casa;
     casaNorm(c);
     const k = casaPrune(c);
     casaMsg = (msg || "") + (k ? (msg ? " " : "") + "Se quit" + (k > 1 ? "aron " + k + " puertas que quedaron" : "\xF3 1 puerta que qued\xF3") + " fuera de un muro." : "");
     save();
-    render(true);
+    casaRefresh();
   }
   function casaNewId(c) {
     let i = 1;
     while (c.rooms.some((r) => r.id === "r" + i)) i++;
     return "r" + i;
+  }
+  function casaSetFull(on) {
+    casaFull = on;
+    document.body.classList.toggle("tgfsb", on);
+    try {
+      if (on && document.documentElement.requestFullscreen && !document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {
+      });
+      if (!on && document.fullscreenElement) document.exitFullscreen().catch(() => {
+      });
+    } catch (e) {
+    }
+    render(true);
+  }
+  function casaDelete(id) {
+    const c = S.casa, i = c.rooms.findIndex((r) => r.id === id);
+    if (i < 0) return;
+    if (c.rooms.length < 2) {
+      casaMsg = "Debe quedar al menos un recinto.";
+      return casaRefresh();
+    }
+    casaPush();
+    const n = c.rooms[i].n;
+    c.rooms.splice(i, 1);
+    if (casaSel === id) casaSel = null;
+    casaCommit("\xAB" + n + "\xBB eliminado. Toca ↶ para deshacer.");
+  }
+  function casaAddRoom() {
+    const c = S.casa, nw = casaNew, w = Math.max(0.9, Math.min(30, +nw.w || 3)), l = Math.max(0.9, Math.min(30, +nw.l || 3));
+    const ref = c.rooms.find((r) => r.id === nw.ref), bb = ref ? { x: ref.x, z: ref.z, x1: ref.x + ref.w, z1: ref.z + ref.l } : c.rooms.length ? { x: Math.min(...c.rooms.map((r) => r.x)), z: Math.min(...c.rooms.map((r) => r.z)), x1: Math.max(...c.rooms.map((r) => r.x + r.w)), z1: Math.max(...c.rooms.map((r) => r.z + r.l)) } : { x: 0, z: 0, x1: 0, z1: 0 };
+    const p = { der: [bb.x1, bb.z], aba: [bb.x, bb.z1], izq: [bb.x - w, bb.z], arr: [bb.x, bb.z - l] }[nw.pos] || [bb.x1, bb.z];
+    casaPush();
+    const id = casaNewId(c), r = casaR(id, (nw.n || "").trim() || (TIPOS_REC[nw.t] || "Recinto") + " " + (c.rooms.filter((q) => q.t === nw.t).length + 1), nw.t, rd(p[0]), rd(p[1]), rd(w), rd(l));
+    c.rooms.push(r);
+    const sh = ref ? casaShared(ref, r) : null;
+    if (sh && sh[3] - sh[2] >= 1) c.doors.push(doorOn(sh, 0.8));
+    casaSel = id;
+    casaMode = "mover";
+    casaNew.n = "";
+    casaCommit("\xAB" + r.n + "\xBB agregado" + (sh && sh[3] - sh[2] >= 1 ? " con puerta hacia \xAB" + ref.n + "\xBB." : ". Agrega una puerta en modo Puertas o con \u{1F6AA} Auto."));
   }
   document.addEventListener("click", (e) => {
     if (cur !== "casa" && cur !== "rep") return;
@@ -7404,12 +7509,12 @@ tr.selrow td{background:var(--copper-soft)}
     if (a === "prst") {
       S.precios = {};
       save();
-      render();
+      render(true);
       return;
     }
     if (!c) return;
-    const i = +b.dataset.i;
     if (a !== "tpl" && a !== "sim" && a !== "p2") casaConf = "";
+    const s = c.rooms.find((r) => r.id === casaSel);
     if (a === "tpl") {
       const k = b.dataset.k;
       if (casaConf !== "tpl:" + k) {
@@ -7418,6 +7523,7 @@ tr.selrow td{background:var(--copper-soft)}
         return;
       }
       casaConf = "";
+      casaPush();
       S.casa = CASA_TPL.find((t) => t[0] === k)[3]();
       casaSel = null;
       casaCommit("Plano cargado.");
@@ -7425,37 +7531,63 @@ tr.selrow td{background:var(--copper-soft)}
     }
     if (a === "mode") {
       casaMode = b.dataset.k;
-      render(true);
-      return;
+      return render(true);
     }
-    if (a === "add") {
-      const ex = c.rooms.length ? Math.max(...c.rooms.map((r) => r.x + r.w)) : 0, id = casaNewId(c);
-      c.rooms.push(casaR(id, "Recinto " + (c.rooms.length + 1), "dormitorio", rd(ex), 0, 3, 3));
-      casaSel = id;
+    if (a === "full") return casaSetFull(!casaFull);
+    if (a === "undo") {
+      if (!casaHist.length) return;
+      S.casa = JSON.parse(casaHist.pop());
+      casaMsg = "Cambio deshecho.";
+      save();
+      return casaRefresh();
+    }
+    if (a === "add" || a === "desel") {
+      if (a === "add") casaNew.ref = casaSel || casaNew.ref;
+      casaSel = null;
       casaMode = "mover";
-      casaCommit("Recinto agregado a la derecha: arr\xE1stralo o escribe sus medidas.");
+      render(true);
+      if (a === "add") {
+        const f = document.getElementById("cn-w");
+        if (f && !casaFull) f.closest(".casains").scrollIntoView({ block: "nearest" });
+      }
       return;
     }
+    if (a === "addgo") return casaAddRoom();
+    if (a === "sel") {
+      casaSel = b.dataset.id;
+      casaMode = "mover";
+      render(true);
+      const w = document.getElementById("casawrap");
+      if (w) w.scrollIntoView({ block: "start" });
+      return;
+    }
+    if (a === "delid") return casaDelete(b.dataset.id);
+    if (a === "del" && s) return casaDelete(s.id);
     if (a === "auto") {
+      casaPush();
       casaAuto(c);
       casaCommit("Puertas recalculadas: una de entrada y una por recinto, de preferencia desde pasillos y living.");
       return;
     }
-    if (a === "dup" && c.rooms[i]) {
-      const r = c.rooms[i], ex = Math.max(...c.rooms.map((q) => q.x + q.w)), id = casaNewId(c);
-      c.rooms.push(casaR(id, r.n + " (copia)", r.t, rd(ex), r.z, r.w, r.l));
+    if (a === "nud" && s) {
+      const [dx, dz] = b.dataset.k.split(",").map(Number);
+      casaPush();
+      s.x = rd(s.x + dx * casaStep);
+      s.z = rd(s.z + dz * casaStep);
+      return casaCommit();
+    }
+    if (a === "siz" && s) {
+      const [f, d] = b.dataset.k.split(",");
+      casaPush();
+      s[f] = rd(Math.max(0.9, Math.min(30, s[f] + +d * casaStep)));
+      return casaCommit();
+    }
+    if (a === "dup" && s) {
+      casaPush();
+      const id = casaNewId(c), r = casaR(id, s.n + " (copia)", s.t, rd(s.x + s.w), s.z, s.w, s.l);
+      c.rooms.push(r);
       casaSel = id;
       casaCommit("Copia agregada a la derecha.");
-      return;
-    }
-    if (a === "del" && c.rooms[i]) {
-      if (c.rooms.length < 2) {
-        casaMsg = "Debe quedar al menos un recinto.";
-        render(true);
-        return;
-      }
-      c.rooms.splice(i, 1);
-      casaCommit("Recinto quitado.");
       return;
     }
     if (a === "p2") {
@@ -7465,14 +7597,10 @@ tr.selrow td{background:var(--copper-soft)}
         return;
       }
       casaConf = "";
-      S.rooms = c.rooms.map((r) => {
-        const o = { nombre: r.n, tipo: r.t, area: rd(cArea(r)), perim: rd(2 * (r.w + r.l)), horno: r.t === "cocina" };
-        o.centros = cMinC(r);
-        o.enchufes = cMinE(r);
-        return o;
-      });
+      S.rooms = c.rooms.map((r) => ({ nombre: r.n, tipo: r.t, area: rd(cArea(r)), perim: rd(2 * (r.w + r.l)), centros: cMinC(r), enchufes: cMinE(r), horno: r.t === "cocina" }));
       if (S.proj && !S.proj.nombre) S.proj.nombre = c.n || "";
       save();
+      if (casaFull) casaSetFull(false);
       go("p2");
       return;
     }
@@ -7489,8 +7617,8 @@ tr.selrow td{background:var(--copper-soft)}
       simSel = null;
       simPC = null;
       save();
+      if (casaFull) casaSetFull(false);
       go("sim");
-      return;
     }
   });
   document.addEventListener("change", (e) => {
@@ -7498,67 +7626,102 @@ tr.selrow td{background:var(--copper-soft)}
     if (!el || !el.dataset) return;
     if (el.dataset.pk && (cur === "casa" || cur === "rep")) {
       if (!S.precios) S.precios = {};
-      const v = Math.max(0, +el.value || 0);
-      S.precios[el.dataset.pk] = v;
+      S.precios[el.dataset.pk] = Math.max(0, +el.value || 0);
       save();
       render(true);
       return;
     }
-    if (cur !== "casa" || !el.dataset.cf || !S.casa) return;
-    const c = S.casa, f = el.dataset.cf, r = c.rooms[+el.dataset.i];
+    if (cur !== "casa" || !S.casa) return;
+    const c = S.casa, num = (v) => +String(v).replace(",", ".");
+    if (el.dataset.cn) {
+      const f = el.dataset.cn;
+      casaNew[f] = f === "w" || f === "l" ? Math.max(0.9, Math.min(30, num(el.value) || 3)) : el.value;
+      return;
+    }
+    const f = el.dataset.cf || el.dataset.ci;
+    if (!f) return;
+    if (el.dataset.cf === "step") {
+      casaStep = +el.value || 0.1;
+      return render(true);
+    }
     if (f === "hn") {
       c.n = el.value.slice(0, 80);
       save();
       return;
     }
     if (f === "tx") {
-      c.tx = rd((+el.value || 0) + Math.min(0, ...c.rooms.map((q) => q.x)));
-      casaCommit();
-      return;
+      casaPush();
+      c.tx = rd((num(el.value) || 0) + Math.min(...c.rooms.map((q) => q.x)));
+      return casaCommit();
     }
-    if (!r) return;
-    if (f === "n") {
-      r.n = el.value.slice(0, 40) || "Recinto";
-      save();
-      render(true);
-      return;
+    const r = c.rooms.find((q) => q.id === casaSel);
+    if (!el.dataset.ci || !r) return;
+    casaPush();
+    if (f === "n") r.n = el.value.slice(0, 40).trim() || "Recinto";
+    else if (f === "t") r.t = el.value;
+    else {
+      let v = num(el.value);
+      if (!isFinite(v)) return render(true);
+      if (f === "w" || f === "l") v = Math.max(0.9, Math.min(30, v));
+      else v = Math.max(-50, Math.min(50, v));
+      r[f] = rd(v);
     }
-    if (f === "t") {
-      r.t = el.value;
-      casaCommit();
-      return;
-    }
-    let v = +String(el.value).replace(",", ".");
-    if (!isFinite(v)) return render(true);
-    if (f === "w" || f === "l") v = Math.max(0.9, Math.min(30, v));
-    r[f] = rd(v);
-    casaSel = r.id;
     casaCommit();
   });
-  document.addEventListener("pointerdown", (e) => {
+  document.addEventListener("keydown", (e) => {
     if (cur !== "casa" || !S.casa) return;
+    const t = e.target, typing = t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA");
+    if (e.key === "Escape") {
+      if (casaFull) casaSetFull(false);
+      else if (casaSel) {
+        casaSel = null;
+        render(true);
+      }
+      return;
+    }
+    if (typing) return;
+    const s = S.casa.rooms.find((r) => r.id === casaSel);
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && casaHist.length) {
+      e.preventDefault();
+      S.casa = JSON.parse(casaHist.pop());
+      save();
+      return casaRefresh();
+    }
+    if (!s) return;
+    const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (d) {
+      e.preventDefault();
+      casaPush();
+      s.x = rd(s.x + d[0] * casaStep);
+      s.z = rd(s.z + d[1] * casaStep);
+      casaCommit();
+    } else if (e.key === "Delete" || e.key === "Backspace") {
+      e.preventDefault();
+      casaDelete(s.id);
+    }
+  });
+  document.addEventListener("pointerdown", (e) => {
+    if (cur !== "casa" || !S.casa || e.button > 0) return;
     const t = e.target;
     if (!t.closest || !t.closest("#casasvg")) return;
     const c = S.casa, p = casaPt(e);
     if (!p) return;
     if (casaMode === "mover") {
-      const h = t.dataset && t.dataset.h, rid = h || t.dataset && t.dataset.r;
+      const hg = t.closest("[data-h]"), rid = hg ? hg.dataset.h : t.dataset && t.dataset.r;
       const r = c.rooms.find((q) => q.id === rid);
+      e.preventDefault();
       if (!r) {
-        if (casaSel) {
-          casaSel = null;
-          render(true);
-        }
+        casaDrag = { none: true, cx: e.clientX, cy: e.clientY };
         return;
       }
-      e.preventDefault();
       casaDragged = false;
-      casaDrag = { id: r.id, size: !!h, p0: p, r0: Object.assign({}, r), fr: { x0: p.b[0], z0: p.b[1], x1: p.b[2], z1: p.b[3] } };
+      casaDrag = { id: r.id, size: !!hg, live: r.id === casaSel, cx: e.clientX, cy: e.clientY, p0: p, r0: Object.assign({}, r), fr: { x0: p.b[0], z0: p.b[1], x1: p.b[2], z1: p.b[3] } };
       return;
     }
     if (casaMode === "puertas") {
       e.preventDefault();
       if (t.dataset && t.dataset.d != null) {
+        casaPush();
         c.doors.splice(+t.dataset.d, 1);
         casaCommit("Puerta quitada.");
         return;
@@ -7566,16 +7729,15 @@ tr.selrow td{background:var(--copper-soft)}
       const ed = casaEdgeAt(c, p);
       if (!ed) {
         casaMsg = "Toca justo sobre un muro.";
-        render(true);
-        return;
+        return casaRefresh();
       }
       const w = ed.ext ? 0.9 : 0.8;
       if (ed.b - ed.a < w + 0.2) {
         casaMsg = "Ese tramo de muro mide " + nf(ed.b - ed.a, 2) + " m: no cabe una puerta de " + nf(w, 1) + " m.";
-        render(true);
-        return;
+        return casaRefresh();
       }
       const m = Math.max(ed.a + 0.1 + w / 2, Math.min(ed.b - 0.1 - w / 2, ed.t));
+      casaPush();
       c.doors = c.doors.filter((d) => !(d[0] === ed.ax && Math.abs(d[1] - ed.v) < 0.02 && d[3] > m - w / 2 && d[2] < m + w / 2));
       c.doors.push([ed.ax, rd(ed.v), rd(m - w / 2), rd(m + w / 2)]);
       casaCommit(ed.ext ? "Puerta exterior agregada." : "Puerta agregada.");
@@ -7586,38 +7748,43 @@ tr.selrow td{background:var(--copper-soft)}
       const fr = casaFront(c), z0 = fr.length ? fr[0].z : 0, r = fr.find((q) => p.x >= q.x && p.x <= q.x + q.w);
       if (!r || Math.abs(p.z - z0) > 0.6) {
         casaMsg = "El tablero va en el muro del frente (l\xEDnea azul).";
-        render(true);
-        return;
+        return casaRefresh();
       }
+      casaPush();
       c.tx = rd(Math.max(r.x + 0.5, Math.min(r.x + r.w - 0.5, Math.round(p.x * 20) / 20)));
       casaCommit("Tablero en " + nf(c.tx - Math.min(...c.rooms.map((q) => q.x)), 2) + " m desde la esquina izquierda del frente.");
     }
   });
   document.addEventListener("pointermove", (e) => {
-    if (!casaDrag || cur !== "casa") return;
-    const c = S.casa, r = c.rooms.find((q) => q.id === casaDrag.id), p = casaPt(e);
-    if (!r || !p) return;
-    const dx = p.x - casaDrag.p0.x, dz = p.z - casaDrag.p0.z, r0 = casaDrag.r0, sn = (v) => Math.round(v * 20) / 20;
-    if (!casaDragged && Math.hypot(dx, dz) < 0.08) return;
-    casaDragged = true;
+    if (!casaDrag || casaDrag.none || cur !== "casa") return;
+    if (!casaDrag.live) return;
+    if (!casaDragged && Math.hypot(e.clientX - casaDrag.cx, e.clientY - casaDrag.cy) < 10) return;
+    const c = S.casa, r = c.rooms.find((q) => q.id === casaDrag.id);
+    if (!r) return;
+    if (!casaDragged) {
+      casaDragged = true;
+      casaPush();
+    }
+    const dx = (e.clientX - casaDrag.cx) / casaDrag.p0.px, dz = (e.clientY - casaDrag.cy) / casaDrag.p0.px, r0 = casaDrag.r0, st = casaStep, sn = (v) => Math.round(v / st) * st, th = Math.max(0.15, st * 0.6);
     const ox = c.rooms.filter((q) => q !== r).flatMap((q) => [q.x, q.x + q.w]), oz = c.rooms.filter((q) => q !== r).flatMap((q) => [q.z, q.z + q.l]);
     const near = (v, L) => {
       let b = null;
       L.forEach((u) => {
-        if (Math.abs(u - v) < 0.18 && (b == null || Math.abs(u - v) < Math.abs(b - v))) b = u;
+        if (Math.abs(u - v) < th && (b == null || Math.abs(u - v) < Math.abs(b - v))) b = u;
       });
       return b;
     };
     if (casaDrag.size) {
       let x1 = sn(r0.x + r0.w + dx), z1 = sn(r0.z + r0.l + dz);
-      const sx = near(x1, ox), sz = near(z1, oz);
+      const sx = near(r0.x + r0.w + dx, ox), sz = near(r0.z + r0.l + dz, oz);
       if (sx != null) x1 = sx;
       if (sz != null) z1 = sz;
-      r.w = rd(Math.max(0.9, x1 - r.x));
-      r.l = rd(Math.max(0.9, z1 - r.z));
+      r.w = rd(Math.max(0.9, Math.min(30, x1 - r.x)));
+      r.l = rd(Math.max(0.9, Math.min(30, z1 - r.z)));
     } else {
-      let x = sn(r0.x + dx), z = sn(r0.z + dz);
-      const a1 = near(x, ox), a2 = near(x + r.w, ox), b1 = near(z, oz), b2 = near(z + r.l, oz);
+      const rx = r0.x + dx, rz = r0.z + dz;
+      let x = sn(rx), z = sn(rz);
+      const a1 = near(rx, ox), a2 = near(rx + r.w, ox), b1 = near(rz, oz), b2 = near(rz + r.l, oz);
       if (a1 != null) x = a1;
       else if (a2 != null) x = a2 - r.w;
       if (b1 != null) z = b1;
@@ -7625,29 +7792,31 @@ tr.selrow td{background:var(--copper-soft)}
       r.x = rd(x);
       r.z = rd(z);
     }
-    const fr = casaDrag.fr, f2 = { x0: Math.min(fr.x0, r.x), z0: Math.min(fr.z0, r.z), x1: Math.max(fr.x1, r.x + r.w), z1: Math.max(fr.z1, r.z + r.l) };
     const pl = document.getElementById("casaplan");
-    if (pl) pl.innerHTML = casaSVG(c, f2);
+    if (pl) pl.innerHTML = casaSVG(c, casaDrag.fr);
   });
-  document.addEventListener("pointerup", () => {
+  function casaEnd() {
     if (!casaDrag) return;
     const d = casaDrag;
     casaDrag = null;
     if (cur !== "casa") return;
-    if (!casaDragged) {
-      casaSel = d.id;
-      render(true);
+    if (d.none) {
+      if (casaSel) {
+        casaSel = null;
+        render(true);
+      }
       return;
     }
+    if (!casaDragged) {
+      casaSel = d.id;
+      return render(true);
+    }
+    casaDragged = false;
     casaSel = d.id;
     casaCommit();
-  });
-  document.addEventListener("pointercancel", () => {
-    if (casaDrag && cur === "casa") {
-      casaDrag = null;
-      casaCommit();
-    }
-  });
+  }
+  document.addEventListener("pointerup", casaEnd);
+  document.addEventListener("pointercancel", casaEnd);
   const PAGES = [
     { id: "home", g: "", t: "Inicio", r: pgHome },
     { id: "hub_proy", g: "hub", t: "Instalaci\xF3n paso a paso", r: pgHubProy },
@@ -7724,6 +7893,10 @@ tr.selrow td{background:var(--copper-soft)}
   }
   function render(keepFocus) {
     simKill();
+    if (cur !== "casa" && casaFull) {
+      casaFull = false;
+      document.body.classList.remove("tgfsb");
+    }
     syncHouse();
     const ae = document.activeElement, fid = keepFocus && ae && ae.id;
     const p = pageOf(cur);
