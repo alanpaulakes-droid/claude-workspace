@@ -342,7 +342,7 @@ tr.selrow td{background:var(--copper-soft)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 .casawrap{position:relative}
 .casabar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 4px}
-.sim-nav .nbfl button{font-size:11px!important;padding:3px 1px!important;white-space:nowrap}.sim-nav .nbfl button[aria-pressed="true"]{background:var(--accent,#b8621b);color:#fff;border-color:transparent}.cfl{display:inline-flex;gap:4px;flex-wrap:wrap}.casabar .chip{min-height:36px}.casabar .chip:disabled{opacity:.45}.cbsep{flex:0 0 1px;height:22px;background:var(--line)}
+.sim-nav .nbfl button{font-size:11px!important;padding:3px 1px!important;white-space:nowrap}.sim-nav .nbfl button[aria-pressed="true"]{background:var(--accent,#b8621b);color:#fff;border-color:transparent}.cfl{display:inline-flex;gap:4px;flex-wrap:wrap}.gsw{padding:6px 8px 8px}.gsw input{width:100%;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font:500 13px var(--f-body);background:var(--surface);color:var(--ink)}#gsres button small{margin-left:4px}#gsres{display:flex;flex-direction:column}.casabar .chip{min-height:36px}.casabar .chip:disabled{opacity:.45}.cbsep{flex:0 0 1px;height:22px;background:var(--line)}
 .cstep{display:inline-flex;align-items:center;gap:4px}.cstep select{border:0;background:transparent;color:inherit;font:inherit;font-weight:700}
 .casahint{margin:0 0 6px}.casamsg .note{margin:0 0 6px}
 .casains{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface2);margin-top:6px}
@@ -533,15 +533,19 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return {
       corriente: { modo: "PaI", sis: "mono", P: 0, I: 0, V: 220, VL: 380, cf: 1 },
       caida: { sis: "mono", ent: "I", I: 0, P: 0, cf: 1, V: 220, VL: 380, L: 0, S: 2.5, rho: 0.018, lim: 3 },
-      conductor: { uso: "enchufes", amb: "seco", sis: "mono", ent: "P", P: 0, I: 0, cf: 1, V: 220, VL: 380, L: 0, lim: 5, fc: 1, rho: 0.018 },
-      proteccion: { tipo: "enchufes", ent: "P", P: 0, I: 0, V: 220, cf: 1, S: 2.5, fc: 1 },
+      conductor: { uso: "enchufes", amb: "seco", sis: "mono", ent: "P", P: 0, I: 0, cf: 1, V: 220, VL: 380, L: 0, lim: 5, fc: 1, rho: 0.018, ta: 30, ng: 1 },
+      proteccion: { tipo: "enchufes", ent: "P", P: 0, I: 0, V: 220, cf: 1, S: 2.5, fc: 1, ta: 30, ng: 1 },
       cargas: { V: 220, cf: 1, dvA: 0, rho: 0.018, fc: 1, rows: [] },
       demanda: { P: 0, n: 1, sis: "mono", V: 220, VL: 380, cf: 1 },
       puntos: { In: 10, V: 220, cf: 1, W: 250, tipo: "dormitorio", area: 0, perim: 0 },
-      tierra: { amb: "seco", idn: 0.03, R: 0, Rs: 0, Sf: 4 },
+      tierra: { amb: "seco", idn: 0.03, R: 0, Rs: 0, Sf: 4, rho: 0, Lb: 1.5, nb: 1 },
       ohm: { par: "VI", V: 0, I: 0, R: 0, P: 0 },
       curvas: { In: 16, cv: "C", I: 0 },
-      potencias: { V: 220, cf: 1, rows: [] }
+      potencias: { V: 220, cf: 1, rows: [] },
+      icc: { Icc0: 3, Sa: 6, La: 12, Ig: 25, pdcG: 6, In: 16, cv: "C", pdc: 6, S: 2.5, L: 0 },
+      ev: { P: 7400, L: 0, Pd: 0, Ig: 25, amb: "int", ta: 30, ng: 1, fc: 1 },
+      fv: { kwh: 0, hsp: 5, pr: 0.8, Wp: 550, Voc: 49.5, Vmp: 41.5, bVoc: -0.27, Tmin: -5, Tmax: 70, Vmax: 600, mppt0: 120, mppt1: 550, Lac: 10, Pinv: 0 },
+      energia: { tar: 200, rows: [] }
     };
   }
   function toolExample(k) {
@@ -553,10 +557,14 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       cargas: { V: 220, cf: 1, dvA: 1, rho: 0.018, fc: 1, rows: [{ n: "Iluminaci\xF3n", tipo: "alumbrado", cant: 8, w: 100, L: 15 }, { n: "Enchufes dormitorios", tipo: "enchufes", cant: 6, w: 250, L: 18 }, { n: "Cocina", tipo: "cocina", cant: 4, w: 250, L: 12 }, { n: "Horno", tipo: "horno", cant: 1, w: 2e3, L: 10 }] },
       demanda: { P: 8e3, n: 1, sis: "mono", V: 220, VL: 380, cf: 1 },
       puntos: { In: 10, V: 220, cf: 1, W: 250, tipo: "living", area: 20, perim: 18 },
-      tierra: { amb: "seco", idn: 0.03, R: 40, Rs: 15, Sf: 4 },
+      tierra: { amb: "seco", idn: 0.03, R: 40, Rs: 15, Sf: 4, rho: 100, Lb: 1.5, nb: 2 },
       ohm: { par: "VI", V: 220, I: 10, R: 0, P: 0 },
       curvas: { In: 16, cv: "C", I: 40 },
-      potencias: { V: 220, cf: 1, rows: [{ n: "Centros de luz", cant: 6, w: 100 }, { n: "Enchufes", cant: 5, w: 250 }, { n: "Microondas", cant: 1, w: 1200 }] }
+      potencias: { V: 220, cf: 1, rows: [{ n: "Centros de luz", cant: 6, w: 100 }, { n: "Enchufes", cant: 5, w: 250 }, { n: "Microondas", cant: 1, w: 1200 }] },
+      icc: { Icc0: 3, Sa: 6, La: 15, Ig: 25, pdcG: 6, In: 16, cv: "C", pdc: 6, S: 2.5, L: 35 },
+      ev: { P: 7400, L: 18, Pd: 5200, Ig: 40, amb: "int", ta: 35, ng: 1, fc: 1 },
+      fv: { kwh: 280, hsp: 5, pr: 0.8, Wp: 550, Voc: 49.5, Vmp: 41.5, bVoc: -0.27, Tmin: -5, Tmax: 70, Vmax: 600, mppt0: 120, mppt1: 550, Lac: 12, Pinv: 0 },
+      energia: { tar: 200, rows: EN_DEF.map(([n, c, w, h, led]) => ({ n, c, w, h, led })) }
     }[k];
   }
   let S;
@@ -610,7 +618,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   function setP(path, v) {
     const ks = path.split(".");
     let o = S;
-    for (let i = 0; i < ks.length - 1; i++) o = o[ks[i]];
+    for (let i = 0; i < ks.length - 1; i++) {
+      if (o[ks[i]] == null) o[ks[i]] = /^\d+$/.test(ks[i + 1]) ? [] : {};
+      o = o[ks[i]];
+    }
     o[ks[ks.length - 1]] = v;
   }
   function nextCom(x) {
@@ -796,7 +807,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         return null;
       }
     })(), lp = last && PAGES.find((p) => p.id === last && p.id !== "home");
-    return '<p class="eyebrow">Pliegos RIC \xB7 SEC Chile</p><h1>Instalaciones domiciliarias</h1>\n  '.concat(lp ? '<button class="resume" type="button" data-go="'.concat(lp.id, '">\u21BB Continuar: <b>').concat(esc(lp.t), "</b></button>") : "", '\n  <div class="mods">').concat(M.map(([id, ic, t, d]) => '<button class="mod" type="button" data-go="'.concat(id, '"><span class="mi">').concat(ic, '</span><span class="mt">').concat(t, '</span><span class="md">').concat(d, "</span></button>")).join(""), '</div>\n  <h2 class="sh">Empezar desde una plantilla</h2>').concat(tplButtons(), '\n  <h2 class="sh">Flujo de trabajo</h2><ol class="flow">').concat([["e1", "Definici\xF3n"], ["p1", "Levantamiento"], ["p2", "Dise\xF1o"], ["e4", "Presupuesto"], ["e5", "Ejecuci\xF3n"], ["p8", "Ensayos"], ["e7", "TE1"], ["e8", "Entrega"]].map(([id, t], i) => '<li><button type="button" data-go="'.concat(id, '"><span>').concat(i + 1, "</span>").concat(t, "</button></li>")).join(""), '</ol>\n  <p class="hint">Toca cualquier abreviatura subrayada, como ').concat(ab("Iz"), ", para ver qu\xE9 significa. Tus datos se guardan en este equipo.</p>");
+    return '<p class="eyebrow">Pliegos RIC \xB7 SEC Chile</p><h1>Instalaciones domiciliarias</h1>\n  '.concat(lp ? '<button class="resume" type="button" data-go="'.concat(lp.id, '">\u21BB Continuar: <b>').concat(esc(lp.t), "</b></button>") : "", '\n  <div class="mods">').concat(M.map(([id, ic, t, d]) => '<button class="mod" type="button" data-go="'.concat(id, '"><span class="mi">').concat(ic, '</span><span class="mt">').concat(t, '</span><span class="md">').concat(d, "</span></button>")).join(""), '</div>\n  ' + projHTML() + '<h2 class="sh">Empezar desde una plantilla</h2>').concat(tplButtons(), '\n  <h2 class="sh">Flujo de trabajo</h2><ol class="flow">').concat([["e1", "Definici\xF3n"], ["p1", "Levantamiento"], ["p2", "Dise\xF1o"], ["e4", "Presupuesto"], ["e5", "Ejecuci\xF3n"], ["p8", "Ensayos"], ["e7", "TE1"], ["e8", "Entrega"]].map(([id, t], i) => '<li><button type="button" data-go="'.concat(id, '"><span>').concat(i + 1, "</span>").concat(t, "</button></li>")).join(""), '</ol>\n  <p class="hint">Toca cualquier abreviatura subrayada, como ').concat(ab("Iz"), ", para ver qu\xE9 significa. Tus datos se guardan en este equipo.</p>");
   }
   function pg1() {
     return pg1b().replace("<h1>Datos generales</h1>", "<h1>Levantamiento y factibilidad</h1>").replace('<section class="card form">', levHTML() + '<section class="card form"><div class="sechead"><span class="tag">Sistema</span><h2 style="margin:0">Caracter\xEDsticas del suministro</h2></div>');
@@ -918,20 +929,20 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   }
   const ENS = [["vis", "Inspecci\xF3n visual", "Secciones, colores, protecciones, rotulado, uniones dentro de cajas y fijaci\xF3n de ductos.", "Detecta errores de montaje sin energizar."], ["cont", "Continuidad del conductor de protecci\xF3n", "Con fuente de 4 a 24 V y al menos 0,2 A, en cada enchufe y carcasa.", "Confirma que todo est\xE1 realmente unido a tierra."], ["tierra", "Resistencia de puesta a tierra", "Medida con telur\xF3metro y dentro de los l\xEDmites del paso 7.", "Una tierra cortada deja la protecci\xF3n sin efecto."], ["dr", "Prueba de diferenciales con instrumento", "Deben disparar con una corriente menor que I\u0394n.", "El bot\xF3n de prueba no mide la corriente ni el tiempo reales."], ["pol", "Polaridad", "Interruptores y protecciones deben cortar la fase.", "Si se corta el neutro, la ampolleta apagada sigue con tensi\xF3n."], ["fun", "Ca\xEDda de tensi\xF3n y funcionamiento", "Medici\xF3n en el punto m\xE1s lejano y prueba de cada circuito.", "Comprueba en la pr\xE1ctica lo calculado."]];
   function pg8() {
-    return pg8b() + '<section class="card"><h2>Cierre de la etapa</h2>' + etApprove("p8", "Ensayos realizados, registrados y observaciones corregidas") + '<div class="actions" style="border:0;padding-top:0"><button class="btn" type="button" data-go="e7">Siguiente: documentaci\xF3n y declaraci\xF3n SEC \u2192</button></div></section>';
+    return pg8b() + '<section class="card"><h2>Protocolo de ensayos</h2><p class="hint" style="margin-top:0">Documento con todas las mediciones registradas, listo para firmar y adjuntar a la declaraci\xF3n.</p><button class="btn" type="button" data-act="protdoc">\u{1F5A8} Generar protocolo de ensayos</button></section><section class="card"><h2>Cierre de la etapa</h2>' + etApprove("p8", "Ensayos realizados, registrados y observaciones corregidas") + '<div class="actions" style="border:0;padding-top:0"><button class="btn" type="button" data-go="e7">Siguiente: documentaci\xF3n y declaraci\xF3n SEC \u2192</button></div></section>';
   }
   function pg8b() {
     if (!Array.isArray(S.ens.aisl)) S.ens.aisl = [];
     const rows = S.circuits.map((c, i) => "<tr><td>C".concat(i + 1, " ").concat(esc(c.nombre || ""), "</td><td>").concat(cNum("ens.aisl.".concat(i), 100, "M\u03A9"), "</td></tr>")).join("");
-    return '<p class="eyebrow">Etapa 6 de 8 \xB7 RIC N\xB019</p><h1>Inspecci\xF3n y ensayos</h1>\n  <p class="lead">Antes de energizar se revisa y se mide. Ingresa los resultados y marca lo realizado.</p>\n  '.concat(formCard("Resultados de los ensayos", "<h3>Resistencia de aislamiento (500 V CC, 1 minuto)</h3>".concat(rows ? '<div class="tbl-wrap"><table><thead><tr><th>Circuito</th><th>Medido ['.concat(ab("M\u03A9"), "]</th></tr></thead><tbody>").concat(rows, "</tbody></table></div>") : '<div class="empty">No hay circuitos.</div>', '\n  <h3 style="margin-top:16px">Lista de verificaci\xF3n</h3>').concat(ENS.map(([k, t, d]) => '<label class="check" for="f_ens_items_'.concat(k, '"><input type="checkbox" id="f_ens_items_').concat(k, '" data-path="ens.items.').concat(k, '" data-bool="1" ').concat(S.ens.items[k] ? "checked" : "", "><span><b>").concat(t, '</b><br><span class="hint">').concat(d, "</span></span></label>")).join("")), { calcLabel: "Evaluar ensayos" }), "\n  ").concat(RES.p8 || "", "\n  ").concat(learn("\xBFPor qu\xE9 se ensaya antes de energizar?", "<p>Muchos errores no se ven: un cable da\xF1ado al pasarlo por el ducto, una uni\xF3n floja, un PE cortado dentro de una caja. Los ensayos los detectan antes de que haya personas usando la instalaci\xF3n.</p><p>La <b>resistencia de aislamiento</b> mide si la cubierta de los cables est\xE1 sana: un valor bajo indica humedad o da\xF1o. Si un ensayo falla, se corrige y se repite junto con los anteriores que pudo afectar. Despu\xE9s, el instalador autorizado declara la instalaci\xF3n a la ".concat(ab("SEC"), " con el tr\xE1mite ").concat(ab("TE-1"), ".</p>")));
+    return '<p class="eyebrow">Etapa 6 de 8 \xB7 RIC N\xB019</p><h1>Inspecci\xF3n y ensayos</h1>\n  <p class="lead">Antes de energizar se revisa y se mide. Ingresa los resultados y marca lo realizado.</p>\n  '.concat(formCard("Resultados de los ensayos", "<h3>Resistencia de aislamiento (500 V CC, 1 minuto)</h3>".concat(rows ? '<div class="tbl-wrap"><table><thead><tr><th>Circuito</th><th>Medido ['.concat(ab("M\u03A9"), "]</th></tr></thead><tbody>").concat(rows, "</tbody></table></div>") : '<div class="empty">No hay circuitos.</div>', '\n  ' + ensExtraHTML() + '<h3 style="margin-top:16px">Lista de verificaci\xF3n</h3>').concat(ENS.map(([k, t, d]) => '<label class="check" for="f_ens_items_'.concat(k, '"><input type="checkbox" id="f_ens_items_').concat(k, '" data-path="ens.items.').concat(k, '" data-bool="1" ').concat(S.ens.items[k] ? "checked" : "", "><span><b>").concat(t, '</b><br><span class="hint">').concat(d, "</span></span></label>")).join("")), { calcLabel: "Evaluar ensayos" }), "\n  ").concat(RES.p8 || "", "\n  ").concat(learn("\xBFPor qu\xE9 se ensaya antes de energizar?", "<p>Muchos errores no se ven: un cable da\xF1ado al pasarlo por el ducto, una uni\xF3n floja, un PE cortado dentro de una caja. Los ensayos los detectan antes de que haya personas usando la instalaci\xF3n.</p><p>La <b>resistencia de aislamiento</b> mide si la cubierta de los cables est\xE1 sana: un valor bajo indica humedad o da\xF1o. Si un ensayo falla, se corrige y se repite junto con los anteriores que pudo afectar. Despu\xE9s, el instalador autorizado declara la instalaci\xF3n a la ".concat(ab("SEC"), " con el tr\xE1mite ").concat(ab("TE-1"), ".</p>")));
   }
   function calc8() {
     const ai = S.circuits.map((c, i) => {
       const v = parseNum(S.ens.aisl[i]);
       return { c, i, v, ok: v >= 0.5 };
     });
-    const med = ai.filter((x) => x.v > 0), done = ENS.filter(([k]) => S.ens.items[k]).length;
-    return kpis([kpi("Aislamiento medido", "".concat(med.length, "/").concat(ai.length)), kpi("Aislamiento bajo 0,5 M\u03A9", med.filter((x) => !x.ok).length, "", med.some((x) => !x.ok) ? "bad" : "ok"), kpi("Verificaciones hechas", "".concat(done, "/").concat(ENS.length), "", done === ENS.length ? "ok" : "")]) + steps([{ t: "Resistencia de aislamiento", f: "R aislamiento \u2265 0,5 M\u03A9 (circuitos hasta 500 V, ensayo a 500 V CC)", s: med.length ? med.map((x) => "C".concat(x.i + 1, ": ").concat(nf(x.v), " M\u03A9 ").concat(x.ok ? "\u2713" : "\u2717")).join(" \xB7 ") : "Sin mediciones", ok: med.length ? med.every((x) => x.ok) : void 0, why: "un valor bajo indica humedad, cables da\xF1ados o uniones mal aisladas, que pueden causar fugas o incendio." }]) + '<h3 style="margin-top:16px">Pendientes</h3>'.concat(ENS.filter(([k]) => !S.ens.items[k]).map(([k, t, d, w]) => '<p style="margin:6px 0"><b>'.concat(t, ':</b> <span class="hint">').concat(w, "</span></p>")).join("") || note("Todas las verificaciones est\xE1n marcadas.", "ok"));
+    const med = ai.filter((x) => x.v > 0), done = ENS.filter(([k]) => S.ens.items[k]).length, EX = ensEval();
+    return kpis([kpi("Aislamiento medido", "".concat(med.length, "/").concat(ai.length)), kpi("Aislamiento bajo 0,5 M\u03A9", med.filter((x) => !x.ok).length, "", med.some((x) => !x.ok) ? "bad" : "ok"), kpi("Verificaciones hechas", "".concat(done, "/").concat(ENS.length), "", done === ENS.length ? "ok" : "")]) + steps([{ t: "Resistencia de aislamiento", f: "R aislamiento \u2265 0,5 M\u03A9 (circuitos hasta 500 V, ensayo a 500 V CC)", s: med.length ? med.map((x) => "C".concat(x.i + 1, ": ").concat(nf(x.v), " M\u03A9 ").concat(x.ok ? "\u2713" : "\u2717")).join(" \xB7 ") : "Sin mediciones", ok: med.length ? med.every((x) => x.ok) : void 0, why: "un valor bajo indica humedad, cables da\xF1ados o uniones mal aisladas, que pueden causar fugas o incendio." }].concat(EX)) + '<h3 style="margin-top:16px">Pendientes</h3>'.concat(ENS.filter(([k]) => !S.ens.items[k]).map(([k, t, d, w]) => '<p style="margin:6px 0"><b>'.concat(t, ':</b> <span class="hint">').concat(w, "</span></p>")).join("") || note("Todas las verificaciones est\xE1n marcadas.", "ok"));
   }
   function pg9() {
     return '<p class="eyebrow">Etapa 3.7 \xB7 Dise\xF1o el\xE9ctrico</p><h1>Cuadro de cargas y observaciones</h1>\n  <p class="lead">Calcula todo el proyecto de una vez y muestra el resumen en el formato que se adjunta a la declaraci\xF3n, m\xE1s la lista de lo que falta corregir.</p>\n  '.concat(formCard("Proyecto: " + esc(S.proj.nombre || "sin nombre"), '<p style="margin:0">'.concat(S.rooms.length, " recinto(s) \xB7 ").concat(S.circuits.length, " circuito(s) \xB7 ").concat(n1(areaTotal(S)), " m\xB2</p>"), { calcLabel: "Calcular todo el proyecto" }), "\n  ").concat(RES.p9 || "");
@@ -1012,7 +1023,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       "RIC N\xB004 y N\xB003",
       "Elegir conductor",
       "Encuentra la secci\xF3n que cumple las tres condiciones de la norma y el tipo de cable adecuado al ambiente.",
-      '<div class="grid">'.concat(fSel("tools.conductor.uso", "\xBFPara qu\xE9 es el cable?", Object.entries(USOS).map(([k, v]) => [k, v[0]]), { re: true, help: "Secci\xF3n m\xEDnima: ".concat(sStr(USOS[t.uso][1]), " mm\xB2") })).concat(fSel("tools.conductor.amb", "\xBFD\xF3nde va?", Object.entries(AMB_CABLE).map(([k, v]) => [k, v[0]]))).concat(fSel("tools.conductor.sis", "Sistema", SIS, { re: true })).concat(fSel("tools.conductor.ent", "Dato que conozco", [["P", "La potencia"], ["I", "La corriente"]], { re: true })).concat(loadFields("conductor", t)).concat(vField("conductor", t)).concat(fNum("tools.conductor.L", "Largo ".concat(ab("L")), { unit: "m", help: "Solo ida" })).concat(fNum("tools.conductor.lim", "Ca\xEDda m\xE1xima permitida", { unit: "%", help: t.uso === "alim" ? "Alimentador: 3 %" : "Lo que queda del 5 % total (ej.: 5 \u2212 ca\xEDda del alimentador)" }), '</div>\n  <details class="item" style="margin-top:14px"><summary>Par\xE1metros avanzados</summary><div class="body"><div class="grid">').concat(fNum("tools.conductor.cf", ab("cos \u03C6"))).concat(fNum("tools.conductor.fc", "Factor de correcci\xF3n ".concat(ab("fc")))).concat(fNum("tools.conductor.rho", ab("\u03C1"), { unit: "\u03A9\xB7mm\xB2/m" }), "</div></div></details>"),
+      '<div class="grid">'.concat(fSel("tools.conductor.uso", "\xBFPara qu\xE9 es el cable?", Object.entries(USOS).map(([k, v]) => [k, v[0]]), { re: true, help: "Secci\xF3n m\xEDnima: ".concat(sStr(USOS[t.uso][1]), " mm\xB2") })).concat(fSel("tools.conductor.amb", "\xBFD\xF3nde va?", Object.entries(AMB_CABLE).map(([k, v]) => [k, v[0]]))).concat(fSel("tools.conductor.sis", "Sistema", SIS, { re: true })).concat(fSel("tools.conductor.ent", "Dato que conozco", [["P", "La potencia"], ["I", "La corriente"]], { re: true })).concat(loadFields("conductor", t)).concat(vField("conductor", t)).concat(fNum("tools.conductor.L", "Largo ".concat(ab("L")), { unit: "m", help: "Solo ida" })).concat(fNum("tools.conductor.lim", "Ca\xEDda m\xE1xima permitida", { unit: "%", help: t.uso === "alim" ? "Alimentador: 3 %" : "Lo que queda del 5 % total (ej.: 5 \u2212 ca\xEDda del alimentador)" }), '</div>\n  <details class="item" style="margin-top:14px"><summary>Par\xE1metros avanzados</summary><div class="body"><div class="grid">').concat(fNum("tools.conductor.cf", ab("cos \u03C6"))).concat(fNum("tools.conductor.fc", "Factor adicional ".concat(ab("fc")))).concat(fNum("tools.conductor.rho", ab("\u03C1"), { unit: "\u03A9\xB7mm\xB2/m" }), "</div></div></details>" + '<div class="grid" style="margin-top:10px">' + fcFields("conductor") + "</div>"),
       "<p>Un cable debe cumplir <b>tres condiciones a la vez</b>:</p><ol><li><b>Secci\xF3n m\xEDnima de la norma</b>, aunque la carga sea chica: 1,5 mm\xB2 en iluminaci\xF3n, 2,5 mm\xB2 en enchufes y 4 mm\xB2 en el alimentador. Da resistencia mec\xE1nica y margen para el futuro.</li><li><b>Capacidad de corriente</b> (".concat(ab("Iz"), "): debe aguantar m\xE1s que la protecci\xF3n (").concat(ab("In"), "), para que esta corte antes de que el cable se recaliente.</li><li><b>Ca\xEDda de tensi\xF3n</b>: no debe perder m\xE1s volts de lo permitido.</li></ol><p>Se elige la secci\xF3n m\xE1s peque\xF1a que cumple las tres. La aislaci\xF3n se elige seg\xFAn el ambiente: humedad, calor, enterrado o lugares con p\xFAblico.</p>")
     );
   }
@@ -1021,10 +1032,11 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (!(I > 0) || !(+t.L > 0) || !(Vr > 0)) return note("Ingresa la potencia (o la corriente), la tensi\xF3n y el largo.");
     const Pw = t.ent === "P" ? +t.P : (tri ? Math.sqrt(3) : 1) * Vr * I * cf, Vcap = tri ? Math.sqrt(3) * Vr : Vr;
     const In = t.uso === "alim" ? nextCom(Math.max(I, 25)) : chooseIn(I, Pw, Vcap, cf, u[2]);
-    const { tries, sel } = chooseS({ I, In, L: +t.L, k, Vref: Vr, rho: +t.rho || 0.018, lim: +t.lim || 5, Smin: u[1], fc: +t.fc || 1 }), cab = AMB_CABLE[t.amb];
+    const { tries, sel } = chooseS({ I, In, L: +t.L, k, Vref: Vr, rho: +t.rho || 0.018, lim: +t.lim || 5, Smin: u[1], fc: fcOf(t) }), cab = AMB_CABLE[t.amb];
     return kpis([kpi("Corriente", nf(I), "A"), kpi("Protecci\xF3n", In != null ? In : "\u2014", "A"), kpi("Secci\xF3n", sel ? sStr(sel.s) : "\u2014", "mm\xB2", sel ? "ok" : "bad"), kpi("Ca\xEDda", sel ? nf(sel.pct) : "\u2014", "%")]) + steps([
       { t: "Corriente ".concat(ab("I")), f: tri ? "I = P \xF7 (\u221A3 \xD7 VL \xD7 cos \u03C6)" : "I = P \xF7 (V \xD7 cos \u03C6)", s: "I = ".concat(nf(I), " A"), r: "".concat(nf(I), " A") },
       { t: "Protecci\xF3n asociada ".concat(ab("In")), q: "Primero se fija el autom\xE1tico, porque el cable debe aguantar al menos esa corriente.", f: t.uso === "alim" ? "In \u2265 I y \u2265 25 A" : "In \u2265 1,1 \xD7 I \xB7 P \u2264 90 % \xD7 V \xD7 In".concat(u[2] ? " \xB7 In \u2265 ".concat(u[2], " A") : ""), s: "In = ".concat(In != null ? In : "\u2014", " A"), r: "".concat(In != null ? In : "\u2014", " A").concat(u[3] !== "\u2014" ? ", curva " + u[3] : ""), ok: In != null },
+      fcOf(t) !== 1 ? fcStep(t) : null,
       { t: "Secci\xF3n ".concat(ab("S")), q: "Probamos de la m\xE1s delgada a la m\xE1s gruesa hasta que cumpla todo.", f: "\u2460 S \u2265 ".concat(sStr(u[1]), " mm\xB2   \u2461 Iz \xD7 fc \u2265 In   \u2462 \u0394V \u2264 ").concat(nf(+t.lim, 1), " %"), s: sel ? "".concat(sStr(sel.s), " mm\xB2: Iz ").concat(n0(sel.Iz), " A \u2265 ").concat(In, " A \xB7 \u0394V ").concat(nf(sel.pct), " %") : "Ninguna secci\xF3n cumple", r: sel ? "".concat(sStr(sel.s), " mm\xB2") : "\u2014", ok: !!sel },
       { t: "Tipo de cable", f: "".concat(cab[0], " \u2192 ").concat(cab[1]), why: "la aislaci\xF3n debe resistir humedad y temperatura; en lugares con p\xFAblico, no debe emitir humos t\xF3xicos al quemarse (RIC N\xB004, Tabla 4.2)." }
     ]) + '<h3 style="margin-top:16px">Comparaci\xF3n de secciones</h3>' + cmpTable(tries, sel, "\u0394V \u2264 ".concat(nf(+t.lim, 1), " %")) + '<p class="hint">Neutro igual a la fase. '.concat(ab("PE"), " igual a la fase hasta 25 mm\xB2. Sobre 6 mm\xB2 se usa cable multifilar.</p>");
@@ -1036,12 +1048,12 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       "RIC N\xB010 y N\xB005",
       "Elegir protecciones",
       "Selecciona el termomagn\xE9tico de un circuito, verifica que coordine con el cable instalado y compara todas las opciones.",
-      '<div class="grid">'.concat(fSel("tools.proteccion.tipo", "Tipo de circuito", CIR_T.map((k) => [k, USOS[k][0]]))).concat(fSel("tools.proteccion.ent", "Dato que conozco", [["P", "La potencia"], ["I", "La corriente"]], { re: true })).concat(loadFields("proteccion", t)).concat(fNum("tools.proteccion.V", "Tensi\xF3n ".concat(ab("V")), { unit: "V" })).concat(fSel("tools.proteccion.S", "Secci\xF3n del cable instalado", SECC.slice(0, 6).map((x) => [x, sStr(x) + " mm\xB2"])), '</div>\n  <details class="item" style="margin-top:14px"><summary>Par\xE1metros avanzados</summary><div class="body"><div class="grid">').concat(fNum("tools.proteccion.cf", ab("cos \u03C6"))).concat(fNum("tools.proteccion.fc", ab("fc")), "</div></div></details>"),
+      '<div class="grid">'.concat(fSel("tools.proteccion.tipo", "Tipo de circuito", CIR_T.map((k) => [k, USOS[k][0]]))).concat(fSel("tools.proteccion.ent", "Dato que conozco", [["P", "La potencia"], ["I", "La corriente"]], { re: true })).concat(loadFields("proteccion", t)).concat(fNum("tools.proteccion.V", "Tensi\xF3n ".concat(ab("V")), { unit: "V" })).concat(fSel("tools.proteccion.S", "Secci\xF3n del cable instalado", SECC.slice(0, 6).map((x) => [x, sStr(x) + " mm\xB2"])), '</div>\n  <details class="item" style="margin-top:14px"><summary>Par\xE1metros avanzados</summary><div class="body"><div class="grid">').concat(fNum("tools.proteccion.cf", ab("cos \u03C6"))).concat(fNum("tools.proteccion.fc", ab("fc")), "</div></div></details>" + '<div class="grid" style="margin-top:10px">' + fcFields("proteccion") + "</div>"),
       "<p>El autom\xE1tico (".concat(ab("In"), ") se elige con dos reglas: debe ser al menos un 10 % mayor que la corriente del circuito, y la potencia conectada no debe superar el 90 % de lo que el autom\xE1tico permite. Ambas evitan que trabaje al l\xEDmite y corte sin motivo.</p><p>Luego se revisa contra el cable: <b>Is \u2264 In \u2264 Iz</b>. La curva B corta r\xE1pido (iluminaci\xF3n); la C tolera el pico de arranque de equipos (enchufes).</p>")
     );
   }
   function cProteccion() {
-    const t = T("proteccion"), u = USOS[t.tipo], cf = +t.cf || 1, V = +t.V, I = t.ent === "P" ? +t.P / (V * cf) : +t.I, Pw = t.ent === "P" ? +t.P : V * I * cf, Iz = (+S.amp[t.S] || 0) * (+t.fc || 1);
+    const t = T("proteccion"), u = USOS[t.tipo], cf = +t.cf || 1, V = +t.V, I = t.ent === "P" ? +t.P / (V * cf) : +t.I, Pw = t.ent === "P" ? +t.P : V * I * cf, Iz = (+S.amp[t.S] || 0) * fcOf(t);
     if (!(I > 0) || !(V > 0)) return note("Ingresa la potencia o la corriente del circuito.");
     const In = chooseIn(I, Pw, V, cf, u[2]), okC = In != null && I <= In && In <= Iz, okS = +t.S >= u[1], W = t.tipo === "alumbrado" ? 100 : 250;
     const rows = COM.slice(0, 7).map((x) => '<tr class="'.concat(x === In ? "sel" : "", '"><td class="num">').concat(x, " A</td><td>").concat(x >= 1.1 * I - 1e-9 ? pill("ok", "s\xED") : pill("bad", "no"), "</td><td>").concat(Pw <= 0.9 * V * x * cf + 1e-9 ? pill("ok", "s\xED") : pill("bad", "no"), "</td><td>").concat(x >= u[2] ? pill("ok", "s\xED") : pill("bad", "no"), "</td><td>").concat(x <= Iz ? pill("ok", "s\xED") : pill("bad", "no"), '</td><td class="num">').concat(Math.floor(0.9 * V * x * cf / W), "</td></tr>")).join("");
@@ -1141,7 +1153,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       "RIC N\xB006 y N\xB005",
       "Puesta a tierra",
       "Verifica las resistencias de puesta a tierra medidas y calcula la secci\xF3n del conductor de protecci\xF3n.",
-      '<div class="grid">'.concat(fNum("tools.tierra.R", "Tierra de protecci\xF3n medida", { unit: "\u03A9" })).concat(fNum("tools.tierra.Rs", "Tierra de servicio medida", { unit: "\u03A9" })).concat(fSel("tools.tierra.amb", "Ambiente", [["seco", "Seco (UL 50 V)"], ["humedo", "H\xFAmedo o mojado (UL 24 V)"]])).concat(fNum("tools.tierra.idn", "Sensibilidad ".concat(ab("I\u0394n")), { unit: "A", help: "30 mA = 0,03" })).concat(fSel("tools.tierra.Sf", "Secci\xF3n de la fase", SECC.map((x) => [x, sStr(x) + " mm\xB2"])), "</div>"),
+      '<div class="grid">'.concat(fNum("tools.tierra.R", "Tierra de protecci\xF3n medida", { unit: "\u03A9" })).concat(fNum("tools.tierra.Rs", "Tierra de servicio medida", { unit: "\u03A9" })).concat(fSel("tools.tierra.amb", "Ambiente", [["seco", "Seco (UL 50 V)"], ["humedo", "H\xFAmedo o mojado (UL 24 V)"]])).concat(fNum("tools.tierra.idn", "Sensibilidad ".concat(ab("I\u0394n")), { unit: "A", help: "30 mA = 0,03" })).concat(fSel("tools.tierra.Sf", "Secci\xF3n de la fase", SECC.map((x) => [x, sStr(x) + " mm\xB2"])), "</div>") + '<h3 style="margin:14px 0 6px">Dise\xF1o del electrodo (opcional)</h3><div class="grid">' + fNum("tools.tierra.rho", "Resistividad del terreno \u03C1", { unit: "\u03A9\xB7m", help: "Medida con m\xE9todo de Wenner. Ref.: tierra vegetal 50\u2013100 \xB7 arcilla 100\u2013200 \xB7 ripio seco 1.000\u20133.000" }) + fNum("tools.tierra.Lb", "Largo de la barra", { unit: "m" }) + fNum("tools.tierra.nb", "N\xFAmero de barras", { help: "En l\xEDnea, separadas al menos 2 veces su largo" }) + "</div>",
       "<p>Cuando una carcasa met\xE1lica queda con tensi\xF3n por una falla, la corriente de fuga pasa por la tierra. Esa corriente multiplicada por la resistencia de tierra es la tensi\xF3n que tendr\xEDa la carcasa. La regla R \u2264 UL \xF7 I\u0394n asegura que esa tensi\xF3n no supere la de seguridad antes de que el diferencial corte.</p>"
     );
   }
@@ -1150,7 +1162,13 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return kpis([kpi("R protecci\xF3n m\xE1x.", n0(Rmax), "\u03A9"), kpi("R servicio m\xE1x.", 20, "\u03A9"), kpi("Conductor PE", sStr(pe), "mm\xB2")]) + steps([
       { t: "Tierra de protecci\xF3n", f: "R m\xE1x = UL \xF7 I\u0394n", s: "".concat(UL, " \xF7 ").concat(nf(+t.idn, 3), " = ").concat(n0(Rmax), " \u03A9").concat(+t.R > 0 ? " \xB7 medido ".concat(nf(+t.R, 1), " \u03A9") : " \xB7 ingresa el valor medido para comparar"), r: "".concat(n0(Rmax), " \u03A9 m\xE1ximo"), ok: +t.R > 0 ? +t.R <= Rmax : void 0 },
       { t: "Tierra de servicio", f: "R \u2264 20 \u03A9", s: +t.Rs > 0 ? "".concat(nf(+t.Rs, 1), " \u03A9") : "Ingresa el valor medido para comparar", ok: +t.Rs > 0 ? +t.Rs <= 20 : void 0, why: "mantiene el neutro cerca del potencial de tierra." },
-      { t: "Conductor de protecci\xF3n ".concat(ab("PE")), f: "S \u2264 25 \u2192 PE = S \xB7 25 < S \u2264 50 \u2192 25 mm\xB2 \xB7 S > 50 \u2192 S \xF7 2", s: "Fase ".concat(sStr(Sf), " mm\xB2 \u2192 PE ").concat(sStr(pe), " mm\xB2"), r: "".concat(sStr(pe), " mm\xB2, verde o verde/amarillo"), why: "debe soportar la corriente de falla mientras la protecci\xF3n corta." }
+      { t: "Conductor de protecci\xF3n ".concat(ab("PE")), f: "S \u2264 25 \u2192 PE = S \xB7 25 < S \u2264 50 \u2192 25 mm\xB2 \xB7 S > 50 \u2192 S \xF7 2", s: "Fase ".concat(sStr(Sf), " mm\xB2 \u2192 PE ").concat(sStr(pe), " mm\xB2"), r: "".concat(sStr(pe), " mm\xB2, verde o verde/amarillo"), why: "debe soportar la corriente de falla mientras la protecci\xF3n corta." },
+      (() => {
+        const rho = +t.rho, L = +t.Lb || 1.5, n = Math.max(1, Math.round(+t.nb || 1));
+        if (!(rho > 0)) return null;
+        const R1 = rho / (2 * Math.PI * L) * Math.log(4 * L / 0.016), k = [1, 1.16, 1.29, 1.36, 1.42, 1.46][Math.min(5, n - 1)], Rn = R1 / n * k, need = Math.ceil(R1 / 20), ok20 = Rn <= 20;
+        return { t: "Resistencia estimada del electrodo", q: "Barra Copperweld 5/8\" (\u2248 16 mm); varias barras en paralelo con factor de utilizaci\xF3n.", f: "R1 = \u03C1 \xF7 (2\u03C0L) \xD7 ln(4L \xF7 d) \xB7 Rn = R1 \xF7 n \xD7 k", s: "R1 = " + n0(rho) + " \xF7 (2\u03C0 \xD7 " + nf(L, 1) + ") \xD7 ln(" + nf(4 * L / 0.016, 0) + ") = " + n1(R1) + " \u03A9 \xB7 con " + n + " barra(s): " + n1(Rn) + " \u03A9", r: n1(Rn) + " \u03A9", ok: ok20 && Rn <= Rmax ? true : Rn <= Rmax ? "warn" : false, why: ok20 ? "cumple tambi\xE9n el valor de 20 \u03A9 que se exige a la tierra de servicio. Conf\xEDrmalo midiendo con telur\xF3metro." : "para llegar a 20 \u03A9 necesitar\xEDas del orden de " + need + " barras o mejorar el terreno (tratamiento qu\xEDmico, barra m\xE1s larga, malla). Siempre se confirma midiendo." };
+      })()
     ]);
   }
   function tOhm() {
@@ -1493,6 +1511,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return "<h1>".concat(title, '</h1><p class="lead">').concat(lead, '</p><div class="tiles">').concat(items.map((p) => '<button class="tile" type="button" data-go="'.concat(p.id, '"><span class="ti">').concat(p.ic || p.n || "\u0192", '</span><span class="tt">').concat(p.t, '</span><span class="td">').concat(p.d || "", "</span>").concat(RES[p.id] ? '<span class="pill ok">\u2713 calculado</span>' : "", "</button>")).join(""), "</div>");
   }
   const DESC = {
+    t_icc: "Poder de corte, disparo magn\xE9tico y largo m\xE1ximo",
+    t_ev: "Circuito exclusivo y diferencial para el cargador",
+    t_fv: "kWp, strings e inversor para net billing",
+    t_energia: "kWh al mes, costo y ahorro con LED",
     e1: "Alcance y requerimientos del mandante",
     e3: "L\xE1mina de plano y especificaciones",
     e4: "Costos y carta Gantt",
@@ -1526,7 +1548,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     casa: "Plano, medidas y costos",
     l_comp: "Una imagen por componente"
   };
-  const ICON = { casa: "\u{1F4D0}", t_curvas: "\u2307", t_corriente: "A", t_potencias: "\u03A3", t_caida: "\u0394V", t_conductor: "mm\xB2", t_proteccion: "In", t_cargas: "\u2630", t_demanda: "Pd", t_puntos: "N", t_tierra: "\u23DA", t_ohm: "\u03A9", l_conceptos: "?", l_comp: "\u25E7", l_glosario: "Aa", l_tablas: "\u25A6", curso: "\u{1F393}" };
+  const ICON = { t_icc: "Icc", t_ev: "\u{1F50C}", t_fv: "\u2600", t_energia: "kWh", casa: "\u{1F4D0}", t_curvas: "\u2307", t_corriente: "A", t_potencias: "\u03A3", t_caida: "\u0394V", t_conductor: "mm\xB2", t_proteccion: "In", t_cargas: "\u2630", t_demanda: "Pd", t_puntos: "N", t_tierra: "\u23DA", t_ohm: "\u03A9", l_conceptos: "?", l_comp: "\u25E7", l_glosario: "Aa", l_tablas: "\u25A6", curso: "\u{1F393}" };
   function pgHubProy() {
     return hub("Instalaci\xF3n paso a paso", "Sigue los 9 pasos en orden. Cada paso usa los datos de los anteriores.", PAGES.filter((p) => p.g === "proy").map((p) => Object.assign({ d: DESC[p.id] }, p)));
   }
@@ -1845,6 +1867,39 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   const simP = (it) => it.t === "out" ? (APPL[it.a] || APPL.none)[1] : +it.P || 0;
   const simProj = (it) => it.t === "lamp" ? 100 : it.t === "out" ? Math.max(250, (APPL[it.a] || APPL.none)[1] >= 1500 ? (APPL[it.a] || APPL.none)[1] : 0) : it.t === "horno" ? Math.max(1500, +it.P || 0) : 0;
   const ampOf = (s) => +S.amp[s] || AMP_DEF[s] || 0;
+  function bathZone(r) {
+    if (!r || r.t !== "bano") return null;
+    const f = r.f || 0, W = Math.min(0.9, r.x1 - r.x0 - 0.2), L = Math.min(0.9, r.z1 - r.z0 - 0.2);
+    if (W < 0.5 || L < 0.5) return null;
+    const dm = DOORS.filter((d) => (d[4] || 0) === f && (d[0] === "x" ? (Math.abs(d[1] - r.x0) < 0.05 || Math.abs(d[1] - r.x1) < 0.05) && d[3] > r.z0 && d[2] < r.z1 : (Math.abs(d[1] - r.z0) < 0.05 || Math.abs(d[1] - r.z1) < 0.05) && d[3] > r.x0 && d[2] < r.x1)).map((d) => d[0] === "x" ? [d[1], (d[2] + d[3]) / 2] : [(d[2] + d[3]) / 2, d[1]]);
+    const C = [[r.x0, r.z0, 1, 1], [r.x1, r.z0, -1, 1], [r.x0, r.z1, 1, -1], [r.x1, r.z1, -1, -1]].map(([x, z, sx, sz]) => ({ x0: Math.min(x, x + sx * W), x1: Math.max(x, x + sx * W), z0: Math.min(z, z + sz * L), z1: Math.max(z, z + sz * L), d: dm.length ? Math.min(...dm.map(([a, b]) => Math.hypot(a - x, b - z))) : 0 }));
+    const b = C.sort((p, q) => q.d - p.d)[0];
+    return { x0: b.x0, x1: b.x1, z0: b.z0, z1: b.z1, f };
+  }
+  function bathVol(it) {
+    const rm = itemRoom(it), z = bathZone(rm);
+    if (!z || it.t === "box" || it.t === "lamp") return 0;
+    const x = it.p[0], y = it.p[1] - (z.f || 0) * FH, w = it.p[2], dx = Math.max(z.x0 - x, 0, x - z.x1), dz = Math.max(z.z0 - w, 0, w - z.z1), d = Math.hypot(dx, dz);
+    if (y > 2.25) return 0;
+    return d < 0.02 ? 1 : d <= 0.6 ? 2 : 0;
+  }
+  function simIcc(s, ev) {
+    const U0 = 220, Zs = U0 / (Math.max(0.5, +s.icc0 || 3) * 1e3), Ra = 2 * RHO * (+s.alim.L || 0) / (+s.alim.S || 6), by = new Map(ev.E.map((e) => [e.id, e])), memo = {};
+    const R = (id) => {
+      if (memo[id] != null) return memo[id];
+      const e = by.get(id);
+      if (!e) return memo[id] = 0;
+      memo[id] = 0;
+      return memo[id] = 2 * RHO * e.L / (+e.S || 1.5) + (e.from != null ? R(e.from) : 0);
+    };
+    const c = {};
+    ev.E.forEach((e) => {
+      const r = R(e.id), x = c[e.cid];
+      if (!x || r > x.R) c[e.cid] = { R: r, far: e.it.name, farId: e.it.id };
+    });
+    Object.values(c).forEach((x) => x.Imin = 0.95 * U0 / (Zs + 1.5 * (Ra + x.R)));
+    return { Zs, Ra, Imax: U0 / (Zs + Ra), c };
+  }
   const roomOf = (x, z, f) => ROOMS.find((r) => (r.f || 0) === (f || 0) && x >= r.x0 - 1e-6 && x <= r.x1 + 1e-6 && z >= r.z0 - 1e-6 && z <= r.z1 + 1e-6) || null;
   const rArea = (r) => (r.x1 - r.x0) * (r.z1 - r.z0), rPer = (r) => 2 * (r.x1 - r.x0 + (r.z1 - r.z0));
   const itemRoom = (it) => {
@@ -3011,6 +3066,12 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       const v = [ev.Pph.R, ev.Pph.S, ev.Pph.T], mx = Math.max(...v), mn = Math.min(...v);
       if (mx > 0 && (mx - mn) / mx > 0.2) add("Fases desbalanceadas", "R ".concat(n0(v[0]), " W \xB7 S ").concat(n0(v[1]), " W \xB7 T ").concat(n0(v[2]), " W (diferencia ").concat(n0((mx - mn) / mx * 100), " %)."), "Reparte los circuitos para que las fases queden parecidas: una fase sobrecargada calienta su conductor y desplaza el neutro. Usa \xABBalancear fases\xBB.", { tab: 1 });
     }
+    const ICC = simIcc(s, ev);
+    if (ICC.Imax > 6e3) add("Poder de corte del general insuficiente", "Icc en el tablero " + nf(ICC.Imax / 1e3, 2) + " kA > 6 kA.", "El general y los autom\xE1ticos deben poder abrir la corriente de cortocircuito del lugar donde se instalan (RIC N\xB005). Usa equipos de 10 kA.", { tab: 1 });
+    s.items.forEach((it) => {
+      const v = bathVol(it);
+      if (v) add((itemRoom(it) || {}).n + ": " + it.name + " dentro del volumen " + v + " de la ducha", "Est\xE1 a menos de 0,6 m de la ducha (zona marcada en celeste en el 3D).", "En los vol\xFAmenes 0, 1 y 2 de ba\xF1os no se instalan enchufes ni interruptores; mu\xE9velo fuera de la zona (criterio IEC 60364-7-701, referencia del RIC N\xB011, secci\xF3n 6).", { id: it.id });
+    });
     if (+s.alim.S < 4) add("Alimentador bajo 4 mm\xB2", "".concat(sStr(+s.alim.S), " mm\xB2."), "Secci\xF3n m\xEDnima del alimentador: 4 mm\xB2 (RIC N\xB004, 5.4).");
     if (ev.dVap / V0 * 100 > 3) add("Ca\xEDda en el alimentador sobre 3 %", "".concat(nf(ev.dVap / V0 * 100, 2), " %."), "Aumenta la secci\xF3n o acorta el alimentador (RIC N\xB003).");
     const used = s.circuits.filter((c) => s.items.some((i) => i.c === c.id && i.t !== "box"));
@@ -3055,6 +3116,11 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       if (ampOf(c.S) < In) addc("".concat(nm, ": el cable soporta menos que el autom\xE1tico"), "Iz ".concat(ampOf(c.S), " A < In ").concat(In, " A."), "Debe cumplirse Is \u2264 In \u2264 Iz.");
       if (out && c.cv === "B") addc("".concat(nm, ": curva B con enchufes"), "Se recomienda curva C.", "Los equipos tienen picos de arranque.");
       if (c.dr === "none") addc("".concat(nm, ": sin diferencial"), "Todos los circuitos de la vivienda llevan diferencial.", "RIC N\xB010, 5.1.3.5.");
+      const ic = ICC.c[c.id], Im = (KMAG[c.cv] || 10) * In;
+      if (ic && ic.Imin < Im) addc(nm + ": el cortocircuito lejano no hace actuar el magn\xE9tico", "Icc m\xEDnima en " + ic.far + ": " + n0(ic.Imin) + " A < " + (KMAG[c.cv] || 10) + " \xD7 In = " + n0(Im) + " A.", "Una falla en el extremo tardar\xEDa segundos en cortarse y el cable se recalienta. Aumenta la secci\xF3n, acorta el recorrido o usa curva B (RIC N\xB005).", { id: ic.farId });
+      if (ICC.Imax > (+c.pc || 6) * 1e3) addc(nm + ": poder de corte insuficiente", "Icc en el tablero " + nf(ICC.Imax / 1e3, 2) + " kA > " + nf(+c.pc || 6, 1) + " kA.", "El autom\xE1tico podr\xEDa destruirse al abrir el cortocircuito. Elige uno de mayor poder de corte.", { tab: 1 });
+      const ft = fTemp(s.ta || 30);
+      if (ft < 1 && ampOf(c.S) * ft < In) addc(nm + ": cable insuficiente a " + (s.ta || 30) + " \xB0C", "Iz corregida " + n0(ampOf(c.S)) + " \xD7 " + nf(ft, 2) + " = " + n0(ampOf(c.S) * ft) + " A < In " + In + " A.", "Con el entretecho caliente el cable disipa peor: sube la secci\xF3n o baja el autom\xE1tico si la carga lo permite (factor de temperatura, RIC N\xB004).");
       else {
         if (+c.ds > 30) addc("".concat(nm, ": diferencial de ").concat(c.ds, " mA"), "Debe ser de 30 mA o menos.", "300 mA no protege a las personas.");
         if (c.cl === "AC") addc("".concat(nm, ": diferencial clase AC"), "Usa clase A.", "Las fugas de equipos electr\xF3nicos no las detecta bien un clase AC (RIC N\xB005).");
@@ -3133,7 +3199,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (!tg.some((o) => o[0] === simRep.t)) simRep.t = tg[0] ? tg[0][0] : "t";
     const chal = s.fault ? '<p style="margin:0 0 8px"><b>Reporte del cliente:</b> '.concat(FHINT[s.fault.type], '</p><div class="grid sg"><div class="field"><label>\xBFD\xF3nde est\xE1 la falla?</label>').concat(sSel("rep.t", tg, simRep.t, "Ubicaci\xF3n"), '</div><div class="field"><label>\xBFQu\xE9 falla es?</label>').concat(sSel("rep.f", Object.entries(FAULTS), simRep.f, "Tipo"), '</div></div><div class="actions" style="border:0;padding-top:0;margin-top:10px"><button class="btn calc" type="button" data-sa="report">Reportar falla</button><button class="btn ghost small" type="button" data-sa="giveup">Ver soluci\xF3n</button></div>') : '<p class="hint" style="margin:0 0 8px">La app esconde una falla en tu instalaci\xF3n. Encu\xE9ntrala con los instrumentos y rep\xF3rtala.</p><button class="btn" type="button" data-sa="chal" '.concat(s.items.some((i) => i.t !== "box") ? "" : "disabled", ">Nuevo desaf\xEDo</button>");
     const insp = simInsp ? simInsp.length ? '<div class="note bad" style="margin-top:10px"><b>'.concat(simInsp.length, " observaci\xF3n(es)</b> \xB7 ").concat(simInsp.length <= 2 ? "\u2605\u2605\u2606" : "\u2605\u2606\u2606", '<ul class="whyl" style="margin-top:8px">').concat(simInsp.map((o) => '<li class="badc"><b>\u2717 '.concat(esc(o.t), "</b><br>").concat(esc(o.d), '<br><span class="hint">Por qu\xE9: ').concat(esc(o.w), "</span></li>")).join(""), "</ul></div>") : note("\u2605\u2605\u2605 Sin observaciones: la instalaci\xF3n cumple todo lo que revisa el inspector.", "ok") : "";
-    return st + '<div class="simcols"><div>\n   <section class="card"><h2>Plantillas</h2>'.concat(tplButtons(), '</section>\n   <section class="card"><h2>Tablero y circuitos</h2>\n    <div class="grid sg"><div class="field"><label>Interruptor general</label>').concat(sSel("gen.In", [[25, "25 A"], [32, "32 A"], [40, "40 A"], [50, "50 A"], [63, "63 A"]], s.gen.In, "General"), '</div><div class="field"><label>Alimentador ').concat(ab("S"), "</label>").concat(sSel("alim.S", [[4, "4 mm\xB2"], [6, "6 mm\xB2"], [10, "10 mm\xB2"], [16, "16 mm\xB2"]], s.alim.S, "Alimentador"), '</div><div class="field"><label>Largo alimentador</label>').concat(sSel("alim.L", [[5, "5 m"], [12, "12 m"], [25, "25 m"], [40, "40 m"]], s.alim.L, "Largo"), '</div></div>\n    <div style="margin-top:12px">').concat(cards || '<div class="empty">Sin circuitos. Agrega uno para empezar a colocar puntos.</div>', '</div>\n    <div class="actions" style="border:0;padding-top:0"><button class="btn" type="button" data-sa="addc" ').concat(s.circuits.length >= 8 ? "disabled" : "", '>+ Agregar circuito</button><button class="btn ghost" type="button" data-sa="ex">Casa de ejemplo</button><button class="btn ghost" type="button" data-go="rep">\u2399 Reporte y materiales</button><button class="btn danger small" type="button" data-sa="clear">').concat(simConfirm === "clear" ? "\xBFSeguro? Toca otra vez" : "Vaciar casa", '</button></div></section>\n   <section class="card"><h2>Puntos instalados <span class="pill info">').concat(s.items.length, '</span></h2><div class="actions" style="border:0;padding:0;margin:6px 0"><button class="btn ghost small" type="button" data-sa="roall">Abrir todos</button><button class="btn ghost small" type="button" data-sa="ronone">Plegar todos</button></div><p class="hint" style="margin:0">Toca una habitaci\xF3n para ver o plegar sus puntos. Para colocar, elige la herramienta <b>Colocar</b> en la vista 3D, el tipo de punto y el circuito, y toca un muro (o el piso para una luz). Aqu\xED puedes cambiar desde qu\xE9 caja se alimenta cada punto y qu\xE9 interruptor controla cada luz.</p>').concat(pts || '<div class="empty" style="margin-top:10px">A\xFAn no hay puntos.</div>', '</section></div><div>\n   <section class="card"><h2>Errores en vivo <span class="pill ').concat(simErrs(s).length ? "bad" : "ok", '">').concat(simErrs(s).length, '</span></h2><p class="hint" style="margin:0 0 8px">Se revisan solos cada vez que cambias algo. Tambi\xE9n est\xE1n en el bot\xF3n \u26A0 de la vista 3D.</p>').concat(errListHTML(simErrs(s)), '</section>\n   <section class="card"><h2>Misiones <span class="pill ').concat(done === MIS.length ? "ok" : "info", '">').concat(done, "/").concat(MIS.length, '</span></h2><ul class="mis">').concat(MIS.map((m) => '<li class="'.concat(m[2](s) ? "done" : "", '"><span>').concat(m[2](s) ? "\u2713" : "\u25CB", "</span>").concat(m[1], "</li>")).join(""), '</ul></section>\n   <section class="card"><h2>Desaf\xEDo: encuentra la falla <span class="pill info">').concat(s.score, " resuelto(s)</span></h2>").concat(chal, '</section>\n   <section class="card"><h2>Revisi\xF3n del inspector</h2><p class="hint" style="margin:0 0 8px">Revisa protecciones, cables, ca\xEDdas de tensi\xF3n, cajas, interruptores y los m\xEDnimos de cada recinto.</p><button class="btn" type="button" data-sa="insp">Pedir revisi\xF3n</button>').concat(insp, '</section>\n   <section class="card"><h2>Registro de mediciones</h2>').concat(s.log.length ? '<ol class="hand">'.concat(s.log.map((x) => "<li>".concat(esc(x), "</li>")).join(""), "</ol>") : '<p class="hint" style="margin:0">A\xFAn no mides nada.</p>', "</section></div></div>");
+    return st + '<div class="simcols"><div>\n   <section class="card"><h2>Plantillas</h2>'.concat(tplButtons(), '</section>\n   <section class="card"><h2>Tablero y circuitos</h2>\n    <div class="grid sg"><div class="field"><label>Interruptor general</label>').concat(sSel("gen.In", [[25, "25 A"], [32, "32 A"], [40, "40 A"], [50, "50 A"], [63, "63 A"]], s.gen.In, "General"), '</div><div class="field"><label>Alimentador ').concat(ab("S"), "</label>").concat(sSel("alim.S", [[4, "4 mm\xB2"], [6, "6 mm\xB2"], [10, "10 mm\xB2"], [16, "16 mm\xB2"]], s.alim.S, "Alimentador"), '</div><div class="field"><label>Largo alimentador</label>').concat(sSel("alim.L", [[5, "5 m"], [12, "12 m"], [25, "25 m"], [40, "40 m"]], s.alim.L, "Largo"), '</div><div class="field"><label>Icc en el empalme</label>').concat(sSel("icc0", [[1.5, "1,5 kA"], [3, "3 kA"], [4.5, "4,5 kA"], [6, "6 kA"], [10, "10 kA"]], s.icc0 || 3, "Icc empalme"), '</div><div class="field"><label>Temperatura entretecho</label>').concat(sSel("ta", [[30, "30 \xB0C"], [35, "35 \xB0C"], [40, "40 \xB0C"], [45, "45 \xB0C"], [50, "50 \xB0C"]], s.ta || 30, "Temperatura"), '</div></div>\n    <div style="margin-top:12px">').concat(cards || '<div class="empty">Sin circuitos. Agrega uno para empezar a colocar puntos.</div>', '</div>\n    <div class="actions" style="border:0;padding-top:0"><button class="btn" type="button" data-sa="addc" ').concat(s.circuits.length >= 8 ? "disabled" : "", '>+ Agregar circuito</button><button class="btn ghost" type="button" data-sa="ex">Casa de ejemplo</button><button class="btn ghost" type="button" data-go="rep">\u2399 Reporte y materiales</button><button class="btn danger small" type="button" data-sa="clear">').concat(simConfirm === "clear" ? "\xBFSeguro? Toca otra vez" : "Vaciar casa", '</button></div></section>\n   <section class="card"><h2>Puntos instalados <span class="pill info">').concat(s.items.length, '</span></h2><div class="actions" style="border:0;padding:0;margin:6px 0"><button class="btn ghost small" type="button" data-sa="roall">Abrir todos</button><button class="btn ghost small" type="button" data-sa="ronone">Plegar todos</button></div><p class="hint" style="margin:0">Toca una habitaci\xF3n para ver o plegar sus puntos. Para colocar, elige la herramienta <b>Colocar</b> en la vista 3D, el tipo de punto y el circuito, y toca un muro (o el piso para una luz). Aqu\xED puedes cambiar desde qu\xE9 caja se alimenta cada punto y qu\xE9 interruptor controla cada luz.</p>').concat(pts || '<div class="empty" style="margin-top:10px">A\xFAn no hay puntos.</div>', '</section></div><div>\n   <section class="card"><h2>Errores en vivo <span class="pill ').concat(simErrs(s).length ? "bad" : "ok", '">').concat(simErrs(s).length, '</span></h2><p class="hint" style="margin:0 0 8px">Se revisan solos cada vez que cambias algo. Tambi\xE9n est\xE1n en el bot\xF3n \u26A0 de la vista 3D.</p>').concat(errListHTML(simErrs(s)), '</section>\n   <section class="card"><h2>Misiones <span class="pill ').concat(done === MIS.length ? "ok" : "info", '">').concat(done, "/").concat(MIS.length, '</span></h2><ul class="mis">').concat(MIS.map((m) => '<li class="'.concat(m[2](s) ? "done" : "", '"><span>').concat(m[2](s) ? "\u2713" : "\u25CB", "</span>").concat(m[1], "</li>")).join(""), '</ul></section>\n   <section class="card"><h2>Desaf\xEDo: encuentra la falla <span class="pill info">').concat(s.score, " resuelto(s)</span></h2>").concat(chal, '</section>\n   <section class="card"><h2>Revisi\xF3n del inspector</h2><p class="hint" style="margin:0 0 8px">Revisa protecciones, cables, ca\xEDdas de tensi\xF3n, cajas, interruptores y los m\xEDnimos de cada recinto.</p><button class="btn" type="button" data-sa="insp">Pedir revisi\xF3n</button>').concat(insp, '</section>\n   <section class="card"><h2>Registro de mediciones</h2>').concat(s.log.length ? '<ol class="hand">'.concat(s.log.map((x) => "<li>".concat(esc(x), "</li>")).join(""), "</ol>") : '<p class="hint" style="margin:0">A\xFAn no mides nada.</p>', "</section></div></div>");
   }
   function placeBar() {
     const s = S.sim2;
@@ -3628,6 +3694,24 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       f.userData = { k: "floor", room: r.id, fl: r.f || 0 };
       FG(r.f).add(f);
       place.push(f);
+    });
+    ROOMS.forEach((r) => {
+      const z = bathZone(r);
+      if (!z) return;
+      const w = z.x1 - z.x0, l = z.z1 - z.z0, cx = (z.x0 + z.x1) / 2, cz = (z.z0 + z.z1) / 2, oy = (r.f || 0) * FH, g2 = FG(r.f);
+      const tr = box(w, 0.06, l, M(16777215));
+      tr.position.set(cx, 0.03 + oy, cz);
+      g2.add(tr);
+      const v1 = box(w, 2.25, l, M(4433868, { transparent: true, opacity: 0.16, depthWrite: false }));
+      v1.position.set(cx, 1.125 + oy, cz);
+      g2.add(v1);
+      const e0 = Math.max(r.x0, z.x0 - 0.6), e1 = Math.min(r.x1, z.x1 + 0.6), f0 = Math.max(r.z0, z.z0 - 0.6), f1 = Math.min(r.z1, z.z1 + 0.6);
+      const v2 = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(e1 - e0, 2.25, f1 - f0)), new THREE.LineBasicMaterial({ color: 15237690, transparent: true, opacity: 0.6 }));
+      v2.position.set((e0 + e1) / 2, 1.125 + oy, (f0 + f1) / 2);
+      g2.add(v2);
+      const sh = box(0.02, 1.9, l, M(13689855, { transparent: true, opacity: 0.25, depthWrite: false }));
+      sh.position.set(z.x0 > r.x0 + 0.01 ? z.x0 : z.x1, 0.95 + oy, cz);
+      g2.add(sh);
     });
     const wallM = M(15986663, { transparent: true, opacity: 0.32, depthWrite: false }), ceilM = M(16513782, { transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide });
     ROOMS.forEach((r) => {
@@ -5388,7 +5472,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         if (l.sw === o.id) l.sw = null;
       });
     } else if (last === "pe") o.pe = el.value === "1";
-    else o[last] = ["In", "S", "ds", "P", "L", "pc", "k"].includes(last) ? +el.value : el.value;
+    else o[last] = ["In", "S", "ds", "P", "L", "pc", "k", "icc0", "ta"].includes(last) ? +el.value : el.value;
     if (last === "S" && o.t && !(+o.S > 0)) delete o.S;
     if (last === "v" && o.v === "s") delete o.v;
     if (last === "dr" && s.fault && s.fault.type === "drMalo") s.fault = null;
@@ -5468,6 +5552,113 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       { t: "Zona de la curva " + t.cv, f: "t\xE9rmica 1,13\u2013".concat(m1, " In \xB7 magn\xE9tica \u2265 ").concat(m2, " In"), s: "".concat(nf(k, 2), " \xD7 In \u2192 ").concat(z.z), r: z.t, why: z.d }
     ]);
   }
+  const FT_PVC = [[10, 1.22], [15, 1.17], [20, 1.12], [25, 1.06], [30, 1], [35, 0.94], [40, 0.87], [45, 0.79], [50, 0.71], [55, 0.61], [60, 0.5]];
+  const fTemp = (ta) => {
+    const x = FT_PVC.find(([t]) => t >= (+ta || 30) - 1e-9);
+    return x ? x[1] : 0.5;
+  };
+  const fGrp = (n) => [1, 1, 0.8, 0.7, 0.65, 0.6, 0.57, 0.54, 0.52, 0.5][Math.max(1, Math.min(9, Math.round(+n || 1)))];
+  const fcOf = (t) => (+t.fc || 1) * fTemp(t.ta) * fGrp(t.ng);
+  const TA_OPT = FT_PVC.slice(1, 10).map(([t, f]) => [t, t + " \xB0C (f = " + nf(f, 2) + ")"]);
+  const NG_OPT = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => [n, n === 1 ? "Solo (f = 1,00)" : n + " circuitos (f = " + nf(fGrp(n), 2) + ")"]);
+  const fcFields = (k) => fSel("tools." + k + ".ta", "Temperatura ambiente", TA_OPT, { help: "Entretecho en verano: 40 a 50 \xB0C" }) + fSel("tools." + k + ".ng", "Circuitos agrupados en el mismo ducto o bandeja", NG_OPT);
+  const fcStep = (t) => ({ t: "Factores de correcci\xF3n " + ab("fc"), q: "La tabla de capacidad vale para 30 \xB0C y un circuito solo; con m\xE1s calor o m\xE1s cables juntos el cable disipa peor.", f: "fc = f temperatura \xD7 f agrupamiento \xD7 f adicional", s: "fc = " + nf(fTemp(t.ta), 2) + " \xD7 " + nf(fGrp(t.ng), 2) + " \xD7 " + nf(+t.fc || 1, 2) + " = " + nf(fcOf(t), 2), r: nf(fcOf(t), 2), why: "valores de referencia IEC 60364-5-52 para cable con aislaci\xF3n de PVC (70 \xB0C) en ducto; confirma con la tabla del RIC N\xB004 o del fabricante." });
+  const KMAG = { B: 5, C: 10, D: 20 };
+  function iccCalc(o) {
+    const U0 = 220, rho = 0.018, Zs = U0 / (Math.max(0.1, +o.Icc0 || 3) * 1e3), Ra = 2 * rho * (+o.La || 0) / (+o.Sa || 6), Rc = 2 * rho * (+o.L || 0) / (+o.S || 2.5);
+    const Imax = U0 / (Zs + Ra), ImaxF = U0 / (Zs + Ra + Rc), Imin = 0.95 * U0 / (Zs + 1.5 * (Ra + Rc)), Im = KMAG[o.cv || "C"] * (+o.In || 16);
+    const Lmax = Math.max(0, (0.95 * U0 / Im - Zs - 1.5 * Ra) * (+o.S || 2.5) / (3 * rho)), Smin = Math.sqrt(Imax * Imax * (+o.t || 0.01)) / 115;
+    const Igm = 5 * (+o.Ig || 25), Lsel = Math.max(0, (U0 / Igm - Zs - Ra) * (+o.S || 2.5) / (2 * rho));
+    return { Zs, Ra, Rc, Imax, ImaxF, Imin, Im, Lmax, Smin, Igm, Lsel, okPdc: Imax <= (+o.pdc || 6) * 1e3, okPdcG: Imax <= (+o.pdcG || +o.pdc || 6) * 1e3, okMag: Imin >= Im, okTh: (+o.S || 2.5) >= Smin, ratio: (+o.Ig || 25) / (+o.In || 16) };
+  }
+  function tIcc() {
+    return tPage("icc", "RIC N\xB005 y N\xB010", "Cortocircuito, poder de corte y selectividad", "Calcula la corriente de cortocircuito en el tablero y al final del circuito, y verifica que los autom\xE1ticos la corten y que el general no salte antes que el del circuito.",
+      '<div class="grid">' + fNum("tools.icc.Icc0", "Icc presunta en el empalme", { unit: "kA", help: "Dato de la distribuidora; en viviendas urbanas suele estar entre 1,5 y 6 kA" }) + fSel("tools.icc.Sa", "Secci\xF3n del alimentador", SECC.slice(2, 8).map((x) => [x, sStr(x) + " mm\xB2"])) + fNum("tools.icc.La", "Largo del alimentador", { unit: "m" }) + fNum("tools.icc.Ig", "Interruptor general", { unit: "A" }) + fSel("tools.icc.pdcG", "Poder de corte del general", [[4.5, "4,5 kA"], [6, "6 kA"], [10, "10 kA"]]) + fNum("tools.icc.In", "Autom\xE1tico del circuito " + ab("In"), { unit: "A" }) + fSel("tools.icc.cv", "Curva", [["B", "B (3–5 In)"], ["C", "C (5–10 In)"], ["D", "D (10–20 In)"]]) + fSel("tools.icc.pdc", "Poder de corte del autom\xE1tico", [[4.5, "4,5 kA"], [6, "6 kA"], [10, "10 kA"]]) + fSel("tools.icc.S", "Secci\xF3n del circuito", SECC.slice(0, 6).map((x) => [x, sStr(x) + " mm\xB2"])) + fNum("tools.icc.L", "Largo del circuito hasta el punto m\xE1s lejano", { unit: "m" }) + "</div>",
+      "<p>Un <b>cortocircuito</b> es un contacto casi sin resistencia entre fase y neutro o tierra. La corriente queda limitada solo por la red y los cables, y puede llegar a miles de amperes.</p><p>Se revisan dos valores. La <b>Icc m\xE1xima</b>, en el tablero, decide el <b>poder de corte</b>: el autom\xE1tico debe poder abrir esa corriente sin destruirse. La <b>Icc m\xEDnima</b>, al final del circuito con el cable caliente, decide si el <b>disparo magn\xE9tico</b> act\xFAa: si el cable es muy largo o delgado, la falla no alcanza 5 \xD7 In (curva B) o 10 \xD7 In (curva C) y el corte demora segundos, con riesgo de incendio.</p><p>La <b>selectividad</b> busca que ante una falla salte solo el autom\xE1tico del circuito y no el general. Con autom\xE1ticos modulares suele ser parcial: hay que revisar las tablas del fabricante.</p>");
+  }
+  function cIcc() {
+    const t = T("icc");
+    if (!(+t.Icc0 > 0) || !(+t.In > 0) || !(+t.L > 0)) return note("Ingresa la Icc del empalme, el autom\xE1tico y el largo del circuito.");
+    const r = iccCalc(t);
+    return kpis([kpi("Icc m\xE1x. tablero", nf(r.Imax / 1e3, 2), "kA", r.okPdc && r.okPdcG ? "ok" : "bad"), kpi("Icc m\xEDn. final", n0(r.Imin), "A", r.okMag ? "ok" : "bad"), kpi("Largo m\xE1x. protegido", n0(r.Lmax), "m"), kpi("Ig / In", nf(r.ratio, 2), "", r.ratio >= 1.6 ? "ok" : "warn")]) + steps([
+      { t: "Impedancia de la red", f: "Zs = U0 \xF7 Icc empalme", s: "Zs = 220 \xF7 " + n0(+t.Icc0 * 1e3) + " = " + nf(r.Zs * 1e3, 1) + " mΩ", r: nf(r.Zs * 1e3, 1) + " mΩ", why: "todo lo que hay antes del medidor (transformador y red) se resume en esta impedancia." },
+      { t: "Icc m\xE1xima en el tablero", f: "Icc m\xE1x = U0 \xF7 (Zs + R alimentador) \xB7 R = 2 \xD7 ρ \xD7 L \xF7 S", s: "220 \xF7 (" + nf(r.Zs, 4) + " + " + nf(r.Ra, 4) + ") = " + n0(r.Imax) + " A", r: nf(r.Imax / 1e3, 2) + " kA", ok: r.okPdc && r.okPdcG, why: r.okPdc && r.okPdcG ? "el general (" + nf(+t.pdcG, 1) + " kA) y el autom\xE1tico (" + nf(+t.pdc, 1) + " kA) pueden abrir esta corriente." : "un autom\xE1tico con poder de corte menor que la Icc puede explotar o soldarse al cortar: usa uno de mayor poder de corte." },
+      { t: "Icc m\xEDnima al final del circuito", q: "Peor caso: falla en el punto m\xE1s lejano, cable caliente (× 1,5) y tensi\xF3n baja (× 0,95).", f: "Icc m\xEDn = 0,95 \xD7 U0 \xF7 (Zs + 1,5 \xD7 (R alim + R circuito))", s: "0,95 \xD7 220 \xF7 (" + nf(r.Zs, 4) + " + 1,5 \xD7 (" + nf(r.Ra, 4) + " + " + nf(r.Rc, 4) + ")) = " + n0(r.Imin) + " A", r: n0(r.Imin) + " A", ok: r.okMag, why: "para que act\xFAe el disparo magn\xE9tico (instant\xE1neo) se necesitan " + KMAG[t.cv] + " \xD7 " + t.In + " = " + n0(r.Im) + " A. " + (r.okMag ? "Se cumple." : "No se cumple: acorta el circuito, aumenta la secci\xF3n o usa curva B.") },
+      { t: "Largo m\xE1ximo protegido", f: "L m\xE1x = (0,95 \xD7 U0 \xF7 Im − Zs − 1,5 \xD7 Ra) \xD7 S \xF7 (3 \xD7 ρ)", s: "L m\xE1x = " + n0(r.Lmax) + " m con " + sStr(+t.S) + " mm\xB2 y " + t.In + " A curva " + t.cv, r: n0(r.Lmax) + " m", ok: +t.L <= r.Lmax, why: "\xFAtil en obra: hasta d\xF3nde puedes alargar el circuito sin perder la protecci\xF3n contra cortocircuito." },
+      { t: "Esfuerzo t\xE9rmico del cable", f: "S ≥ √(Icc\xB2 \xD7 t) \xF7 k \xB7 k = 115 (cobre, PVC) \xB7 t ≈ 10 ms", s: "S m\xEDn = √(" + n0(r.Imax) + "\xB2 \xD7 0,01) \xF7 115 = " + nf(r.Smin, 2) + " mm\xB2", r: nf(r.Smin, 2) + " mm\xB2", ok: r.okTh, why: "el cable debe aguantar el calor de la falla durante lo que tarda en cortar el autom\xE1tico." },
+      { t: "Selectividad general ↔ circuito", f: "Ig \xF7 In ≥ 1,6 (selectividad de sobrecarga) \xB7 selectivo en cortocircuito si Icc < 5 \xD7 Ig", s: nf(r.ratio, 2) + " \xB7 el general no salta por fallas bajo " + n0(r.Igm) + " A, es decir a m\xE1s de ≈ " + n0(r.Lsel) + " m del tablero", r: r.ratio >= 1.6 ? "Selectividad parcial" : "Selectividad reducida", ok: r.ratio >= 1.6 ? true : "warn", why: "cerca del tablero la falla es tan grande que pueden saltar ambos; para selectividad total se necesitan las tablas del fabricante o un general de mayor calibre o curva." }
+    ]);
+  }
+  function tEv() {
+    const t = T("ev");
+    return tPage("ev", "RIC N\xB015", "Cargador de veh\xEDculo el\xE9ctrico", "Dimensiona el circuito exclusivo de un punto de carga domiciliario (wallbox o modo 3).",
+      '<div class="grid">' + fSel("tools.ev.P", "Potencia del cargador", [[3700, "3,7 kW (16 A monof\xE1sico)"], [7400, "7,4 kW (32 A monof\xE1sico)"], [11e3, "11 kW (16 A trif\xE1sico)"], [22e3, "22 kW (32 A trif\xE1sico)"]], { re: true }) + fNum("tools.ev.L", "Largo desde el tablero", { unit: "m" }) + fNum("tools.ev.Pd", "Demanda actual de la vivienda", { unit: "W", help: "De tu cuadro de cargas" }) + fNum("tools.ev.Ig", "Interruptor general actual", { unit: "A" }) + fSel("tools.ev.amb", "Ubicaci\xF3n", [["int", "Garaje cerrado"], ["ext", "Exterior bajo alero"], ["intem", "A la intemperie"]]) + fcFields("ev") + "</div>",
+      "<p>Un cargador trabaja horas a corriente constante, as\xED que el circuito se dimensiona para carga continua: protecci\xF3n con margen sobre la corriente nominal, un circuito exclusivo por punto de carga y protecci\xF3n diferencial capaz de detectar fugas con componente continua (los cargadores la generan).</p><p>Antes de instalarlo revisa que el empalme y el general soporten la nueva carga: una carga de 7,4 kW equivale a casi toda la demanda de una casa t\xEDpica.</p>");
+  }
+  function cEv() {
+    const t = T("ev"), P0 = +t.P || 7400, tri = P0 > 8e3, V = tri ? 380 : 220, I = P0 === 3700 || P0 === 11e3 ? 16 : 32, P = tri ? Math.sqrt(3) * V * I : V * I, In = nextCom(1.25 * I), fc = fcOf(t);
+    if (!(+t.L > 0)) return note("Ingresa el largo desde el tablero.");
+    const { tries, sel } = chooseS({ I, In, L: +t.L, k: tri ? Math.sqrt(3) : 2, Vref: V, rho: 0.018, lim: 3, Smin: 2.5, fc });
+    const Pd2 = (+t.Pd || 0) + P, Ib = tri ? Pd2 / 3 / 220 : Pd2 / 220, okG = !(+t.Ig > 0) || Ib <= +t.Ig, ip = { int: "IP44", ext: "IP54", intem: "IP54 y protecci\xF3n UV" }[t.amb || "int"];
+    return kpis([kpi("Corriente", nf(I, 1), "A"), kpi("Autom\xE1tico", In || "—", "A curva C"), kpi("Secci\xF3n", sel ? sStr(sel.s) : "—", "mm\xB2", sel ? "ok" : "bad"), kpi("General", okG ? "Suficiente" : "Aumentar", "", okG ? "ok" : "bad")]) + steps([
+      { t: "Corriente del cargador", f: "Corriente nominal de placa del cargador", s: I + " A" + (tri ? " por fase" : "") + " \u2192 P = " + (tri ? "\u221A3 \xD7 380" : "220") + " \xD7 " + I + " = " + n0(P) + " W", r: I + " A", why: "el cargador limita su corriente a este valor durante toda la carga." },
+      { t: "Protecci\xF3n (carga continua)", f: "In ≥ 1,25 \xD7 I", s: "1,25 \xD7 " + nf(I, 1) + " = " + nf(1.25 * I, 1) + " A → " + In + " A curva C, " + (tri ? "4P" : "2P"), r: In + " A", ok: In != null, why: "criterio usual para cargas que funcionan varias horas seguidas: el autom\xE1tico no debe trabajar al l\xEDmite." },
+      fcStep(t),
+      { t: "Secci\xF3n del conductor", f: "S ≥ 2,5 mm\xB2 \xB7 Iz \xD7 fc ≥ In \xB7 ΔV ≤ 3 %", s: sel ? sStr(sel.s) + " mm\xB2: Iz " + n0(sel.Iz) + " A \xB7 ΔV " + nf(sel.pct, 2) + " %" : "Ninguna secci\xF3n cumple", r: sel ? sStr(sel.s) + " mm\xB2" : "—", ok: !!sel },
+      { t: "Protecci\xF3n diferencial", f: "30 mA tipo A + detecci\xF3n de continua 6 mA (RDC-DD), o diferencial tipo B", why: "un diferencial clase AC o A com\xFAn puede quedar “ciego” ante fugas continuas del cargador. Muchos wallbox traen la detecci\xF3n de 6 mA incorporada: rev\xEDsalo en su ficha.", ok: true },
+      { t: "Capacidad del general y del empalme", f: "Demanda actual + cargador ≤ general", s: n0(+t.Pd || 0) + " + " + n0(P) + " = " + n0(Pd2) + " W → " + nf(Ib, 1) + " A" + (+t.Ig > 0 ? " vs " + t.Ig + " A" : ""), ok: +t.Ig > 0 ? okG : void 0, why: okG ? "el empalme actual soporta la carga; considera programar la carga en horario nocturno." : "pide aumento de capacidad del empalme a la distribuidora o usa un cargador con gesti\xF3n din\xE1mica de potencia." },
+      { t: "Instalaci\xF3n", f: "Circuito exclusivo \xB7 enchufe o cargador " + ip + " \xB7 altura de toma 0,5 a 1,5 m \xB7 PE obligatorio", why: "la comunicaci\xF3n de la instalaci\xF3n a la SEC se hace con el tr\xE1mite que corresponda a puntos de carga; confirma los requisitos vigentes del RIC N\xB015." }
+    ]) + '<h3 style="margin-top:16px">Secciones comparadas</h3>' + cmpTable(tries, sel, "ΔV ≤ 3 %");
+  }
+  function fvCalc(t) {
+    const kWp = (+t.kwh || 0) * 12 / ((+t.hsp || 5) * 365 * (+t.pr || 0.8)), N = Math.max(1, Math.ceil(kWp * 1e3 / (+t.Wp || 550))), b = (+t.bVoc || -0.27) / 100;
+    const VocC = (+t.Voc || 49.5) * (1 + b * ((+t.Tmin || -5) - 25)), VmpH = (+t.Vmp || 41.5) * (1 + b * ((+t.Tmax || 70) - 25)), VmpC = (+t.Vmp || 41.5) * (1 + b * ((+t.Tmin || -5) - 25));
+    const nMax = Math.floor(Math.min((+t.Vmax || 600) / VocC, (+t.mppt1 || 550) / VmpC)), nMin = Math.ceil((+t.mppt0 || 120) / VmpH);
+    let best = null;
+    for (let ns = 1; ns <= 4; ns++) {
+      const per = Math.ceil(N / ns);
+      if (per >= nMin && per <= nMax) {
+        best = { ns, per };
+        break;
+      }
+    }
+    const kWpR = (best ? best.ns * best.per : N) * (+t.Wp || 550) / 1e3, Pinv = +t.Pinv > 0 ? +t.Pinv : Math.max(1, Math.round(kWpR / 1.15 * 2) / 2) * 1e3, Iac = Pinv / 220, In = nextCom(1.25 * Iac);
+    return { kWp, N, VocC, VmpH, nMax, nMin, best, kWpR, Pinv, Iac, In, gen: kWpR * (+t.hsp || 5) * 30 * (+t.pr || 0.8) };
+  }
+  function tFv() {
+    return tPage("fv", "RIC N\xB009 \xB7 Ley 20.571", "Sistema fotovoltaico domiciliario", "Estima la potencia de paneles para cubrir tu consumo, arma los strings seg\xFAn el inversor y dimensiona el circuito de inyecci\xF3n (net billing).",
+      '<div class="grid">' + fNum("tools.fv.kwh", "Consumo mensual", { unit: "kWh", help: "Est\xE1 en tu boleta" }) + fNum("tools.fv.hsp", "Horas sol pico", { unit: "h/d\xEDa", help: "Norte 6–7 \xB7 Santiago 5 \xB7 Sur 3–4" }) + fNum("tools.fv.Wp", "Potencia del panel", { unit: "Wp" }) + fNum("tools.fv.Voc", "Voc del panel", { unit: "V" }) + fNum("tools.fv.Vmp", "Vmp del panel", { unit: "V" }) + fNum("tools.fv.bVoc", "Coef. de temperatura de Voc", { unit: "%/\xB0C" }) + fNum("tools.fv.Tmin", "Temperatura m\xEDnima del lugar", { unit: "\xB0C" }) + fNum("tools.fv.Vmax", "Tensi\xF3n m\xE1x. CC del inversor", { unit: "V" }) + fNum("tools.fv.mppt0", "MPPT m\xEDnimo", { unit: "V" }) + fNum("tools.fv.mppt1", "MPPT m\xE1ximo", { unit: "V" }) + fNum("tools.fv.Lac", "Largo inversor → tablero", { unit: "m" }) + "</div>",
+      "<p>Con <b>net billing</b> (Ley 20.571) la vivienda inyecta a la red lo que no consume y la distribuidora lo descuenta de la boleta. El sistema tiene una parte en <b>corriente continua</b> (paneles en serie, llamados strings) y una en <b>alterna</b> (inversor → tablero).</p><p>La tensi\xF3n de un panel <b>sube con el fr\xEDo</b>: el string se calcula con la temperatura m\xEDnima para no superar la tensi\xF3n m\xE1xima del inversor, y con el calor para no quedar bajo el rango MPPT.</p>");
+  }
+  function cFv() {
+    const t = T("fv");
+    if (!(+t.kwh > 0)) return note("Ingresa el consumo mensual.");
+    const r = fvCalc(t), { tries, sel } = chooseS({ I: r.Iac, In: r.In, L: +t.Lac || 10, k: 2, Vref: 220, rho: 0.018, lim: 1.5, Smin: 2.5, fc: 1 });
+    return kpis([kpi("Potencia FV", nf(r.kWpR, 2), "kWp"), kpi("Paneles", r.best ? r.best.ns * r.best.per : r.N), kpi("Strings", r.best ? r.best.ns + " \xD7 " + r.best.per : "—", "", r.best ? "ok" : "bad"), kpi("Generaci\xF3n", n0(r.gen), "kWh/mes")]) + steps([
+      { t: "Potencia necesaria", f: "kWp = consumo anual \xF7 (HSP \xD7 365 \xD7 PR)", s: n0(+t.kwh * 12) + " \xF7 (" + nf(+t.hsp, 1) + " \xD7 365 \xD7 " + nf(+t.pr || 0.8, 2) + ") = " + nf(r.kWp, 2) + " kWp → " + r.N + " paneles de " + t.Wp + " Wp", r: nf(r.kWp, 2) + " kWp", why: "PR (rendimiento global) descuenta p\xE9rdidas por temperatura, suciedad, cables e inversor." },
+      { t: "Voc en fr\xEDo (tensi\xF3n m\xE1xima)", f: "Voc fr\xEDo = Voc \xD7 (1 + β \xD7 (Tmin − 25))", s: nf(+t.Voc, 1) + " \xD7 (1 + " + nf(+t.bVoc / 100, 4) + " \xD7 (" + t.Tmin + " − 25)) = " + nf(r.VocC, 1) + " V", r: "M\xE1x. " + r.nMax + " paneles por string", why: "en la ma\xF1ana fr\xEDa, con sol y sin carga, la tensi\xF3n del string es la m\xE1s alta: no debe superar la del inversor." },
+      { t: "Vmp en calor (tensi\xF3n m\xEDnima)", f: "Vmp caliente = Vmp \xD7 (1 + β \xD7 (70 − 25))", s: nf(r.VmpH, 1) + " V por panel", r: "M\xEDn. " + r.nMin + " paneles por string", why: "con el panel a 70 \xB0C la tensi\xF3n baja; si el string queda bajo el MPPT m\xEDnimo, el inversor no produce." },
+      { t: "Configuraci\xF3n de strings", f: r.nMin + " ≤ paneles por string ≤ " + r.nMax, s: r.best ? r.best.ns + " string(s) de " + r.best.per + " paneles = " + nf(r.kWpR, 2) + " kWp" : "No hay configuraci\xF3n v\xE1lida con 1 a 4 strings", ok: !!r.best, why: "strings iguales en cada entrada MPPT; con 3 o m\xE1s strings en paralelo se necesitan fusibles de string (≈ 1,5 a 2 \xD7 Isc)." },
+      { t: "Inversor", f: "P inversor ≈ kWp \xF7 1,1 a 1,2", s: n0(r.Pinv) + " W", r: nf(r.Pinv / 1e3, 1) + " kW", why: "el inversor debe estar en el listado de equipos autorizados por la SEC para generaci\xF3n distribuida." },
+      { t: "Circuito de inyecci\xF3n (lado alterna)", f: "In ≥ 1,25 \xD7 I inversor \xB7 ΔV ≤ 1,5 % recomendado", s: "I = " + nf(r.Iac, 1) + " A → " + r.In + " A \xB7 " + (sel ? sStr(sel.s) + " mm\xB2, ΔV " + nf(sel.pct, 2) + " %" : "sin secci\xF3n v\xE1lida"), r: sel ? sStr(sel.s) + " mm\xB2" : "—", ok: !!sel, why: "baja ca\xEDda para que el inversor no se desconecte por sobretensi\xF3n al inyectar." },
+      { t: "Protecciones y tr\xE1mite", f: "Lado CC: seccionador CC y protector de sobretensiones \xB7 Lado CA: autom\xE1tico, diferencial 30 mA tipo A (o el que indique el inversor) y protecci\xF3n RI incorporada", why: "la conexi\xF3n se tramita con la distribuidora (solicitud de conexi\xF3n) y se declara a la SEC con el formulario de generaci\xF3n (TE4). Confirma los requisitos vigentes antes de ejecutar." }
+    ]) + '<h3 style="margin-top:16px">Secci\xF3n del circuito de inyecci\xF3n</h3>' + cmpTable(tries, sel, "ΔV ≤ 1,5 %");
+  }
+  const EN_DEF = [["Ampolletas", 10, 60, 4, 9], ["Refrigerador", 1, 150, 10, 0], ["Lavadora", 1, 500, 0.5, 0], ["Televisor", 1, 100, 5, 0], ["Computador", 1, 120, 6, 0], ["Hervidor", 1, 2e3, 0.2, 0], ["Microondas", 1, 1100, 0.3, 0], ["Plancha", 1, 1200, 0.2, 0], ["Calefactor el\xE9ctrico", 1, 1500, 3, 0], ["Termo el\xE9ctrico", 0, 2e3, 2, 0]];
+  function tEnergia() {
+    const t = T("energia");
+    if (!Array.isArray(t.rows) || !t.rows.length) t.rows = EN_DEF.map(([n, c, w, h, led]) => ({ n, c, w, h, led }));
+    const rows = t.rows.map((r, i) => "<tr><td>" + cTxt("tools.energia.rows." + i + ".n", "Equipo", "Equipo") + "</td><td>" + cNum("tools.energia.rows." + i + ".c", 56, "Cantidad") + "</td><td>" + cNum("tools.energia.rows." + i + ".w", 70, "W") + "</td><td>" + cNum("tools.energia.rows." + i + ".h", 56, "Horas") + "</td><td>" + cNum("tools.energia.rows." + i + ".led", 56, "W eficiente") + "</td></tr>").join("");
+    return tPage("energia", "Eficiencia energ\xE9tica", "Consumo y costo de energ\xEDa", "Estima cu\xE1nto consume la vivienda al mes, cu\xE1nto cuesta y cu\xE1nto ahorras cambiando a equipos eficientes.",
+      '<div class="grid">' + fNum("tools.energia.tar", "Precio de la energ\xEDa", { unit: "$/kWh", help: "Valor con IVA de tu boleta (cargo por energ\xEDa)" }) + '</div><div class="tbl-wrap"><table class="pt"><thead><tr><th>Equipo</th><th>Cant.</th><th>W c/u</th><th>Horas/d\xEDa</th><th>W alternativa eficiente</th></tr></thead><tbody>' + rows + '</tbody></table></div><p class="hint">Deja en 0 la columna eficiente si no hay alternativa. Ej.: ampolleta incandescente 60 W → LED 9 W.</p>',
+      "<p>La energ\xEDa (kWh) es potencia por tiempo: un equipo de 1.000 W encendido una hora consume 1 kWh. Por eso un hervidor de 2.000 W gasta poco (se usa minutos) y un refrigerador de 150 W gasta mucho (funciona todo el d\xEDa).</p><p>La iluminaci\xF3n LED consume entre 80 y 90 % menos que la incandescente y dura muchas veces m\xE1s. Tambi\xE9n reduce la corriente del circuito de alumbrado.</p>");
+  }
+  function cEnergia() {
+    const t = T("energia"), tar = +t.tar || 0, R = (t.rows || []).map((r) => ({ n: r.n, kwh: (+r.c || 0) * (+r.w || 0) * (+r.h || 0) * 30 / 1e3, kwh2: +r.led > 0 ? (+r.c || 0) * +r.led * (+r.h || 0) * 30 / 1e3 : null })).filter((r) => r.kwh > 0);
+    if (!R.length) return note("Ingresa al menos un equipo con cantidad, potencia y horas.");
+    const tot = R.reduce((a, r) => a + r.kwh, 0), tot2 = R.reduce((a, r) => a + (r.kwh2 != null ? r.kwh2 : r.kwh), 0), sv = tot - tot2;
+    return kpis([kpi("Consumo", n0(tot), "kWh/mes"), kpi("Costo", "$" + n0(tot * tar), "/mes"), kpi("Ahorro posible", n0(sv), "kWh/mes", sv > 0 ? "ok" : ""), kpi("Ahorro anual", "$" + n0(sv * tar * 12), "")]) + '<div class="tbl-wrap"><table class="pt"><thead><tr><th>Equipo</th><th class="num">kWh/mes</th><th class="num">$/mes</th><th class="num">% del total</th><th class="num">Eficiente kWh/mes</th></tr></thead><tbody>' + R.sort((a, b) => b.kwh - a.kwh).map((r) => "<tr><td>" + esc(r.n) + '</td><td class="num">' + n1(r.kwh) + '</td><td class="num">$' + n0(r.kwh * tar) + '</td><td class="num">' + n0(r.kwh / tot * 100) + ' %</td><td class="num">' + (r.kwh2 != null ? n1(r.kwh2) : "—") + "</td></tr>").join("") + "</tbody></table></div>" + steps([{ t: "Energ\xEDa de cada equipo", f: "kWh/mes = cantidad \xD7 W \xD7 horas/d\xEDa \xD7 30 \xF7 1.000", r: n0(tot) + " kWh/mes" }, { t: "Costo", f: "$ = kWh \xD7 precio", s: n0(tot) + " \xD7 " + n0(tar) + " = $" + n0(tot * tar), r: "$" + n0(tot * tar) + " al mes" }]);
+  }
   const TPLS = [["casa", "\u{1F3E0}", "Vivienda completa", "70 m\xB2 \xB7 4 circuitos"], ["cocina", "\u{1F373}", "Remodelaci\xF3n cocina y logia", "Circuito exclusivo + horno"], ["clima", "\u2744", "Climatizaci\xF3n", "2 aires acondicionados"], ["vacia", "\u25A2", "Casa vac\xEDa", "Parte desde cero"], ["mia", "\u270F", "Mi vivienda", "La que dise\xF1aste, vac\xEDa"]];
   function simTemplate(k) {
     if (k === "casa") return sim2Example();
@@ -5535,6 +5726,99 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     const Pi = rows.reduce((a, r) => a + r.P, 0);
     return { ev, errs, rows, Pi, Pd: ev.fd.Pd, Id: ev.Idm, dva };
   }
+  function repIccHTML(s) {
+    const r = simReport(s), ev = r.ev, I = simIcc(s, ev), Pd = r.Pd, Id = r.Id, tri = s.sys === "tri", ok = (b) => b ? '<span class="pill ok">✓</span>' : '<span class="pill bad">✗</span>';
+    const rows = s.circuits.map((c, k) => {
+      const x = I.c[c.id], Im = (KMAG[c.cv] || 10) * +c.In, ft = fTemp(s.ta || 30), Izc = ampOf(c.S) * ft;
+      return "<tr><td><b>C" + (k + 1) + "</b> " + esc(c.n || "") + "</td><td>" + c.In + " A " + c.cv + " \xB7 " + nf(+c.pc, 1) + ' kA</td><td class="num">' + (x ? n0(x.Imin) : "—") + '</td><td class="num">' + n0(Im) + "</td><td>" + (x ? esc(x.far) : "—") + "</td><td>" + ok(!x || x.Imin >= Im) + " " + ok(I.Imax <= (+c.pc || 6) * 1e3) + '</td><td class="num">' + n0(Izc) + " A</td><td>" + ok(Izc >= +c.In) + "</td></tr>";
+    }).join("");
+    const big = Pd > 1e4 || tri, Igs = nextCom(Math.max(25, Id * 1.15)) || 63;
+    return '<section class="card rep-s"><h2>Cortocircuito, temperatura y empalme</h2><p class="hint" style="margin-top:0">Icc presunta en el empalme ' + nf(+s.icc0 || 3, 1) + " kA \xB7 temperatura del entretecho " + (s.ta || 30) + " \xB0C (c\xE1mbialas en el Simulador, panel Tablero y circuitos).</p>" + kpis([kpi("Icc m\xE1x. en tablero", nf(I.Imax / 1e3, 2), "kA", I.Imax <= 6e3 ? "ok" : "bad"), kpi("Impedancia de red", nf(I.Zs * 1e3, 1), "mΩ"), kpi("Factor de temperatura", nf(fTemp(s.ta || 30), 2)), kpi("Empalme sugerido", big ? "Trif\xE1sico" : "Monof\xE1sico", Igs + " A")]) + '<div class="tbl-wrap"><table class="pt"><thead><tr><th>Circuito</th><th>Protecci\xF3n</th><th class="num">Icc m\xEDn. (A)</th><th class="num">Disparo magn. (A)</th><th>Punto m\xE1s lejano</th><th>Magn. \xB7 PdC</th><th class="num">Iz corregida</th><th>Iz ≥ In</th></tr></thead><tbody>' + (rows || '<tr><td colspan="8">Sin circuitos.</td></tr>') + '</tbody></table></div><p class="hint">Icc m\xEDn. con el cable caliente (\xD7 1,5) y tensi\xF3n al 95 %: debe superar 5 \xD7 In (curva B) o 10 \xD7 In (curva C) para que la falla se corte en forma instant\xE1nea. Selectividad: el general de ' + s.gen.In + " A s\xF3lo no act\xFAa ante fallas bajo " + n0(5 * s.gen.In) + " A; cerca del tablero puede saltar junto con el circuito (selectividad parcial). Empalme: demanda " + n0(Pd) + " W (" + nf(Id, 1) + " A). " + (big ? "Con m\xE1s de ≈ 10 kW de demanda o equipos trif\xE1sicos conviene empalme trif\xE1sico." : "Un empalme monof\xE1sico es suficiente para esta demanda.") + " La capacidad final la asigna la distribuidora.</p></section>";
+  }
+  function repCompraHTML(B) {
+    const rows = [];
+    B.filter((b) => b.q > 0).forEach((b) => {
+      if (/^cab:/.test(b.k || "") && b.u === "m") {
+        const R = Math.floor(b.q / 100), m = b.q - R * 100;
+        rows.push([b.d, (R ? R + " rollo(s) de 100 m" : "") + (R && m ? " + " : "") + (m ? m + " m a granel" + (m >= 60 ? " (o un rollo m\xE1s: suele salir m\xE1s barato)" : "") : ""), b.q + " m"]);
+      } else if (/^tub:/.test(b.k || "") && b.u === "m") rows.push([b.d, Math.ceil(b.q / 3) + " tira(s) de 3 m", b.q + " m"]);
+      else rows.push([b.d, b.q + " " + (b.u === "u" ? "unidad(es)" : b.u), ""]);
+    });
+    return '<h3 style="margin-top:14px">Lista de compra por presentaci\xF3n</h3><div class="tbl-wrap"><table class="pt"><thead><tr><th>Material</th><th>Comprar</th><th class="num">Necesario</th></tr></thead><tbody>' + rows.map((r) => "<tr><td>" + esc(r[0]) + "</td><td><b>" + r[1] + '</b></td><td class="num">' + r[2] + "</td></tr>").join("") + '</tbody></table></div><p class="hint">Cable en rollos de 100 m y tubo en tiras de 3 m. Si un color sobra mucho, comb\xEDnalo con otro circuito antes de comprar otro rollo.</p><div class="chips no-print" style="margin-top:8px"><button type="button" class="chip" data-pcsv="out">⬇ Exportar precios (CSV)</button><label class="chip" style="cursor:pointer">⬆ Importar precios (CSV)<input type="file" accept=".csv,text/csv" data-pcsv="in" hidden></label><span class="hint" id="pcsvmsg"></span></div>';
+  }
+  const ENS_DR = (i) => (S.ens.dr && S.ens.dr[i]) || {};
+  function ensExtraHTML() {
+    const nDR = Math.max(1, Math.ceil(S.circuits.length / 3));
+    if (!S.ens.dr) S.ens.dr = [];
+    if (!S.ens.cont) S.ens.cont = [];
+    if (!S.ens.zs) S.ens.zs = [];
+    const dr = Array.from({ length: nDR }, (_, i) => "<tr><td>DR" + (i + 1) + "</td><td>" + cNum("ens.dr." + i + ".ma", 70, "mA de disparo") + "</td><td>" + cNum("ens.dr." + i + ".ms", 70, "ms a IΔn") + "</td><td>" + cNum("ens.dr." + i + ".ms5", 70, "ms a 5 IΔn") + "</td></tr>").join("");
+    const cc = S.circuits.map((c, i) => "<tr><td>C" + (i + 1) + " " + esc(c.nombre || "") + "</td><td>" + cNum("ens.cont." + i, 70, "Ω continuidad") + "</td><td>" + cNum("ens.zs." + i, 70, "Ω lazo") + "</td></tr>").join("");
+    return '<h3 style="margin-top:16px">Prueba de diferenciales (instrumento)</h3><div class="tbl-wrap"><table><thead><tr><th>Diferencial</th><th>Corriente de disparo [mA]</th><th>Tiempo a IΔn [ms]</th><th>Tiempo a 5 \xD7 IΔn [ms]</th></tr></thead><tbody>' + dr + '</tbody></table></div><h3 style="margin-top:16px">Continuidad del PE e impedancia de lazo</h3>' + (cc ? '<div class="tbl-wrap"><table><thead><tr><th>Circuito</th><th>Continuidad PE [Ω]</th><th>Impedancia de lazo Zs [Ω]</th></tr></thead><tbody>' + cc + "</tbody></table></div>" : '<div class="empty">No hay circuitos.</div>') + '<label class="check" style="margin-top:10px"><input type="checkbox" data-path="ens.pol" data-bool="1" ' + (S.ens.pol ? "checked" : "") + '><span><b>Polaridad verificada</b><br><span class="hint">Fase en el borne correcto de cada enchufe; interruptores cortan la fase, no el neutro.</span></span></label>';
+  }
+  function ensEval() {
+    const out = [], a = calcAlim(S);
+    (S.ens.dr || []).forEach((d, i) => {
+      if (!d) return;
+      const ma = parseNum(d.ma), ms = parseNum(d.ms), ms5 = parseNum(d.ms5);
+      if (ma > 0) out.push({ t: "DR" + (i + 1) + ": corriente de disparo", f: "0,5 \xD7 IΔn < I disparo ≤ IΔn (15 a 30 mA)", s: nf(ma, 1) + " mA", ok: ma > 15 && ma <= 30 });
+      if (ms > 0) out.push({ t: "DR" + (i + 1) + ": tiempo a IΔn", f: "t ≤ 300 ms", s: n0(ms) + " ms", ok: ms <= 300 });
+      if (ms5 > 0) out.push({ t: "DR" + (i + 1) + ": tiempo a 5 \xD7 IΔn", f: "t ≤ 40 ms", s: n0(ms5) + " ms", ok: ms5 <= 40 });
+    });
+    S.circuits.forEach((c, i) => {
+      const r = calcCirc(S, c, a), In = r.In || 16, Im = (KMAG[r.curva] || 10) * In, zs = parseNum((S.ens.zs || [])[i]), ct = parseNum((S.ens.cont || [])[i]);
+      if (ct > 0) out.push({ t: "C" + (i + 1) + ": continuidad del PE", f: "Valor bajo y estable (referencia ≤ 1 Ω)", s: nf(ct, 2) + " Ω", ok: ct <= 1 ? true : "warn" });
+      if (zs > 0) out.push({ t: "C" + (i + 1) + ": impedancia de lazo", f: "Zs \xD7 Im ≤ U0 → Zs ≤ 220 \xF7 (" + (KMAG[r.curva] || 10) + " \xD7 " + In + ")", s: nf(zs, 2) + " Ω \xB7 m\xE1x. " + nf(220 / Im, 2) + " Ω", ok: zs <= 220 / Im, why: "si Zs es alta, un cortocircuito no hace actuar el magn\xE9tico del autom\xE1tico." });
+    });
+    if (S.ens.pol != null) out.push({ t: "Polaridad", f: "Fase, neutro y tierra en sus bornes", s: S.ens.pol ? "Verificada" : "Pendiente", ok: !!S.ens.pol });
+    return out;
+  }
+  function protocoloDoc() {
+    const inf = infGet(), nm = S.proj && S.proj.nombre || "Vivienda", hoy = (/* @__PURE__ */ new Date()).toLocaleDateString("es-CL"), ev = ensEval(), a = calcAlim(S);
+    const row = (c) => "<tr>" + c.map((x) => "<td>" + x + "</td>").join("") + "</tr>";
+    const ai = S.circuits.map((c, i) => {
+      const v = parseNum((S.ens.aisl || [])[i]);
+      return row(["C" + (i + 1) + " " + esc(c.nombre || ""), v > 0 ? nf(v, 2) : "", "≥ 0,5", v > 0 ? v >= 0.5 ? "Cumple" : "No cumple" : ""]);
+    }).join("");
+    return '<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Protocolo de ensayos \xB7 ' + esc(nm) + "</title><style>" + INF_CSS + '</style></head><body><h1>Protocolo de inspecci\xF3n y ensayos</h1><p>' + [esc(nm), esc((inf.dir || "") + (inf.comuna ? ", " + inf.comuna : "")), hoy].filter(Boolean).join(" \xB7 ") + "</p><h2>1. Datos generales</h2><table class=\"kv\"><tr><th>Propietario</th><td>" + esc(inf.prop || "") + "</td></tr><tr><th>Instalador</th><td>" + esc(inf.inst || "") + (inf.lic ? " \xB7 licencia SEC " + esc(inf.lic) : "") + "</td></tr><tr><th>Sistema</th><td>" + (S.proj.sistema === "tri" ? "Trif\xE1sico 380/220 V" : "Monof\xE1sico 220 V") + " \xB7 general " + a.In + " A \xB7 " + S.circuits.length + " circuitos</td></tr><tr><th>Instrumentos</th><td>Megger 500 V CC \xB7 telur\xF3metro \xB7 probador de diferenciales \xB7 medidor de lazo (indicar marca, modelo y fecha de calibraci\xF3n)</td></tr></table><h2>2. Inspecci\xF3n visual</h2><table><thead><tr><th>Verificaci\xF3n</th><th>Resultado</th></tr></thead><tbody>" + ENS.map(([k, t]) => row([t, S.ens.items[k] ? "Conforme" : "Pendiente"])).join("") + "</tbody></table><h2>3. Resistencia de aislamiento (500 V CC)</h2><table><thead><tr><th>Circuito</th><th>Medido [MΩ]</th><th>M\xEDnimo [MΩ]</th><th>Resultado</th></tr></thead><tbody>" + ai + "</tbody></table><h2>4. Puesta a tierra</h2><table><tbody>" + row(["Tierra de servicio", +S.tierra.Rserv > 0 ? nf(+S.tierra.Rserv, 1) + " Ω" : "", "≤ 20 Ω"]) + row(["Tierra de protecci\xF3n", +S.tierra.Rprot > 0 ? nf(+S.tierra.Rprot, 1) + " Ω" : "", "≤ UL \xF7 IΔn"]) + "</tbody></table><h2>5. Diferenciales, continuidad, lazo y polaridad</h2><table><thead><tr><th>Ensayo</th><th>Criterio</th><th>Medido</th><th>Resultado</th></tr></thead><tbody>" + (ev.map((x) => row([x.t, x.f, x.s, x.ok === true ? "Cumple" : x.ok === "warn" ? "Revisar" : "No cumple"])).join("") || row(["Sin mediciones registradas", "", "", ""])) + '</tbody></table><h2>6. Conclusi\xF3n</h2><p>La instalaci\xF3n ' + (ev.length && ev.every((x) => x.ok === true) && ENS.every(([k]) => S.ens.items[k]) && S.circuits.length && S.circuits.every((c, i) => parseNum((S.ens.aisl || [])[i]) >= 0.5) ? "cumple" : "debe completar o corregir") + ' los ensayos de verificaci\xF3n inicial (RIC N\xB019) antes de su puesta en servicio.</p><div class="firm"><div>Instalador autorizado SEC</div><div>Propietario o mandante</div></div></body></html>';
+  }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest && e.target.closest('[data-pcsv="out"]');
+    if (!b) return;
+    const names = {};
+    try {
+      if (S.sim2) simBOM(S.sim2).forEach((r) => names[r.k] = names[r.k] || r.d);
+    } catch (err) {
+    }
+    const lines = ["clave;descripcion;precio_clp"].concat(Object.keys(PREC0).map((k) => k + ";" + String(names[k] || k).replace(/;/g, ",") + ";" + precio(k)));
+    dlFile("precios-materiales.csv", new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv" })).then((rr) => {
+      const m = document.getElementById("pcsvmsg");
+      if (m) m.textContent = dlMsg(rr, "Precios exportados. Ed\xEDtalos en Excel y vuelve a importarlos.");
+    });
+  });
+  document.addEventListener("change", (e) => {
+    const el = e.target;
+    if (!el || !el.matches || !el.matches('[data-pcsv="in"]') || !el.files || !el.files[0]) return;
+    const rd2 = new FileReader();
+    rd2.onload = () => {
+      let n = 0;
+      String(rd2.result || "").split(/\r?\n/).forEach((ln) => {
+        const p = ln.split(/[;\t]/);
+        if (p.length < 2) return;
+        const k = p[0].trim().replace(/^\uFEFF/, ""), v = parseNum(p[p.length - 1]);
+        if (PREC0[k] != null && v > 0) {
+          if (!S.precios) S.precios = {};
+          S.precios[k] = v;
+          n++;
+        }
+      });
+      save();
+      render(true);
+      const m = document.getElementById("pcsvmsg");
+      if (m) m.textContent = n + " precio(s) importado(s).";
+    };
+    rd2.readAsText(el.files[0]);
+  });
   function simBOM(s) {
     const ev = simEval(s), cond = {}, tubo = {}, cK = {}, tK = {}, add = (o, k, v) => o[k] = (o[k] || 0) + v, COLN = { F: "rojo (fase)", N: "blanco (neutro)", PE: "verde/amarillo (tierra)", R: "rojo oscuro (retorno)", R2: "naranjo (retorno 2)", C: "rojo (com\xFAn 9/24)", V1: "negro (viajero)", V2: "caf\xE9 (viajero)" };
     let curvas = 0;
@@ -5599,7 +5883,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return '<p class="eyebrow no-print">Reportes y entregables</p><h1>'.concat(esc(S.proj && S.proj.nombre || "Instalaci\xF3n del simulador"), '</h1>\n  <div class="rep-act no-print"><button class="btn" type="button" data-act="rpdf">\u{1F5A8} PDF / Imprimir</button><button class="btn" type="button" data-act="rxls">\u2B07 Excel</button><button class="btn ghost" type="button" data-act="rcopy">\u29C9 Copiar cuadro</button><button class="btn ghost" type="button" data-act="rjson">\u{1F4BE} Guardar proyecto</button><label class="btn ghost" style="cursor:pointer">\u{1F4C2} Abrir proyecto<input type="file" accept=".json,application/json" id="rjsonin" hidden></label><span class="hint" id="rmsg"></span></div>\n  ').concat(kpis([kpi("Circuitos", s.circuits.length), kpi("P instalada", n0(r.Pi), "W"), kpi("Demanda", n0(r.Pd), "W"), kpi("General", s.gen.In, "A", r.Id > s.gen.In ? "bad" : "ok"), kpi("\u0394V m\xE1x.", nf(Math.max(0, ...r.rows.map((x) => x.dv)), 2), "%", Math.max(0, ...r.rows.map((x) => x.dv)) > 5 ? "bad" : "ok"), kpi("Observaciones", r.errs.length, "", ok ? "ok" : "bad")]), '\n  <section class="card rep-s"><h2>1 \xB7 Cuadro de carga</h2>').concat(cq, '<p class="hint">Proyecci\xF3n: 100 W por centro de luz, 250 W por enchufe; equipos de 1.500 W o m\xE1s con su potencia. Demanda seg\xFAn RIC N\xB003, Tabla 3.1.</p></section>\n  ').concat(s.sys === "tri" ? '<section class="card rep-s"><h2>Balance de fases</h2><div class="phb">'.concat(["R", "S", "T"].map((f) => {
       const mx = Math.max(1, r.ev.Pph.R, r.ev.Pph.S, r.ev.Pph.T);
       return "<div><b>".concat(f, '</b><span style="width:').concat(r.ev.Pph[f] / mx * 100, "%;background:").concat({ R: "#1F5FBF", S: "#333", T: "#C0392B" }[f], '"></span><em>').concat(n0(r.ev.Pph[f]), " W \xB7 ").concat(nf(r.ev.Pph[f] / V0, 1), " A</em></div>");
-    }).join(""), "</div></section>") : "", '\n  <section class="card rep-s"><h2>2 \xB7 Diagrama unilineal del tablero</h2>').concat(simConnSVG(s), '</section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">3 \xB7 Plano de planta</h2><button class="btn ghost small no-print" type="button" data-act="rsvg">\u2B07 Plano (.svg)</button></div><div class="plan">').concat(planSVG(s), '</div><p class="hint">L\xEDnea punteada: recorrido autom\xE1tico por el entretecho. L\xEDnea continua: tubo que trazaste con la herramienta Trazar.</p></section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">4 \xB7 Materiales y costos</h2><button class="btn ghost small no-print" type="button" data-cs="prst">\u21BA Restaurar precios</button></div>').concat(bomTable(B, true), '<p class="hint">Metros con 10 % de holgura, medidos sobre los recorridos del simulador. Precios unitarios referenciales en pesos chilenos, netos: c\xE1mbialos por los de tu proveedor y el total se recalcula (se guardan con el proyecto).</p></section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">5 \xB7 Memoria explicativa</h2><button class="btn ghost small no-print" type="button" data-act="rmem">\u2B07 Memoria (.html, abre en Word)</button></div><details class="memd" open><summary class="no-print">Ver / ocultar</summary><div class="memo">').concat(memoriaHTML(s, false), '</div></details></section>\n  ' + infSection(s) + '<section class="card rep-s"><h2>9 \xB7 Observaciones del inspector</h2>').concat(ok ? note("\u2713 La instalaci\xF3n cumple todo lo que revisa la app.", "ok") : '<ol class="obs">'.concat(r.errs.map((o) => "<li><b>".concat(esc(o.t), "</b> \u2014 ").concat(esc(o.d), ' <span class="hint">').concat(esc(o.w), "</span></li>")).join(""), "</ol>"), '</section>\n  <p class="hint no-print">Los datos salen del <button class="linkb" type="button" data-go="sim">Simulador 3D</button>. Cambia la instalaci\xF3n all\xED y este reporte se actualiza solo.</p><div class="no-print">').concat(testsHTML(), "</div>");
+    }).join(""), "</div></section>") : "", '\n  <section class="card rep-s"><h2>2 \xB7 Diagrama unilineal del tablero</h2>').concat(simConnSVG(s), '</section>' + repIccHTML(s) + '\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">3 \xB7 Plano de planta</h2><button class="btn ghost small no-print" type="button" data-act="rsvg">\u2B07 Plano (.svg)</button></div><div class="plan">').concat(planSVG(s), '</div><p class="hint">L\xEDnea punteada: recorrido autom\xE1tico por el entretecho. L\xEDnea continua: tubo que trazaste con la herramienta Trazar.</p></section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">4 \xB7 Materiales y costos</h2><button class="btn ghost small no-print" type="button" data-cs="prst">\u21BA Restaurar precios</button></div>').concat(bomTable(B, true), '<p class="hint">Metros con 10 % de holgura, medidos sobre los recorridos del simulador. Precios unitarios referenciales en pesos chilenos, netos: c\xE1mbialos por los de tu proveedor y el total se recalcula (se guardan con el proyecto).</p>' + repCompraHTML(B) + '</section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">5 \xB7 Memoria explicativa</h2><button class="btn ghost small no-print" type="button" data-act="rmem">\u2B07 Memoria (.html, abre en Word)</button></div><details class="memd" open><summary class="no-print">Ver / ocultar</summary><div class="memo">').concat(memoriaHTML(s, false), '</div></details></section>\n  ' + infSection(s) + '<section class="card rep-s"><h2>9 \xB7 Observaciones del inspector</h2>').concat(ok ? note("\u2713 La instalaci\xF3n cumple todo lo que revisa la app.", "ok") : '<ol class="obs">'.concat(r.errs.map((o) => "<li><b>".concat(esc(o.t), "</b> \u2014 ").concat(esc(o.d), ' <span class="hint">').concat(esc(o.w), "</span></li>")).join(""), "</ol>"), '</section>\n  <p class="hint no-print">Los datos salen del <button class="linkb" type="button" data-go="sim">Simulador 3D</button>. Cambia la instalaci\xF3n all\xED y este reporte se actualiza solo.</p><div class="no-print">').concat(testsHTML(), "</div>");
   }
   const CCOL = ["#1f77b4", "#d62728", "#2ca02c", "#9467bd", "#ff7f0e", "#8c564b", "#e377c2", "#17becf"];
   function edgeFl(e) {
@@ -7983,6 +8267,18 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     const i = CU.findIndex((x) => x.id === after);
     CU.splice(i < 0 ? CU.length : i + 1, 0, l);
   });
+  const CU_ADD2 = [
+    ["c3", { id: "c4", m: "cond", t: "Cortocircuito, poder de corte y selectividad", body: () => cuSec("Qu\xE9 pasa en un cortocircuito", "<p>En un cortocircuito la fase toca el neutro o la tierra casi sin resistencia. La corriente queda limitada s\xF3lo por la impedancia de la red (transformador y l\xEDnea) y de los cables, y puede llegar a varios miles de amperes en el tablero.</p>" + cuTbl(["Valor", "D\xF3nde se calcula", "Qu\xE9 decide"], [["Icc m\xE1xima", "En el tablero, con cables fr\xEDos", "El <b>poder de corte</b> del general y de los autom\xE1ticos (4,5 \xB7 6 \xB7 10 kA)"], ["Icc m\xEDnima", "En el punto m\xE1s lejano, con cables calientes", "Si act\xFAa el <b>disparo magn\xE9tico</b>: ≥ 5 \xD7 In (curva B) o ≥ 10 \xD7 In (curva C)"]]) + "<p>F\xF3rmulas pr\xE1cticas (monof\xE1sico): Zs = 220 \xF7 Icc empalme; Icc m\xE1x = 220 \xF7 (Zs + 2ρLₐ/Sₐ); Icc m\xEDn = 0,95 \xD7 220 \xF7 (Zs + 1,5 \xD7 (R alimentador + R circuito)).</p>") + cuSec("Largo m\xE1ximo protegido", "<p>Si el circuito es muy largo o delgado, la Icc m\xEDnima no alcanza el umbral magn\xE9tico y la falla se despeja por la parte t\xE9rmica, en segundos: el cable se recalienta y puede iniciar un incendio. Por eso cada combinaci\xF3n de autom\xE1tico y secci\xF3n tiene un <b>largo m\xE1ximo</b>. Con 16 A curva C y 2,5 mm\xB2 suele estar entre 40 y 60 m; con 10 A curva B y 1,5 mm\xB2, sobre 70 m.</p>") + cuSec("Selectividad", "<p>Es la coordinaci\xF3n para que ante una falla act\xFAe s\xF3lo la protecci\xF3n m\xE1s cercana. Con autom\xE1ticos modulares la selectividad suele ser <b>parcial</b>: el general de 25 A curva C puede disparar con fallas sobre 125 A, como las que ocurren cerca del tablero. Para mejorarla se usa un general de mayor calibre o curva, o se consultan las tablas de selectividad del fabricante. En diferenciales en cascada, el de aguas arriba debe ser selectivo (tipo S) y de mayor sensibilidad nominal.</p>" + cuRef) + cuKey(["El poder de corte se elige con la Icc m\xE1xima del tablero.", "La Icc m\xEDnima en el extremo debe superar el umbral magn\xE9tico.", "Cada autom\xE1tico y secci\xF3n tiene un largo m\xE1ximo protegido.", "La selectividad general–circuito suele ser parcial."]), q: [["\xBFQu\xE9 valor define el poder de corte del autom\xE1tico?", ["La corriente nominal del circuito", "La Icc m\xE1xima en el tablero", "La Icc m\xEDnima del extremo", "La ca\xEDda de tensi\xF3n"], 1, "El autom\xE1tico debe poder abrir la mayor corriente de falla del lugar donde se instala."], ["Un 16 A curva C necesita, para disparar en forma instant\xE1nea, al menos:", ["16 A", "48 A", "80 A", "160 A"], 3, "Curva C: el magn\xE9tico act\xFAa entre 5 y 10 \xD7 In; se verifica con 10 \xD7 16 = 160 A."], ["Si el circuito es muy largo, la falla en el extremo…", ["Se corta m\xE1s r\xE1pido", "Puede no hacer actuar el magn\xE9tico", "Aumenta el poder de corte", "No cambia nada"], 1, "M\xE1s largo significa m\xE1s resistencia y menos corriente de falla."]] }],
+    ["f3", { id: "f4", m: "fund", t: "Energ\xEDa, consumo y eficiencia", body: () => cuSec("Potencia no es lo mismo que energ\xEDa", "<p>La <b>potencia</b> (W) es la rapidez con que un equipo usa energ\xEDa; la <b>energ\xEDa</b> (kWh) es potencia por tiempo y es lo que se cobra en la boleta. Un equipo de 1.000 W encendido 1 hora consume 1 kWh.</p>" + cuTbl(["Equipo", "Potencia", "Uso diario", "Consumo mensual"], [["Refrigerador", "150 W", "10 h efectivas", "45 kWh"], ["Hervidor", "2.000 W", "12 min", "12 kWh"], ["10 ampolletas incandescentes", "600 W", "4 h", "72 kWh"], ["10 ampolletas LED", "90 W", "4 h", "11 kWh"]])) + cuSec("Eficiencia en la instalaci\xF3n", "<ul><li>Iluminaci\xF3n LED: 80 a 90 % menos consumo y menos corriente en el circuito de alumbrado.</li><li>Etiqueta de eficiencia energ\xE9tica en refrigeradores, lavadoras y aire acondicionado.</li><li>Cables con baja ca\xEDda de tensi\xF3n: la energ\xEDa perdida en el cable tambi\xE9n se paga.</li><li>Factor de potencia: equipos con cos φ bajo piden m\xE1s corriente para el mismo trabajo.</li></ul><p>Usa la calculadora \xABConsumo y costo de energ\xEDa\xBB para estimar la boleta y el ahorro.</p>" + cuRef) + cuKey(["kWh = W \xD7 horas \xF7 1.000.", "Los equipos que funcionan muchas horas pesan m\xE1s en la boleta que los de alta potencia y poco uso.", "LED y buenos cables reducen consumo y p\xE9rdidas."]), q: [["\xBFCu\xE1nta energ\xEDa consume un equipo de 2.000 W durante 30 minutos?", ["0,5 kWh", "1 kWh", "2 kWh", "60 kWh"], 1, "2.000 W \xD7 0,5 h = 1.000 Wh = 1 kWh."], ["\xBFQu\xE9 se cobra en la boleta el\xE9ctrica domiciliaria?", ["La potencia instalada", "La energ\xEDa consumida (kWh)", "La corriente m\xE1xima", "La tensi\xF3n"], 1, "El cargo principal es por energ\xEDa en kWh."]] }],
+    ["p5", { id: "p6", m: "puntos", t: "Viviendas de 2 pisos, electromovilidad y paneles solares", body: () => cuSec("Viviendas de dos pisos", "<ul><li>Un tablero general en el 1.er piso, accesible y cerca del medidor; en casas grandes, un tablero de distribuci\xF3n en el 2.\xBA piso con su propio alimentador y protecci\xF3n.</li><li>Circuitos separados por piso para alumbrado y enchufes.</li><li>Montante vertical con cajas de registro en cada piso; el largo vertical se suma a la ca\xEDda de tensi\xF3n.</li><li>Luz de escalera comandada desde ambos niveles con dos interruptores 9/24.</li></ul>") + cuSec("Carga de veh\xEDculos el\xE9ctricos (RIC N\xB015)", "<ul><li>Circuito exclusivo por punto de carga, dimensionado para carga continua (In ≥ 1,25 \xD7 I).</li><li>Diferencial 30 mA tipo A con detecci\xF3n de continua de 6 mA, o tipo B.</li><li>Revisar si el empalme soporta la nueva carga: un wallbox de 7,4 kW duplica la demanda de una casa t\xEDpica.</li></ul>") + cuSec("Generaci\xF3n fotovoltaica (RIC N\xB009, Ley 20.571)", "<ul><li>Strings calculados con la Voc a la temperatura m\xEDnima (no superar la tensi\xF3n m\xE1xima del inversor).</li><li>Lado continua: seccionador y protector de sobretensiones; con 3 o m\xE1s strings, fusibles por string.</li><li>Lado alterna: circuito exclusivo con autom\xE1tico y diferencial; ca\xEDda baja para que el inversor no se desconecte.</li><li>Inversor autorizado por la SEC, solicitud de conexi\xF3n a la distribuidora y declaraci\xF3n de la instalaci\xF3n de generaci\xF3n.</li></ul>" + cuRef) + cuKey(["2 pisos: circuitos por piso, montante y 9/24 en la escalera.", "Cargador: circuito exclusivo, carga continua y diferencial con detecci\xF3n de continua.", "Fotovoltaico: Voc en fr\xEDo manda el largo del string."]), q: [["La luz de una escalera entre dos pisos se comanda con:", ["Un 9/12", "Dos 9/24", "Un 9/15", "Un dimmer"], 1, "Dos interruptores de combinaci\xF3n (9/24) permiten encender y apagar desde cada nivel."], ["\xBFQu\xE9 diferencial se recomienda para un cargador de auto?", ["AC de 300 mA", "Tipo A 30 mA con detecci\xF3n de continua 6 mA, o tipo B", "Ninguno", "Clase AC 30 mA"], 1, "Los cargadores pueden producir fugas con componente continua que \xABciegan\xBB a un diferencial com\xFAn."], ["El n\xFAmero m\xE1ximo de paneles por string se calcula con:", ["La Vmp a 70 \xB0C", "La Voc a la temperatura m\xEDnima", "La corriente del inversor", "La potencia del panel"], 1, "Con fr\xEDo la tensi\xF3n del panel sube; no debe superar la tensi\xF3n m\xE1xima del inversor."]] }],
+    ["m2", { id: "m3", m: "serv", t: "Errores frecuentes en la inspecci\xF3n SEC", body: () => cuSec("Lo que m\xE1s se observa", cuTbl(["Error", "Por qu\xE9 es grave", "C\xF3mo se corrige"], [["Empalmes fuera de cajas o con cinta sola", "Uniones flojas calientan y pueden iniciar incendios", "Uniones dentro de cajas accesibles, con conectores certificados"], ["Conductor de protecci\xF3n ausente o cortado", "Una falla deja carcasas con tensi\xF3n", "PE continuo hasta cada enchufe y centro de luz; medir continuidad"], ["Colores cambiados", "Confusi\xF3n en mantenciones: riesgo de electrocuci\xF3n", "Fase rojo (o azul/negro/rojo), neutro blanco, PE verde/amarillo"], ["Circuitos sin diferencial", "Sin protecci\xF3n contra contactos indirectos", "Diferencial 30 mA, m\xE1ximo 3 circuitos por diferencial"], ["Secci\xF3n bajo el m\xEDnimo", "El cable se recalienta antes de que act\xFAe la protecci\xF3n", "1,5 mm\xB2 alumbrado, 2,5 mm\xB2 enchufes, 4 mm\xB2 alimentador; Is ≤ In ≤ Iz"], ["Enchufes en el volumen de la ducha", "Riesgo de electrocuci\xF3n con piel mojada", "Fuera de los vol\xFAmenes 0, 1 y 2; IP44 en zonas h\xFAmedas"], ["Tablero sin rotular ni tapa", "Maniobras equivocadas, partes con tensi\xF3n al alcance", "Cuadro de circuitos, rotulado, tapa y se\xF1al de riesgo"], ["Ductos llenos o con m\xE1s de 3 curvas", "Cables da\xF1ados al pasarlos, mala disipaci\xF3n", "Llenado ≤ 40 %, cajas de paso"], ["Tierra con resistencia alta o sin c\xE1mara", "El diferencial y la protecci\xF3n no act\xFAan bien", "Mejorar electrodo, c\xE1mara de registro, medir con telur\xF3metro"], ["Planos que no coinciden con lo ejecutado", "La declaraci\xF3n no refleja la instalaci\xF3n real", "Actualizar planos y cuadro de cargas antes del TE1"]])) + cuRef + cuKey(["La mayor\xEDa de las observaciones son de uniones, tierra, diferenciales y rotulado.", "Revisar con la lista antes de pedir la inspecci\xF3n ahorra visitas."]), q: [["\xBFD\xF3nde deben quedar las uniones de conductores?", ["Dentro del ducto", "Dentro de cajas accesibles", "Bajo el estuco", "En cualquier parte con cinta"], 1, "Las uniones s\xF3lo se hacen dentro de cajas accesibles."], ["Un enchufe a 30 cm del borde de la ducha est\xE1 en:", ["Fuera de zonas", "Volumen 2", "Volumen 0", "Zona libre"], 1, "El volumen 2 se extiende 0,6 m alrededor de la ducha o tina."]] }]
+  ];
+  CU_ADD2.forEach(([after, l]) => {
+    if (CU.some((x) => x.id === l.id)) return;
+    const i = CU.findIndex((x) => x.id === after);
+    CU.splice(i < 0 ? CU.length : i + 1, 0, l);
+  });
+
   function cuStaticQuiz(q) {
     return '<section class="card cuqz"><h2>Autoevaluación</h2>' + q.map((x, i) => '<div class="cuq"><p><b>' + (i + 1) + ". " + x[0] + '</b></p><ol type="a" class="xopts">' + x[1].map((o) => "<li>" + o + "</li>").join("") + '</ol><details class="xans"><summary>Ver respuesta</summary><p><b>' + String.fromCharCode(97 + x[2]) + ") " + x[1][x[2]] + "</b>" + (x[3] ? ". " + x[3] : "") + "</p></details></div>").join("") + "</section>";
   }
@@ -10088,6 +10384,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     { id: "t_tierra", g: "calc", t: "Puesta a tierra", r: tTierra, c: cTierra },
     { id: "t_ohm", g: "calc", t: "Ley de Ohm", r: tOhm, c: cOhm },
     { id: "t_curvas", g: "calc", t: "Curvas de disparo", r: tCurvas, c: cCurvas },
+    { id: "t_icc", g: "calc", t: "Cortocircuito y selectividad", r: tIcc, c: cIcc },
+    { id: "t_ev", g: "calc", t: "Cargador de auto el\xE9ctrico", r: tEv, c: cEv },
+    { id: "t_fv", g: "calc", t: "Paneles solares (net billing)", r: tFv, c: cFv },
+    { id: "t_energia", g: "calc", t: "Consumo y costo de energ\xEDa", r: tEnergia, c: cEnergia },
     { id: "rep", g: "rep", t: "Reportes", r: pgRep },
     { id: "curso", g: "learn", t: "Curso RIC completo", r: pgCurso },
     { id: "l_conceptos", g: "learn", t: "Conceptos b\xE1sicos", r: pgConceptos },
@@ -10121,8 +10421,122 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     const ks = [...new Set([...html.matchAll(/data-ab="([^"]+)"/g)].map((m) => m[1].replace(/&amp;/g, "&")))];
     return ks.length ? learn("Abreviaturas de esta p\xE1gina", '<dl class="gl">'.concat(ks.map((k) => "<dt>".concat(esc(k), "</dt><dd>").concat(esc(GLOS[k] || ""), "</dd>")).join(""), "</dl>")) : "";
   }
+  const PKEY = KEY + "-projs";
+  const projList = () => {
+    try {
+      return JSON.parse(localStorage.getItem(PKEY) || "{}") || {};
+    } catch (e) {
+      return {};
+    }
+  };
+  let projMsg = "";
+  function projHTML() {
+    const L = projList(), ks = Object.keys(L).sort((a, b) => (L[b].d || 0) - (L[a].d || 0)), nm = S.proj && S.proj.nombre || S.casa && S.casa.n || "";
+    return '<section class="card"><div class="sechead"><h2 style="margin:0">Mis proyectos</h2><span class="hint">Se guardan en este navegador; exp\xF3rtalos para respaldarlos o abrirlos en otro equipo.</span></div><div class="chips" style="margin:8px 0"><input type="text" id="projname" value="' + esc(nm) + '" placeholder="Nombre del proyecto" aria-label="Nombre del proyecto" style="min-width:200px;flex:1"><button type="button" class="btn small" data-pj="save">\u{1F4BE} Guardar actual</button><button type="button" class="btn ghost small" data-pj="exp">⬇ Exportar archivo</button><label class="btn ghost small" style="cursor:pointer">⬆ Importar archivo<input type="file" accept=".json,application/json" data-pj="imp" hidden></label><button type="button" class="btn ghost small" data-pj="new">' + (projMsg === "conf-new" ? "\xBFSeguro? Toca otra vez" : "＋ Proyecto nuevo") + "</button></div>" + (projMsg && projMsg !== "conf-new" ? note(esc(projMsg), "ok") : "") + (ks.length ? '<div class="tbl-wrap"><table class="pt"><thead><tr><th>Proyecto</th><th>Guardado</th><th></th></tr></thead><tbody>' + ks.map((k) => "<tr><td><b>" + esc(k) + "</b></td><td>" + new Date(L[k].d || 0).toLocaleString("es-CL") + '</td><td style="white-space:nowrap"><button type="button" class="btn small" data-pj="open" data-k="' + esc(k) + '">Abrir</button> <button type="button" class="btn ghost small" data-pj="del" data-k="' + esc(k) + '">' + (projMsg === "conf-del:" + k ? "\xBFBorrar?" : "✕") + "</button></td></tr>").join("") + "</tbody></table></div>" : '<p class="hint" style="margin:0">A\xFAn no guardas proyectos. Al abrir otro, guarda primero el actual.</p>') + "</section>";
+  }
+  function projLoad(o) {
+    if (!o || typeof o !== "object" || !o.proj) return false;
+    S = Object.assign(blankProject(), { amp: Object.assign({}, AMP_DEF), tools: toolBlank() }, o);
+    const b = toolBlank();
+    for (const k in b) if (!S.tools[k]) S.tools[k] = b[k];
+    if (!S.cuadro) S.cuadro = cuadroBlank();
+    houseKey = null;
+    save();
+    return true;
+  }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest && e.target.closest("[data-pj]");
+    if (!b || b.tagName === "INPUT") return;
+    const a = b.dataset.pj, L = projList(), k = b.dataset.k;
+    const put = (m) => {
+      try {
+        localStorage.setItem(PKEY, JSON.stringify(m));
+        return true;
+      } catch (err) {
+        projMsg = "No hay espacio en el navegador: exporta y borra proyectos antiguos.";
+        return false;
+      }
+    };
+    if (a === "save") {
+      const n = (document.getElementById("projname").value || "").trim() || "Proyecto " + (Object.keys(L).length + 1);
+      if (S.proj && !S.proj.nombre) S.proj.nombre = n;
+      save();
+      L[n] = { d: Date.now(), s: JSON.stringify(S) };
+      if (put(L)) projMsg = "\xAB" + n + "\xBB guardado.";
+    } else if (a === "open" && L[k]) {
+      try {
+        projLoad(JSON.parse(L[k].s));
+        projMsg = "\xAB" + k + "\xBB abierto.";
+      } catch (err) {
+        projMsg = "No se pudo abrir el proyecto.";
+      }
+    } else if (a === "del") {
+      if (projMsg !== "conf-del:" + k) projMsg = "conf-del:" + k;
+      else {
+        delete L[k];
+        put(L);
+        projMsg = "\xAB" + k + "\xBB borrado.";
+      }
+    } else if (a === "new") {
+      if (projMsg !== "conf-new") projMsg = "conf-new";
+      else {
+        projLoad({ proj: blankProject().proj });
+        projMsg = "Proyecto nuevo creado. El anterior sigue en la lista si lo guardaste.";
+      }
+    } else if (a === "exp") {
+      const n = (S.proj && S.proj.nombre || "proyecto").replace(/[^\w\-]+/g, "_");
+      dlFile(n + ".ric.json", new Blob([JSON.stringify({ app: "calculadora-ric", v: 1, d: Date.now(), S })], { type: "application/json" })).then((rr) => {
+        projMsg = dlMsg(rr, "Proyecto exportado.");
+        render(true);
+      });
+      return;
+    }
+    render(true);
+  });
+  document.addEventListener("change", (e) => {
+    const el = e.target;
+    if (!el || !el.matches || !el.matches('[data-pj="imp"]') || !el.files || !el.files[0]) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const o = JSON.parse(String(r.result || "")), d = o && o.S ? o.S : o;
+        projMsg = projLoad(d) ? "Proyecto importado." : "El archivo no es un proyecto de esta app.";
+      } catch (err) {
+        projMsg = "El archivo no es un proyecto v\xE1lido.";
+      }
+      render(true);
+    };
+    r.readAsText(el.files[0]);
+  });
+  function searchHits(q) {
+    q = q.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+    if (q.length < 2) return [];
+    const nz = (t) => String(t || "").replace(/<[^>]+>/g, "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(), H = [];
+    PAGES.forEach((p) => {
+      if (nz(p.t + " " + (DESC[p.id] || "")).includes(q)) H.push({ go: p.id, t: p.t, k: GROUPS[p.g] || "Inicio" });
+    });
+    CU.forEach((l) => {
+      if (nz(l.t).includes(q)) H.push({ cu: l.id, t: l.t, k: "Lecci\xF3n" });
+    });
+    Object.keys(GLOS).forEach((g) => {
+      if (nz(g + " " + GLOS[g]).includes(q)) H.push({ go: "l_glosario", t: g + ": " + String(GLOS[g]).slice(0, 60), k: "Glosario" });
+    });
+    return H.slice(0, 12);
+  }
+  document.addEventListener("input", (e) => {
+    if (!e.target || e.target.id !== "gsearch") return;
+    const box = document.getElementById("gsres"), H = searchHits(e.target.value);
+    if (box) box.innerHTML = H.map((h) => '<button type="button" ' + (h.cu ? 'data-gscu="' + h.cu + '"' : 'data-go="' + h.go + '"') + '><span class="k">›</span>' + esc(h.t) + ' <small class="hint">' + esc(h.k) + "</small></button>").join("") || (e.target.value.trim().length >= 2 ? '<p class="hint" style="padding:4px 8px;margin:0">Sin resultados</p>' : "");
+  });
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest && e.target.closest("[data-gscu]");
+    if (!b) return;
+    cuInit().cur = b.dataset.gscu;
+    save();
+    go("curso");
+  });
   function renderSide() {
-    let h = '<button type="button" data-go="home" aria-current="'.concat(cur === "home", '"><span class="k">\u2302</span>Inicio</button>');
+    let h = '<div class="gsw"><input type="search" id="gsearch" placeholder="\u{1F50D} Buscar c\xE1lculo, lecci\xF3n o t\xE9rmino\u2026" aria-label="Buscar en la app" autocomplete="off"><div id="gsres"></div></div><button type="button" data-go="home" aria-current="'.concat(cur === "home", '"><span class="k">\u2302</span>Inicio</button>');
     let closed = [];
     try {
       closed = JSON.parse(localStorage.getItem(KEY + "-side") || "[]");
@@ -10540,6 +10954,15 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (act === "tclear") {
       S.tools[b.dataset.k] = toolBlank()[b.dataset.k];
       delete RES["t_" + b.dataset.k];
+    }
+    if (act === "protdoc") {
+      const w = window.open("", "_blank");
+      if (w && w.document) {
+        w.document.open();
+        w.document.write(protocoloDoc());
+        w.document.close();
+      } else dlFile("protocolo-ensayos.html", new Blob([protocoloDoc()], { type: "text/html" }));
+      return;
     }
     if (act === "tex") {
       S.tools[b.dataset.k] = toolExample(b.dataset.k);
