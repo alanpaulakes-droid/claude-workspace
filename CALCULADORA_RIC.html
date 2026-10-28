@@ -553,7 +553,8 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       ev: { P: 7400, L: 0, Pd: 0, Ig: 25, amb: "int", ta: 30, ng: 1, fc: 1 },
       fv: { kwh: 0, hsp: 5, pr: 0.8, Wp: 550, Voc: 49.5, Vmp: 41.5, bVoc: -0.27, Tmin: -5, Tmax: 70, Vmax: 600, mppt0: 120, mppt1: 550, Lac: 10, Pinv: 0 },
       energia: { tar: 200, rows: [] },
-      td: { Pv: 0, Ig: 40, Sa: 10, La: 12, Ls: 0, ta: 30, ng: 1, fc: 1, rows: [] }
+      td: { Pv: 0, Ig: 40, Sa: 10, La: 12, Ls: 0, ta: 30, ng: 1, fc: 1, rows: [] },
+      mom: { V: 220, S: 2.5, lim: 3, dva: 0, rows: [] }
     };
   }
   function toolExample(k) {
@@ -573,7 +574,8 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       ev: { P: 7400, L: 18, Pd: 5200, Ig: 40, amb: "int", ta: 35, ng: 1, fc: 1 },
       fv: { kwh: 280, hsp: 5, pr: 0.8, Wp: 550, Voc: 49.5, Vmp: 41.5, bVoc: -0.27, Tmin: -5, Tmax: 70, Vmax: 600, mppt0: 120, mppt1: 550, Lac: 12, Pinv: 0 },
       energia: { tar: 200, rows: EN_DEF.map(([n, c, w, h, led]) => ({ n, c, w, h, led })) },
-      td: { Pv: 9e3, Ig: 40, Sa: 10, La: 12, Ls: 14, ta: 35, ng: 1, fc: 1, rows: TD_DEF.map(([n, tipo, P, L]) => ({ n, tipo, P, L })) }
+      td: { Pv: 9e3, Ig: 40, Sa: 10, La: 12, Ls: 14, ta: 35, ng: 1, fc: 1, rows: TD_DEF.map(([n, tipo, P, L]) => ({ n, tipo, P, L })) },
+      mom: { V: 220, S: 2.5, lim: 3, dva: 1.2, rows: MOM_DEF.map(([n, P, L]) => ({ n, P, L })) }
     }[k];
   }
   let S;
@@ -1008,7 +1010,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       "caida",
       "RIC N\xB003, 5.1.3",
       "Ca\xEDda de tensi\xF3n",
-      "Calcula cu\xE1nta tensi\xF3n se pierde en un tramo de cable, la secci\xF3n m\xEDnima para cumplir el l\xEDmite y el largo m\xE1ximo con la secci\xF3n elegida.",
+      "Calcula cu\xE1nta tensi\xF3n se pierde en un tramo con la carga concentrada al final (alimentador, subalimentador o un equipo \xFAnico). Para un circuito con varios enchufes o centros de luz repartidos usa <button type=\"button\" class=\"linkb\" data-go=\"t_mom\">el m\xE9todo de los momentos el\xE9ctricos</button>.",
       '<div class="grid">'.concat(fSel("tools.caida.sis", "Sistema", SIS, { re: true })).concat(fSel("tools.caida.ent", "Dato que conozco", [["I", "La corriente"], ["P", "La potencia"]], { re: true })).concat(loadFields("caida", t)).concat(t.ent === "P" ? fNum("tools.caida.cf", ab("cos \u03C6")) : "").concat(vField("caida", t)).concat(fNum("tools.caida.L", "Largo del tramo ".concat(ab("L")), { unit: "m", help: "Solo ida" })).concat(fSel("tools.caida.S", "Secci\xF3n del cable ".concat(ab("S")), SECC.map((x) => [x, sStr(x) + " mm\xB2"]))).concat(fSel("tools.caida.lim", "L\xEDmite que debe cumplir", [[3, "3 % \u2014 alimentador"], [5, "5 % \u2014 total hasta el punto m\xE1s lejano"], [2, "2 % \u2014 circuito, si el alimentador ya us\xF3 3 %"]])).concat(fNum("tools.caida.rho", "Resistividad ".concat(ab("\u03C1")), { unit: "\u03A9\xB7mm\xB2/m", help: "Cobre 0,018 \xB7 Aluminio 0,028" }), "</div>"),
       "<p>Un cable no es un conductor perfecto: tiene resistencia, y parte de la tensi\xF3n se \u201Cgasta\u201D en calentarlo. Es como el agua en una manguera larga y delgada: llega con menos presi\xF3n al final.</p><p>La p\xE9rdida crece con el <b>largo</b> y la <b>corriente</b>, y disminuye con la <b>secci\xF3n</b>. En monof\xE1sico el largo se multiplica por 2 porque la corriente va por la fase y vuelve por el neutro. El RIC N\xB003 permite 3 % en el alimentador y 5 % en total hasta el punto m\xE1s lejano.</p>"
     );
@@ -1525,6 +1527,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     t_fv: "kWp, strings e inversor para net billing",
     t_energia: "kWh al mes, costo y ahorro con LED",
     t_td: "Subalimentador, protecciones y ca\xEDda acumulada",
+    t_mom: "Cargas repartidas: suma de momentos el\xE9ctricos",
     e1: "Alcance y requerimientos del mandante",
     e3: "L\xE1mina de plano y especificaciones",
     e4: "Costos y carta Gantt",
@@ -1558,7 +1561,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     casa: "Plano, medidas y costos",
     l_comp: "Una imagen por componente"
   };
-  const ICON = { t_icc: "Icc", t_ev: "\u{1F50C}", t_fv: "\u2600", t_energia: "kWh", t_td: "TD", casa: "\u{1F4D0}", t_curvas: "\u2307", t_corriente: "A", t_potencias: "\u03A3", t_caida: "\u0394V", t_conductor: "mm\xB2", t_proteccion: "In", t_cargas: "\u2630", t_demanda: "Pd", t_puntos: "N", t_tierra: "\u23DA", t_ohm: "\u03A9", l_conceptos: "?", l_comp: "\u25E7", l_glosario: "Aa", l_tablas: "\u25A6", curso: "\u{1F393}" };
+  const ICON = { t_icc: "Icc", t_ev: "\u{1F50C}", t_fv: "\u2600", t_energia: "kWh", t_td: "TD", t_mom: "\u03A3IL", casa: "\u{1F4D0}", t_curvas: "\u2307", t_corriente: "A", t_potencias: "\u03A3", t_caida: "\u0394V", t_conductor: "mm\xB2", t_proteccion: "In", t_cargas: "\u2630", t_demanda: "Pd", t_puntos: "N", t_tierra: "\u23DA", t_ohm: "\u03A9", l_conceptos: "?", l_comp: "\u25E7", l_glosario: "Aa", l_tablas: "\u25A6", curso: "\u{1F393}" };
   function pgHubProy() {
     return hub("Instalaci\xF3n paso a paso", "Sigue los 9 pasos en orden. Cada paso usa los datos de los anteriores.", PAGES.filter((p) => p.g === "proy").map((p) => Object.assign({ d: DESC[p.id] }, p)));
   }
@@ -5932,6 +5935,39 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       { t: "Armado del tablero de distribuci\xF3n", f: "Interruptor de cabecera " + InS + " A \xB7 " + nDR + " diferencial(es) 30 mA (m\xE1x. 3 circuitos c/u) \xB7 " + C.length + " autom\xE1ticos \xB7 barras N y PE \xB7 tapa y rotulado", why: "el PE del subalimentador une la barra PE del tablero de distribuci\xF3n con la del general; no se vuelve a unir el neutro con tierra en este tablero (RIC N\xB002)." }
     ]);
   }
+  const MOM_DEF = [["Enchufe 1", 250, 4], ["Enchufe 2", 250, 7.5], ["Enchufe 3", 250, 11], ["Enchufe 4", 250, 14], ["Enchufe 5", 250, 17.5], ["Enchufe 6", 250, 21], ["", 0, 0], ["", 0, 0]];
+  function tMom() {
+    const t = T("mom");
+    if (!Array.isArray(t.rows) || !t.rows.length) t.rows = MOM_DEF.map(([n, P, L]) => ({ n, P, L }));
+    const rows = t.rows.map((r, i) => "<tr><td>" + (i + 1) + "</td><td>" + cTxt("tools.mom.rows." + i + ".n", "Punto", "Nombre") + "</td><td>" + cNum("tools.mom.rows." + i + ".P", 76, "Potencia W") + "</td><td>" + cNum("tools.mom.rows." + i + ".L", 70, "Distancia m") + "</td></tr>").join("");
+    return tPage("mom", "RIC N\xB003, 5.1.3", "Ca\xEDda en circuitos: momentos el\xE9ctricos", "Para circuitos interiores con varias cargas repartidas (enchufes, centros de luz): calcula la ca\xEDda sumando el momento de cada carga, la secci\xF3n m\xEDnima y la compara con suponer toda la carga al final.",
+      '<div class="grid">' + fNum("tools.mom.V", "Tensi\xF3n " + ab("V"), { unit: "V" }) + fSel("tools.mom.S", "Secci\xF3n del circuito " + ab("S"), SECC.slice(0, 6).map((x) => [x, sStr(x) + " mm\xB2"])) + fNum("tools.mom.lim", "Ca\xEDda permitida en el circuito", { unit: "%", help: "5 % total menos lo que use el alimentador (t\xEDpico 2 a 3 %)" }) + fNum("tools.mom.dva", "Ca\xEDda del alimentador (opcional)", { unit: "%" }) + '</div><h3 style="margin:14px 0 6px">Cargas del circuito</h3><div class="tbl-wrap"><table class="pt"><thead><tr><th>#</th><th>Punto</th><th>Potencia (W)</th><th>Distancia desde el tablero (m)</th></tr></thead><tbody>' + rows + '</tbody></table></div><p class="hint">La distancia es el recorrido real del cable desde el tablero hasta cada punto (solo ida). Usa 100 W por centro de luz y 250 W por enchufe, o la potencia real del equipo.</p>',
+      "<p>La f\xF3rmula ΔV = 2\xB7ρ\xB7L\xB7I \xF7 S sirve para una carga <b>concentrada</b> al final de la l\xEDnea, como el alimentador entre el empalme y el tablero. En un circuito interior la corriente no recorre todo el cable completa: cada enchufe o centro de luz toma su parte en el camino, as\xED que el \xFAltimo tramo lleva poca corriente.</p><p>El <b>m\xE9todo de los momentos el\xE9ctricos</b> considera eso: cada carga aporta su corriente multiplicada por su distancia al tablero (su <b>momento</b>, I\xB7L o P\xB7L). La ca\xEDda hasta el punto m\xE1s lejano es ΔV = 2\xB7ρ\xB7Σ(Iᵢ\xB7Lᵢ) \xF7 S. Es equivalente a sumar tramo por tramo la corriente que circula por cada uno.</p><p>Si se supusiera toda la carga en el extremo, el resultado sale mayor y se elegir\xEDan cables m\xE1s gruesos de lo necesario. Si las cargas est\xE1n repartidas en forma pareja, el resultado se parece a poner toda la carga en la mitad del largo.</p>");
+  }
+  function cMom() {
+    const t = T("mom"), V = +t.V || 220, S0 = +t.S || 2.5, rho = 0.018, lim = +t.lim || 3, R = (t.rows || []).filter((r) => +r.P > 0 && +r.L > 0).map((r) => ({ n: r.n || "", P: +r.P, L: +r.L, I: +r.P / V })).sort((a, b) => a.L - b.L);
+    if (!R.length) return note("Ingresa al menos una carga con potencia y distancia.");
+    const Ptot = R.reduce((a, r) => a + r.P, 0), Itot = Ptot / V, Lmax = R[R.length - 1].L, MI = R.reduce((a, r) => a + r.I * r.L, 0), MP = R.reduce((a, r) => a + r.P * r.L, 0);
+    const dv = 2 * rho * MI / S0, pct = dv / V * 100, dvC = 2 * rho * Lmax * Itot / S0, pctC = dvC / V * 100, Smin = 2 * rho * MP / (V * (lim / 100 * V)), Sn = SECC.find((x) => x >= Smin - 1e-9), Lc = MI / Itot;
+    let acc = 0, prev = 0, Irest = Itot;
+    const tr = R.map((r) => {
+      const d = 2 * rho * (r.L - prev) * Irest / S0;
+      acc += d;
+      const row = { r, Lt: r.L - prev, I: Irest, d, acc };
+      Irest -= r.I;
+      prev = r.L;
+      return row;
+    });
+    const tot = pct + (+t.dva || 0);
+    return kpis([kpi("Ca\xEDda (momentos)", nf(pct, 2), "%", pct <= lim ? "ok" : "bad"), kpi("Si fuera concentrada", nf(pctC, 2), "%"), kpi("Secci\xF3n m\xEDnima", Sn ? sStr(Sn) : "—", "mm\xB2"), kpi("Centro de cargas", n1(Lc), "m")]) + steps([
+      { t: "Corriente de cada carga", f: "Iᵢ = Pᵢ \xF7 V", s: R.map((r) => nf(r.I, 2)).join(" + ") + " = " + nf(Itot, 2) + " A en total", r: nf(Itot, 2) + " A" },
+      { t: "Suma de momentos el\xE9ctricos", q: "Cada carga se multiplica por su distancia al tablero.", f: "Σ (Iᵢ \xD7 Lᵢ)", s: R.map((r) => nf(r.I, 2) + " \xD7 " + n1(r.L)).join(" + ") + " = " + nf(MI, 2) + " A\xB7m", r: nf(MI, 2) + " A\xB7m (" + n0(MP) + " W\xB7m)" },
+      { t: "Ca\xEDda hasta el punto m\xE1s lejano", f: "ΔV = 2 \xD7 ρ \xD7 Σ(Iᵢ \xD7 Lᵢ) \xF7 S", s: "2 \xD7 0,018 \xD7 " + nf(MI, 2) + " \xF7 " + sStr(S0) + " = " + nf(dv, 2) + " V → " + nf(pct, 2) + " %", r: nf(pct, 2) + " % (l\xEDmite " + nf(lim, 1) + " %)", ok: pct <= lim, why: pct <= lim ? "el punto m\xE1s lejano recibe tensi\xF3n suficiente." : "aumenta la secci\xF3n, divide el circuito o acerca el tablero." },
+      { t: "Secci\xF3n m\xEDnima por momentos", f: "S = 2 \xD7 ρ \xD7 Σ(Pᵢ \xD7 Lᵢ) \xF7 (V \xD7 ΔV permitida en volts)", s: "2 \xD7 0,018 \xD7 " + n0(MP) + " \xF7 (" + n0(V) + " \xD7 " + nf(lim / 100 * V, 2) + ") = " + nf(Smin, 2) + " mm\xB2 → " + (Sn ? sStr(Sn) + " mm\xB2" : "sobre 120 mm\xB2"), r: Sn ? sStr(Sn) + " mm\xB2" : "—", why: "adem\xE1s debe cumplir la secci\xF3n m\xEDnima del RIC N\xB004 (1,5 mm\xB2 alumbrado, 2,5 mm\xB2 enchufes) e Iz ≥ In." },
+      { t: "Comparaci\xF3n con carga concentrada", f: "ΔV concentrada = 2 \xD7 ρ \xD7 L m\xE1x \xD7 I total \xF7 S", s: "2 \xD7 0,018 \xD7 " + n1(Lmax) + " \xD7 " + nf(Itot, 2) + " \xF7 " + sStr(S0) + " = " + nf(pctC, 2) + " %", r: "Sobreestima " + n0((pctC / pct - 1) * 100) + " %", why: "suponer toda la carga al final s\xF3lo es correcto para un alimentador o un equipo \xFAnico. Equivale a concentrar la carga en el centro de cargas, a " + n1(Lc) + " m del tablero." },
+      +t.dva > 0 ? { t: "Ca\xEDda total desde el empalme", f: "ΔV total = ΔV alimentador + ΔV circuito ≤ 5 %", s: nf(+t.dva, 2) + " + " + nf(pct, 2) + " = " + nf(tot, 2) + " %", ok: tot <= 5 } : null
+    ]) + '<h3 style="margin-top:16px">C\xE1lculo tramo por tramo (mismo resultado)</h3><div class="tbl-wrap"><table class="pt"><thead><tr><th>Tramo hasta</th><th class="num">Largo (m)</th><th class="num">Corriente que circula (A)</th><th class="num">ΔV tramo (V)</th><th class="num">ΔV acumulada</th></tr></thead><tbody>' + tr.map((x) => "<tr><td>" + esc(x.r.n || "Punto") + '</td><td class="num">' + n1(x.Lt) + '</td><td class="num">' + nf(x.I, 2) + '</td><td class="num">' + nf(x.d, 3) + '</td><td class="num">' + nf(x.acc, 2) + " V \xB7 " + nf(x.acc / V * 100, 2) + " %</td></tr>").join("") + '</tbody></table></div><p class="hint">Cada tramo lleva la corriente de todas las cargas que quedan aguas abajo. Sumar las ca\xEDdas de los tramos da exactamente lo mismo que la suma de momentos.</p>';
+  }
   const TPLS = [["casa", "\u{1F3E0}", "Vivienda completa", "70 m\xB2 \xB7 4 circuitos"], ["cocina", "\u{1F373}", "Remodelaci\xF3n cocina y logia", "Circuito exclusivo + horno"], ["clima", "\u2744", "Climatizaci\xF3n", "2 aires acondicionados"], ["vacia", "\u25A2", "Casa vac\xEDa", "Parte desde cero"], ["mia", "\u270F", "Mi vivienda", "La que dise\xF1aste, vac\xEDa"]];
   function simTemplate(k) {
     if (k === "casa") return sim2Example();
@@ -8542,6 +8578,14 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     ["p5", { id: "p6", m: "puntos", t: "Viviendas de 2 pisos, electromovilidad y paneles solares", body: () => cuSec("Viviendas de dos pisos", "<ul><li>Un tablero general en el 1.er piso, accesible y cerca del medidor; en casas grandes, un tablero de distribuci\xF3n en el 2.\xBA piso con su propio alimentador y protecci\xF3n.</li><li>Circuitos separados por piso para alumbrado y enchufes.</li><li>Montante vertical con cajas de registro en cada piso; el largo vertical se suma a la ca\xEDda de tensi\xF3n.</li><li>Luz de escalera comandada desde ambos niveles con dos interruptores 9/24.</li></ul>") + cuSec("Carga de veh\xEDculos el\xE9ctricos (RIC N\xB015)", "<ul><li>Circuito exclusivo por punto de carga, dimensionado para carga continua (In ≥ 1,25 \xD7 I).</li><li>Diferencial 30 mA tipo A con detecci\xF3n de continua de 6 mA, o tipo B.</li><li>Revisar si el empalme soporta la nueva carga: un wallbox de 7,4 kW duplica la demanda de una casa t\xEDpica.</li></ul>") + cuSec("Generaci\xF3n fotovoltaica (RIC N\xB009, Ley 20.571)", "<ul><li>Strings calculados con la Voc a la temperatura m\xEDnima (no superar la tensi\xF3n m\xE1xima del inversor).</li><li>Lado continua: seccionador y protector de sobretensiones; con 3 o m\xE1s strings, fusibles por string.</li><li>Lado alterna: circuito exclusivo con autom\xE1tico y diferencial; ca\xEDda baja para que el inversor no se desconecte.</li><li>Inversor autorizado por la SEC, solicitud de conexi\xF3n a la distribuidora y declaraci\xF3n de la instalaci\xF3n de generaci\xF3n.</li></ul>" + cuRef) + cuKey(["2 pisos: circuitos por piso, montante y 9/24 en la escalera.", "Cargador: circuito exclusivo, carga continua y diferencial con detecci\xF3n de continua.", "Fotovoltaico: Voc en fr\xEDo manda el largo del string."]), q: [["La luz de una escalera entre dos pisos se comanda con:", ["Un 9/12", "Dos 9/24", "Un 9/15", "Un dimmer"], 1, "Dos interruptores de combinaci\xF3n (9/24) permiten encender y apagar desde cada nivel."], ["\xBFQu\xE9 diferencial se recomienda para un cargador de auto?", ["AC de 300 mA", "Tipo A 30 mA con detecci\xF3n de continua 6 mA, o tipo B", "Ninguno", "Clase AC 30 mA"], 1, "Los cargadores pueden producir fugas con componente continua que \xABciegan\xBB a un diferencial com\xFAn."], ["El n\xFAmero m\xE1ximo de paneles por string se calcula con:", ["La Vmp a 70 \xB0C", "La Voc a la temperatura m\xEDnima", "La corriente del inversor", "La potencia del panel"], 1, "Con fr\xEDo la tensi\xF3n del panel sube; no debe superar la tensi\xF3n m\xE1xima del inversor."]] }],
     ["m2", { id: "m3", m: "serv", t: "Errores frecuentes en la inspecci\xF3n SEC", body: () => cuSec("Lo que m\xE1s se observa", cuTbl(["Error", "Por qu\xE9 es grave", "C\xF3mo se corrige"], [["Empalmes fuera de cajas o con cinta sola", "Uniones flojas calientan y pueden iniciar incendios", "Uniones dentro de cajas accesibles, con conectores certificados"], ["Conductor de protecci\xF3n ausente o cortado", "Una falla deja carcasas con tensi\xF3n", "PE continuo hasta cada enchufe y centro de luz; medir continuidad"], ["Colores cambiados", "Confusi\xF3n en mantenciones: riesgo de electrocuci\xF3n", "Fase rojo (o azul/negro/rojo), neutro blanco, PE verde/amarillo"], ["Circuitos sin diferencial", "Sin protecci\xF3n contra contactos indirectos", "Diferencial 30 mA, m\xE1ximo 3 circuitos por diferencial"], ["Secci\xF3n bajo el m\xEDnimo", "El cable se recalienta antes de que act\xFAe la protecci\xF3n", "1,5 mm\xB2 alumbrado, 2,5 mm\xB2 enchufes, 4 mm\xB2 alimentador; Is ≤ In ≤ Iz"], ["Enchufes en el volumen de la ducha", "Riesgo de electrocuci\xF3n con piel mojada", "Fuera de los vol\xFAmenes 0, 1 y 2; IP44 en zonas h\xFAmedas"], ["Tablero sin rotular ni tapa", "Maniobras equivocadas, partes con tensi\xF3n al alcance", "Cuadro de circuitos, rotulado, tapa y se\xF1al de riesgo"], ["Ductos llenos o con m\xE1s de 3 curvas", "Cables da\xF1ados al pasarlos, mala disipaci\xF3n", "Llenado ≤ 40 %, cajas de paso"], ["Tierra con resistencia alta o sin c\xE1mara", "El diferencial y la protecci\xF3n no act\xFAan bien", "Mejorar electrodo, c\xE1mara de registro, medir con telur\xF3metro"], ["Planos que no coinciden con lo ejecutado", "La declaraci\xF3n no refleja la instalaci\xF3n real", "Actualizar planos y cuadro de cargas antes del TE1"]])) + cuRef + cuKey(["La mayor\xEDa de las observaciones son de uniones, tierra, diferenciales y rotulado.", "Revisar con la lista antes de pedir la inspecci\xF3n ahorra visitas."]), q: [["\xBFD\xF3nde deben quedar las uniones de conductores?", ["Dentro del ducto", "Dentro de cajas accesibles", "Bajo el estuco", "En cualquier parte con cinta"], 1, "Las uniones s\xF3lo se hacen dentro de cajas accesibles."], ["Un enchufe a 30 cm del borde de la ducha est\xE1 en:", ["Fuera de zonas", "Volumen 2", "Volumen 0", "Zona libre"], 1, "El volumen 2 se extiende 0,6 m alrededor de la ducha o tina."]] }]
   ];
+  {
+    const L3 = CU_ADD.find((x) => x[1].id === "c3");
+    if (L3) {
+      const b0 = L3[1].body;
+      L3[1].body = () => b0() + cuSec("Circuitos con cargas repartidas: m\xE9todo de los momentos el\xE9ctricos", "<p>La f\xF3rmula \u0394V = 2\xB7\u03C1\xB7L\xB7I \xF7 S supone toda la corriente recorriendo todo el largo: es correcta para el <b>alimentador</b> (empalme \u2192 tablero) o un equipo \xFAnico. En un circuito interior cada enchufe o centro de luz toma su corriente en el camino, as\xED que se usa la <b>suma de momentos</b>:</p>" + cuTbl(["Uso", "F\xF3rmula"], [["Ca\xEDda hasta el punto m\xE1s lejano", "\u0394V = 2 \xD7 \u03C1 \xD7 \u03A3(I\u1D62 \xD7 L\u1D62) \xF7 S"], ["Con potencias", "\u0394V = 2 \xD7 \u03C1 \xD7 \u03A3(P\u1D62 \xD7 L\u1D62) \xF7 (V \xD7 S)"], ["Secci\xF3n m\xEDnima", "S = 2 \xD7 \u03C1 \xD7 \u03A3(P\u1D62 \xD7 L\u1D62) \xF7 (V \xD7 \u0394V permitida en volts)"]]) + "<p>Ejemplo: 6 enchufes de 250 W a 4; 7,5; 11; 14; 17,5 y 21 m, en 2,5 mm\xB2: \u03A3(P\xB7L) = 18.750 W\xB7m \u2192 \u0394V = 2 \xD7 0,018 \xD7 18.750 \xF7 (220 \xD7 2,5) = 1,23 V (0,56 %). Con toda la carga al final (21 m) dar\xEDa 2,06 V: casi el doble. Prueba la calculadora \xABCa\xEDda en circuitos (momentos)\xBB.</p>");
+      L3[1].q = (L3[1].q || []).concat([["En un circuito con 6 enchufes repartidos, \xBFqu\xE9 m\xE9todo da la ca\xEDda de tensi\xF3n correcta?", ["Toda la carga al final del circuito", "Suma de momentos el\xE9ctricos \u03A3(I\xB7L)", "Solo el primer enchufe", "No se calcula"], 1, "Cada carga se multiplica por su distancia al tablero; suponer todo al final sobreestima la ca\xEDda."]]);
+    }
+  }
   CU_ADD2.forEach(([after, l]) => {
     if (CU.some((x) => x.id === l.id)) return;
     const i = CU.findIndex((x) => x.id === after);
@@ -10649,6 +10693,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     { id: "t_corriente", g: "calc", t: "Corriente y potencia", r: tCorriente, c: cCorriente },
     { id: "t_potencias", g: "calc", t: "Suma de potencias", r: tPotencias, c: cPotencias },
     { id: "t_caida", g: "calc", t: "Ca\xEDda de tensi\xF3n", r: tCaida, c: cCaida },
+    { id: "t_mom", g: "calc", t: "Ca\xEDda en circuitos (momentos)", r: tMom, c: cMom },
     { id: "t_conductor", g: "calc", t: "Elegir conductor", r: tConductor, c: cConductor },
     { id: "t_proteccion", g: "calc", t: "Elegir protecciones", r: tProteccion, c: cProteccion },
     { id: "t_cargas", g: "calc", t: "Cuadro de cargas r\xE1pido", r: tCargas, c: cCargas },
