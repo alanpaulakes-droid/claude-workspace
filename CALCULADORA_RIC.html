@@ -439,6 +439,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
 /* Móvil */
 @media (max-width:900px){.tabbar{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);background:color-mix(in srgb,var(--surface) 92%,transparent);box-shadow:0 -4px 16px rgba(16,24,32,.08)}.tabbar button[aria-current="true"] .ic{background:var(--copper-soft);border-radius:10px;padding:0 10px}.card{padding:16px}.brand::before{width:24px;height:24px}}
 .sim-place:has(.pb-v){flex-wrap:wrap}.sim-place .pb-v{flex:0 0 100%;order:5;overflow-x:auto;padding-bottom:2px}.sim-place:has(.pb-v)>.pb-t:not(.pb-v){flex:1 1 220px;min-width:0;overflow-x:auto}
+.gw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:#fff;margin:8px 0}.gw svg{display:block;min-width:640px;max-width:none;height:auto}.te1 table.te{margin:4px 0 10px}.te1 table.te th{width:38%;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink)}.te1 .tc th{width:auto}.te1 .miss{color:var(--bad);font-style:italic}.te1 .te-w{background:var(--warn-soft);color:var(--warn);padding:8px 10px;border-radius:8px;font-size:13px}.te1 .firm{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:30px}.te1 .firm div{border-top:1px solid var(--ink);text-align:center;font-size:12px;padding-top:4px}.te1 h3{margin-top:14px}
 </style>
 
 <header class="top"><div class="top-in">
@@ -5477,7 +5478,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return '<p class="eyebrow no-print">Reportes y entregables</p><h1>'.concat(esc(S.proj && S.proj.nombre || "Instalaci\xF3n del simulador"), '</h1>\n  <div class="rep-act no-print"><button class="btn" type="button" data-act="rpdf">\u{1F5A8} PDF / Imprimir</button><button class="btn" type="button" data-act="rxls">\u2B07 Excel</button><button class="btn ghost" type="button" data-act="rcopy">\u29C9 Copiar cuadro</button><button class="btn ghost" type="button" data-act="rjson">\u{1F4BE} Guardar proyecto</button><label class="btn ghost" style="cursor:pointer">\u{1F4C2} Abrir proyecto<input type="file" accept=".json,application/json" id="rjsonin" hidden></label><span class="hint" id="rmsg"></span></div>\n  ').concat(kpis([kpi("Circuitos", s.circuits.length), kpi("P instalada", n0(r.Pi), "W"), kpi("Demanda", n0(r.Pd), "W"), kpi("General", s.gen.In, "A", r.Id > s.gen.In ? "bad" : "ok"), kpi("\u0394V m\xE1x.", nf(Math.max(0, ...r.rows.map((x) => x.dv)), 2), "%", Math.max(0, ...r.rows.map((x) => x.dv)) > 5 ? "bad" : "ok"), kpi("Observaciones", r.errs.length, "", ok ? "ok" : "bad")]), '\n  <section class="card rep-s"><h2>1 \xB7 Cuadro de carga</h2>').concat(cq, '<p class="hint">Proyecci\xF3n: 100 W por centro de luz, 250 W por enchufe; equipos de 1.500 W o m\xE1s con su potencia. Demanda seg\xFAn RIC N\xB003, Tabla 3.1.</p></section>\n  ').concat(s.sys === "tri" ? '<section class="card rep-s"><h2>Balance de fases</h2><div class="phb">'.concat(["R", "S", "T"].map((f) => {
       const mx = Math.max(1, r.ev.Pph.R, r.ev.Pph.S, r.ev.Pph.T);
       return "<div><b>".concat(f, '</b><span style="width:').concat(r.ev.Pph[f] / mx * 100, "%;background:").concat({ R: "#1F5FBF", S: "#333", T: "#C0392B" }[f], '"></span><em>').concat(n0(r.ev.Pph[f]), " W \xB7 ").concat(nf(r.ev.Pph[f] / V0, 1), " A</em></div>");
-    }).join(""), "</div></section>") : "", '\n  <section class="card rep-s"><h2>2 \xB7 Diagrama unilineal del tablero</h2>').concat(simConnSVG(s), '</section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">3 \xB7 Plano de planta</h2><button class="btn ghost small no-print" type="button" data-act="rsvg">\u2B07 Plano (.svg)</button></div><div class="plan">').concat(planSVG(s), '</div><p class="hint">L\xEDnea punteada: recorrido autom\xE1tico por el entretecho. L\xEDnea continua: tubo que trazaste con la herramienta Trazar.</p></section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">4 \xB7 Materiales y costos</h2><button class="btn ghost small no-print" type="button" data-cs="prst">\u21BA Restaurar precios</button></div>').concat(bomTable(B, true), '<p class="hint">Metros con 10 % de holgura, medidos sobre los recorridos del simulador. Precios unitarios referenciales en pesos chilenos, netos: c\xE1mbialos por los de tu proveedor y el total se recalcula (se guardan con el proyecto).</p></section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">5 \xB7 Memoria explicativa</h2><button class="btn ghost small no-print" type="button" data-act="rmem">\u2B07 Memoria (.html, abre en Word)</button></div><details class="memd" open><summary class="no-print">Ver / ocultar</summary><div class="memo">').concat(memoriaHTML(s, false), '</div></details></section>\n  <section class="card rep-s"><h2>6 \xB7 Observaciones del inspector</h2>').concat(ok ? note("\u2713 La instalaci\xF3n cumple todo lo que revisa la app.", "ok") : '<ol class="obs">'.concat(r.errs.map((o) => "<li><b>".concat(esc(o.t), "</b> \u2014 ").concat(esc(o.d), ' <span class="hint">').concat(esc(o.w), "</span></li>")).join(""), "</ol>"), '</section>\n  <p class="hint no-print">Los datos salen del <button class="linkb" type="button" data-go="sim">Simulador 3D</button>. Cambia la instalaci\xF3n all\xED y este reporte se actualiza solo.</p><div class="no-print">').concat(testsHTML(), "</div>");
+    }).join(""), "</div></section>") : "", '\n  <section class="card rep-s"><h2>2 \xB7 Diagrama unilineal del tablero</h2>').concat(simConnSVG(s), '</section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">3 \xB7 Plano de planta</h2><button class="btn ghost small no-print" type="button" data-act="rsvg">\u2B07 Plano (.svg)</button></div><div class="plan">').concat(planSVG(s), '</div><p class="hint">L\xEDnea punteada: recorrido autom\xE1tico por el entretecho. L\xEDnea continua: tubo que trazaste con la herramienta Trazar.</p></section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">4 \xB7 Materiales y costos</h2><button class="btn ghost small no-print" type="button" data-cs="prst">\u21BA Restaurar precios</button></div>').concat(bomTable(B, true), '<p class="hint">Metros con 10 % de holgura, medidos sobre los recorridos del simulador. Precios unitarios referenciales en pesos chilenos, netos: c\xE1mbialos por los de tu proveedor y el total se recalcula (se guardan con el proyecto).</p></section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">5 \xB7 Memoria explicativa</h2><button class="btn ghost small no-print" type="button" data-act="rmem">\u2B07 Memoria (.html, abre en Word)</button></div><details class="memd" open><summary class="no-print">Ver / ocultar</summary><div class="memo">').concat(memoriaHTML(s, false), '</div></details></section>\n  ' + infSection(s) + '<section class="card rep-s"><h2>9 \xB7 Observaciones del inspector</h2>').concat(ok ? note("\u2713 La instalaci\xF3n cumple todo lo que revisa la app.", "ok") : '<ol class="obs">'.concat(r.errs.map((o) => "<li><b>".concat(esc(o.t), "</b> \u2014 ").concat(esc(o.d), ' <span class="hint">').concat(esc(o.w), "</span></li>")).join(""), "</ol>"), '</section>\n  <p class="hint no-print">Los datos salen del <button class="linkb" type="button" data-go="sim">Simulador 3D</button>. Cambia la instalaci\xF3n all\xED y este reporte se actualiza solo.</p><div class="no-print">').concat(testsHTML(), "</div>");
   }
   const CCOL = ["#1f77b4", "#d62728", "#2ca02c", "#9467bd", "#ff7f0e", "#8c564b", "#e377c2", "#17becf"];
   function planSVG(s, opt) {
@@ -9161,6 +9162,196 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   }
   document.addEventListener("pointerup", casaEnd);
   document.addEventListener("pointercancel", casaEnd);
+  function infDef() {
+    const d = /* @__PURE__ */ new Date(), iso = new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+    return { prop: "", rut: "", dir: "", comuna: "", region: "", rol: "", tipo: "nueva", inst: "", instRut: "", lic: "", clase: "D", fono: "", mail: "", dist: "", cliente: "", ini: iso, n: 2, hd: 8, sab: false, vhh: 9e3, gg: 10, ut: 15, mo: "hh" };
+  }
+  function infGet() {
+    if (!S.inf) S.inf = infDef();
+    const d = infDef();
+    for (const k in d) if (S.inf[k] == null) S.inf[k] = d[k];
+    return S.inf;
+  }
+  const INF_TIPO = { nueva: "Instalaci\xF3n nueva", ampliacion: "Ampliaci\xF3n", modificacion: "Modificaci\xF3n" };
+  function infQty(s) {
+    const ev = simEval(s), B = simBOM(s), it = (t) => s.items.filter((i) => i.t === t).length, sum = (g, u) => B.filter((b) => b.g === g && b.u === u).reduce((a, b) => a + b.q, 0);
+    const curv = (B.find((b) => b.d === "Curvas y uniones") || {}).q || 0, regl = (B.find((b) => b.k === "conec") || {}).q || 0;
+    return { ev, B, area: ROOMS.reduce((a, r) => a + rArea(r), 0), tubo: sum("Canalizaci\xF3n", "m"), cable: sum("Conductores", "m"), curv, regl, box: it("box"), lamp: it("lamp"), sw: it("sw"), out: it("out"), hor: it("horno"), nc: s.circuits.length, ndr: simDRs(s).length, La: +s.alim.L || 0, emb: s.inst !== "vista" };
+  }
+  function infTasks(s) {
+    const q = infQty(s), k = q.emb ? 1 : 0.75, pts = q.lamp + q.sw + q.out + q.hor;
+    return [
+      { id: "rep", n: "Replanteo y trazado en obra", h: 1.5 + 0.04 * q.area, c: 2, d: [], w: "Marcar en muros y cielo la posici\xF3n de cajas, aparatos, tablero y recorridos seg\xFAn el plano." },
+      { id: "can", n: "Canalizaci\xF3n (tubos, curvas" + (q.emb ? ", picado y tapado)" : ", fijaciones)"), h: (q.tubo * 0.17 + q.curv * 0.08) * k, c: 4, d: ["rep"], w: q.emb ? "Picar muros, fijar tubos y tapar. Respetar 3 curvas m\xE1ximo entre cajas." : "Fijar tubos con abrazaderas cada metro." },
+      { id: "caj", n: "Cajas de derivaci\xF3n, de embutir y de centro", h: (q.box * 0.5 + (q.sw + q.out + q.hor) * 0.35 + q.lamp * 0.3) * k, c: 4, d: ["rep"], w: "Instalar " + q.box + " cajas de derivaci\xF3n, " + (q.sw + q.out + q.hor) + " de embutir y " + q.lamp + " de centro." },
+      { id: "tab", n: "Montaje del tablero y protecciones", h: 2.5 + 0.35 * (q.nc + q.ndr + 1), c: 1, d: ["rep"], w: "General, " + q.ndr + " diferencial(es), " + q.nc + " autom\xE1tico(s), barras N y PE, rotulado." },
+      { id: "ali", n: "Alimentador y puesta a tierra", h: 3 + 0.08 * q.La, c: 2, d: ["rep"], w: "Tender el alimentador (" + n1(q.La) + " m), hincar el electrodo y conectar la barra PE." },
+      { id: "cab", n: "Alambrado (pasada de conductores)", h: q.cable * 0.012 + q.nc * 0.3, c: 3, d: ["can", "caj"], w: "Pasar " + n0(q.cable) + " m de conductor respetando los colores: fase rojo, neutro blanco, tierra verde/amarillo." },
+      { id: "emp", n: "Empalmes en cajas de derivaci\xF3n", h: q.regl * 0.12 + q.box * 0.2, c: 3, d: ["cab"], w: q.regl + " regletas o conectores. Nunca unir neutro con tierra." },
+      { id: "ctb", n: "Conexi\xF3n de circuitos al tablero", h: q.nc * 0.4 + 0.5, c: 1, d: ["tab", "cab"], w: "Cada neutro sale de su diferencial; cada PE a la barra de tierra." },
+      { id: "apa", n: "Aparatos y luminarias", h: (q.sw + q.out) * 0.25 + q.lamp * 0.35 + q.hor * 0.5, c: 3, d: ["emp"], w: q.sw + " interruptores, " + q.out + " enchufes, " + q.lamp + " luminarias" + (q.hor ? ", " + q.hor + " salida(s) de fuerza" : "") + "." },
+      { id: "pru", n: "Pruebas, mediciones y puesta en servicio", h: 2 + 0.08 * pts + 0.3 * q.ndr, c: 2, d: ["ctb", "apa", "ali"], w: "Continuidad de PE, aislamiento (≥ 0,5 MΩ), resistencia de puesta a tierra, prueba de diferenciales y polaridad (RIC N\xB019)." },
+      { id: "doc", n: "Planos finales, TE1 y entrega al propietario", h: 3, c: 1, d: ["pru"], w: "Actualizar planos, completar el cuadro de cargas y declarar la instalaci\xF3n (TE1)." }
+    ].map((t) => Object.assign(t, { h: Math.max(0.5, Math.round(t.h * 2) / 2) }));
+  }
+  function infPlan(s, inf) {
+    const T = infTasks(s), N = Math.max(1, Math.min(8, +inf.n || 1)), done = {}, run = [];
+    let t = 0, free = N, guard = 0;
+    while (Object.keys(done).length < T.length && guard++ < 500) {
+      T.forEach((x) => {
+        if (x.st != null || free < 1 || !x.d.every((d) => done[d] != null)) return;
+        const w = Math.min(free, x.c);
+        x.st = Math.max(t, ...x.d.map((d) => done[d]));
+        x.w2 = w;
+        x.dur = x.h / w;
+        x.en = x.st + x.dur;
+        free -= w;
+        run.push(x);
+      });
+      if (!run.length) break;
+      run.sort((a, b) => a.en - b.en);
+      const f = run.shift();
+      t = f.en;
+      done[f.id] = f.en;
+      free += f.w2;
+    }
+    const hd = Math.max(4, Math.min(12, +inf.hd || 8)), HH = T.reduce((a, x) => a + x.h, 0), mk = Math.max(...T.map((x) => x.en || 0));
+    return { T, N, hd, HH, mk, days: Math.ceil(mk / hd - 1e-9) };
+  }
+  function infDates(inf, nd) {
+    const out = [], d = new Date((inf.ini || "2026-01-01") + "T12:00:00");
+    if (isNaN(d)) d.setTime(Date.now());
+    while (out.length < nd) {
+      const w = d.getDay();
+      if (w !== 0 && (w !== 6 || inf.sab)) out.push(new Date(d));
+      d.setDate(d.getDate() + 1);
+    }
+    return out;
+  }
+  const fDate = (d) => d.toLocaleDateString("es-CL", { day: "2-digit", month: "2-digit" });
+  const fDateL = (d) => d.toLocaleDateString("es-CL", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+  function ganttSVG(P, inf, mono) {
+    const nd = Math.max(1, P.days), D = infDates(inf, nd + 1), LW = 270, cw = Math.max(26, Math.min(70, 640 / nd)), RH = 30, top = 46, W = LW + nd * cw + 190, H = top + P.T.length * RH + 34;
+    const col = ["#1E4E78", "#B0522A", "#2A7848", "#7B4A9E", "#93600A", "#C0392B", "#17808A", "#555"];
+    let g = '<rect width="' + W + '" height="' + H + '" fill="#fff"/><text x="10" y="18" font-size="13" font-weight="800" fill="#14202C">Carta Gantt \xB7 ' + P.N + " instalador" + (P.N > 1 ? "es" : "") + " \xB7 " + P.hd + " h/d\xEDa \xB7 " + nd + " d\xEDa" + (nd > 1 ? "s" : "") + " h\xE1biles</text>";
+    for (let i = 0; i < nd; i++) {
+      const x = LW + i * cw, we = D[i].getDay() === 6;
+      g += '<rect x="' + x + '" y="' + (top - 16) + '" width="' + cw + '" height="' + (P.T.length * RH + 16) + '" fill="' + (i % 2 ? "#f4f6f8" : "#fff") + '" stroke="#e1e6eb"/>' + (we ? '<rect x="' + x + '" y="' + (top - 16) + '" width="' + cw + '" height="3" fill="#B0522A"/>' : "") + '<text x="' + (x + cw / 2) + '" y="' + (top - 4) + '" font-size="' + (cw < 34 ? 8.5 : 10) + '" text-anchor="middle" fill="#56657A">' + fDate(D[i]) + "</text>";
+    }
+    P.T.forEach((x, i) => {
+      const y = top + i * RH, x0 = LW + x.st / P.hd * cw, x1 = LW + x.en / P.hd * cw, c = mono ? "#333" : col[i % col.length];
+      g += '<text x="10" y="' + (y + 19) + '" font-size="11.5" fill="#14202C">' + (i + 1) + ". " + esc(x.n.length > 40 ? x.n.slice(0, 39) + "…" : x.n) + '</text><rect x="' + x0.toFixed(1) + '" y="' + (y + 7) + '" width="' + Math.max(3, x1 - x0).toFixed(1) + '" height="16" rx="4" fill="' + c + '" opacity=".9"/><text x="' + (x1 + 4).toFixed(1) + '" y="' + (y + 19) + '" font-size="9.5" fill="#56657A">' + nf(x.h, 1) + " HH \xB7 " + x.w2 + "p</text>";
+      x.d.forEach((dd) => {
+        const p = P.T.find((z) => z.id === dd), j = P.T.indexOf(p);
+        if (p && Math.abs(p.en - x.st) < 1e-6) g += '<path d="M' + (LW + p.en / P.hd * cw).toFixed(1) + " " + (top + j * RH + 23) + "V" + (y + 15) + "h3" + '" fill="none" stroke="#9aa5ae" stroke-width="1" stroke-dasharray="2 2"/>';
+      });
+    });
+    const xe = LW + P.mk / P.hd * cw, ye = top + P.T.length * RH;
+    g += '<path d="M' + xe.toFixed(1) + " " + (ye + 6) + "l6 6l-6 6l-6 -6z" + '" fill="#2A7848"/><text x="' + (xe + 10).toFixed(1) + '" y="' + (ye + 16) + '" font-size="11" font-weight="700" fill="#2A7848">Entrega: ' + fDateL(D[Math.max(0, nd - 1)]) + "</text>";
+    return '<svg class="gantt" viewBox="0 0 ' + W + " " + H + '" width="' + W + '" role="img" aria-label="Carta Gantt de la obra">' + g + "</svg>";
+  }
+  function infBudget(s, inf, P) {
+    const B = simBOM(s), mat = bomCost(B.filter((b) => b.g !== "Mano de obra")).net, moPt = bomCost(B.filter((b) => b.g === "Mano de obra")).net;
+    const lab = inf.mo === "pt" ? moPt : P.HH * (+inf.vhh || 0), sub = mat + lab, gg = sub * (+inf.gg || 0) / 100, ut = (sub + gg) * (+inf.ut || 0) / 100, net = sub + gg + ut;
+    return { mat, lab, gg, ut, net, iva: net * 0.19, tot: net * 1.19, moPt };
+  }
+  function infMissing(inf) {
+    const F = [["prop", "nombre del propietario"], ["rut", "RUT del propietario"], ["dir", "direcci\xF3n de la instalaci\xF3n"], ["comuna", "comuna"], ["inst", "nombre del instalador"], ["instRut", "RUT del instalador"], ["lic", "n\xFAmero de licencia SEC"], ["dist", "empresa distribuidora"]];
+    return F.filter(([k]) => !String(inf[k] || "").trim()).map((x) => x[1]);
+  }
+  function infTE1(s, inf) {
+    const r = simReport(s), ev = r.ev, tri = s.sys === "tri", area = ROOMS.reduce((a, x) => a + rArea(x), 0), T = S.tierra || {}, row = (a, b) => "<tr><th>" + a + "</th><td>" + (b === "" || b == null ? '<span class="miss">— completar —</span>' : b) + "</td></tr>";
+    const tb = (t, rows) => '<h3>' + t + '</h3><table class="te">' + rows.join("") + "</table>";
+    const drs = simDRs(s), ens = S.ens || {};
+    return '<div class="te1"><p class="te-w">Borrador con los datos que pide la declaraci\xF3n de instalaci\xF3n el\xE9ctrica interior (TE1). La declaraci\xF3n oficial la ingresa un instalador autorizado en la plataforma en l\xEDnea de la SEC; este documento sirve para reunir y revisar la informaci\xF3n antes de declarar.</p>' +
+      tb("A. Propietario", [row("Nombre o raz\xF3n social", esc(inf.prop)), row("RUT", esc(inf.rut)), row("Rol de aval\xFAo", esc(inf.rol))]) +
+      tb("B. Ubicaci\xF3n y tipo de instalaci\xF3n", [row("Direcci\xF3n", esc(inf.dir)), row("Comuna / regi\xF3n", esc([inf.comuna, inf.region].filter(Boolean).join(", "))), row("Tipo de declaraci\xF3n", INF_TIPO[inf.tipo] || ""), row("Destino", "Vivienda unifamiliar"), row("Superficie construida", n1(area) + " m\xB2 \xB7 " + ROOMS.length + " recintos")]) +
+      tb("C. Empalme y suministro", [row("Empresa distribuidora", esc(inf.dist)), row("N\xB0 de cliente / medidor", esc(inf.cliente)), row("Sistema", tri ? "Trif\xE1sico 380/220 V, 50 Hz" : "Monof\xE1sico 220 V, 50 Hz"), row("Potencia instalada", nf(r.Pi / 1e3, 2) + " kW"), row("Demanda m\xE1xima (RIC N\xB003)", nf(r.Pd / 1e3, 2) + " kW \xB7 " + nf(r.Id, 1) + " A"), row("Protecci\xF3n general", s.gen.In + " A, " + (tri ? "4P" : "2P") + " curva C")]) +
+      tb("D. Instalador responsable", [row("Nombre", esc(inf.inst)), row("RUT", esc(inf.instRut)), row("Licencia SEC", inf.lic ? "Clase " + esc(inf.clase) + " \xB7 N\xB0 " + esc(inf.lic) : ""), row("Contacto", esc([inf.fono, inf.mail].filter(Boolean).join(" \xB7 ")))]) +
+      tb("E. Caracter\xEDsticas t\xE9cnicas", [row("Alimentador", sStr(+s.alim.S) + " mm\xB2 Cu \xB7 " + n1(+s.alim.L || 0) + " m \xB7 ΔV " + nf(r.dva, 2) + " %"), row("Tablero", "1 tablero general \xB7 " + s.circuits.length + " circuito(s) \xB7 " + drs.length + " diferencial(es) de " + (s.circuits[0] ? s.circuits[0].ds : 30) + " mA"), row("Canalizaci\xF3n", ({ pvc: "Tubo PVC conduit", emt: "Tubo met\xE1lico EMT", flex: "Tubo flexible" }[s.duct || "pvc"]) + (s.inst === "vista" ? ", a la vista" : ", embutida")), row("Puesta a tierra", 'Electrodo Copperweld 5/8" \xD7 1,5 m' + (+T.Rprot > 0 ? " \xB7 R protecci\xF3n medida " + nf(+T.Rprot, 1) + " Ω" : "") + (+T.Rserv > 0 ? " \xB7 R servicio " + nf(+T.Rserv, 1) + " Ω" : "")), row("Esquema", "TN-S: neutro y tierra separados en toda la instalaci\xF3n")]) +
+      '<h3>F. Cuadro de circuitos</h3><table class="te tc"><tr><th>Circ.</th><th>Destino</th><th>P (W)</th><th>Protecci\xF3n</th><th>DR</th><th>Conductor</th><th>ΔV</th></tr>' + r.rows.map((x) => "<tr><td>" + x.n + "</td><td>" + esc(x.nom) + "</td><td>" + n0(x.P) + "</td><td>" + x.In + " A curva " + x.cv + "</td><td>" + x.dr + "</td><td>" + sStr(x.S) + " mm\xB2</td><td>" + nf(x.dv, 2) + " %</td></tr>").join("") + "</table>" +
+      tb("G. Ensayos (RIC N\xB019)", [row("Continuidad de conductores de protecci\xF3n", ens.items && Object.keys(ens.items).length ? "Registrados en el paso 8" : ""), row("Resistencia de aislamiento", Array.isArray(ens.aisl) && ens.aisl.some((v) => +v > 0) ? ens.aisl.filter((v) => +v > 0).map((v) => nf(+v, 1) + " MΩ").join(" \xB7 ") : ""), row("Prueba de diferenciales", ""), row("Resistencia de puesta a tierra", +T.Rprot > 0 ? nf(+T.Rprot, 1) + " Ω" : "")]) +
+      tb("H. Documentos que se adjuntan", [row("Plano de planta con simbolog\xEDa", "Incluido"), row("Diagrama unilineal del tablero", "Incluido"), row("Cuadro de cargas", "Incluido"), row("Memoria explicativa", "Incluida")]) +
+      '<div class="firm"><div>Firma instalador</div><div>Firma propietario</div></div></div>';
+  }
+  const INF_CSS = "body{font-family:Arial,Helvetica,sans-serif;max-width:900px;margin:24px auto;padding:0 20px;color:#14202C;line-height:1.45;font-size:14px}h1{font-size:26px;margin:0}h2{font-size:18px;margin:26px 0 8px;border-bottom:3px solid #1E4E78;padding-bottom:4px;page-break-after:avoid}h3{font-size:14.5px;margin:16px 0 6px;color:#1E4E78}table{border-collapse:collapse;width:100%;font-size:12.5px;margin:6px 0}th,td{border:1px solid #b8c2cc;padding:4px 6px;text-align:left;vertical-align:top}th{background:#eef2f6}td.n,th.n{text-align:right}.cover{border:2px solid #1E4E78;border-radius:10px;padding:26px;margin-bottom:20px}.cover .sub{color:#56657A}.kp{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.kp div{border:1px solid #b8c2cc;border-radius:8px;padding:8px}.kp b{display:block;font-size:18px}.kp span{font-size:11.5px;color:#56657A}.te th{width:38%}.te.tc th{width:auto}.miss{color:#AE2A21;font-style:italic}.te-w{background:#F9EED7;color:#6b4a07;padding:8px 10px;border-radius:6px;font-size:12.5px}.firm{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:50px}.firm div{border-top:1px solid #333;padding-top:4px;text-align:center;font-size:12px}.gw{overflow-x:auto}svg{max-width:100%;height:auto}figure.ill{margin:8px 0}figcaption{font-size:12px;color:#56657A}.ill text{fill:#14202C;font-size:13px;font-family:Arial,Helvetica,sans-serif}.ill .f-ink{fill:#14202C}.ill .f-surf{fill:#fff}.ill .f-surf2{fill:#F5F7F9}.ill .f-mut{fill:#56657A}.ill .f-line{fill:#D2DAE2}.ill .s-ink{stroke:#14202C}.ill .s-mut{stroke:#56657A}.ill .s-line{stroke:#D2DAE2}.ill .bad{fill:#AE2A21}.ill .ok{fill:#2A7848}figure.ill svg{display:block;width:100%;height:auto;max-height:380px}.ill .ts{fill:#56657A;font-size:12px}.ill .tb{font-weight:700}.pb{page-break-before:always}ol.obs li{margin:3px 0}.tot td{font-weight:700;background:#eef2f6}:root{--ink:#14202C;--bad:#AE2A21;--muted:#56657A;--line:#D2DAE2;--surface:#fff;--surface2:#F5F7F9}@media print{body{margin:0;max-width:none}}";
+  function infDoc(s, which) {
+    const inf = infGet(), P = infPlan(s, inf), Bg = infBudget(s, inf, P), r = simReport(s), B = simBOM(s), D = infDates(inf, Math.max(1, P.days)), nm = S.proj && S.proj.nombre || (HNAME || "Vivienda unifamiliar"), area = ROOMS.reduce((a, x) => a + rArea(x), 0), hoy = (/* @__PURE__ */ new Date()).toLocaleDateString("es-CL");
+    const head = (t) => '<!doctype html><html lang="es"><head><meta charset="utf-8"><title>' + t + " \xB7 " + esc(nm) + "</title><style>" + INF_CSS + "</style></head><body>";
+    if (which === "te1") return head("Borrador TE1") + "<h1>Datos para la declaraci\xF3n TE1</h1><p class=\"sub\">" + esc(nm) + " \xB7 " + hoy + "</p>" + infTE1(s, inf) + '<h2 class="pb">Anexo 1 \xB7 Plano de planta</h2>' + planSVG(s) + "<h2>Anexo 2 \xB7 Diagrama unilineal</h2>" + simConnSVG(s) + "</body></html>";
+    const mat = B.filter((b) => b.q > 0 && b.g !== "Mano de obra");
+    bomCost(mat);
+    const bud = '<table><tr><th>Partida</th><th class="n">Monto</th></tr><tr><td>Materiales (' + mat.length + " \xEDtems)</td><td class=\"n\">" + clp(Bg.mat) + "</td></tr><tr><td>Mano de obra " + (inf.mo === "pt" ? "(por punto)" : "(" + nf(P.HH, 1) + " HH \xD7 " + clp(+inf.vhh) + ")") + '</td><td class="n">' + clp(Bg.lab) + "</td></tr><tr><td>Gastos generales (" + inf.gg + ' %)</td><td class="n">' + clp(Bg.gg) + "</td></tr><tr><td>Utilidad (" + inf.ut + ' %)</td><td class="n">' + clp(Bg.ut) + '</td></tr><tr class="tot"><td>Neto</td><td class="n">' + clp(Bg.net) + '</td></tr><tr><td>IVA 19 %</td><td class="n">' + clp(Bg.iva) + '</td></tr><tr class="tot"><td>Total</td><td class="n">' + clp(Bg.tot) + "</td></tr></table>";
+    const its = (t) => s.items.filter((i) => i.t === t).length;
+    const work = ROOMS.map((rm) => {
+      const L = s.items.filter((i) => itemRoom(i) === rm);
+      if (!L.length) return "";
+      return "<tr><td><b>" + esc(rm.n) + "</b></td><td>" + L.map((i) => esc(i.name) + (varOf(i) ? " (" + varOf(i)[1] + ")" : "") + " \xB7 C" + (cIdx(s, i.c) + 1)).join("<br>") + "</td></tr>";
+    }).join("");
+    const body = '<div class="cover"><p class="sub">Informe t\xE9cnico \xB7 instalaci\xF3n el\xE9ctrica interior</p><h1>' + esc(nm) + '</h1><p class="sub">' + esc([inf.dir, inf.comuna, inf.region].filter(Boolean).join(", ") || "Direcci\xF3n por completar") + "</p><p>Propietario: <b>" + esc(inf.prop || "—") + "</b><br>Instalador: <b>" + esc(inf.inst || "—") + "</b>" + (inf.lic ? " \xB7 Licencia SEC clase " + esc(inf.clase) + " N\xB0 " + esc(inf.lic) : "") + "<br>Fecha: " + hoy + '</p><div class="kp"><div><b>' + n1(area) + ' m\xB2</b><span>superficie</span></div><div><b>' + s.circuits.length + "</b><span>circuitos</span></div><div><b>" + P.days + " d\xEDas</b><span>plazo con " + P.N + " instalador(es)</span></div><div><b>" + clp(Bg.tot) + "</b><span>total con IVA</span></div></div></div>" +
+      "<h2>1. Resumen para el propietario</h2><p>Se instalar\xE1 la red el\xE9ctrica interior de la vivienda: " + its("lamp") + " puntos de iluminaci\xF3n, " + its("sw") + " interruptores, " + (its("out") + its("horno")) + " enchufes o salidas de fuerza, repartidos en " + s.circuits.length + " circuitos protegidos por autom\xE1ticos y " + simDRs(s).length + " diferencial(es) de 30 mA, con su puesta a tierra. El trabajo toma <b>" + P.days + " d\xEDas h\xE1biles</b> (" + nf(P.HH, 1) + " horas-hombre) con " + P.N + " instalador(es), desde el " + fDateL(D[0]) + " hasta el " + fDateL(D[D.length - 1]) + ". El presupuesto total es de <b>" + clp(Bg.tot) + "</b> IVA incluido. Al terminar se entregan los planos, el cuadro de cargas y la declaraci\xF3n TE1 ante la SEC.</p>" +
+      "<h2>2. Presupuesto</h2>" + bud + "<p style=\"font-size:12px;color:#56657A\">Precios referenciales en pesos chilenos. Validez sugerida: 15 d\xEDas.</p>" +
+      "<h2>3. Programa de obra (Carta Gantt)</h2><div class=\"gw\">" + ganttSVG(P, inf) + '</div><table><tr><th>#</th><th>Actividad</th><th class="n">HH</th><th class="n">Personas</th><th>Inicio</th><th>T\xE9rmino</th></tr>' + P.T.map((x, i) => "<tr><td>" + (i + 1) + "</td><td>" + esc(x.n) + '</td><td class="n">' + nf(x.h, 1) + '</td><td class="n">' + x.w2 + "</td><td>" + fDate(D[Math.min(D.length - 1, Math.floor(x.st / P.hd + 1e-9))]) + "</td><td>" + fDate(D[Math.min(D.length - 1, Math.max(0, Math.ceil(x.en / P.hd - 1e-9) - 1))]) + "</td></tr>").join("") + "</table>" +
+      '<h2 class="pb">4. Plano de planta</h2>' + planSVG(s) + "<h2>5. Diagrama unilineal del tablero</h2>" + simConnSVG(s) +
+      '<h2 class="pb">6. Cuadro de cargas</h2><table><tr><th>Circ.</th><th>Nombre</th><th class="n">Luces</th><th class="n">Enchufes</th><th class="n">P (W)</th><th class="n">Is (A)</th><th>Autom\xE1tico</th><th>DR</th><th>Cable</th><th class="n">L (m)</th><th class="n">ΔV</th></tr>' + r.rows.map((x) => "<tr><td>" + x.n + "</td><td>" + esc(x.nom) + '</td><td class="n">' + x.luces + '</td><td class="n">' + x.enchufes + '</td><td class="n">' + n0(x.P) + '</td><td class="n">' + nf(x.Is, 2) + "</td><td>" + x.In + " A " + x.cv + "</td><td>" + x.dr + "</td><td>" + sStr(x.S) + ' mm\xB2</td><td class="n">' + n1(x.L) + '</td><td class="n">' + nf(x.dv, 2) + " %</td></tr>").join("") + '<tr class="tot"><td colspan="4">Total instalado \xB7 demanda</td><td class="n">' + n0(r.Pi) + '</td><td colspan="6">Demanda ' + n0(r.Pd) + " W \xB7 " + nf(r.Id, 1) + " A</td></tr></table>" +
+      "<h2>7. Materiales</h2><table><tr><th>Grupo</th><th>Material</th><th class=\"n\">Cant.</th><th>Unid.</th><th class=\"n\">P. unit.</th><th class=\"n\">Subtotal</th></tr>" + mat.map((b) => "<tr><td>" + b.g + "</td><td>" + esc(b.d) + '</td><td class="n">' + b.q + "</td><td>" + b.u + '</td><td class="n">' + clp(b.pu) + '</td><td class="n">' + clp(b.st) + "</td></tr>").join("") + "</table>" +
+      '<h2 class="pb">8. Hoja de trabajo para instaladores</h2><table><tr><th>#</th><th>Actividad</th><th>Qu\xE9 hacer</th></tr>' + P.T.map((x, i) => "<tr><td>" + (i + 1) + "</td><td>" + esc(x.n) + "</td><td>" + esc(x.w) + "</td></tr>").join("") + "</table><h3>Puntos por recinto</h3><table><tr><th>Recinto</th><th>Puntos (circuito)</th></tr>" + work + "</table><h3>Reglas en obra</h3><ul><li>Fase en rojo, neutro en blanco, tierra en verde/amarillo; el interruptor corta siempre la fase.</li><li>M\xE1ximo 3 curvas entre cajas; llenado de tubo ≤ 40 %.</li><li>El neutro de cada circuito sale de su propio diferencial; neutro y tierra no se unen dentro de la vivienda.</li><li>Trabajar sin tensi\xF3n: bloquear y rotular el general antes de intervenir.</li></ul>" +
+      '<h2 class="pb">9. Datos para la declaraci\xF3n TE1</h2>' + infTE1(s, inf) +
+      '<h2 class="pb">10. Memoria explicativa</h2>' + memoriaHTML(s, false).replace(/<h1>[^<]*<\/h1>/, "") +
+      "<h2>11. Observaciones de revisi\xF3n</h2>" + (r.errs.length ? '<ol class="obs">' + r.errs.map((o) => "<li><b>" + esc(o.t) + "</b> — " + esc(o.d) + "</li>").join("") + "</ol>" : "<p>Sin observaciones: la instalaci\xF3n cumple lo que revisa la app.</p>") +
+      '<div class="firm"><div>Instalador responsable</div><div>Propietario</div></div>';
+    return head("Informe t\xE9cnico") + body + "</body></html>";
+  }
+  function infSection(s) {
+    const inf = infGet(), P = infPlan(s, inf), Bg = infBudget(s, inf, P), miss = infMissing(inf), D = infDates(inf, Math.max(1, P.days));
+    const f = (k, l, ph, t) => '<div class="field"><label>' + l + '</label><input type="' + (t || "text") + '" data-inf="' + k + '" value="' + esc(inf[k]) + '" placeholder="' + esc(ph || "") + '"></div>';
+    const sel = (k, l, o) => '<div class="field"><label>' + l + '</label><select data-inf="' + k + '">' + o.map(([v, t]) => '<option value="' + v + '"' + ((k === "sab" ? inf.sab ? "1" : "" : String(inf[k])) === String(v) ? " selected" : "") + ">" + t + "</option>").join("") + "</select></div>";
+    const crew = '<div class="chips" role="group" aria-label="Instaladores"><span class="hint" style="align-self:center">Instaladores:</span>' + [1, 2, 3, 4, 5, 6].map((v) => '<button type="button" class="chip' + (+inf.n === v ? " on" : "") + '" data-ia="n" data-v="' + v + '">' + v + "</button>").join("") + "</div>";
+    return '<section class="card rep-s"><div class="sechead"><h2 style="margin:0">6 \xB7 Programa de obra (Carta Gantt)</h2></div>' + crew + '<div class="grid sg">' + f("ini", "Fecha de inicio", "", "date") + sel("hd", "Horas por jornada", [[6, "6 h"], [8, "8 h"], [9, "9 h"], [10, "10 h"]]) + sel("sab", "S\xE1bados", [["", "No se trabaja"], ["1", "Se trabaja"]]) + "</div>" + kpis([kpi("Horas-hombre", nf(P.HH, 1), "HH"), kpi("Plazo", P.days, "d\xEDas h\xE1biles"), kpi("Inicio", fDate(D[0])), kpi("Entrega", fDate(D[D.length - 1]), "", "ok")]) + '<div class="gw">' + ganttSVG(P, inf) + '</div><p class="hint">Rendimientos referenciales por actividad (tubo, cajas, cable, aparatos, pruebas), calculados con las cantidades del simulador. Cada actividad usa como m\xE1ximo las personas que pueden trabajar en ella a la vez; las l\xEDneas punteadas son dependencias.</p></section>' +
+      '<section class="card rep-s"><h2>7 \xB7 Presupuesto</h2><div class="grid sg">' + sel("mo", "Mano de obra", [["hh", "Por horas-hombre (Gantt)"], ["pt", "Por punto (tabla de precios)"]]) + (inf.mo === "pt" ? "" : f("vhh", "Valor hora-hombre ($)", "9000", "number")) + f("gg", "Gastos generales (%)", "10", "number") + f("ut", "Utilidad (%)", "15", "number") + '</div><div class="tbl-wrap"><table class="pt bom"><tbody><tr><td>Materiales</td><td class="num">' + clp(Bg.mat) + "</td></tr><tr><td>Mano de obra " + (inf.mo === "pt" ? "por punto" : nf(P.HH, 1) + " HH \xD7 " + clp(+inf.vhh)) + '</td><td class="num">' + clp(Bg.lab) + "</td></tr><tr><td>Gastos generales " + inf.gg + ' %</td><td class="num">' + clp(Bg.gg) + "</td></tr><tr><td>Utilidad " + inf.ut + ' %</td><td class="num">' + clp(Bg.ut) + '</td></tr></tbody><tfoot><tr><td>Neto</td><td class="num">' + clp(Bg.net) + '</td></tr><tr><td>IVA 19 %</td><td class="num">' + clp(Bg.iva) + '</td></tr><tr class="tot"><td><b>Total</b></td><td class="num"><b>' + clp(Bg.tot) + "</b></td></tr></tfoot></table></div></section>" +
+      '<section class="card rep-s"><div class="sechead"><h2 style="margin:0">8 \xB7 Informe t\xE9cnico y TE1</h2></div><p class="hint">Estos datos aparecen en el informe y en el borrador TE1. Se guardan con el proyecto.</p><h3>Propietario e instalaci\xF3n</h3><div class="grid sg">' + f("prop", "Propietario", "Nombre completo") + f("rut", "RUT propietario", "12.345.678-9") + f("dir", "Direcci\xF3n", "Calle y n\xFAmero") + f("comuna", "Comuna") + f("region", "Regi\xF3n") + f("rol", "Rol de aval\xFAo", "Opcional") + sel("tipo", "Tipo de declaraci\xF3n", Object.entries(INF_TIPO)) + f("dist", "Distribuidora", "Ej.: empresa local") + f("cliente", "N\xB0 cliente / medidor", "Opcional") + '</div><h3>Instalador</h3><div class="grid sg">' + f("inst", "Nombre") + f("instRut", "RUT") + sel("clase", "Clase de licencia", [["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"]]) + f("lic", "N\xB0 licencia SEC") + f("fono", "Tel\xE9fono") + f("mail", "Correo", "", "email") + "</div>" + (miss.length ? note("Falta para el TE1: " + miss.join(", ") + ".", "warn") : note("✓ Datos completos para el borrador TE1.", "ok")) + '<div class="rep-act no-print"><button class="btn" type="button" data-ia="dinf">⬇ Informe t\xE9cnico completo</button><button class="btn" type="button" data-ia="dte1">⬇ Borrador TE1</button><button class="btn ghost" type="button" data-ia="pinf">\u{1F5A8} Ver e imprimir informe</button><span class="hint" id="imsg"></span></div><details class="memd"><summary class="no-print">Vista previa del borrador TE1</summary>' + infTE1(s, inf) + "</details>" + learn("Qu\xE9 incluye cada documento", '<ul class="hand"><li><b>Informe t\xE9cnico</b> (propietario, SEC e instaladores): portada, resumen, presupuesto, carta Gantt, plano, unilineal, cuadro de cargas, materiales, hoja de trabajo por recinto, datos TE1, memoria explicativa y observaciones.</li><li><b>Borrador TE1</b>: los datos que pide la declaraci\xF3n (propietario, ubicaci\xF3n, empalme, instalador, caracter\xEDsticas t\xE9cnicas, circuitos, ensayos y anexos) con el plano y el unilineal. La declaraci\xF3n se presenta en l\xEDnea ante la SEC, firmada por un instalador autorizado.</li><li>Los archivos son p\xE1ginas HTML: \xE1brelos en el navegador y usa Imprimir → Guardar como PDF, o \xE1brelos con Word.</li></ul>') + "</section>";
+  }
+  document.addEventListener("click", (e) => {
+    if (cur !== "rep") return;
+    const b = e.target.closest && e.target.closest("[data-ia]");
+    if (!b || !S.sim2) return;
+    const a = b.dataset.ia, inf = infGet(), m = document.getElementById("imsg");
+    if (a === "n") {
+      inf.n = +b.dataset.v;
+      save();
+      render(true);
+      return;
+    }
+    if (a === "dinf" || a === "dte1") {
+      const te = a === "dte1";
+      dlFile(te ? "borrador-TE1.html" : "informe-tecnico.html", new Blob([infDoc(S.sim2, te ? "te1" : "inf")], { type: "text/html" })).then((rr) => {
+        if (m) m.textContent = dlMsg(rr, te ? "Borrador TE1 descargado." : "Informe descargado: \xE1brelo en el navegador e impr\xEDmelo como PDF.");
+      });
+      return;
+    }
+    if (a === "pinf") {
+      const w = window.open("", "_blank");
+      if (w && w.document) {
+        w.document.open();
+        w.document.write(infDoc(S.sim2, "inf"));
+        w.document.close();
+        setTimeout(() => {
+          try {
+            w.print();
+          } catch (err) {
+          }
+        }, 500);
+      } else if (m) m.textContent = "El navegador bloque\xF3 la ventana: usa \xAB⬇ Informe t\xE9cnico completo\xBB.";
+    }
+  });
+  document.addEventListener("change", (e) => {
+    const el = e.target;
+    if (cur !== "rep" || !el || !el.dataset || !el.dataset.inf) return;
+    const inf = infGet(), k = el.dataset.inf;
+    inf[k] = ["n", "hd", "vhh", "gg", "ut"].includes(k) ? Math.max(0, +el.value || 0) : k === "sab" ? !!el.value : el.value.slice(0, 120);
+    save();
+    if (["ini", "hd", "sab", "vhh", "gg", "ut", "mo"].includes(k)) render(true);
+  });
   const PAGES = [
     { id: "home", g: "", t: "Inicio", r: pgHome },
     { id: "hub_proy", g: "hub", t: "Instalaci\xF3n paso a paso", r: pgHubProy },
