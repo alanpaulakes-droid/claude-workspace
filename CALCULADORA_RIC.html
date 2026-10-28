@@ -342,7 +342,7 @@ tr.selrow td{background:var(--copper-soft)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 .casawrap{position:relative}
 .casabar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 4px}
-.casabar .chip{min-height:36px}.casabar .chip:disabled{opacity:.45}.cbsep{flex:0 0 1px;height:22px;background:var(--line)}
+.sim-nav .nbfl button{font-size:11px!important;padding:3px 1px!important;white-space:nowrap}.sim-nav .nbfl button[aria-pressed="true"]{background:var(--accent,#b8621b);color:#fff;border-color:transparent}.cfl{display:inline-flex;gap:4px;flex-wrap:wrap}.casabar .chip{min-height:36px}.casabar .chip:disabled{opacity:.45}.cbsep{flex:0 0 1px;height:22px;background:var(--line)}
 .cstep{display:inline-flex;align-items:center;gap:4px}.cstep select{border:0;background:transparent;color:inherit;font:inherit;font-weight:700}
 .casahint{margin:0 0 6px}.casamsg .note{margin:0 0 6px}
 .casains{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface2);margin-top:6px}
@@ -462,7 +462,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   const COM = [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125];
   const SECC = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120];
   const AMP_DEF = { 1.5: 15, 2.5: 20, 4: 25, 6: 33, 10: 45, 16: 61, 25: 83, 35: 103, 50: 132, 70: 165, 95: 197, 120: 235 };
-  const TIPOS_REC = { dormitorio: "Dormitorio", living: "Living", comedor: "Comedor", estar: "Sala de estar", cocina: "Cocina", lavadero: "Lavadero", bano: "Ba\xF1o", pasillo: "Pasillo / hall", otro: "Otro" };
+  const TIPOS_REC = { dormitorio: "Dormitorio", living: "Living", comedor: "Comedor", estar: "Sala de estar", cocina: "Cocina", lavadero: "Lavadero", bano: "Ba\xF1o", pasillo: "Pasillo / hall", escalera: "Escalera", otro: "Otro" };
   const USOS = { alumbrado: ["Alumbrado", 1.5, 0, "B", 100], enchufes: ["Enchufes generales", 2.5, 0, "C", 250], cocina: ["Enchufes cocina / lavadero", 2.5, 16, "C", 250], horno: ["Horno o cocina el\xE9ctrica", 2.5, 16, "C", 0], especial: ["Otra carga (equipo)", 2.5, 0, "C", 0], sub: ["Subalimentador", 2.5, 0, "C", 0], alim: ["Alimentador", 4, 25, "\u2014", 0] };
   const CIR_T = ["alumbrado", "enchufes", "cocina", "horno", "especial"];
   const AMB_CABLE = { seco: ["Interior seco, en ducto", "THHN (90 \xB0C) o H07V-K (70 \xB0C)"], humedo: ["Ambiente h\xFAmedo", "THWN-2 (90 \xB0C)"], enterrado: ["Directamente enterrado", "RV-K (90 \xB0C, 0,6/1 kV)"], reunion: ["Lugar de reuni\xF3n de personas", "H07Z1-K libre de hal\xF3genos (solo circuitos)"], aire: ["Bandeja o aire libre (alimentador)", "RV o RV-K (90 \xB0C)"] };
@@ -1705,7 +1705,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   const APPC = { tv: 2238513, pc: 5595246, lav: 15330800, plancha: 10181046, micro: 14014684, estufa: 12075823, hervidor: 3049153, clima: 16054007 };
   const ROOMS0 = [{ id: "liv", n: "Living-comedor", x0: 0, x1: 5, z0: 0, z1: 4, t: "living", col: 14074530 }, { id: "coc", n: "Cocina", x0: 5, x1: 8, z0: 0, z1: 3, t: "cocina", col: 13883340 }, { id: "lav", n: "Lavadero", x0: 8, x1: 10, z0: 0, z1: 3, t: "lavadero", col: 13358296 }, { id: "pas", n: "Pasillo", x0: 5, x1: 8, z0: 3, z1: 4.5, t: "pasillo", col: 13681842 }, { id: "ban", n: "Ba\xF1o", x0: 8, x1: 10, z0: 3, z1: 4.5, t: "bano", col: 13031902 }, { id: "d1", n: "Dormitorio 1", x0: 0, x1: 5, z0: 4, z1: 7, t: "dormitorio", col: 14273202 }, { id: "d2", n: "Dormitorio 2", x0: 5, x1: 10, z0: 4.5, z1: 7, t: "dormitorio", col: 13812651 }];
   const DOORS0 = [["z", 0, 3, 3.9], ["x", 5, 1.5, 2.4], ["x", 5, 3.1, 3.9], ["z", 4, 3.8, 4.6], ["z", 3, 6, 6.8], ["x", 8, 1.8, 2.6], ["x", 8, 3.2, 4], ["z", 4.5, 6.2, 7]];
-  let ROOMS = ROOMS0, DOORS = DOORS0, OPEN = [], WALLS = [], HW = 10, HD = 7, TX = 1.7, HNAME = "", houseKey = null, WTE = 0.15, WTI = 0.12;
+  let NFL = 1, ROOMS = ROOMS0, DOORS = DOORS0, OPEN = [], WALLS = [], HW = 10, HD = 7, TX = 1.7, HNAME = "", houseKey = null, WTE = 0.15, WTI = 0.12;
   function wallKind(R, w) {
     const mx = (w[0] + w[2]) / 2, mz = (w[1] + w[3]) / 2, hz = Math.abs(w[1] - w[3]) < 1e-6, inR = (x, z) => R.some((r) => x > r.x0 + 1e-6 && x < r.x1 - 1e-6 && z > r.z0 + 1e-6 && z < r.z1 - 1e-6);
     return (hz ? inR(mx, mz - 0.05) && inR(mx, mz + 0.05) : inR(mx - 0.05, mz) && inR(mx + 0.05, mz)) ? "i" : "e";
@@ -1741,25 +1741,37 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   }
   function setHouse(h) {
     const ok = h && Array.isArray(h.rooms) && h.rooms.length;
-    ROOMS = ok ? h.rooms.map((r) => ({ id: String(r.id), n: String(r.n || "Recinto"), t: r.t || "otro", x0: +r.x0, x1: +r.x1, z0: +r.z0, z1: +r.z1 })) : ROOMS0;
-    DOORS = ok ? (h.doors || []).map((d) => [d[0], +d[1], +d[2], +d[3]]) : DOORS0;
-    OPEN = ok ? (h.open || []).map((d) => [d[0], +d[1], +d[2], +d[3]]) : [];
+    ROOMS = ok ? h.rooms.map((r) => ({ id: String(r.id), n: String(r.n || "Recinto"), t: r.t || "otro", x0: +r.x0, x1: +r.x1, z0: +r.z0, z1: +r.z1, f: +r.f === 1 ? 1 : 0 })) : ROOMS0;
+    DOORS = ok ? (h.doors || []).map((d) => [d[0], +d[1], +d[2], +d[3], +d[4] === 1 ? 1 : 0]) : DOORS0;
+    OPEN = ok ? (h.open || []).map((d) => [d[0], +d[1], +d[2], +d[3], +d[4] === 1 ? 1 : 0]) : [];
+    NFL = ROOMS.some((r) => r.f === 1) ? 2 : 1;
     WTE = ok && +h.we >= 0.08 ? Math.min(0.3, +h.we) : 0.15;
     WTI = ok && +h.wi >= 0.06 ? Math.min(0.25, +h.wi) : 0.12;
     HW = Math.max(...ROOMS.map((r) => r.x1));
     HD = Math.max(...ROOMS.map((r) => r.z1));
     TX = ok && isFinite(+h.tx) ? +h.tx : 1.7;
     HNAME = ok ? String(h.n || "Mi vivienda") : "";
-    WALLS = deriveWalls(ROOMS, DOORS, OPEN).map((w) => w.concat([wallKind(ROOMS, w) === "e" ? WTE : WTI]));
+    WALLS = [];
+    for (let f = 0; f < NFL; f++) {
+      const Rf = ROOMS.filter((r) => (r.f || 0) === f), of = (d) => (d[4] || 0) === f;
+      deriveWalls(Rf, DOORS.filter(of), OPEN.filter(of)).forEach((w) => {
+        const a = w.concat([wallKind(Rf, w) === "e" ? WTE : WTI]);
+        a.f = f;
+        WALLS.push(a);
+      });
+    }
   }
   function syncHouse() {
     const h = S && S.sim2 && S.sim2.house || null, k = h ? JSON.stringify(h) : "";
     if (k === houseKey) return false;
     houseKey = k;
+    const n0f = NFL;
     setHouse(h);
+    if (NFL !== n0f || NFL < 2) simFl = NFL > 1 ? 0 : -1;
     return true;
   }
   setHouse(null);
+  const FH = 2.75, flY = (y) => (+y || 0) >= FH - 0.1 ? 1 : 0, flVis = (f) => simFl < 0 || NFL < 2 || f <= simFl, flPick = (f) => simFl < 0 || NFL < 2 || f === simFl;
   const WH = 2.5, V0 = 220, RHO = 0.018, YC = 2.64, MAXI = 60;
   const T_NAME = { lamp: "Luz", sw: "Interruptor", out: "Enchufe", box: "Caja", horno: "Horno" };
   const VAR = {
@@ -1828,16 +1840,16 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   const INSTR = ["volt", "pinza", "cont", "megger", "telu", "drt"], MAINT = ["mano", "place", "wire", "del", "info", "meas"];
   const SHORT = { wire: "toca el origen y luego los puntos", info: "toca algo (o mant\xE9n el dedo con cualquier herramienta)", mano: "toca para encender o apagar", place: "toca un muro o el piso", del: "toca un punto para quitarlo", look: "toca para acercar", volt: "toca un punto", pinza: "toca un ducto o equipo", cont: "apaga el circuito y toca un punto", megger: "apaga el circuito y toca un ducto", telu: "toca la barra de tierra", drt: "toca un diferencial" };
   let simCeil = 1, simDuctSolid = false, simLP = false, simRoute = null, simSrc = null, simHeat = 0, simCut = null, simNewDR = "auto", simMode = "orbit", simWallPrev = null, simRO = /* @__PURE__ */ new Set(), simWall = 1, simConn = false, simSheet = null, simPrevErr = null;
-  let simPV = { sw: "s", out: "s", lamp: "s" }, simWS = 0, simWCut = false;
+  let simFl = -1, simPV = { sw: "s", out: "s", lamp: "s" }, simWS = 0, simWCut = false;
   let simTool = "mano", SIMV = null, simInsp = null, simToastT = 0, simSel = null, simPT = "lamp", simPC = null, simRep = { t: "", f: "aisl" }, simConfirm = "";
   const simP = (it) => it.t === "out" ? (APPL[it.a] || APPL.none)[1] : +it.P || 0;
   const simProj = (it) => it.t === "lamp" ? 100 : it.t === "out" ? Math.max(250, (APPL[it.a] || APPL.none)[1] >= 1500 ? (APPL[it.a] || APPL.none)[1] : 0) : it.t === "horno" ? Math.max(1500, +it.P || 0) : 0;
   const ampOf = (s) => +S.amp[s] || AMP_DEF[s] || 0;
-  const roomOf = (x, z) => ROOMS.find((r) => x >= r.x0 - 1e-6 && x <= r.x1 + 1e-6 && z >= r.z0 - 1e-6 && z <= r.z1 + 1e-6) || null;
+  const roomOf = (x, z, f) => ROOMS.find((r) => (r.f || 0) === (f || 0) && x >= r.x0 - 1e-6 && x <= r.x1 + 1e-6 && z >= r.z0 - 1e-6 && z <= r.z1 + 1e-6) || null;
   const rArea = (r) => (r.x1 - r.x0) * (r.z1 - r.z0), rPer = (r) => 2 * (r.x1 - r.x0 + (r.z1 - r.z0));
   const itemRoom = (it) => {
     const n = it.n || [0, 0, 0];
-    return roomOf(it.p[0] + n[0] * 0.3, it.p[2] + n[2] * 0.3);
+    return roomOf(it.p[0] + n[0] * 0.3, it.p[2] + n[2] * 0.3, flY(it.p[1]));
   };
   const cIdx = (s, id) => s.circuits.findIndex((c) => c.id === id);
   function simDRs(s) {
@@ -1861,7 +1873,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (t === "sw") it.on = false;
     if (t === "horno") Object.assign(it, { P: 2e3, on: false });
     const rm = itemRoom(it);
-    if (t === "out" && rm && rm.t === "cocina") it.p[1] = 1.1;
+    if (t === "out" && rm && rm.t === "cocina") it.p[1] = 1.1 + flY(p[1]) * FH;
     if (o.free) {
       it.free = true;
       it.par = null;
@@ -1870,7 +1882,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       let best = null, bd = 1e9;
       s.items.forEach((b) => {
         if (b.t === "box" && b.c === cid) {
-          const d = Math.hypot(b.p[0] - p[0], b.p[2] - p[2]);
+          const d = Math.hypot(b.p[0] - p[0], b.p[2] - p[2]) + (flY(b.p[1]) !== flY(p[1]) ? 50 : 0);
           if (d < bd) {
             bd = d;
             best = b;
@@ -1979,7 +1991,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return [TX + W / 2 - 0.115 - ci * 0.07, 1.975, 0.13];
   }
   function anchor(it) {
-    if (it.t === "lamp") return [it.p[0], WH, it.p[2]];
+    if (it.t === "lamp") return [it.p[0], WH + flY(it.p[1]) * FH, it.p[2]];
     const n = it.n || [0, 0, 1];
     return [it.p[0] + n[0] * 0.035, it.p[1] + (it.t === "box" ? 0 : 0.07), it.p[2] + n[2] * 0.035];
   }
@@ -1993,13 +2005,13 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     const TAB = { p: [TX, 1.5, 0.066], n: [0, 0, 1] };
     const keyOf = (p, n) => {
       if (!n) return null;
-      if (Math.abs(n[1]) > 0.5) return "ceil" + p[0] + "," + p[2];
-      const rm = roomOf(p[0] + n[0] * 0.3, p[2] + n[2] * 0.3);
+      if (Math.abs(n[1]) > 0.5) return "ceil" + flY(p[1]) + ":" + p[0] + "," + p[2];
+      const rm = roomOf(p[0] + n[0] * 0.3, p[2] + n[2] * 0.3, flY(p[1]));
       return (Math.abs(n[0]) > 0.5 ? "x" + Math.round(p[0] * 10) / 10 : "z" + Math.round(p[2] * 10) / 10) + "|" + (rm ? rm.id : "");
     };
     const doorBetween = (a, b) => {
       const ax = Math.abs(a.n[0]) > 0.5 ? "x" : "z", w = ax === "x" ? a.p[0] : a.p[2], t0 = Math.min(ax === "x" ? a.p[2] : a.p[0], ax === "x" ? b.p[2] : b.p[0]), t1 = Math.max(ax === "x" ? a.p[2] : a.p[0], ax === "x" ? b.p[2] : b.p[0]);
-      return DOORS.some(([dx, dv, m0, m1]) => dx === ax && Math.abs(dv - w) < 0.2 && t1 > m0 && t0 < m1);
+      return DOORS.some(([dx, dv, m0, m1, df]) => (df || 0) === flY(a.p[1]) && dx === ax && Math.abs(dv - w) < 0.2 && t1 > m0 && t0 < m1);
     };
     const live2 = s.items.filter((it) => !it.free && cIdx(s, it.c) >= 0 && (it.par == null || by.has(it.par)));
     const faces = /* @__PURE__ */ new Map(), addF = (bid, key, face) => {
@@ -2022,9 +2034,9 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     });
     const portOf = (bx, key, face) => {
       const L = faces.get(bx.id)[face], cnt = L.length, i = L.indexOf(key), sp = Math.min(0.045, 0.16 / Math.max(1, cnt)), o = (i - (cnt - 1) / 2) * sp, a = anchor(bx), n = bx.n || [0, 0, 1], ceil = n[1] < -0.5, t = ceil ? [1, 0, 0] : [n[2], 0, -n[0]];
-      return [a[0] + t[0] * o, ceil ? s.inst === "vista" ? WH - 0.06 : WH + 0.02 : a[1] + (face === "top" ? 0.07 : -0.07), a[2] + t[2] * o];
+      return [a[0] + t[0] * o, ceil ? (s.inst === "vista" ? WH - 0.06 : WH + 0.02) + flY(bx.p[1]) * FH : a[1] + (face === "top" ? 0.07 : -0.07), a[2] + t[2] * o];
     };
-    const lanes = [], vista = s.inst === "vista", dw = vista ? 0 : -0.075, sh = (P, n) => n ? [P[0] + n[0] * dw, P[1] + (n[1] < -0.5 ? 0 : n[1] * dw), P[2] + n[2] * dw] : P;
+    const lanesF = [[], []], vista = s.inst === "vista", dw = vista ? 0 : -0.075, sh = (P, n) => n ? [P[0] + n[0] * dw, P[1] + (n[1] < -0.5 ? 0 : n[1] * dw), P[2] + n[2] * dw] : P;
     E0.forEach((e) => {
       const it = e.it, ci = cIdx(s, it.c), par = e.par;
       const A0 = par ? portOf(par, it.id + "o", e.pf) : tabExit(ci, W), B0 = it.t === "box" ? portOf(it, it.id + "i", e.cf) : anchor(it), A = sh(A0, par ? par.n && par.n[1] < -0.5 ? null : par.n || [0, 0, 1] : [0, 0, 1]), B = sh(B0, it.t === "lamp" || it.n && it.n[1] < -0.5 ? null : it.n);
@@ -2042,12 +2054,17 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         const aP = !!par, bP = it.t === "box", ym = aP && bP ? (A[1] + B[1]) / 2 : A[1];
         raw = [A, [A[0], ym, A[2]], [B[0], ym, B[2]], B];
       } else {
+        const fa = par ? flY(par.p[1]) : 0, fb = flY(it.p[1]), lanes = lanesF[fb];
         const sg = [["x", A[2], A[0], B[0]], ["z", B[0], A[2], B[2]]].map(([ax, c2, a2, b2]) => [ax, c2, Math.min(a2, b2), Math.max(a2, b2)]).filter((q) => q[3] - q[2] > 0.02);
         let ln = 0;
         while (ln < 9 && sg.some((q) => (lanes[ln] || []).some((r2) => r2[0] === q[0] ? Math.abs(r2[1] - q[1]) < 0.09 && Math.min(r2[3], q[3]) - Math.max(r2[2], q[2]) > 0.02 : r2[1] > q[2] + 0.03 && r2[1] < q[3] - 0.03 && q[1] > r2[2] + 0.03 && q[1] < r2[3] - 0.03))) ln++;
         (lanes[ln] = lanes[ln] || []).push(...sg);
-        const y = vista ? WH - 0.05 - 0.07 * Math.min(ln, 4) - 0.012 * (ci % 3) : YC + 0.07 * ln + 0.015 * (ci % 3);
-        raw = [A, [A[0], y, A[2]], [B[0], y, A[2]], [B[0], y, B[2]], B];
+        const hy = (f) => (vista ? WH - 0.05 - 0.07 * Math.min(ln, 4) - 0.012 * (ci % 3) : YC + 0.07 * ln + 0.015 * (ci % 3)) + f * FH, y = hy(fb);
+        if (fa === fb) raw = [A, [A[0], y, A[2]], [B[0], y, A[2]], [B[0], y, B[2]], B];
+        else {
+          const MX = TX + W / 2 + 0.35 + 0.05 * (ci % 4), MZ = 0.09, ya = hy(fa);
+          raw = [A, [A[0], ya, A[2]], [MX, ya, A[2]], [MX, ya, MZ], [MX, y, MZ], [B[0], y, MZ], [B[0], y, B[2]], B];
+        }
       }
       raw = [A0].concat(raw, [B0]);
       const pts = [raw[0]];
@@ -2820,23 +2837,23 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         simToast([["warn", "Para colocar una luz, toca el techo (o el piso) del recinto."]]);
         return;
       }
-      id = simAddItem(s, "lamp", cid, [hit.p[0], 2.42, hit.p[2]], null, Object.assign(s.mconn === false ? {} : { free: true }, { v: simPV.lamp }));
+      id = simAddItem(s, "lamp", cid, [hit.p[0], 2.42 + flY(hit.p[1]) * FH, hit.p[2]], null, Object.assign(s.mconn === false ? {} : { free: true }, { v: simPV.lamp }));
     } else if (simPT === "box" && hit.k === "ceil") {
-      if (!roomOf(hit.p[0], hit.p[2])) {
+      if (!roomOf(hit.p[0], hit.p[2], flY(hit.p[1]))) {
         simToast([["warn", "Toca el techo dentro de la casa."]]);
         return;
       }
-      id = simAddItem(s, "box", cid, [hit.p[0], WH, hit.p[2]], [0, -1, 0], s.mconn === false ? {} : { free: true });
+      id = simAddItem(s, "box", cid, [hit.p[0], WH + flY(hit.p[1]) * FH, hit.p[2]], [0, -1, 0], s.mconn === false ? {} : { free: true });
     } else {
       if (hit.k !== "wall") {
         simToast([["warn", simPT === "box" ? "Toca un muro o el techo para colocar la caja." : "Toca un muro para colocar este elemento."]]);
         return;
       }
-      if (!roomOf(hit.p[0] + hit.n[0] * 0.3, hit.p[2] + hit.n[2] * 0.3)) {
+      if (!roomOf(hit.p[0] + hit.n[0] * 0.3, hit.p[2] + hit.n[2] * 0.3, flY(hit.p[1]))) {
         simToast([["warn", "Toca la cara interior de un muro de la casa."]]);
         return;
       }
-      id = simAddItem(s, simPT, cid, [hit.p[0], T_Y[simPT], hit.p[2]], hit.n, Object.assign(s.mconn === false ? {} : { free: true }, VAR[simPT] ? { v: simPV[simPT] } : {}));
+      id = simAddItem(s, simPT, cid, [hit.p[0], T_Y[simPT] + flY(hit.p[1]) * FH, hit.p[2]], hit.n, Object.assign(s.mconn === false ? {} : { free: true }, VAR[simPT] ? { v: simPV[simPT] } : {}));
     }
     const it = s.items.find((i) => i.id === id), rm = itemRoom(it);
     simSel = "i" + id;
@@ -2998,8 +3015,16 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (ev.dVap / V0 * 100 > 3) add("Ca\xEDda en el alimentador sobre 3 %", "".concat(nf(ev.dVap / V0 * 100, 2), " %."), "Aumenta la secci\xF3n o acorta el alimentador (RIC N\xB003).");
     const used = s.circuits.filter((c) => s.items.some((i) => i.c === c.id && i.t !== "box"));
     if (used.length < 3 && !s.scope) add("Menos de 3 circuitos", "Hay ".concat(used.length, " circuito(s) con puntos."), "Una vivienda de 30 m\xB2 o m\xE1s necesita al menos 3 circuitos (RIC N\xB010, 5.2.1).");
+    if (NFL > 1 && !s.scope) {
+      const esc0 = ROOMS.filter((r) => r.t === "escalera"), its = s.items.filter((i) => esc0.includes(itemRoom(i)));
+      if (esc0.length && its.some((i) => i.t === "lamp")) {
+        const c24 = its.filter((i) => i.t === "sw" && i.v === "c"), fl = new Set(c24.map((i) => flY(i.p[1])));
+        if (c24.length < 2 || fl.size < 2) add("Escalera: la luz debe encenderse desde ambos pisos", "Hay ".concat(c24.length, " interruptor(es) 9/24 en la escalera", c24.length ? " (en " + fl.size + " piso)" : "", "."), "Para circular con seguridad, la luz de la escalera se comanda con un par de interruptores 9/24 (combinaci\xF3n), uno al pie y otro en el desembarco del segundo piso.", { room: esc0[0].id });
+      }
+    }
     ROOMS.forEach((r) => {
       if (s.scope && !s.scope.includes(r.id)) return;
+      if (r.f && r.t === "escalera") return;
       const its = s.items.filter((i) => itemRoom(i) === r), lamps = its.filter((i) => i.t === "lamp").length, outs = its.filter((i) => i.t === "out").length, ml = rArea(r) > 10 ? 2 : 1;
       const mo = ["dormitorio", "living"].includes(r.t) ? Math.ceil(rPer(r) / 8) : r.t === "cocina" ? 3 : r.t === "lavadero" ? 1 : 0;
       if (lamps < ml) add("".concat(r.n, ": faltan luces"), "Tiene ".concat(lamps, "; m\xEDnimo ").concat(ml, " (").concat(n1(rArea(r)), " m\xB2)."), "RIC N\xB010, 5.2.2: 1 centro hasta 10 m\xB2 y 2 sobre 10 m\xB2.", { room: r.id });
@@ -3116,7 +3141,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return "".concat(s.circuits.length ? '<select data-sx="pc" aria-label="Circuito">'.concat(s.circuits.map((c, k) => '<option value="'.concat(c.id, '" ').concat(c.id === simPC ? "selected" : "", ">C").concat(k + 1, " ").concat(esc(c.n || ""), "</option>")).join(""), "</select>") : '<span class="pb-w">Primero agrega un disyuntor \u2192</span>', '<button type="button" class="pb-tab" data-sa="tabsheet">\u26A1 + Disyuntor / DR</button><button type="button" class="pb-tab" data-sa="pconn" title="C\xF3mo se conectan los puntos nuevos">').concat(s.mconn === false ? "\u{1F517} Cable: autom\xE1tico" : "\u{1F517} Cable: lo tiro yo", '</button><div class="pb-t">').concat([["lamp", "Luz"], ["sw", "Interruptor"], ["out", "Enchufe"], ["box", "Caja de distribuci\xF3n"], ["horno", "Horno"]].map(([k, l]) => '<button type="button" data-sa="ptype" data-k="'.concat(k, '" aria-pressed="').concat(simPT === k, '">').concat(l, "</button>")).join(""), "</div>").concat(VAR[simPT] ? '<div class="pb-t pb-v">' + VAR[simPT].map((x) => '<button type="button" data-sa="pvar" data-k="' + x[0] + '" aria-pressed="' + ((simPV[simPT] || "s") === x[0]) + '" title="' + x[2] + '">' + varIcon(simPT, x[0]) + " " + x[1] + "</button>").join("") + "</div>" : "");
   }
   function pgSim() {
-    return '<p class="eyebrow">Simulador</p><button class="btn calc" type="button" data-go="tg" style="float:right;margin:0 0 8px 8px">⚡ Juego: armar tablero</button><h1>Taller 3D de instalaci\xF3n domiciliaria</h1>\n  <p class="lead">'.concat(HNAME ? esc(HNAME) + ":" : "Una casa de", " ").concat(n0(ROOMS.reduce((a, r) => a + rArea(r), 0)), " m\xB2 con ").concat(ROOMS.length) + ' recintos. Coloca luces, interruptores, enchufes, cajas de derivaci\xF3n y horno donde quieras, con\xE9ctalos, energiza y mide con instrumentos.</p>\n  <div class="simwrap" id="simwrap" tabindex="0" aria-label="Vista 3D. Arrastra para girar, dos dedos o clic derecho para desplazar, rueda o pellizco para acercar. Flechas y W A S D tambi\xE9n mueven la vista."><canvas id="simcv"></canvas>\n   <div class="sim-hud" id="simhud"></div><div class="sim-fade" id="simfade"></div><div class="sim-legend" id="simleg" hidden></div><div class="sim-cut" id="simcut" '.concat(simCut == null ? "hidden" : "", '><span>Corte a</span><input type="range" id="simcutr" min="0.3" max="2.6" step="0.05" value="').concat(simCut == null ? 1.2 : simCut, '" aria-label="Altura de corte de los muros"><b id="simcutv">').concat(nf(simCut == null ? 1.2 : simCut, 2), ' m</b></div>\n   <div class="sim-joy" id="simjoy" ').concat(simMode === "walk" ? "" : "hidden", ' aria-label="Joystick: arrastra para caminar"><div class="jk"></div></div><div class="sim-toast" id="simtoast" aria-live="polite"></div>\n   <div class="sim-nav"><select data-sx="go" aria-label="Ir a"><option value="">Ir a\u2026</option><option value="g">Toda la casa</option><option value="p">Planta</option><option value="t">Tablero</option>').concat(ROOMS.map((r) => '<option value="'.concat(r.id, '">').concat(r.n, "</option>")).join(""), '</select>\n    <div class="nb"><button type="button" data-sa="zin" aria-label="Acercar">+</button><button type="button" data-sa="zout" aria-label="Alejar">\u2212</button><button type="button" data-sa="rl" aria-label="Girar a la izquierda">\u27F2</button><button type="button" data-sa="rr" aria-label="Girar a la derecha">\u27F3</button><button type="button" data-sa="up" aria-label="Ver m\xE1s desde arriba">\u2912</button><button type="button" data-sa="dn" aria-label="Ver m\xE1s de lado">\u2913</button></div>\n    <div class="nb nbq"><button type="button" data-sa="mode" id="simmode" aria-pressed="').concat(simMode === "walk", '" title="Modo libre / caminar">').concat(simMode === "walk" ? '<span class="ic">\u{1F6B6}</span><small>Andar</small>' : '<span class="ic">\u2725</span><small>Libre</small>', '</button><button type="button" data-sa="fs" id="simfs" title="Pantalla completa"><span class="ic">\u26F6</span><small>Grande</small></button><button type="button" data-sa="undo" id="simundo" ').concat(simUndo.length ? "" : "disabled", ' title="Deshacer"><span class="ic">\u21B6</span><small>Atr\xE1s</small></button><button type="button" data-sa="conn" aria-pressed="').concat(simConn, '" title="Ver conexiones del tablero"><span class="ic">\u26A1</span><small>Cables</small></button><button type="button" data-sa="vista" id="simvbtn" title="Opciones de vista"><span class="ic">\u2630</span><small>Vista</small></button><button type="button" data-sa="errs" id="simerr" class="eb" title="Errores">\u26A0</button></div>\n    <div class="sim-vista" id="simvista" hidden><button type="button" data-sa="walls">Muros: ').concat(["tenues", "medios", "s\xF3lidos"][simWall], '</button><button type="button" data-sa="ceil">Techo: ').concat(["oculto", "tenue", "medio", "s\xF3lido"][simCeil], '</button><button type="button" data-sa="dsolid">Tubos: ').concat(simDuctSolid ? "s\xF3lidos" : "transp.", '</button><button type="button" data-sa="heat" id="simheat">\u{1F321} Calor: ').concat(["no", "carga", "ca\xEDda"][simHeat], '</button><button type="button" data-sa="xray" aria-pressed="').concat(simCut != null, '">\u2702 Corte</button><button type="button" data-sa="labels" aria-pressed="false">Nombres</button></div></div>\n   <div class="sim-sheet" id="simsheet" hidden><div class="sh-h"><b id="shtitle"></b><button type="button" data-sa="shx" aria-label="Cerrar">\u2715</button></div><div class="sh-b" id="shbody"></div></div>\n   <div class="sim-place" id="simplace" ').concat(simTool === "place" ? "" : "hidden", ">").concat(placeBar(), '</div>\n   <div class="sim-place sim-meas" id="simmeas" ').concat(INSTR.includes(simTool) ? "" : "hidden", '><div class="pb-t">').concat(INSTR.map((k) => {
+    return '<p class="eyebrow">Simulador</p><button class="btn calc" type="button" data-go="tg" style="float:right;margin:0 0 8px 8px">⚡ Juego: armar tablero</button><h1>Taller 3D de instalaci\xF3n domiciliaria</h1>\n  <p class="lead">'.concat(HNAME ? esc(HNAME) + ":" : "Una casa de", " ").concat(n0(ROOMS.filter((r) => !(r.f && r.t === "escalera")).reduce((a, r) => a + rArea(r), 0)), " m\xB2 con ").concat(ROOMS.filter((r) => !(r.f && r.t === "escalera")).length) + (NFL > 1 ? " recintos en 2 pisos" : " recintos") + '. Coloca luces, interruptores, enchufes, cajas de derivaci\xF3n y horno donde quieras, con\xE9ctalos, energiza y mide con instrumentos.</p>\n  <div class="simwrap" id="simwrap" tabindex="0" aria-label="Vista 3D. Arrastra para girar, dos dedos o clic derecho para desplazar, rueda o pellizco para acercar. Flechas y W A S D tambi\xE9n mueven la vista."><canvas id="simcv"></canvas>\n   <div class="sim-hud" id="simhud"></div><div class="sim-fade" id="simfade"></div><div class="sim-legend" id="simleg" hidden></div><div class="sim-cut" id="simcut" '.concat(simCut == null ? "hidden" : "", '><span>Corte a</span><input type="range" id="simcutr" min="0.3" max="2.6" step="0.05" value="').concat(simCut == null ? 1.2 : simCut, '" aria-label="Altura de corte de los muros"><b id="simcutv">').concat(nf(simCut == null ? 1.2 : simCut, 2), ' m</b></div>\n   <div class="sim-joy" id="simjoy" ').concat(simMode === "walk" ? "" : "hidden", ' aria-label="Joystick: arrastra para caminar"><div class="jk"></div></div><div class="sim-toast" id="simtoast" aria-live="polite"></div>\n   <div class="sim-nav"><select data-sx="go" aria-label="Ir a"><option value="">Ir a\u2026</option><option value="g">Toda la casa</option><option value="p">Planta</option><option value="t">Tablero</option>').concat(ROOMS.map((r) => '<option value="'.concat(r.id, '">').concat(r.n, NFL > 1 ? " (piso " + ((r.f || 0) + 1) + ")" : "", "</option>")).join(""), "</select>").concat(NFL > 1 ? '<div class="nb nbfl" role="group" aria-label="Piso visible">' + [[0, "Piso 1"], [1, "Piso 2"], [-1, "Todo"]].map(([v, l]) => '<button type="button" data-sa="fl" data-v="' + v + '" aria-pressed="' + (simFl === v) + '">' + l + "</button>").join("") + "</div>" : "", '\n    <div class="nb"><button type="button" data-sa="zin" aria-label="Acercar">+</button><button type="button" data-sa="zout" aria-label="Alejar">\u2212</button><button type="button" data-sa="rl" aria-label="Girar a la izquierda">\u27F2</button><button type="button" data-sa="rr" aria-label="Girar a la derecha">\u27F3</button><button type="button" data-sa="up" aria-label="Ver m\xE1s desde arriba">\u2912</button><button type="button" data-sa="dn" aria-label="Ver m\xE1s de lado">\u2913</button></div>\n    <div class="nb nbq"><button type="button" data-sa="mode" id="simmode" aria-pressed="').concat(simMode === "walk", '" title="Modo libre / caminar">').concat(simMode === "walk" ? '<span class="ic">\u{1F6B6}</span><small>Andar</small>' : '<span class="ic">\u2725</span><small>Libre</small>', '</button><button type="button" data-sa="fs" id="simfs" title="Pantalla completa"><span class="ic">\u26F6</span><small>Grande</small></button><button type="button" data-sa="undo" id="simundo" ').concat(simUndo.length ? "" : "disabled", ' title="Deshacer"><span class="ic">\u21B6</span><small>Atr\xE1s</small></button><button type="button" data-sa="conn" aria-pressed="').concat(simConn, '" title="Ver conexiones del tablero"><span class="ic">\u26A1</span><small>Cables</small></button><button type="button" data-sa="vista" id="simvbtn" title="Opciones de vista"><span class="ic">\u2630</span><small>Vista</small></button><button type="button" data-sa="errs" id="simerr" class="eb" title="Errores">\u26A0</button></div>\n    <div class="sim-vista" id="simvista" hidden><button type="button" data-sa="walls">Muros: ').concat(["tenues", "medios", "s\xF3lidos"][simWall], '</button><button type="button" data-sa="ceil">Techo: ').concat(["oculto", "tenue", "medio", "s\xF3lido"][simCeil], '</button><button type="button" data-sa="dsolid">Tubos: ').concat(simDuctSolid ? "s\xF3lidos" : "transp.", '</button><button type="button" data-sa="heat" id="simheat">\u{1F321} Calor: ').concat(["no", "carga", "ca\xEDda"][simHeat], '</button><button type="button" data-sa="xray" aria-pressed="').concat(simCut != null, '">\u2702 Corte</button><button type="button" data-sa="labels" aria-pressed="false">Nombres</button></div></div>\n   <div class="sim-sheet" id="simsheet" hidden><div class="sh-h"><b id="shtitle"></b><button type="button" data-sa="shx" aria-label="Cerrar">\u2715</button></div><div class="sh-b" id="shbody"></div></div>\n   <div class="sim-place" id="simplace" ').concat(simTool === "place" ? "" : "hidden", ">").concat(placeBar(), '</div>\n   <div class="sim-place sim-meas" id="simmeas" ').concat(INSTR.includes(simTool) ? "" : "hidden", '><div class="pb-t">').concat(INSTR.map((k) => {
       const t = TOOLS3D.find((x) => x[0] === k);
       return '<button type="button" data-sa="tool" data-k="'.concat(k, '" aria-pressed="').concat(k === simTool, '"><b>').concat(t[1], "</b> ").concat(t[2], "</button>");
     }).join(""), '</div></div>\n   <div class="sim-tools" id="simtools">').concat(MAINT.map((k) => {
@@ -3263,6 +3288,20 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (simPrevErr && toast) nw = errs.filter((o) => !o.quiet && !simPrevErr.has(o.t)).slice(0, 2).map((o) => ["warn", "\u26A0 " + o.t + ". " + o.w]);
     simPrevErr = now;
     return nw;
+  }
+  function simSetFl(v) {
+    simFl = NFL > 1 ? v : -1;
+    document.querySelectorAll('[data-sa="fl"]').forEach((x) => x.setAttribute("aria-pressed", String(+x.dataset.v === simFl)));
+    if (!SIMV) return;
+    SIMV.applyFl();
+    if (SIMV.mode === "walk" && simFl < 0) simFl = 0;
+    if (SIMV.cutH != null) SIMV.setCut(SIMV.cutH);
+    if (SIMV.mode !== "walk") SIMV.set({ y: simFl > 0 ? FH + 0.6 : simFl < 0 ? FH * 0.6 : 0.6 });
+    else if (!SIMV.okAt(SIMV.w.x, SIMV.w.z)) {
+      const r = ROOMS.filter((q) => (q.f || 0) === simFl && q.t !== "escalera").sort((a, b) => rArea(b) - rArea(a))[0];
+      if (r) SIMV.wTo({ x: (r.x0 + r.x1) / 2, z: (r.z0 + r.z1) / 2 });
+    }
+    SIMV.updRL();
   }
   function applyWalls() {
     if (!SIMV) return;
@@ -3576,57 +3615,91 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
       return t;
     };
-    const WOOD = ftex("wood"), TILE = ftex("tile");
+    const WOOD = ftex("wood"), TILE = ftex("tile"), FLG1 = new THREE.Group(), FG = (f) => f ? FLG1 : sc;
+    sc.add(FLG1);
     ROOMS.forEach((r) => {
+      if (r.f && r.t === "escalera") return;
       const wet = ["cocina", "bano", "lavadero"].includes(r.t), tx2 = (wet ? TILE : WOOD).clone();
       tx2.needsUpdate = true;
       tx2.repeat.set((r.x1 - r.x0) / (wet ? 1.2 : 1.6), (r.z1 - r.z0) / (wet ? 1.2 : 1.6));
       const f = new THREE.Mesh(new THREE.PlaneGeometry(r.x1 - r.x0, r.z1 - r.z0), new THREE.MeshStandardMaterial({ map: tx2, roughness: wet ? 0.55 : 0.8 }));
       f.rotation.x = -Math.PI / 2;
-      f.position.set((r.x0 + r.x1) / 2, 5e-3, (r.z0 + r.z1) / 2);
-      f.userData = { k: "floor", room: r.id };
-      sc.add(f);
+      f.position.set((r.x0 + r.x1) / 2, 5e-3 + (r.f || 0) * FH, (r.z0 + r.z1) / 2);
+      f.userData = { k: "floor", room: r.id, fl: r.f || 0 };
+      FG(r.f).add(f);
       place.push(f);
     });
     const wallM = M(15986663, { transparent: true, opacity: 0.32, depthWrite: false }), ceilM = M(16513782, { transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide });
     ROOMS.forEach((r) => {
+      if (NFL > 1 && !r.f && r.t === "escalera") return;
       const c = new THREE.Mesh(new THREE.PlaneGeometry(r.x1 - r.x0, r.z1 - r.z0), ceilM);
       c.rotation.x = Math.PI / 2;
-      c.position.set((r.x0 + r.x1) / 2, WH, (r.z0 + r.z1) / 2);
-      c.userData = { k: "ceil", room: r.id };
+      c.position.set((r.x0 + r.x1) / 2, WH + (r.f || 0) * FH, (r.z0 + r.z1) / 2);
+      c.userData = { k: "ceil", room: r.id, fl: r.f || 0 };
       c.renderOrder = 1;
-      sc.add(c);
+      FG(r.f).add(c);
       place.push(c);
     });
-    WALLS.forEach(([x0, z0, x1, z1, wt]) => {
+    WALLS.forEach((wa) => {
+      const [x0, z0, x1, z1, wt] = wa, wf = wa.f || 0;
       const lx = Math.abs(x1 - x0), lz = Math.abs(z1 - z0), t = wt || 0.12, w = box(lx > 0 ? lx + t : t, WH, lz > 0 ? lz + t : t, wallM);
-      w.position.set((x0 + x1) / 2, WH / 2, (z0 + z1) / 2);
-      w.userData = { k: "wall", t };
+      w.position.set((x0 + x1) / 2, WH / 2 + wf * FH, (z0 + z1) / 2);
+      w.userData = { k: "wall", t, fl: wf };
       w.renderOrder = 1;
-      sc.add(w);
+      FG(wf).add(w);
       place.push(w);
     });
     const zoc = M(8019008), frm = M(10188371);
-    WALLS.forEach(([x0, z0, x1, z1, wt]) => {
+    WALLS.forEach((wa) => {
+      const [x0, z0, x1, z1, wt] = wa, wf = wa.f || 0;
       const lx = Math.abs(x1 - x0), lz = Math.abs(z1 - z0), t = (wt || 0.12) + 0.03, b = box(lx > 0 ? lx : t, 0.08, lz > 0 ? lz : t, zoc);
-      b.position.set((x0 + x1) / 2, 0.04, (z0 + z1) / 2);
-      sc.add(b);
+      b.position.set((x0 + x1) / 2, 0.04 + wf * FH, (z0 + z1) / 2);
+      FG(wf).add(b);
     });
-    DOORS.forEach(([ax, v, m0, m1]) => {
-      const L = m1 - m0, mid = (m0 + m1) / 2, hd = WH - 2.08;
+    DOORS.forEach(([ax, v, m0, m1, df]) => {
+      const L = m1 - m0, mid = (m0 + m1) / 2, hd = WH - 2.08, sc = FG(df), oy = (df || 0) * FH;
       const top = box(ax === "x" ? 0.12 : L, hd, ax === "x" ? L : 0.12, wallM);
-      top.position.set(ax === "x" ? v : mid, 2.08 + hd / 2, ax === "x" ? mid : v);
+      top.position.set(ax === "x" ? v : mid, 2.08 + hd / 2 + oy, ax === "x" ? mid : v);
       top.renderOrder = 1;
       sc.add(top);
       const li = box(ax === "x" ? 0.15 : L + 0.1, 0.07, ax === "x" ? L + 0.1 : 0.15, frm);
-      li.position.set(ax === "x" ? v : mid, 2.05, ax === "x" ? mid : v);
+      li.position.set(ax === "x" ? v : mid, 2.05 + oy, ax === "x" ? mid : v);
       sc.add(li);
       [m0, m1].forEach((m) => {
         const j = box(ax === "x" ? 0.15 : 0.05, 2.05, ax === "x" ? 0.05 : 0.15, frm);
-        j.position.set(ax === "x" ? v : m, 1.025, ax === "x" ? m : v);
+        j.position.set(ax === "x" ? v : m, 1.025 + oy, ax === "x" ? m : v);
         sc.add(j);
       });
     });
+    if (NFL > 1) {
+      const slabM = M(12105912, { transparent: true, opacity: 0.55 }), stepM = M(11053224), railM = M(5592405);
+      ROOMS.filter((r) => r.f === 1 && r.t !== "escalera").forEach((r) => {
+        const sl = box(r.x1 - r.x0, FH - WH - 0.01, r.z1 - r.z0, slabM);
+        sl.position.set((r.x0 + r.x1) / 2, (WH + FH) / 2, (r.z0 + r.z1) / 2);
+        FLG1.add(sl);
+      });
+      ROOMS.filter((r) => !r.f && r.t === "escalera").forEach((r) => {
+        const lx = r.x1 - r.x0, lz = r.z1 - r.z0, alongZ = lz >= lx, L = (alongZ ? lz : lx) - 0.3, Wd = Math.min(1.1, (alongZ ? lx : lz) - 0.1), n = 15, rise = FH / n, run = L / n;
+        for (let i = 0; i < n; i++) {
+          const st = box(alongZ ? Wd : run + 0.02, rise * (i + 1), alongZ ? run + 0.02 : Wd, stepM), t = 0.15 + run * (i + 0.5);
+          st.position.set(alongZ ? r.x0 + 0.05 + Wd / 2 : r.x1 - t, rise * (i + 1) / 2, alongZ ? r.z1 - t : r.z0 + 0.05 + Wd / 2);
+          sc.add(st);
+          const ns = box(alongZ ? Wd : 0.03, 0.012, alongZ ? 0.03 : Wd, railM);
+          ns.position.set(alongZ ? r.x0 + 0.05 + Wd / 2 : r.x1 - t + run / 2, rise * (i + 1) + 6e-3, alongZ ? r.z1 - t + run / 2 : r.z0 + 0.05 + Wd / 2);
+          sc.add(ns);
+        }
+        const HL = Math.hypot(L, FH), rl = box(alongZ ? 0.045 : HL, 0.045, alongZ ? HL : 0.045, railM), ang = Math.atan2(FH, L);
+        rl.position.set(alongZ ? r.x0 + 0.05 + Wd + 0.02 : r.x1 - 0.15 - L / 2, FH / 2 + 0.9, alongZ ? r.z1 - 0.15 - L / 2 : r.z0 + 0.05 + Wd + 0.02);
+        if (alongZ) rl.rotation.x = ang;
+        else rl.rotation.z = -ang;
+        sc.add(rl);
+        for (let i = 1; i < n; i += 3) {
+          const t = 0.15 + run * (i + 0.5), po = box(0.03, 0.9, 0.03, railM);
+          po.position.set(alongZ ? r.x0 + 0.05 + Wd + 0.02 : r.x1 - t, rise * (i + 1) + 0.45, alongZ ? r.z1 - t : r.z0 + 0.05 + Wd + 0.02);
+          sc.add(po);
+        }
+      });
+    }
     const med = box(0.34, 0.48, 0.16, M(14014684));
     med.position.set(TX - 1, 1.5, -0.14);
     med.userData = { k: "medidor" };
@@ -3658,10 +3731,26 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     sc.add(ghost);
     const dyn = new THREE.Group();
     sc.add(dyn);
-    const V = { R, sc, cam, dyn, stat, place, pick: [], mk, ghost, M, G, MAT, box, wallM, ceilM, labels: false, glow: glowTex(), tmp: [], dirty: true, raf: 0 };
+    const V = { R, sc, cam, dyn, stat, place, pick: [], mk, ghost, M, G, MAT, box, wallM, ceilM, labels: false, glow: glowTex(), tmp: [], dirty: true, raf: 0, FLG1 };
+    V.applyFl = () => {
+      FLG1.visible = flVis(1);
+      const sm = S.sim2, by = new Map(sm.items.map((i) => [i.id, i]));
+      dyn.traverse((o) => {
+        const u = o.userData;
+        if (u && (u.k === "item" || u.k === "edge") && u.id != null) {
+          const it = by.get(u.id);
+          if (it) o.visible = flVis(flY(it.p[1]));
+        }
+      });
+      (V.rl || []).forEach((o) => {
+        if (!flVis(o.r.f || 0)) o.sp.visible = false;
+      });
+      V.dirty = true;
+    };
     V.setCut = (h) => {
       R.localClippingEnabled = true;
-      const cp = h == null ? [] : [new THREE.Plane(new THREE.Vector3(0, -1, 0), h)];
+      V.cutH = h;
+      const cp = h == null ? [] : [new THREE.Plane(new THREE.Vector3(0, -1, 0), h + (NFL > 1 && simFl > 0 ? FH : 0))];
       wallM.clippingPlanes = cp;
       ceilM.clippingPlanes = cp;
       wallM.needsUpdate = true;
@@ -3670,10 +3759,11 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     };
     V.HM = {};
     V.rl = [];
+    V.okAt = (x, z) => okAt(x, z);
     V.updRL = () => {
-      const wk = V.mode === "walk", far = !wk && V.c.rad > 8.5, inr = wk ? roomOf(V.w.x, V.w.z) : roomOf(V.c.x, V.c.z);
+      const wk = V.mode === "walk", far = !wk && V.c.rad > 8.5, wf = simFl > 0 ? 1 : 0, inr = wk ? roomOf(V.w.x, V.w.z, wf) : roomOf(V.c.x, V.c.z, wf);
       V.rl.forEach((o) => {
-        o.sp.visible = far || o.r === inr || o.err;
+        o.sp.visible = flVis(o.r.f || 0) && (far || o.r === inr || o.err);
       });
     };
     V.c = { th: 0.55, ph: 0.85, rad: 15 * Math.max(1, Math.max(HW, HD) / 10), x: HW / 2, y: 0.6, z: HD / 2 };
@@ -3696,8 +3786,9 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     const apply = () => {
       if (V.mode === "walk") {
         const w = V.w, cp = Math.cos(w.pit);
-        cam.position.set(w.x, EY, w.z);
-        cam.lookAt(w.x + Math.sin(w.yaw) * cp, EY + Math.sin(w.pit), w.z + Math.cos(w.yaw) * cp);
+        const ey = EY + (simFl > 0 ? FH : 0);
+        cam.position.set(w.x, ey, w.z);
+        cam.lookAt(w.x + Math.sin(w.yaw) * cp, ey + Math.sin(w.pit), w.z + Math.cos(w.yaw) * cp);
       } else {
         const c = V.c, sp = Math.sin(c.ph);
         cam.position.set(c.x + c.rad * sp * Math.sin(c.th), c.y + c.rad * Math.cos(c.ph), c.z + c.rad * sp * Math.cos(c.th));
@@ -3717,7 +3808,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       t = Math.max(0, Math.min(1, t));
       return Math.hypot(x - a[0] - t * dx, z - a[1] - t * dz);
     };
-    const okAt = (x, z) => x > 0.2 && x < HW - 0.2 && z > 0.2 && z < HD - 0.2 && !!roomOf(x, z) && WALLS.every((a) => segD(x, z, a) > 0.22);
+    const okAt = (x, z) => {
+      const wf = simFl > 0 ? 1 : 0;
+      return x > 0.2 && x < HW - 0.2 && z > 0.2 && z < HD - 0.2 && !!roomOf(x, z, wf) && (roomOf(x, z, wf) || {}).t !== "escalera" && WALLS.every((a) => (a.f || 0) !== wf || segD(x, z, a) > 0.22);
+    };
     const wMove = (o, dx, dz) => {
       const n = Math.max(1, Math.ceil(Math.hypot(dx, dz) / 0.05));
       for (let i = 0; i < n; i++) {
@@ -3784,7 +3878,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       g.rad = Math.min(32 * Math.max(1, Math.max(HW, HD) / 10), Math.max(1, g.rad));
       g.x = Math.min(HW + 3, Math.max(-3, g.x));
       g.z = Math.min(HD + 3, Math.max(-3, g.z));
-      g.y = Math.min(3, Math.max(0, g.y));
+      g.y = Math.min(3 + (NFL > 1 ? FH : 0), Math.max(0, g.y));
     };
     V.set = (o, instant) => {
       Object.assign(V.g, o);
@@ -3802,6 +3896,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
           return;
         }
         const r = ROOMS.find((q) => q.id === k);
+        if (r && NFL > 1 && (r.f || 0) !== (simFl > 0 ? 1 : 0)) simSetFl(r.f || 0);
         if (r) {
           const cs2 = [[r.x0 + 0.45, r.z0 + 0.45], [r.x1 - 0.45, r.z0 + 0.45], [r.x0 + 0.45, r.z1 - 0.45], [r.x1 - 0.45, r.z1 - 0.45]].filter((c2) => okAt(c2[0], c2[1]));
           const c = (cs2.length ? cs2 : [[(r.x0 + r.x1) / 2, (r.z0 + r.z1) / 2]]).sort((a, b) => Math.hypot(a[0] - V.w.x, a[1] - V.w.z) - Math.hypot(b[0] - V.w.x, b[1] - V.w.z))[0];
@@ -3812,20 +3907,23 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         if (simMode !== "orbit") simSetMode("orbit");
       }
       const fit = Math.max(1, Math.min(1.7, 1.3 / (cam.aspect || 1.5)));
+      const oyv = NFL > 1 && simFl > 0 ? FH : 0;
+      if (k === "t" && simFl > 0) simSetFl(0);
       if (k === "t") V.set({ x: TX, y: simConn ? 1.42 : 1.5, z: 0.1, th: 0, ph: 1.5, rad: (simConn ? 1.8 : 1.55) * fit });
-      else if (k === "p") V.set({ x: HW / 2, y: 0, z: HD / 2, th: 0, ph: 0.05, rad: 14 * fit * Math.max(0.7, Math.max(HW / 10, HD / 7)) });
-      else if (k === "g") V.set({ x: HW / 2, y: 0.6, z: HD / 2, th: 0.55, ph: 0.85, rad: 15 * fit * Math.max(0.7, Math.max(HW / 10, HD / 7)) });
+      else if (k === "p") V.set({ x: HW / 2, y: oyv, z: HD / 2, th: 0, ph: 0.05, rad: 14 * fit * Math.max(0.7, Math.max(HW / 10, HD / 7)) });
+      else if (k === "g") V.set({ x: HW / 2, y: 0.6 + (NFL > 1 && simFl < 0 ? FH * 0.5 : oyv), z: HD / 2, th: 0.55, ph: 0.85, rad: 15 * fit * Math.max(0.7, Math.max(HW / 10, HD / 7)) });
       else {
         const r = ROOMS.find((q) => q.id === k);
-        if (r) V.set({ x: (r.x0 + r.x1) / 2, y: 0.6, z: (r.z0 + r.z1) / 2, th: 0.35, ph: 0.5, rad: (Math.max(r.x1 - r.x0, r.z1 - r.z0) * 1.1 + 3.2) * fit });
+        if (r && NFL > 1 && simFl >= 0 && (r.f || 0) !== simFl) simSetFl(r.f || 0);
+        if (r) V.set({ x: (r.x0 + r.x1) / 2, y: 0.6 + (r.f || 0) * FH, z: (r.z0 + r.z1) / 2, th: 0.35, ph: 0.5, rad: (Math.max(r.x1 - r.x0, r.z1 - r.z0) * 1.1 + 3.2) * fit });
       }
     };
     V.focus = (p) => {
       if (V.mode === "walk") {
-        V.wTo({ yaw: Math.atan2(p.x - V.w.x, p.z - V.w.z), pit: Math.atan2(p.y - EY, Math.hypot(p.x - V.w.x, p.z - V.w.z)) });
+        V.wTo({ yaw: Math.atan2(p.x - V.w.x, p.z - V.w.z), pit: Math.atan2(p.y - EY - (simFl > 0 ? FH : 0), Math.hypot(p.x - V.w.x, p.z - V.w.z)) });
         return;
       }
-      V.set({ x: p.x, y: Math.min(2, p.y), z: p.z, rad: Math.min(V.g.rad, 4) });
+      V.set({ x: p.x, y: Math.min(2 + flY(p.y) * FH, p.y), z: p.z, rad: Math.min(V.g.rad, 4) });
     };
     V.zoom = (f) => {
       if (V.mode === "walk") {
@@ -3875,27 +3973,30 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       const r = cv.getBoundingClientRect();
       v2.set((cx - r.left) / r.width * 2 - 1, -(cy - r.top) / r.height * 2 + 1);
       rc.setFromCamera(v2, cam);
-      return rc.intersectObjects(list, true);
+      return rc.intersectObjects(list, true).filter((h) => {
+        for (let o = h.object; o; o = o.parent) if (!o.visible) return false;
+        return true;
+      });
     };
     const pickAt = (cx, cy) => {
       var _a;
       if (simTool === "place") {
         const KS = simPT === "lamp" ? ["floor", "ceil"] : simPT === "box" ? ["wall", "ceil"] : ["wall"];
-        for (const h of cast(cx, cy, V.place.filter((o) => KS.includes(o.userData.k) && (o.userData.k !== "ceil" || simCeil > 0)))) {
-          const u = h.object.userData;
-          if (u.k === "ceil") return { k: "ceil", p: [h.point.x, WH, h.point.z], n: [0, -1, 0] };
+        for (const h of cast(cx, cy, V.place.filter((o) => KS.includes(o.userData.k) && flPick(o.userData.fl || 0) && (o.userData.k !== "ceil" || simCeil > 0)))) {
+          const u = h.object.userData, hf = u.fl || 0;
+          if (u.k === "ceil") return { k: "ceil", p: [h.point.x, WH + hf * FH, h.point.z], n: [0, -1, 0] };
           if (u.k === "wall") {
             const n = h.face.normal;
             if (Math.abs(n.y) > 0.5) continue;
             const nx = Math.round(n.x), nz = Math.round(n.z), px = h.point.x, pz = h.point.z;
-            if (roomOf(px + nx * 0.3, pz + nz * 0.3)) return { k: "wall", p: [px + nx * 6e-3, h.point.y, pz + nz * 6e-3], n: [nx, 0, nz] };
-            if (roomOf(px - nx * 0.42, pz - nz * 0.42)) {
+            if (roomOf(px + nx * 0.3, pz + nz * 0.3, hf)) return { k: "wall", p: [px + nx * 6e-3, h.point.y, pz + nz * 6e-3], n: [nx, 0, nz] };
+            if (roomOf(px - nx * 0.42, pz - nz * 0.42, hf)) {
               const tt = (u.t || 0.12) + 6e-3;
               return { k: "wall", p: [px - nx * tt, h.point.y, pz - nz * tt], n: [-nx, 0, -nz] };
             }
             continue;
           }
-          if (u.k === "floor") return { k: "floor", p: [h.point.x, 0, h.point.z] };
+          if (u.k === "floor") return { k: "floor", p: [h.point.x, hf * FH, h.point.z] };
         }
         return null;
       }
@@ -3993,7 +4094,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         if (simTool === "place" && e.pointerType === "mouse") {
           const h = pickAt(e.clientX, e.clientY);
           if (h && simPT === "lamp" === (h.k === "floor")) {
-            ghost.position.set(h.p[0], simPT === "lamp" ? 2.42 : T_Y[simPT] || 0.3, h.p[2]);
+            ghost.position.set(h.p[0], (simPT === "lamp" ? 2.42 : T_Y[simPT] || 0.3) + flY(h.p[1]) * FH, h.p[2]);
             ghost.visible = true;
           } else ghost.visible = false;
           V.dirty = true;
@@ -4305,7 +4406,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     ROOMS.forEach((r) => {
       const er = eRoom.has(r.id);
       const l = spr("".concat(er ? "\u26A0 " : "").concat(r.n, " \xB7 ").concat(n0(rArea(r)), " m\xB2"), { h: 0.26, depth: true, bg: er ? "rgba(174,42,33,.9)" : "rgba(255,255,255,.88)", fg: er ? "#fff" : "#24313d" });
-      l.position.set((r.x0 + r.x1) / 2, 0.2, (r.z0 + r.z1) / 2);
+      l.position.set((r.x0 + r.x1) / 2, 0.2 + (r.f || 0) * FH, (r.z0 + r.z1) / 2);
       g.add(l);
       V.rl.push({ sp: l, r, err: er });
     });
@@ -4494,8 +4595,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       lb.position.set(p[0], p[1] + 0.12, p[2]);
       g.add(lb);
     });
-    s.items.forEach((it) => {
-      const k = cIdx(s, it.c), x = ev.cs[k], lit = x && x.en && ev.act(it) && (ev.V[it.id] || 0) > 1, grp = new THREE.Group();
+    s.items.forEach((it0) => {
+      const oyF = flY(it0.p[1]) * FH, it = oyF ? Object.assign({}, it0, { p: [it0.p[0], it0.p[1] - oyF, it0.p[2]] }) : it0;
+      const k = cIdx(s, it.c), x = ev.cs[k], lit = x && x.en && ev.act(it0) && (ev.V[it.id] || 0) > 1, grp = new THREE.Group();
+      grp.position.y = oyF;
       grp.userData = { k: "item", id: it.id };
       const n = it.n || [0, 0, 1];
       if (it.t === "lamp" && it.v && it.v !== "s") {
@@ -4637,6 +4740,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       g.add(grp);
       V.pick.push(grp);
     });
+    V.applyFl();
     V.dirty = true;
   }
   function simShowHud(m) {
@@ -4753,6 +4857,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (a === "meas") {
       const bt = document.querySelector('#simmeas button[data-k="'.concat(INSTR.includes(simTool) ? simTool : "volt", '"]'));
       if (bt) bt.click();
+      return;
+    }
+    if (a === "fl") {
+      simSetFl(+b.dataset.v);
       return;
     }
     if (a === "ceil") {
@@ -5494,26 +5602,56 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     }).join(""), "</div></section>") : "", '\n  <section class="card rep-s"><h2>2 \xB7 Diagrama unilineal del tablero</h2>').concat(simConnSVG(s), '</section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">3 \xB7 Plano de planta</h2><button class="btn ghost small no-print" type="button" data-act="rsvg">\u2B07 Plano (.svg)</button></div><div class="plan">').concat(planSVG(s), '</div><p class="hint">L\xEDnea punteada: recorrido autom\xE1tico por el entretecho. L\xEDnea continua: tubo que trazaste con la herramienta Trazar.</p></section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">4 \xB7 Materiales y costos</h2><button class="btn ghost small no-print" type="button" data-cs="prst">\u21BA Restaurar precios</button></div>').concat(bomTable(B, true), '<p class="hint">Metros con 10 % de holgura, medidos sobre los recorridos del simulador. Precios unitarios referenciales en pesos chilenos, netos: c\xE1mbialos por los de tu proveedor y el total se recalcula (se guardan con el proyecto).</p></section>\n  <section class="card rep-s"><div class="sechead"><h2 style="margin:0">5 \xB7 Memoria explicativa</h2><button class="btn ghost small no-print" type="button" data-act="rmem">\u2B07 Memoria (.html, abre en Word)</button></div><details class="memd" open><summary class="no-print">Ver / ocultar</summary><div class="memo">').concat(memoriaHTML(s, false), '</div></details></section>\n  ' + infSection(s) + '<section class="card rep-s"><h2>9 \xB7 Observaciones del inspector</h2>').concat(ok ? note("\u2713 La instalaci\xF3n cumple todo lo que revisa la app.", "ok") : '<ol class="obs">'.concat(r.errs.map((o) => "<li><b>".concat(esc(o.t), "</b> \u2014 ").concat(esc(o.d), ' <span class="hint">').concat(esc(o.w), "</span></li>")).join(""), "</ol>"), '</section>\n  <p class="hint no-print">Los datos salen del <button class="linkb" type="button" data-go="sim">Simulador 3D</button>. Cambia la instalaci\xF3n all\xED y este reporte se actualiza solo.</p><div class="no-print">').concat(testsHTML(), "</div>");
   }
   const CCOL = ["#1f77b4", "#d62728", "#2ca02c", "#9467bd", "#ff7f0e", "#8c564b", "#e377c2", "#17becf"];
+  function edgeFl(e) {
+    const fb = flY(e.it.p[1]), k = e.pts.findIndex((p, i) => i && Math.abs(p[0] - e.pts[i - 1][0]) < 1e-6 && Math.abs(p[2] - e.pts[i - 1][2]) < 1e-6 && Math.abs(p[1] - e.pts[i - 1][1]) > FH - 0.3);
+    return k < 0 ? [[fb, e.pts, null]] : [[1 - fb, e.pts.slice(0, k), e.pts[k]], [fb, e.pts.slice(k), e.pts[k]]];
+  }
   function planSVG(s, opt) {
     opt = opt || {};
+    if (NFL < 2 || opt.fl != null) return planSVG1(s, opt);
+    const A = [0, 1].map((f) => planSVG1(s, Object.assign({}, opt, { fl: f }))), vb = A.map((x) => x.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number)), W = Math.max(vb[0][0], vb[1][0]), H = vb[0][1] + vb[1][1] + 60;
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + " " + H + '" font-family="Arial,Helvetica,sans-serif" role="img" aria-label="Plano de planta, 2 pisos"><rect width="' + W + '" height="' + H + '" fill="#fff"/>' + [0, 1].map((f) => '<text x="40" y="' + (f ? vb[0][1] + 52 : 22) + '" font-size="15" font-weight="800">' + (f ? "PLANTA SEGUNDO PISO" : "PLANTA PRIMER PISO") + '</text><svg x="0" y="' + (f ? vb[0][1] + 60 : 30) + '" width="' + vb[f][0] + '" height="' + vb[f][1] + '" viewBox="0 0 ' + vb[f][0] + " " + vb[f][1] + '">' + A[f].replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "") + "</svg>").join("") + "</svg>";
+  }
+  function planSVG1(s, opt) {
+    opt = opt || {};
+    const PF = opt.fl == null ? -1 : opt.fl, onF = (f) => PF < 0 || f === PF;
     const VU = ["lamp", "sw", "out"].flatMap((t) => VAR[t].filter((x) => x[0] !== "s" && s.items.some((i) => i.t === t && i.v === x[0])).map((x) => [t, x])), K = Math.min(62, 620 / Math.max(HW, 1)), M = 40, W = HW * K + M * 2 + 170, H = Math.max(HD * K + M * 2, 474 + 18 * s.circuits.length + 24 * VU.length), X = (x) => M + x * K, Z = (z) => M + z * K, ev = simEval(s);
     let g = '<rect x="0" y="0" width="'.concat(W, '" height="').concat(H, '" fill="#fff"/>');
     ROOMS.forEach((r) => {
+      if (!onF(r.f || 0)) return;
+      if (r.t === "escalera" && NFL > 1) {
+        const az = r.z1 - r.z0 >= r.x1 - r.x0, L = az ? r.z1 - r.z0 : r.x1 - r.x0, n = 14;
+        for (let i = 1; i < n; i++) {
+          const t = 0.15 + (L - 0.3) * i / n;
+          g += az ? '<line x1="' + X(r.x0 + 0.05) + '" y1="' + Z(r.z1 - t) + '" x2="' + X(r.x1 - 0.05) + '" y2="' + Z(r.z1 - t) + '" stroke="#c9bfae" stroke-width="1"/>' : '<line x1="' + X(r.x1 - t) + '" y1="' + Z(r.z0 + 0.05) + '" x2="' + X(r.x1 - t) + '" y2="' + Z(r.z1 - 0.05) + '" stroke="#c9bfae" stroke-width="1"/>';
+        }
+      }
       g += '<rect x="'.concat(X(r.x0), '" y="').concat(Z(r.z0), '" width="').concat((r.x1 - r.x0) * K, '" height="').concat((r.z1 - r.z0) * K, '" fill="#f6f3ec"/><text x="').concat(X(r.x0) + 8, '" y="').concat(Z(r.z1) - 20, '" font-size="11" fill="#8a8170" font-weight="700">').concat(esc(r.n.toUpperCase()), '</text><text x="').concat(X(r.x0) + 8, '" y="').concat(Z(r.z1) - 8, '" font-size="10" fill="#a39a88">').concat(n1(rArea(r)), " m\xB2</text>");
     });
-    WALLS.forEach(([a, b, c, d, wt]) => {
+    WALLS.forEach((wl) => {
+      const [a, b, c, d, wt] = wl;
+      if (!onF(wl.f || 0)) return;
       g += '<line x1="'.concat(X(a), '" y1="').concat(Z(b), '" x2="').concat(X(c), '" y2="').concat(Z(d), '" stroke="#222" stroke-width="').concat(Math.max(3, (wt || 0.12) * K * 0.9).toFixed(1), '" stroke-linecap="square"/>');
     });
-    DOORS.forEach(([ax, v, m0, m1]) => {
+    DOORS.forEach(([ax, v, m0, m1, df]) => {
+      if (!onF(df || 0)) return;
       const r = (m1 - m0) * K;
       if (ax === "x") g += '<path d="M'.concat(X(v), " ").concat(Z(m0), " A ").concat(r, " ").concat(r, " 0 0 1 ").concat(X(v) + r, " ").concat(Z(m0) + r, '" fill="none" stroke="#999" stroke-width="1"/>');
       else g += '<path d="M'.concat(X(m0), " ").concat(Z(v), " A ").concat(r, " ").concat(r, " 0 0 0 ").concat(X(m0) + r, " ").concat(Z(v) + r, '" fill="none" stroke="#999" stroke-width="1"/>');
     });
+    const MT = [];
     ev.E.forEach((e) => {
       const col = CCOL[e.ci % CCOL.length];
-      const p = e.pts.map((q) => "".concat(X(q[0]).toFixed(1), ",").concat(Z(q[2]).toFixed(1))).join(" ");
-      g += '<polyline points="'.concat(p, '" fill="none" stroke="').concat(col, '" stroke-width="2" stroke-dasharray="').concat(e.it.route ? "" : "6 3", '" opacity=".9"/>');
+      (PF < 0 ? [[0, e.pts, null]] : edgeFl(e).filter((x) => x[0] === PF)).forEach(([, pts, mp]) => {
+        const p = pts.map((q) => "".concat(X(q[0]).toFixed(1), ",").concat(Z(q[2]).toFixed(1))).join(" ");
+        g += '<polyline points="'.concat(p, '" fill="none" stroke="').concat(col, '" stroke-width="2" stroke-dasharray="').concat(e.it.route ? "" : "6 3", '" opacity=".9"/>');
+        if (mp) MT.push(mp);
+      });
     });
+    if (MT.length) {
+      const mx = Math.min(...MT.map((q) => q[0])), xx = Math.max(...MT.map((q) => q[0])), mz = MT[0][2];
+      g += '<rect x="' + (X(mx) - 6) + '" y="' + (Z(mz) - 6) + '" width="' + (X(xx) - X(mx) + 12) + '" height="12" fill="#fff" stroke="#333" stroke-width="1.5"/><path d="M' + (X(mx) - 6) + " " + (Z(mz) + 6) + "L" + (X(xx) + 6) + " " + (Z(mz) - 6) + '" stroke="#333" stroke-width="1"/><text x="' + (X(xx) + 10) + '" y="' + (Z(mz) + 16) + '" font-size="10" font-weight="700">MONTANTE ' + (PF ? "(BAJA AL 1.\xBA PISO)" : "(SUBE AL 2.\xBA PISO)") + "</text>";
+    }
     const sym = (it) => {
       const x = X(it.p[0]), z = Z(it.p[2]), k = cIdx(s, it.c), col = CCOL[k % CCOL.length];
       if (it.t === "lamp" || it.t === "sw") return '<g transform="translate(' + x + " " + z + ')">' + varSym(it.t, it.v || "s", col) + "</g>";
@@ -5527,9 +5665,9 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       return '<g transform="translate('.concat(x, " ").concat(z, ") rotate(").concat(ang, ')"><path d="M0 -7 A7 7 0 0 1 0 7Z" fill="#fff" stroke="').concat(col, '" stroke-width="2"/><line x1="2" y1="-3" x2="6" y2="-3" stroke="').concat(col, '" stroke-width="1.5"/><line x1="2" y1="3" x2="6" y2="3" stroke="').concat(col, '" stroke-width="1.5"/></g>');
     };
     s.items.forEach((it) => {
-      g += sym(it);
+      if (onF(flY(it.p[1]))) g += sym(it);
     });
-    g += '<rect x="'.concat(X(TX) - tabW(s) * K / 2, '" y="').concat(Z(0) + 3, '" width="').concat(tabW(s) * K, '" height="9" fill="#333"/><text x="').concat(X(TX), '" y="').concat(Z(0) + 24, '" text-anchor="middle" font-size="10" font-weight="700">TABLERO</text>');
+    if (PF < 1) g += '<rect x="'.concat(X(TX) - tabW(s) * K / 2, '" y="').concat(Z(0) + 3, '" width="').concat(tabW(s) * K, '" height="9" fill="#333"/><text x="').concat(X(TX), '" y="').concat(Z(0) + 24, '" text-anchor="middle" font-size="10" font-weight="700">TABLERO</text>');
     const lx = HW * K + M * 2 + 10;
     let ly = M;
     g += '<text x="'.concat(lx, '" y="').concat(ly, '" font-size="12" font-weight="800">SIMBOLOG\xCDA</text>');
@@ -5563,6 +5701,16 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return '<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Memoria explicativa \xB7 '.concat(esc(nm), "</title><style>body{font-family:Arial,Helvetica,sans-serif;max-width:820px;margin:30px auto;padding:0 20px;color:#111;line-height:1.45}h1{font-size:24px;margin-bottom:0}h2{font-size:16px;margin-top:22px;border-bottom:2px solid #333;padding-bottom:3px}.mm{color:#555;font-size:13px}table{border-collapse:collapse;width:100%;font-size:12.5px;margin:8px 0}th,td{border:1px solid #999;padding:4px 6px;text-align:left}th{background:#eee}</style></head><body>").concat(body, "<h2>Anexo: plano de planta</h2>").concat(planSVG(s), "</body></html>");
   }
   function selfTests() {
+    const hk0 = houseKey, hh0 = S.sim2 && S.sim2.house || null;
+    setHouse(null);
+    try {
+      return selfTests1();
+    } finally {
+      setHouse(hh0);
+      houseKey = hk0;
+    }
+  }
+  function selfTests1() {
     const T2 = [], chk = (n, ok, got, exp) => T2.push({ n, ok: !!ok, got, exp });
     try {
       chk("Demanda RIC N\xB003 de 6.700 W", Math.round(fdViv(6700).Pd) === 4295, n0(fdViv(6700).Pd) + " W", "4.295 W");
@@ -5596,6 +5744,31 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         chk("Plantilla " + k, false, String(e), "");
       }
     });
+    {
+      try {
+        const h = casaToHouse(CASA_TPL.find((t) => t[0] === "casa2p")[3]());
+        setHouse(h);
+        const s = sim2Blank(), c = { id: s.nid++, n: "Alumbrado escalera", In: 10, cv: "B", pc: 6, S: 1.5, dr: "DR1", ds: 30, cl: "A", nc: "dr", pe: true, on: true };
+        s.house = h;
+        s.circuits.push(c);
+        s.gen.on = true;
+        const A = simAddItem(s, "sw", c.id, [5.74, 1.1, 4], [-1, 0, 0], { v: "c" }), B = simAddItem(s, "sw", c.id, [5.74, 1.1 + FH, 4.5], [-1, 0, 0], { v: "c" });
+        const l = simAddItem(s, "lamp", c.id, [5.2, 2.42 + FH, 3.9], null, { sw: A, sw2: B });
+        const ev = simEval(s), eB = ev.E.find((e) => e.id === B), rB = itemRoom(s.items.find((i) => i.id === B));
+        chk("2 pisos: el punto del 2.\xBA piso queda en su recinto", rB && rB.f === 1 && rB.t === "escalera", rB ? rB.n + " (piso " + (rB.f + 1) + ")" : "\u2014", "Escalera (piso 2)");
+        const up = eB && eB.pts.some((p, i) => i && Math.abs(p[0] - eB.pts[i - 1][0]) < 1e-6 && Math.abs(p[2] - eB.pts[i - 1][2]) < 1e-6 && Math.abs(p[1] - eB.pts[i - 1][1]) > FH - 0.2);
+        chk("2 pisos: la canalizaci\xF3n sube por el montante", up, eB ? n1(eB.L) + " m" : "sin tramo", "tramo vertical \u2265 " + nf(FH, 2) + " m");
+        const by = (id) => s.items.find((i) => i.id === id);
+        by(A).on = true;
+        const on1 = simEval(s).act(by(l));
+        by(B).on = true;
+        const on2 = simEval(s).act(by(l));
+        chk("2 pisos: la luz de escalera se comanda desde ambos pisos", on1 && !on2 && !simInspect(s).some((o) => /Escalera: la luz/.test(o.t)), (on1 ? "on" : "off") + " \u2192 " + (on2 ? "on" : "off"), "on \u2192 off");
+      } catch (e) {
+        chk("Vivienda de 2 pisos", false, String(e), "");
+      }
+      setHouse(null);
+    }
     try {
       const s = sim2Blank(), c = { id: s.nid++, n: "Alumbrado", In: 10, cv: "B", pc: 6, S: 1.5, dr: "DR1", ds: 30, cl: "A", nc: "dr", pe: true, on: true };
       s.circuits.push(c);
@@ -8104,8 +8277,8 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     }).join("");
     return '<div class="tbl-wrap"><table class="pt bom"><thead><tr><th>Material</th><th>Cant.</th><th>Unid.</th><th>Precio unit.</th><th>Subtotal</th></tr></thead><tbody>' + rows + '</tbody><tfoot><tr><td colspan="4">Neto</td><td class="num">' + clp(c.net) + '</td></tr><tr><td colspan="4">IVA 19 %</td><td class="num">' + clp(c.iva) + '</td></tr><tr class="tot"><td colspan="4"><b>Total</b></td><td class="num"><b>' + clp(c.tot) + "</b></td></tr></tfoot></table></div>";
   }
-  const CASA_COL = { dormitorio: "#dbe6f2", living: "#efe4cf", comedor: "#efe4cf", estar: "#efe4cf", cocina: "#f4dfc8", lavadero: "#dcebee", bano: "#d4ebe2", pasillo: "#e6e6e6", otro: "#ececec" };
-  const CIRC = ["pasillo", "living", "comedor", "estar"];
+  const CASA_COL = { dormitorio: "#dbe6f2", living: "#efe4cf", comedor: "#efe4cf", estar: "#efe4cf", cocina: "#f4dfc8", lavadero: "#dcebee", bano: "#d4ebe2", pasillo: "#e6e6e6", escalera: "#ddd3c2", otro: "#ececec" };
+  const CIRC = ["pasillo", "living", "comedor", "estar", "escalera"];
   const rd = (v) => Math.round(v * 100) / 100;
   let casaCotas = true, casaMode = "mover", casaSel = null, casaConf = "", casaDrag = null, casaMsg = "", casaDragged = false, casaFull = false, casaStep = 0.1, casaHist = [], casaWsel = null, casaWPush = false, casaNew = { t: "dormitorio", n: "", w: 3, l: 3, pos: "der", ref: "" };
   const casaR = (id, n, t, x, z, w, l) => ({ id, n, t, x, z, w, l });
@@ -8116,9 +8289,29 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     ["base", "Casa base 70 m\xB2", "La del simulador", casaDef],
     ["depto", "Departamento ≈ 50 m\xB2", "1 dormitorio", () => casaAuto({ n: "Departamento 50 m\xB2", tx: 1.2, rooms: [casaR("r1", "Living-comedor", "living", 0, 0, 4.5, 3.2), casaR("r2", "Dormitorio", "dormitorio", 0, 3.2, 4.5, 3), casaR("r3", "Cocina", "cocina", 4.5, 0, 3.5, 2.4), casaR("r4", "Hall", "pasillo", 4.5, 2.4, 1.2, 3.8), casaR("r5", "Ba\xF1o", "bano", 5.7, 2.4, 2.3, 2), casaR("r6", "Logia", "lavadero", 5.7, 4.4, 2.3, 1.8)], doors: [] })],
     ["casa3", "Casa ≈ 90 m\xB2", "3 dormitorios, 2 ba\xF1os", () => casaAuto({ n: "Casa 3 dormitorios 90 m\xB2", tx: 1.5, rooms: [casaR("r1", "Living-comedor", "living", 0, 0, 5.5, 4), casaR("r2", "Cocina", "cocina", 5.5, 0, 3.5, 4), casaR("r3", "Logia", "lavadero", 9, 0, 3, 2.2), casaR("r4", "Ba\xF1o 2", "bano", 9, 2.2, 3, 1.8), casaR("r5", "Pasillo", "pasillo", 3.5, 4, 8.5, 1.1), casaR("r6", "Dormitorio 1", "dormitorio", 0, 4, 3.5, 3.5), casaR("r7", "Dormitorio 2", "dormitorio", 3.5, 5.1, 3.5, 2.4), casaR("r8", "Ba\xF1o", "bano", 7, 5.1, 2, 2.4), casaR("r9", "Dormitorio 3", "dormitorio", 9, 5.1, 3, 2.4)], doors: [] })],
+    ["casa2p", "Casa 2 pisos ≈ 125 m\xB2", "3 dormitorios, escalera", () => {
+      const R = casaR, c = { n: "Casa 2 pisos 125 m\xB2", tx: 1.5, af: 0, rooms: [R("r1", "Living-comedor", "living", 0, 0, 4.6, 7.4), R("r2", "Hall de acceso", "pasillo", 4.6, 0, 1.2, 3.4), R("r3", "Escalera", "escalera", 4.6, 3.4, 1.2, 4), R("r4", "Ba\xF1o visita", "bano", 5.8, 0, 2.8, 1.8), R("r5", "Cocina", "cocina", 5.8, 1.8, 2.8, 3.4), R("r6", "Logia", "lavadero", 5.8, 5.2, 2.8, 2.2)], doors: [["z", 0, 4.75, 5.65], ["x", 4.6, 1.3, 2.1], ["x", 5.8, 0.5, 1.3], ["x", 5.8, 2.3, 3.1], ["z", 5.2, 6.6, 7.4]], open: [["x", 4.6, 5.6, 7.4]] };
+      c.other = { rooms: [R("r7", "Dormitorio principal", "dormitorio", 0, 0, 3.4, 4.6), R("r8", "Ba\xF1o", "bano", 3.4, 0, 2.4, 2.2), R("r9", "Estudio", "otro", 5.8, 0, 2.8, 2.2), R("r10", "Pasillo", "pasillo", 3.4, 2.2, 5.2, 1.2), R("r11", "Hall", "pasillo", 3.4, 3.4, 1.2, 1.2), R("r12", "Escalera", "escalera", 4.6, 3.4, 1.2, 4), R("r13", "Dormitorio 2", "dormitorio", 0, 4.6, 4.6, 2.8), R("r14", "Dormitorio 3", "dormitorio", 5.8, 3.4, 2.8, 4)], doors: [["x", 3.4, 2.4, 3.2], ["z", 2.2, 4.2, 5], ["z", 2.2, 6.8, 7.6], ["z", 3.4, 6.8, 7.6], ["z", 4.6, 3.6, 4.4]], open: [["z", 3.4, 3.4, 4.6], ["z", 3.4, 4.6, 5.8]] };
+      return c;
+    }],
     ["cero", "Desde cero", "Un recinto para empezar", () => casaAuto({ n: "Mi vivienda", tx: 1, rooms: [casaR("r1", "Living", "living", 0, 0, 4, 4)], doors: [] })]
   ];
   const cBox = (r) => ({ x0: r.x, x1: r.x + r.w, z0: r.z, z1: r.z + r.l });
+  function casaSwap(c) {
+    if (!c.other) return;
+    const o = c.other;
+    c.other = { rooms: c.rooms, doors: c.doors, open: c.open || [] };
+    c.rooms = o.rooms || [];
+    c.doors = o.doors || [];
+    c.open = o.open || [];
+    c.af = c.af === 1 ? 0 : 1;
+  }
+  const casaAF = (c) => c.af === 1 ? 1 : 0;
+  function casaAll(c) {
+    const a = casaAF(c), R = c.rooms.map((r) => Object.assign({}, r, { f: a }));
+    return c.other ? R.concat((c.other.rooms || []).map((r) => Object.assign({}, r, { f: 1 - a }))) : R;
+  }
+  const casaUse = (c) => casaAll(c).filter((r) => !(r.f && r.t === "escalera"));
   function casaShared(a, b) {
     const A = cBox(a), B = cBox(b), e = 0.02;
     for (const [p0, p1, q0, q1, ax] of [[A.x1, B.x0, 0, 0, "x"], [A.x0, B.x1, 0, 0, "x"], [A.z1, B.z0, 0, 0, "z"], [A.z0, B.z1, 0, 0, "z"]]) {
@@ -8134,6 +8327,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return [sh[0], rd(sh[1]), rd(c - w / 2), rd(c + w / 2)];
   };
   function casaRoot(c) {
+    if (casaAF(c) === 1) return c.rooms.find((r) => r.t === "escalera") || c.rooms.slice().sort((a, b) => b.w * b.l - a.w * a.l)[0];
     const z0 = Math.min(...c.rooms.map((r) => r.z));
     return c.rooms.filter((r) => Math.abs(r.z - z0) < 0.02).sort((a, b) => CIRC.includes(b.t) - CIRC.includes(a.t) || b.w * b.l - a.w * a.l)[0];
   }
@@ -8142,7 +8336,8 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     c.doors = D;
     if (!R.length) return c;
     const root = casaRoot(c), z0 = root.z, lo = root.x + 0.6, hi = root.x + root.w - 0.6;
-    if (hi >= lo) {
+    if (!c.open) c.open = [];
+    if (hi >= lo && casaAF(c) === 0) {
       let cx = [c.tx + 1.4, c.tx - 1.4].find((v) => v >= lo && v <= hi);
       if (cx == null) cx = Math.abs(lo - c.tx) > Math.abs(hi - c.tx) ? lo : hi;
       D.push(["z", rd(z0), rd(cx - 0.45), rd(cx + 0.45)]);
@@ -8162,27 +8357,37 @@ select.bad{border-color:var(--bad);color:var(--bad)}
             return;
           }
           if (sh[3] - sh[2] < 1) return;
+          if (a.t === "escalera" || b.t === "escalera") {
+            if (!CIRC.includes(a.t) || !CIRC.includes(b.t)) return;
+            if (!best || best.sc > -50) best = { sc: -50, sh, b, mkop: 1 };
+            return;
+          }
           const sc = (CIRC.includes(a.t) ? 0 : 2) + (a.t === "bano" ? 4 : 0) + (b.t === "bano" && !CIRC.includes(a.t) ? 3 : 0) - Math.min(sh[3] - sh[2], 3) * 0.1;
           if (!best || sc < best.sc) best = { sc, sh, b };
         });
       });
       if (!best) break;
       inT.add(best.b.id);
-      if (!best.op) D.push(doorOn(best.sh, 0.8));
+      if (best.mkop) c.open.push(doorOn(best.sh, Math.min(1.2, best.sh[3] - best.sh[2])));
+      else if (!best.op) D.push(doorOn(best.sh, 0.8));
     }
     return c;
   }
   function casaNorm(c) {
-    if (!c.rooms.length) return;
-    const mx = Math.min(...c.rooms.map((r) => r.x)), mz = Math.min(...c.rooms.map((r) => r.z));
+    const A = casaAll(c);
+    if (!A.length) return;
+    const mx = Math.min(...A.map((r) => r.x)), mz = Math.min(...A.map((r) => r.z));
     if (Math.abs(mx) < 1e-9 && Math.abs(mz) < 1e-9) return;
-    c.rooms.forEach((r) => {
-      r.x = rd(r.x - mx);
-      r.z = rd(r.z - mz);
-    });
     const sh = (d) => d[0] === "x" ? ["x", rd(d[1] - mx), rd(d[2] - mz), rd(d[3] - mz)] : ["z", rd(d[1] - mz), rd(d[2] - mx), rd(d[3] - mx)];
-    c.doors = c.doors.map(sh);
-    c.open = (c.open || []).map(sh);
+    [c, c.other].forEach((k) => {
+      if (!k) return;
+      (k.rooms || []).forEach((r) => {
+        r.x = rd(r.x - mx);
+        r.z = rd(r.z - mz);
+      });
+      k.doors = (k.doors || []).map(sh);
+      k.open = (k.open || []).map(sh);
+    });
     c.tx = rd(c.tx - mx);
   }
   function casaPrune(c) {
@@ -8201,8 +8406,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   }
   function casaToHouse(c) {
     const k = JSON.parse(JSON.stringify(c));
+    if (casaAF(k) === 1) casaSwap(k);
     casaNorm(k);
-    return { n: k.n || "Mi vivienda", tx: rd(k.tx), rooms: k.rooms.map((r) => ({ id: r.id, n: r.n, t: r.t, x0: rd(r.x), x1: rd(r.x + r.w), z0: rd(r.z), z1: rd(r.z + r.l) })), doors: k.doors.map((d) => d.slice()), open: (k.open || []).map((d) => d.slice()), we: +k.we || 0.15, wi: +k.wi || 0.12 };
+    const o = k.other || { rooms: [], doors: [], open: [] }, rm = (f) => (r) => ({ id: r.id, n: r.n, t: r.t, x0: rd(r.x), x1: rd(r.x + r.w), z0: rd(r.z), z1: rd(r.z + r.l), f }), dd = (f) => (d) => d.slice(0, 4).concat([f]);
+    return { n: k.n || "Mi vivienda", tx: rd(k.tx), rooms: k.rooms.map(rm(0)).concat((o.rooms || []).map(rm(1))), doors: k.doors.map(dd(0)).concat((o.doors || []).map(dd(1))), open: (k.open || []).map(dd(0)).concat((o.open || []).map(dd(1))), we: +k.we || 0.15, wi: +k.wi || 0.12 };
   }
   const cArea = (r) => r.w * r.l;
   const cMinC = (r) => minCentros({ area: cArea(r) });
@@ -8212,7 +8419,14 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return c.rooms.filter((r) => Math.abs(r.z - z0) < 0.02);
   }
   function casaCheck(c) {
-    const E = [], Wn = [], R = c.rooms;
+    if (!c.other) return casaCheck1(c);
+    const a = casaCheck1(c), k = JSON.parse(JSON.stringify(c));
+    casaSwap(k);
+    const b = casaCheck1(k), P = "Piso " + (casaAF(k) + 1) + ": ";
+    return { E: a.E.concat(b.E.map((m) => P + m)), Wn: a.Wn.concat(b.Wn.map((m) => P + m)) };
+  }
+  function casaCheck1(c) {
+    const E = [], Wn = [], R = c.rooms, up = casaAF(c) === 1, two = !!c.other;
     R.forEach((r) => {
       if (!(r.w >= 0.9 && r.l >= 0.9)) E.push(r.n + ": cada lado debe medir al menos 0,9 m.");
       if (r.w > 30 || r.l > 30) E.push(r.n + ": m\xE1ximo 30 m por lado.");
@@ -8223,6 +8437,37 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     }
     if (!R.length) E.push("Agrega al menos un recinto.");
     if (!R.length) return { E, Wn };
+    if (two) {
+      const es = R.filter((r) => r.t === "escalera"), eo = (c.other.rooms || []).filter((r) => r.t === "escalera");
+      if (!es.length) E.push("En una casa de 2 pisos ambos pisos necesitan un recinto \xABEscalera\xBB, uno sobre el otro.");
+      else if (eo.length && !es.some((a) => eo.some((b) => {
+        const A = cBox(a), B = cBox(b), ox = Math.min(A.x1, B.x1) - Math.max(A.x0, B.x0), oz = Math.min(A.z1, B.z1) - Math.max(A.z0, B.z0);
+        return ox > 0 && oz > 0 && ox * oz >= 0.6 * Math.min(cArea(a), cArea(b));
+      }))) E.push("La escalera de este piso no coincide con la del otro piso: deben quedar una sobre la otra.");
+      es.forEach((r) => {
+        if (Math.min(r.w, r.l) < 0.9) E.push(r.n + ": el ancho \xFAtil m\xEDnimo de una escalera es 0,9 m.");
+        else if (Math.max(r.w, r.l) < 3.6) Wn.push(r.n + ": una escalera recta para " + nf(FH, 2) + " m de altura necesita \u2248 3,8 m de largo (15 pelda\xF1os de 18 \xD7 25 cm); con " + nf(Math.max(r.w, r.l), 2) + " m deber\xE1 ser en L o de caracol.");
+      });
+    }
+    if (up) {
+      const seen = new Set(R.filter((r) => r.t === "escalera").map((r) => r.id)), q = [...seen];
+      const adj = (a, b) => {
+        const sh = casaShared(a, b);
+        return sh && c.doors.concat((c.open || []).filter((o) => o[3] - o[2] >= 0.6)).some((d) => d[0] === sh[0] && Math.abs(d[1] - sh[1]) < 0.02 && d[2] >= sh[2] - 0.02 && d[3] <= sh[3] + 0.02);
+      };
+      while (q.length) {
+        const id = q.shift(), a = R.find((r) => r.id === id);
+        R.forEach((b) => {
+          if (!seen.has(b.id) && adj(a, b)) {
+            seen.add(b.id);
+            q.push(b.id);
+          }
+        });
+      }
+      const off = R.filter((r) => !seen.has(r.id));
+      if (seen.size && off.length) Wn.push("Sin acceso desde la escalera: " + off.map((r) => r.n).join(", ") + ". Usa \xAB\u{1F6AA} Auto\xBB o agrega puertas.");
+      return { E, Wn };
+    }
     const fr = casaFront(c), onF = fr.find((r) => c.tx >= r.x + 0.5 && c.tx <= r.x + r.w - 0.5);
     if (!onF) E.push("El tablero debe ir en el muro del frente (arriba en el plano), a 0,5 m o m\xE1s de una esquina.");
     const z0 = fr[0].z;
@@ -8253,10 +8498,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   }
   const CC_T = { alumbrado: ["Alumbrado", 100, "B", 0, 1.5], enchufes: ["Enchufes", 250, "C", 0, 2.5], cocina: ["Cocina y lavadero", 250, "C", 16, 2.5], horno: ["Horno o cocina el\xE9ctrica", 0, "C", 16, 2.5], clima: ["Climatizaci\xF3n", 0, "C", 16, 2.5], otro: ["Otro equipo", 0, "C", 0, 2.5] };
   function casaBase(c) {
-    const R = c.rooms, z0 = R.length ? Math.min(...R.map((r) => r.z)) : 0;
+    const R = casaUse(c), R0 = R.filter((r) => !r.f), z0 = R0.length ? Math.min(...R0.map((r) => r.z)) : 0;
     let cen = 0, enc = 0, sw = 0, hor = 0, La = 0, Le = 0, wet = 0, dmax = 0;
     R.forEach((r) => {
-      const d = Math.abs(r.x + r.w / 2 - c.tx) + (r.z + r.l / 2 - z0) + 0.6, mc = cMinC(r), me = cMinE(r);
+      const d = Math.abs(r.x + r.w / 2 - c.tx) + Math.abs(r.z + r.l / 2 - z0) + 0.6 + (r.f ? FH : 0), mc = cMinC(r), me = cMinE(r);
       dmax = Math.max(dmax, d + Math.max(r.w, r.l) / 2);
       cen += mc;
       enc += me;
@@ -8281,7 +8526,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     split(b.enc - b.wet, 12).forEach((n, i, a) => out.push(mk("enchufes", "Enchufes" + (a.length > 1 ? " " + (i + 1) : ""), n)));
     if (b.wet) out.push(mk("cocina", "Cocina y lavadero", b.wet));
     for (let i = 0; i < b.hor; i++) out.push(mk("horno", "Horno" + (b.hor > 1 ? " " + (i + 1) : ""), 1, 2e3));
-    const A = c.rooms.reduce((a, r) => a + cArea(r), 0), minC = A >= 30 ? 3 : 2;
+    const A = casaUse(c).reduce((a, r) => a + cArea(r), 0), minC = A >= 30 ? 3 : 2;
     while (out.length < minC) {
       const k = out.reduce((bi, x, i) => x.pts > 1 && CC_T[x.t][1] && (bi < 0 || x.pts > out[bi].pts) ? i : bi, -1);
       if (k < 0) break;
@@ -8305,9 +8550,9 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return { P, I, In, auto, Iz, S: S0, dv, cv: T0[2], E, W, ok: !E.length };
   }
   function casaCircCheck(c) {
-    const cs = c.circ || [], b = casaBase(c), A = c.rooms.reduce((a, r) => a + cArea(r), 0), minC = A >= 30 ? 3 : 2, G = [], Wn = [], rs = cs.map(casaCircCalc);
+    const cs = c.circ || [], b = casaBase(c), A = casaUse(c).reduce((a, r) => a + cArea(r), 0), minC = A >= 30 ? 3 : 2, G = [], Wn = [], rs = cs.map(casaCircCalc);
     if (cs.length < minC) G.push("Una vivienda de " + n1(A) + " m\xB2 necesita al menos " + minC + " circuitos (RIC N\xB010).");
-    if (c.rooms.some((r) => ["cocina", "lavadero"].includes(r.t)) && !cs.some((x) => x.t === "cocina")) G.push("Falta el circuito exclusivo de enchufes de cocina y lavadero (m\xEDnimo 16 A).");
+    if (casaUse(c).some((r) => ["cocina", "lavadero"].includes(r.t)) && !cs.some((x) => x.t === "cocina")) G.push("Falta el circuito exclusivo de enchufes de cocina y lavadero (m\xEDnimo 16 A).");
     const pa = cs.filter((x) => x.t === "alumbrado").reduce((a, x) => a + (+x.pts || 0), 0), pe = cs.filter((x) => x.t === "enchufes" || x.t === "cocina").reduce((a, x) => a + (+x.pts || 0), 0);
     if (pa < b.cen) Wn.push("Los circuitos de alumbrado suman " + pa + " centros; el plano necesita al menos " + b.cen + ".");
     if (pe < b.enc) Wn.push("Los circuitos de enchufes suman " + pe + "; el plano necesita al menos " + b.enc + ".");
@@ -8354,10 +8599,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return B;
   }
   function casaEst(c) {
-    const R = c.rooms, z0 = R.length ? Math.min(...R.map((r) => r.z)) : 0;
+    const R = casaUse(c), R0 = R.filter((r) => !r.f), z0 = R0.length ? Math.min(...R0.map((r) => r.z)) : 0;
     let cen = 0, enc = 0, sw = 0, hor = 0, La = 0, Le = 0, wet = 0;
     R.forEach((r) => {
-      const d = Math.abs(r.x + r.w / 2 - c.tx) + (r.z + r.l / 2 - z0) + 0.6, mc = cMinC(r), me = cMinE(r);
+      const d = Math.abs(r.x + r.w / 2 - c.tx) + Math.abs(r.z + r.l / 2 - z0) + 0.6 + (r.f ? FH : 0), mc = cMinC(r), me = cMinE(r);
       cen += mc;
       enc += me;
       sw++;
@@ -8407,10 +8652,13 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return o;
   }
   function casaSVG(c, fr) {
-    const R = c.rooms, K = CK, M = CM, ov = casaOver(c);
-    const b = fr || { x0: Math.min(0, ...R.map((r) => r.x)), z0: Math.min(0, ...R.map((r) => r.z)), x1: Math.max(4, ...R.map((r) => r.x + r.w)), z1: Math.max(4, ...R.map((r) => r.z + r.l)) };
+    const R = c.rooms, K = CK, M = CM, ov = casaOver(c), RA = casaAll(c), RO = c.other ? c.other.rooms || [] : [], up = casaAF(c) === 1;
+    const b = fr || { x0: Math.min(0, ...RA.map((r) => r.x)), z0: Math.min(0, ...RA.map((r) => r.z)), x1: Math.max(4, ...RA.map((r) => r.x + r.w)), z1: Math.max(4, ...RA.map((r) => r.z + r.l)) };
     const W = (b.x1 - b.x0) * K + M * 2, H = (b.z1 - b.z0) * K + M * 2, X = (x) => M + (x - b.x0) * K, Z = (z) => M + (z - b.z0) * K;
     let g = '<defs><pattern id="cgrid" width="' + K + '" height="' + K + '" patternUnits="userSpaceOnUse" x="' + X(0) + '" y="' + Z(0) + '"><path d="M' + K + " 0H0V" + K + '" fill="none" stroke="#c9d3dc" stroke-width=".6"/></pattern><marker id="ca" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7c8790"/></marker></defs><rect width="' + W + '" height="' + H + '" fill="#fbfcfd"/><rect width="' + W + '" height="' + H + '" fill="url(#cgrid)"/>';
+    RO.forEach((r) => {
+      g += '<g pointer-events="none"><rect x="' + X(r.x) + '" y="' + Z(r.z) + '" width="' + r.w * K + '" height="' + r.l * K + '" fill="' + (r.t === "escalera" ? "rgba(140,120,90,.16)" : "none") + '" stroke="#8a96a1" stroke-width="1.2" stroke-dasharray="5 4"/><text x="' + X(r.x + 4 / K) + '" y="' + Z(r.z + 12 / K) + '" font-size="8.5" fill="#8a96a1">' + esc(r.n) + " (piso " + (up ? 1 : 2) + ")</text></g>";
+    });
     R.forEach((r) => {
       const sel = r.id === casaSel, bad = ov.has(r.id);
       g += '<rect data-r="' + r.id + '" x="' + X(r.x) + '" y="' + Z(r.z) + '" width="' + r.w * K + '" height="' + r.l * K + '" fill="' + (bad ? "#f6d4d0" : CASA_COL[r.t] || "#eee") + '" stroke="' + (sel ? "#b8621b" : bad ? "#c0392b" : "none") + '" stroke-width="' + (sel ? 3 : bad ? 2 : 1) + '"' + (sel ? ' stroke-dasharray="7 4"' : "") + ' style="cursor:' + (casaMode === "mover" ? sel ? "move" : "pointer" : "crosshair") + '"/>';
@@ -8449,6 +8697,16 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         g += '<path d="' + p + '" fill="rgba(184,98,27,.08)" stroke="#b8621b" stroke-width="1.2" pointer-events="none"/>';
         g += '<line data-d="' + i + '" x1="' + (ax === "x" ? X(v) : X(m0)) + '" y1="' + (ax === "x" ? Z(m0) : Z(v)) + '" x2="' + (ax === "x" ? X(v) : X(m1)) + '" y2="' + (ax === "x" ? Z(m1) : Z(v)) + '" stroke="' + (casaMode === "puertas" ? "rgba(174,42,33,.55)" : "transparent") + '" stroke-width="14"' + (casaMode === "puertas" ? "" : ' pointer-events="none"') + "/>";
       });
+      R.filter((r) => r.t === "escalera").forEach((r) => {
+        const az = r.l >= r.w, L = az ? r.l : r.w, n = Math.max(4, Math.round((L - 0.3) / 0.25));
+        let p = "";
+        for (let i = 1; i < n; i++) {
+          const t = 0.15 + (L - 0.3) * i / n;
+          p += az ? "M" + X(r.x + 0.08) + " " + Z(r.z + r.l - t) + "H" + X(r.x + r.w - 0.08) : "M" + X(r.x + r.w - t) + " " + Z(r.z + 0.08) + "V" + Z(r.z + r.l - 0.08);
+        }
+        const a0 = az ? [X(r.x + r.w / 2), Z(r.z + r.l - 0.2)] : [X(r.x + r.w - 0.2), Z(r.z + r.l / 2)], a1 = az ? [X(r.x + r.w / 2), Z(r.z + 0.3)] : [X(r.x + 0.3), Z(r.z + r.l / 2)];
+        g += '<g pointer-events="none"><path d="' + p + '" stroke="#8c7a5c" stroke-width="1" fill="none"/><line x1="' + a0[0] + '" y1="' + a0[1] + '" x2="' + a1[0] + '" y2="' + a1[1] + '" stroke="#5c4a2c" stroke-width="1.4" marker-end="url(#ca)"' + (up ? ' stroke-dasharray="4 3"' : "") + '/><text x="' + a1[0] + '" y="' + (a1[1] - 5) + '" font-size="8.5" font-weight="800" fill="#5c4a2c" text-anchor="middle">' + (up ? "BAJA" : "SUBE") + "</text></g>";
+      });
       R.forEach((r) => {
         const cx = X(r.x + r.w / 2), cz = Z(r.z + r.l / 2), fs = Math.max(8, Math.min(12, r.w * K / 9));
         g += '<g pointer-events="none" text-anchor="middle" fill="#25313b"><text x="' + cx + '" y="' + (cz - 4) + '" font-size="' + fs + '" font-weight="800">' + esc(r.n) + '</text><text x="' + cx + '" y="' + (cz + fs + 1) + '" font-size="' + (fs - 1) + '">' + nf(r.w, 2) + " \xD7 " + nf(r.l, 2) + " m \xB7 " + n1(cArea(r)) + " m\xB2</text></g>";
@@ -8461,8 +8719,8 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       }
       const ex = Math.max(...R.map((r) => r.x + r.w)), mx = Math.min(...R.map((r) => r.x)), ez = Math.max(...R.map((r) => r.z + r.l));
       g += '<g font-size="11" fill="#5a6772" text-anchor="middle" pointer-events="none"><line x1="' + X(mx) + '" y1="' + (Z(z0) - 26) + '" x2="' + X(ex) + '" y2="' + (Z(z0) - 26) + '" stroke="#7c8790" marker-start="url(#ca)" marker-end="url(#ca)"/><text x="' + (X(mx) + X(ex)) / 2 + '" y="' + (Z(z0) - 31) + '" font-weight="700">' + nf(ex - mx, 2) + ' m \xB7 frente (calle)</text><line x1="' + (X(mx) - 24) + '" y1="' + Z(z0) + '" x2="' + (X(mx) - 24) + '" y2="' + Z(ez) + '" stroke="#7c8790" marker-start="url(#ca)" marker-end="url(#ca)"/><text transform="translate(' + (X(mx) - 30) + " " + (Z(z0) + Z(ez)) / 2 + ') rotate(-90)" font-weight="700">' + nf(ez - z0, 2) + " m</text></g>";
-      g += '<g pointer-events="none"><rect x="' + (X(c.tx) - 0.45 * K) + '" y="' + (Z(z0) + 3) + '" width="' + 0.9 * K + '" height="9" fill="#1d2329"/><text x="' + X(c.tx) + '" y="' + (Z(z0) + 24) + '" text-anchor="middle" font-size="10" font-weight="800" fill="#1d2329">TABLERO</text><rect x="' + (X(c.tx - 1) - 6) + '" y="' + (Z(z0) - 14) + '" width="12" height="10" fill="#ddd" stroke="#555"/></g>';
-      if (casaMode === "tablero") g += '<line data-front="1" x1="' + X(mx) + '" y1="' + Z(z0) + '" x2="' + X(ex) + '" y2="' + Z(z0) + '" stroke="rgba(31,95,191,.35)" stroke-width="18"/>';
+      if (!up) g += '<g pointer-events="none"><rect x="' + (X(c.tx) - 0.45 * K) + '" y="' + (Z(z0) + 3) + '" width="' + 0.9 * K + '" height="9" fill="#1d2329"/><text x="' + X(c.tx) + '" y="' + (Z(z0) + 24) + '" text-anchor="middle" font-size="10" font-weight="800" fill="#1d2329">TABLERO</text><rect x="' + (X(c.tx - 1) - 6) + '" y="' + (Z(z0) - 14) + '" width="12" height="10" fill="#ddd" stroke="#555"/></g>';
+      if (casaMode === "tablero" && !up) g += '<line data-front="1" x1="' + X(mx) + '" y1="' + Z(z0) + '" x2="' + X(ex) + '" y2="' + Z(z0) + '" stroke="rgba(31,95,191,.35)" stroke-width="18"/>';
     }
     return '<svg id="casasvg" viewBox="0 0 ' + W + " " + H + '" data-b="' + [b.x0, b.z0, b.x1, b.z1].join(",") + '" role="img" aria-label="Plano de la vivienda">' + g + "</svg>";
   }
@@ -8498,29 +8756,32 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return '<div class="casains"><div class="cih"><b>＋ Nuevo recinto</b><span class="hint">o toca un recinto del plano para editarlo</span></div><div class="cigrid"><label class="cif"><span>Tipo</span>' + ts(nw.t, 'id="cn-t" data-cn="t"') + '</label><label class="cif"><span>Nombre</span><input id="cn-n" type="text" data-cn="n" maxlength="40" placeholder="' + esc(TIPOS_REC[nw.t] || "Recinto") + '" value="' + esc(nw.n) + '"></label><label class="cif"><span>Ancho (m)</span><input id="cn-w" type="number" inputmode="decimal" step="0.05" min="0.9" max="30" data-cn="w" value="' + nw.w + '"></label><label class="cif"><span>Largo (m)</span><input id="cn-l" type="number" inputmode="decimal" step="0.05" min="0.9" max="30" data-cn="l" value="' + nw.l + '"></label><label class="cif"><span>Ubicar</span><select id="cn-p" data-cn="pos">' + pos + '</select></label><label class="cif"><span>De</span><select id="cn-r" data-cn="ref">' + refs + '</select></label></div><div class="chips"><button type="button" class="btn small" data-cs="addgo">＋ Agregar recinto</button></div></div>';
   }
   function casaWrap(c, ck) {
-    const modes = [["mover", "✋ Mover"], ["muros", "\u{1F9F1} Muros"], ["puertas", "\u{1F6AA} Puertas"], ["tablero", "▣ Tablero"]].map(([k, t]) => '<button type="button" class="chip' + (casaMode === k ? " on" : "") + '" data-cs="mode" data-k="' + k + '" aria-pressed="' + (casaMode === k) + '">' + t + "</button>").join("");
+    const up = casaAF(c) === 1;
+    if (up && casaMode === "tablero") casaMode = "mover";
+    const fls = c.other ? '<span class="cfl" role="group" aria-label="Piso">' + [0, 1].map((f) => '<button type="button" class="chip' + (casaAF(c) === f ? " on" : "") + '" data-cs="fl" data-k="' + f + '" aria-pressed="' + (casaAF(c) === f) + '">Piso ' + (f + 1) + "</button>").join("") + '<button type="button" class="chip bad" data-cs="rm2" title="Quitar el 2.\xBA piso">' + (casaConf === "rm2" ? "\xBFQuitar el 2.\xBA piso? Toca otra vez" : "✕ 2.\xBA piso") + '</button></span><span class="cbsep"></span>' : '<button type="button" class="chip" data-cs="add2" title="Agregar un segundo piso">＋ 2.\xBA piso</button><span class="cbsep"></span>';
+    const modes = fls + [["mover", "✋ Mover"], ["muros", "\u{1F9F1} Muros"], ["puertas", "\u{1F6AA} Puertas"]].concat(up ? [] : [["tablero", "▣ Tablero"]]).map(([k, t]) => '<button type="button" class="chip' + (casaMode === k ? " on" : "") + '" data-cs="mode" data-k="' + k + '" aria-pressed="' + (casaMode === k) + '">' + t + "</button>").join("");
     const hint = { mover: casaSel ? "Arrastra el recinto marcado para moverlo o el punto naranjo para cambiar su tama\xF1o. Se ajusta a la grilla y a los muros vecinos." : "Toca un recinto para seleccionarlo; despu\xE9s podr\xE1s arrastrarlo o escribir sus medidas.", muros: "Toca un muro interior y elige en el panel qu\xE9 parte quitar: porcentaje, largo y ubicaci\xF3n (cocina americana, living-comedor integrado, arco al pasillo\u2026). Los muros exteriores no se abren.", puertas: "Toca un muro para poner una puerta (0,8 m; 0,9 m en el frente). Toca una puerta roja para quitarla.", tablero: "Toca el muro del frente (l\xEDnea azul) donde ir\xE1 el tablero." }[casaMode];
-    const msg = (casaMsg ? note(esc(casaMsg), "ok") : "") + (ck.E.length ? note("<b>Corrige:</b> " + ck.E.map(esc).join(" \xB7 "), "bad") : "") + (ck.Wn.length ? note(ck.Wn.map(esc).join(" \xB7 "), "warn") : "") + (!ck.E.length && !ck.Wn.length ? note("✓ Plano listo: sin superposiciones, todos con acceso y tablero en el frente.", "ok") : "");
+    const msg = (c.other ? note("<b>Editando el piso " + (casaAF(c) + 1) + ".</b> " + (up ? "El otro piso se ve punteado como referencia. La escalera debe quedar exactamente sobre la del 1.\xBA piso; el tablero general queda en el 1.\xBA piso." : "El 2.\xBA piso se ve punteado como referencia. Cambia de piso con los botones Piso 1 / Piso 2."), "info") : "") + (casaMsg ? note(esc(casaMsg), "ok") : "") + (ck.E.length ? note("<b>Corrige:</b> " + ck.E.map(esc).join(" \xB7 "), "bad") : "") + (ck.Wn.length ? note(ck.Wn.map(esc).join(" \xB7 "), "warn") : "") + (!ck.E.length && !ck.Wn.length ? note("✓ Plano listo: sin superposiciones, todos con acceso y tablero en el frente.", "ok") : "");
     casaMsg = "";
     return '<div id="casawrap" class="casawrap' + (casaFull ? " full" : "") + '"><div class="casabar">' + modes + '<span class="cbsep"></span><button type="button" class="chip" data-cs="add" title="Nuevo recinto">＋ Recinto</button><button type="button" class="chip" data-cs="auto" title="Puertas autom\xE1ticas">\u{1F6AA} Auto</button><button type="button" class="chip" data-cs="undo"' + (casaHist.length ? "" : " disabled") + ' title="Deshacer">↶</button><label class="chip cstep" title="Im\xE1n de la grilla">Im\xE1n <select data-cf="step" aria-label="Im\xE1n">' + STEPS.map((v) => '<option value="' + v + '"' + (v === casaStep ? " selected" : "") + ">" + nf(v, 2) + " m</option>").join("") + '</select></label><button type="button" class="chip' + (casaCotas ? " on" : "") + '" data-cs="cotas" aria-pressed="' + casaCotas + '">\u{1F4CF} Cotas</button><label class="chip cstep" title="Espesor de muros exteriores">Muro ext. <select data-cf="we" aria-label="Espesor muros exteriores">' + [0.1, 0.12, 0.15, 0.2, 0.25, 0.3].map((v) => '<option value="' + v + '"' + (Math.abs(v - (+c.we || 0.15)) < 1e-6 ? " selected" : "") + ">" + nf(v, 2) + " m</option>").join("") + '</select></label><label class="chip cstep" title="Espesor de tabiques interiores">Tabique <select data-cf="wi" aria-label="Espesor tabiques">' + [0.07, 0.1, 0.12, 0.15].map((v) => '<option value="' + v + '"' + (Math.abs(v - (+c.wi || 0.12)) < 1e-6 ? " selected" : "") + ">" + nf(v, 2) + " m</option>").join("") + '</select></label><button type="button" class="chip on" data-cs="full">' + (casaFull ? "✕ Salir" : "⛶ Pantalla completa") + '</button></div><p class="hint casahint">' + hint + '</p><div class="casaplan" id="casaplan">' + casaSVG(c) + '</div><div class="casamsg">' + msg + "</div>" + (casaMode === "muros" ? casaWallEditor(c) : casaInspector(c)) + "</div>";
   }
   function pgCasa() {
     if (!S.casa) S.casa = casaDef();
     if (!Array.isArray(S.casa.circ)) S.casa.circ = casaCircAuto(S.casa);
-    const c = S.casa, ck = casaCheck(c), A = c.rooms.reduce((a, r) => a + cArea(r), 0), est = casaEst(c);
+    const c = S.casa, ck = casaCheck(c), A = casaUse(c).reduce((a, r) => a + cArea(r), 0), est = casaEst(c), two = !!c.other;
     if (casaSel && !c.rooms.some((r) => r.id === casaSel)) casaSel = null;
-    const rows = c.rooms.map((r) => '<tr class="' + (r.id === casaSel ? "csel" : "") + '"><td><b>' + esc(r.n) + "</b></td><td>" + (TIPOS_REC[r.t] || r.t) + '</td><td class="num">' + nf(r.w, 2) + " \xD7 " + nf(r.l, 2) + '</td><td class="num">' + n1(cArea(r)) + '</td><td class="num">' + cMinC(r) + " / " + cMinE(r) + '</td><td style="white-space:nowrap"><button type="button" class="btn ghost small" data-cs="sel" data-id="' + r.id + '" title="Editar">✏</button><button type="button" class="btn ghost small" data-cs="delid" data-id="' + r.id + '" title="Eliminar">\u{1F5D1}</button></td></tr>').join("");
+    const rows = casaAll(c).sort((a, b) => a.f - b.f).map((r) => '<tr class="' + (r.id === casaSel ? "csel" : "") + '"><td><b>' + esc(r.n) + "</b>" + (two ? ' <span class="hint">\xB7 piso ' + (r.f + 1) + (r.f && r.t === "escalera" ? " (vac\xEDo)" : "") + "</span>" : "") + "</td><td>" + (TIPOS_REC[r.t] || r.t) + '</td><td class="num">' + nf(r.w, 2) + " \xD7 " + nf(r.l, 2) + '</td><td class="num">' + n1(cArea(r)) + '</td><td class="num">' + cMinC(r) + " / " + cMinE(r) + '</td><td style="white-space:nowrap"><button type="button" class="btn ghost small" data-cs="sel" data-id="' + r.id + '" title="Editar">✏</button><button type="button" class="btn ghost small" data-cs="delid" data-id="' + r.id + '" title="Eliminar">\u{1F5D1}</button></td></tr>').join("");
     const tpl = CASA_TPL.map(([k, t, d]) => '<button type="button" class="tpl" data-cs="tpl" data-k="' + k + '"><span class="ti">\u{1F4D0}</span><span class="tt">' + (casaConf === "tpl:" + k ? "\xBFReemplazar el plano? Toca otra vez" : t) + '</span><span class="td">' + d + "</span></button>").join("");
     const cs = s2HasWork() && casaConf === "sim" ? "\xBFReemplazar la instalaci\xF3n actual del 3D? Toca otra vez" : "▶ Usar en el Simulador 3D";
-    const front = c.rooms.length ? Math.min(...c.rooms.map((r) => r.x)) : 0;
+    const R0 = casaAll(c).filter((r) => !r.f), front = R0.length ? Math.min(...R0.map((r) => r.x)) : 0;
     return '<p class="eyebrow">Simulador \xB7 proyecto real</p><h1>Dise\xF1ar mi vivienda</h1><p class="lead">Dibuja el plano con las medidas reales: recintos, puertas y ubicaci\xF3n del tablero. La app calcula superficies, los puntos m\xEDnimos RIC N\xB010 por recinto y un presupuesto preliminar. Despu\xE9s p\xE1salo al Simulador 3D para instalar punto por punto y obtener el listado exacto de materiales y costos en Reportes.</p>' +
       '<section class="card"><h2>1 \xB7 Partir de</h2><div class="tpls">' + tpl + "</div></section>" +
       '<section class="card"><div class="sechead"><h2 style="margin:0">2 \xB7 Plano</h2><div class="field" style="margin:0;min-width:180px"><input type="text" data-cf="hn" value="' + esc(c.n || "") + '" aria-label="Nombre del proyecto" placeholder="Nombre del proyecto"></div></div>' + casaWrap(c, ck) +
-      kpis([kpi("Superficie", n1(A), "m\xB2"), kpi("Recintos", c.rooms.length), kpi("Puertas", c.doors.length), kpi("Centros m\xEDn.", est.cen), kpi("Enchufes m\xEDn.", est.enc), kpi("Circuitos m\xEDn.", A >= 30 ? Math.max(3, est.nTot) : est.nTot)]) + "</section>" +
+      kpis([kpi("Superficie", n1(A), "m\xB2"), kpi("Recintos", casaUse(c).length), kpi(two ? "Pisos" : "Puertas", two ? 2 : c.doors.length), kpi("Centros m\xEDn.", est.cen), kpi("Enchufes m\xEDn.", est.enc), kpi("Circuitos m\xEDn.", A >= 30 ? Math.max(3, est.nTot) : est.nTot)]) + "</section>" +
       '<section class="card"><h2>3 \xB7 Cuadro de recintos</h2><div class="tbl-wrap"><table class="pt casat"><thead><tr><th>Recinto</th><th>Tipo</th><th>Medidas (m)</th><th>m\xB2</th><th>M\xEDn. RIC</th><th></th></tr></thead><tbody>' + rows + '</tbody><tfoot><tr><td colspan="3"><b>Total</b></td><td class="num"><b>' + n1(A) + '</b></td><td class="num">' + est.cen + " / " + est.enc + '</td><td></td></tr></tfoot></table></div><p class="hint">M\xEDn. RIC: centros de luz / enchufes seg\xFAn RIC N\xB010 (5.2.2 y 5.2.3).</p><div class="field" style="max-width:300px;margin-top:10px"><label>Tablero: distancia desde la esquina izquierda del frente (m)</label><input type="number" inputmode="decimal" step="0.05" data-cf="tx" value="' + rd(c.tx - front) + '"></div></section>' +
       '' + casaCircHTML(c) + '<section class="card"><h2>5 \xB7 Presupuesto preliminar</h2><p class="hint">Estimaci\xF3n con los puntos m\xEDnimos RIC y recorridos aproximados desde el tablero. Los precios son referenciales (CLP) y puedes cambiarlos aqu\xED o en Reportes; se guardan para todo el proyecto. El listado exacto sale al instalar en el 3D.</p>' + bomTable(est.B, true) + '<div class="chips" style="margin-top:8px"><button type="button" class="chip" data-cs="prst">↺ Restaurar precios</button></div></section>' +
       '<section class="card"><h2>6 \xB7 Usar el plano</h2><div class="chips"><button type="button" class="btn calc" data-cs="sim"' + (ck.E.length ? " disabled" : "") + ">" + cs + '</button><button type="button" class="btn ghost" data-cs="p2"' + (ck.E.length ? " disabled" : "") + ">" + (casaConf === "p2" ? "\xBFReemplazar los recintos del paso 2? Toca otra vez" : "→ Enviar recintos al paso 2") + "</button></div>" + (ck.E.length ? '<p class="hint">Corrige los errores del plano para continuar.</p>' : "") +
-      learn("Qu\xE9 revisa la RIC en el plano", '<ul class="hand"><li><b>Centros de luz (RIC N\xB010, 5.2.2):</b> 1 por recinto hasta 10 m\xB2 y 2 sobre 10 m\xB2.</li><li><b>Enchufes (RIC N\xB010, 5.2.3):</b> dormitorios y living 1 cada 8 m de per\xEDmetro (o fracci\xF3n); cocina 3; lavadero 1.</li><li><b>Circuitos:</b> una vivienda de 30 m\xB2 o m\xE1s necesita al menos 3 (alumbrado, enchufes y cocina/lavadero), cada uno con diferencial de 30 mA.</li><li><b>Tablero:</b> en un lugar accesible, cerca del acceso y del medidor, nunca en ba\xF1os ni sobre el vano de una puerta.</li><li><b>Ba\xF1os:</b> respeta los vol\xFAmenes de seguridad: nada de enchufes cerca de la tina o ducha.</li></ul>') + "</section>";
+      learn("Qu\xE9 revisa la RIC en el plano", '<ul class="hand"><li><b>Centros de luz (RIC N\xB010, 5.2.2):</b> 1 por recinto hasta 10 m\xB2 y 2 sobre 10 m\xB2.</li><li><b>Enchufes (RIC N\xB010, 5.2.3):</b> dormitorios y living 1 cada 8 m de per\xEDmetro (o fracci\xF3n); cocina 3; lavadero 1.</li><li><b>Circuitos:</b> una vivienda de 30 m\xB2 o m\xE1s necesita al menos 3 (alumbrado, enchufes y cocina/lavadero), cada uno con diferencial de 30 mA.</li><li><b>Tablero:</b> en un lugar accesible, cerca del acceso y del medidor, nunca en ba\xF1os ni sobre el vano de una puerta.</li><li><b>Ba\xF1os:</b> respeta los vol\xFAmenes de seguridad: nada de enchufes cerca de la tina o ducha.</li></ul>') + learn("Viviendas de 2 pisos: instrucciones b\xE1sicas", '<ol class="hand"><li><b>Un solo empalme y tablero general</b> en el 1.\xBA piso, en lugar accesible, cerca del acceso y del medidor. Si el 2.\xBA piso es grande o est\xE1 lejos, se recomienda un <b>tablero de distribuci\xF3n</b> en el 2.\xBA piso alimentado desde el general con su propio autom\xE1tico.</li><li><b>Circuitos por piso:</b> separa alumbrado y enchufes de cada piso (por ejemplo, C1 alumbrado 1.\xBA piso, C2 alumbrado 2.\xBA piso, C3 y C4 enchufes). As\xED una falla no deja a oscuras toda la casa y la ca\xEDda de tensi\xF3n se controla mejor.</li><li><b>Montante:</b> las canalizaciones suben por un ducto vertical cerca del tablero o por un tabique, con <b>cajas de registro</b> en cada piso; nunca cables sueltos dentro de la losa o el entrepiso sin tubo.</li><li><b>Escalera:</b> la luz se comanda desde ambos niveles con un par de interruptores <b>9/24</b> (combinaci\xF3n). Ubica la luminaria donde se pueda cambiar la ampolleta sin riesgo de ca\xEDda (muro o descanso, no sobre el vac\xEDo).</li><li><b>Ca\xEDda de tensi\xF3n:</b> el largo de cada circuito incluye el tramo vertical (≈ ' + nf(FH, 2) + ' m por piso); revisa que no supere el 3 % (RIC N\xB003).</li><li><b>Puesta a tierra \xFAnica:</b> un solo electrodo y una barra PE en el tablero general; el conductor de protecci\xF3n llega a todos los circuitos de ambos pisos y al tablero del 2.\xBA piso (RIC N\xB006).</li><li><b>Protecci\xF3n diferencial:</b> 30 mA en todos los circuitos de alumbrado y enchufes, en especial los ba\xF1os de ambos pisos (RIC N\xB010, 5.1.3.5).</li><li><b>Puntos m\xEDnimos</b> se calculan por recinto en cada piso igual que en un piso; el vac\xEDo de la escalera del 2.\xBA piso no cuenta como recinto.</li></ol><p class="hint">En el Simulador 3D ver\xE1s ambos pisos, la escalera y el montante; usa los botones Piso 1 / Piso 2 / Todo para trabajar en cada nivel.</p>') + "</section>";
   }
   function s2HasWork() {
     return !!(S.sim2 && (S.sim2.items.length || S.sim2.circuits.length));
@@ -8672,7 +8933,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   }
   function casaNewId(c) {
     let i = 1;
-    while (c.rooms.some((r) => r.id === "r" + i)) i++;
+    while (casaAll(c).some((r) => r.id === "r" + i)) i++;
     return "r" + i;
   }
   function casaSetFull(on) {
@@ -8726,7 +8987,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       return;
     }
     if (!c) return;
-    if (a !== "tpl" && a !== "sim" && a !== "p2" && a !== "ccauto") casaConf = "";
+    if (a !== "tpl" && a !== "sim" && a !== "p2" && a !== "ccauto" && a !== "rm2") casaConf = "";
     const s = c.rooms.find((r) => r.id === casaSel);
     if (a === "tpl") {
       const k = b.dataset.k;
@@ -8749,6 +9010,53 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (a === "cotas") {
       casaCotas = !casaCotas;
       return render(true);
+    }
+    if (a === "fl") {
+      if (+b.dataset.k !== casaAF(c)) {
+        casaSwap(c);
+        casaSel = null;
+        casaWsel = null;
+        save();
+      }
+      return render(true);
+    }
+    if (a === "add2") {
+      casaPush();
+      if (casaAF(c) === 1) c.af = 0;
+      let es = c.rooms.find((r) => r.t === "escalera");
+      const R2 = [];
+      if (es) {
+        R2.push(casaR(casaNewId(c), "Escalera", "escalera", es.x, es.z, es.w, es.l));
+        c.other = { rooms: R2, doors: [], open: [] };
+        const az = es.l >= es.w;
+        R2.push(casaR(casaNewId(c), "Hall", "pasillo", az ? es.x + es.w : es.x, az ? es.z : es.z + es.l, az ? 1.2 : es.w, az ? Math.min(es.l, 1.5) : 1.2));
+      } else {
+        c.other = { rooms: [], doors: [], open: [] };
+        c.other.rooms.push(casaR(casaNewId(c), "Hall", "pasillo", 0, 0, 3, 3));
+      }
+      casaSwap(c);
+      casaAuto(c);
+      casaSel = null;
+      casaCommit(es ? "2.\xBA piso creado con la escalera sobre la del 1.\xBA piso y un hall de llegada. Agrega dormitorios, ba\xF1o y otros recintos." : "2.\xBA piso creado. Agrega un recinto \xABEscalera\xBB en el 1.\xBA piso y otro igual en este piso, uno sobre el otro.");
+      return;
+    }
+    if (a === "rm2") {
+      if (casaConf !== "rm2") {
+        casaConf = "rm2";
+        return render(true);
+      }
+      casaConf = "";
+      casaPush();
+      if (casaAF(c) === 1) casaSwap(c);
+      delete c.other;
+      c.af = 0;
+      casaSel = null;
+      casaCommit("2.\xBA piso quitado. Toca ↶ para deshacer.");
+      return;
+    }
+    if ((a === "sel" || a === "delid") && c.other && !c.rooms.some((r) => r.id === b.dataset.id) && (c.other.rooms || []).some((r) => r.id === b.dataset.id)) {
+      casaSwap(c);
+      save();
     }
     if (a === "wsel") {
       casaWsel = { ids: b.dataset.k.split(",") };
@@ -8867,7 +9175,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         return;
       }
       casaConf = "";
-      S.rooms = c.rooms.map((r) => ({ nombre: r.n, tipo: r.t, area: rd(cArea(r)), perim: rd(2 * (r.w + r.l)), centros: cMinC(r), enchufes: cMinE(r), horno: r.t === "cocina" }));
+      S.rooms = casaUse(c).map((r) => ({ nombre: r.n + (c.other ? " (piso " + (r.f + 1) + ")" : ""), tipo: r.t, area: rd(cArea(r)), perim: rd(2 * (r.w + r.l)), centros: cMinC(r), enchufes: cMinE(r), horno: r.t === "cocina" }));
       if (S.proj && !S.proj.nombre) S.proj.nombre = c.n || "";
       save();
       if (casaFull) casaSetFull(false);
@@ -8979,7 +9287,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     }
     if (f === "tx") {
       casaPush();
-      c.tx = rd((num(el.value) || 0) + Math.min(...c.rooms.map((q) => q.x)));
+      c.tx = rd((num(el.value) || 0) + Math.min(...casaAll(c).filter((q) => !q.f).map((q) => q.x)));
       return casaCommit();
     }
     const r = c.rooms.find((q) => q.id === casaSel);
@@ -9331,7 +9639,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       H(true) + infTE1(s, inf).replace('<div class="firm"><div>Firma instalador</div><div>Firma propietario</div></div>', "") +
       H() + (r.errs.length ? "<table><tr><th>N\xB0</th><th>Observaci\xF3n</th><th>Detalle</th></tr>" + r.errs.map((o, i) => "<tr><td>" + (i + 1) + "</td><td>" + esc(o.t) + "</td><td>" + esc(o.d) + "</td></tr>").join("") + "</table>" : "<p>Sin observaciones pendientes en la revisi\xF3n del proyecto.</p>") +
       '<div class="sig"><div>Instalador responsable<br>' + esc(inf.inst || "") + '</div><div>Propietario / mandante<br>' + esc(inf.prop || "") + "</div><div>Recepci\xF3n conforme<br>Fecha</div></div>" +
-      '<h2 class="pb">Anexo A. L\xE1mina del proyecto</h2><div class="lam">' + laminaSVG(s) + '</div><h2 class="pb">Anexo B. Plano de planta y canalizaciones</h2>' + planSVG(s) + "<h2>Anexo C. Diagrama unilineal del tablero</h2>" + simConnSVG(s);
+      '<h2 class="pb">Anexo A. L\xE1mina del proyecto</h2><div class="lam">' + laminaSVG(s) + (NFL > 1 ? '</div><div class="lam pb">' + laminaSVG(s, false, 1) : "") + '</div><h2 class="pb">Anexo B. Plano de planta y canalizaciones</h2>' + planSVG(s) + "<h2>Anexo C. Diagrama unilineal del tablero</h2>" + simConnSVG(s);
     return head("Informe t\xE9cnico") + body + "</body></html>";
   }
   function infSection(s, part) {
@@ -9385,8 +9693,8 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     save();
     if (["ini", "hd", "sab", "vhh", "gg", "ut", "mo"].includes(k)) render(true);
   });
-  function laminaSVG(s, standalone) {
-    const inf = infGet(), E = etGet(), r = simReport(s), ev = r.ev, tri = s.sys === "tri", hoy = (/* @__PURE__ */ new Date()).toLocaleDateString("es-CL"), nm = S.proj && S.proj.nombre || HNAME || "Casa habitaci\xF3n";
+  function laminaSVG(s, standalone, fl) {
+    const LF = NFL > 1 ? fl || 0 : -1, onF = (f) => LF < 0 || f === LF, inf = infGet(), E = etGet(), r = simReport(s), ev = r.ev, tri = s.sys === "tri", hoy = (/* @__PURE__ */ new Date()).toLocaleDateString("es-CL"), nm = S.proj && S.proj.nombre || HNAME || "Casa habitaci\xF3n";
     const F = "font-family:Arial,Helvetica,sans-serif";
     const T = (x, y, t, z, a, w, c) => '<text x="' + x.toFixed(2) + '" y="' + y.toFixed(2) + '" font-size="' + (z || 2.4) + '" text-anchor="' + (a || "start") + '" font-weight="' + (w || 400) + '" fill="' + (c || "#111") + '">' + esc(String(t)) + "</text>";
     const R = (x, y, w, h, sw, f) => '<rect x="' + x.toFixed(2) + '" y="' + y.toFixed(2) + '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '" fill="' + (f || "none") + '" stroke="#111" stroke-width="' + (sw || 0.25) + '"/>';
@@ -9396,16 +9704,39 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     const plan = (ox, oy, w, h, kind, title) => {
       const k = Math.min((w - 6) / HW, (h - 16) / HD), X = (x) => ox + 3 + x * k, Z = (z) => oy + 3 + z * k;
       let p = "";
-      ROOMS.forEach((rm) => p += T(X(rm.x0) + 1.2, Z(rm.z0) + 3.2, rm.n.toUpperCase(), 1.9, "start", 700, "#333"));
-      WALLS.forEach((wl) => p += Ln(X(wl[0]), Z(wl[1]), X(wl[2]), Z(wl[3]), Math.max(0.9, (wl[4] || 0.15) * k * 0.9)));
-      DOORS.forEach(([ax, v, m0, m1]) => {
+      ROOMS.forEach((rm) => {
+        if (!onF(rm.f || 0)) return;
+        p += T(X(rm.x0) + 1.2, Z(rm.z0) + 3.2, rm.n.toUpperCase(), 1.9, "start", 700, "#333");
+        if (rm.t === "escalera" && LF >= 0) {
+          const az = rm.z1 - rm.z0 >= rm.x1 - rm.x0, Lr = az ? rm.z1 - rm.z0 : rm.x1 - rm.x0;
+          for (let i = 1; i < 14; i++) {
+            const t = 0.15 + (Lr - 0.3) * i / 14;
+            p += az ? Ln(X(rm.x0 + 0.05), Z(rm.z1 - t), X(rm.x1 - 0.05), Z(rm.z1 - t), 0.12) : Ln(X(rm.x1 - t), Z(rm.z0 + 0.05), X(rm.x1 - t), Z(rm.z1 - 0.05), 0.12);
+          }
+          p += T(X((rm.x0 + rm.x1) / 2), Z((rm.z0 + rm.z1) / 2), LF ? "BAJA" : "SUBE", 1.6, "middle", 700);
+        }
+      });
+      WALLS.forEach((wl) => {
+        if (onF(wl.f || 0)) p += Ln(X(wl[0]), Z(wl[1]), X(wl[2]), Z(wl[3]), Math.max(0.9, (wl[4] || 0.15) * k * 0.9));
+      });
+      DOORS.forEach(([ax, v, m0, m1, df]) => {
+        if (!onF(df || 0)) return;
         const L = (m1 - m0) * k;
         p += ax === "x" ? '<path d="M' + X(v).toFixed(2) + " " + Z(m0).toFixed(2) + " A " + L.toFixed(2) + " " + L.toFixed(2) + " 0 0 1 " + (X(v) + L).toFixed(2) + " " + (Z(m0) + L).toFixed(2) + '" fill="none" stroke="#777" stroke-width="0.18"/>' : '<path d="M' + X(m0).toFixed(2) + " " + Z(v).toFixed(2) + " A " + L.toFixed(2) + " " + L.toFixed(2) + " 0 0 0 " + (X(m0) + L).toFixed(2) + " " + (Z(v) + L).toFixed(2) + '" fill="none" stroke="#777" stroke-width="0.18"/>';
       });
       const isL = (it) => it.t === "lamp" || it.t === "sw", sub = (it) => [...descend(s, it.id)].map((id) => by.get(id)).filter(Boolean), want = (it) => kind === "L" ? isL(it) || it.t === "box" && sub(it).some(isL) : !isL(it) && (it.t !== "box" || sub(it).some((x) => !isL(x) && x.t !== "box"));
+      const MX = TX + tabW(s) / 2 + 0.4, MZ = 0.25;
+      let mont = false;
       ev.E.forEach((e) => {
         if (!want(e.it)) return;
-        const a = e.from != null ? by.get(e.from) : null, x1 = a ? a.p[0] : TX, z1 = a ? a.p[2] : 0.2, x2 = e.it.p[0], z2 = e.it.p[2], mx = (X(x1) + X(x2)) / 2, mz = (Z(z1) + Z(z2)) / 2, dx = X(x2) - X(x1), dz = Z(z2) - Z(z1), L = Math.hypot(dx, dz) || 1, cx = mx - dz / L * L * 0.18, cz = mz + dx / L * L * 0.18;
+        const a0 = e.from != null ? by.get(e.from) : null, fi = flY(e.it.p[1]), fa = a0 ? flY(a0.p[1]) : 0;
+        if (!onF(fi)) {
+          if (LF >= 0 && fa === LF) mont = true;
+          return;
+        }
+        const xf = LF >= 0 && fa !== fi;
+        if (xf) mont = true;
+        const a = xf ? null : a0, x1 = a ? a.p[0] : xf ? MX : TX, z1 = a ? a.p[2] : xf ? MZ : 0.2, x2 = e.it.p[0], z2 = e.it.p[2], mx = (X(x1) + X(x2)) / 2, mz = (Z(z1) + Z(z2)) / 2, dx = X(x2) - X(x1), dz = Z(z2) - Z(z1), L = Math.hypot(dx, dz) || 1, cx = mx - dz / L * L * 0.18, cz = mz + dx / L * L * 0.18;
         p += '<path d="M' + X(x1).toFixed(2) + " " + Z(z1).toFixed(2) + " Q" + cx.toFixed(2) + " " + cz.toFixed(2) + " " + X(x2).toFixed(2) + " " + Z(z2).toFixed(2) + '" fill="none" stroke="#111" stroke-width="0.22"/>';
         const tx = 0.25 * X(x1) + 0.5 * cx + 0.25 * X(x2), tz = 0.25 * Z(z1) + 0.5 * cz + 0.25 * Z(z2), ux = dx / L, uz = dz / L;
         e.cond.forEach((q, j) => {
@@ -9414,6 +9745,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         });
       });
       s.items.forEach((it) => {
+        if (!onF(flY(it.p[1]))) return;
         if (it.t === "box") {
           if (!want(it)) return;
           p += '<g transform="translate(' + X(it.p[0]).toFixed(2) + " " + Z(it.p[2]).toFixed(2) + ') scale(0.22)"><rect x="-6" y="-6" width="12" height="12" fill="#fff" stroke="#111" stroke-width="1.6"/><line x1="-6" y1="-6" x2="6" y2="6" stroke="#111" stroke-width="1.2"/></g>';
@@ -9424,9 +9756,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         if (it.t === "horno") p += '<g transform="translate(' + X(it.p[0]).toFixed(2) + " " + Z(it.p[2]).toFixed(2) + ") rotate(" + ang + ') scale(0.22)">' + varSym("out", "f", "#111") + "</g>";
         else p += '<g transform="translate(' + X(it.p[0]).toFixed(2) + " " + Z(it.p[2]).toFixed(2) + ")" + (it.t === "out" ? " rotate(" + ang + ")" : "") + ' scale(0.22)">' + varSym(it.t, it.v || "s", "#111") + "</g>";
       });
-      p += '<rect x="' + (X(TX) - 0.45 * k).toFixed(2) + '" y="' + (Z(0) + 0.3).toFixed(2) + '" width="' + (0.9 * k).toFixed(2) + '" height="1.6" fill="#111"/>' + T(X(TX), Z(0) + 4.3, "T.D.A.", 1.7, "middle", 700);
+      if (LF < 1) p += '<rect x="' + (X(TX) - 0.45 * k).toFixed(2) + '" y="' + (Z(0) + 0.3).toFixed(2) + '" width="' + (0.9 * k).toFixed(2) + '" height="1.6" fill="#111"/>' + T(X(TX), Z(0) + 4.3, "T.D.A.", 1.7, "middle", 700);
+      if (mont) p += R(X(MX) - 0.9, Z(MZ) - 0.9, 1.8, 1.8, 0.3, "#fff") + Ln(X(MX) - 0.9, Z(MZ) + 0.9, X(MX) + 0.9, Z(MZ) - 0.9, 0.2) + T(X(MX) + 1.4, Z(MZ) + 3.4, LF ? "MONTANTE (DESDE T.D.A.)" : "MONTANTE AL 2.\xBA PISO", 1.4, "start", 700);
       const yt = Z(HD) + 8;
-      p += T(ox + w / 2, yt, title, 3, "middle", 700) + Ln(ox + w / 2 - 28, yt + 1, ox + w / 2 + 28, yt + 1, 0.3) + T(ox + w / 2, yt + 4, "ESC. 1:" + Math.round(1e3 / k / 10) * 10 + " (aprox.)", 1.8, "middle");
+      p += T(ox + w / 2, yt, title + (LF >= 0 ? (LF ? " \xB7 2.\xBA PISO" : " \xB7 1.ER PISO") : ""), 3, "middle", 700) + Ln(ox + w / 2 - 28, yt + 1, ox + w / 2 + 28, yt + 1, 0.3) + T(ox + w / 2, yt + 4, "ESC. 1:" + Math.round(1e3 / k / 10) * 10 + " (aprox.)", 1.8, "middle");
       return p;
     };
     const kP = Math.min(126 / HW, 134 / HD), yB = Math.min(172, 10 + 3 + HD * kP + 26);
@@ -9540,7 +9873,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         const y = ty + i * 6.5;
         g += Ln(x0, y + 6.5, x0 + tw, y + 6.5, 0.2) + T(x0 + 1.5, y + 4.3, a, 1.6, "start", 700) + T(x0 + 22, y + 4.3, b.slice(0, 82), b.length > 64 ? 1.45 : 1.75) + Ln(x0 + 20, y, x0 + 20, y + 6.5, 0.2);
       });
-      const yb = ty + 26, cells = [["ESCALA", "INDICADA"], ["L\xC1MINA", "1 DE 1"], ["FECHA", hoy], ["REV.", "0"], ["FIRMA INSTALADOR", ""]], cw = [18, 18, 22, 10, 60];
+      const yb = ty + 26, cells = [["ESCALA", "INDICADA"], ["L\xC1MINA", LF >= 0 ? LF + 1 + " DE 2" : "1 DE 1"], ["FECHA", hoy], ["REV.", "0"], ["FIRMA INSTALADOR", ""]], cw = [18, 18, 22, 10, 60];
       let cx = x0;
       cells.forEach(([a, b], i) => {
         g += Ln(cx, yb, cx, ty + 41, 0.2) + T(cx + 1.2, yb + 3.2, a, 1.5, "start", 700) + T(cx + cw[i] / 2, yb + 10, b, 2, "middle");
@@ -9700,7 +10033,8 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (!b || !S.sim2) return;
     const m = document.getElementById("lmsg") || document.getElementById("imsg");
     if (b.dataset.ia2 === "lam") {
-      dlFile("lamina-proyecto-electrico.svg", new Blob([laminaSVG(S.sim2, true)], { type: "image/svg+xml" })).then((rr) => {
+      if (NFL > 1) dlFile("lamina-proyecto-electrico-2-piso.svg", new Blob([laminaSVG(S.sim2, true, 1)], { type: "image/svg+xml" }));
+      dlFile(NFL > 1 ? "lamina-proyecto-electrico-1-piso.svg" : "lamina-proyecto-electrico.svg", new Blob([laminaSVG(S.sim2, true)], { type: "image/svg+xml" })).then((rr) => {
         if (m) m.textContent = dlMsg(rr, "L\xE1mina descargada (SVG, tama\xF1o A3): \xE1brela en el navegador o en un programa de dibujo e impr\xEDmela en A3 horizontal.");
       });
     }
@@ -9708,7 +10042,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       const w = window.open("", "_blank");
       if (w && w.document) {
         w.document.open();
-        w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>L\xE1mina</title><style>@page{size:A3 landscape;margin:6mm}body{margin:0}svg{width:100%;height:auto}</style></head><body>' + laminaSVG(S.sim2) + "</body></html>");
+        w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>L\xE1mina</title><style>@page{size:A3 landscape;margin:6mm}body{margin:0}svg{width:100%;height:auto}.pb{page-break-before:always}</style></head><body>' + laminaSVG(S.sim2) + (NFL > 1 ? '<div class="pb">' + laminaSVG(S.sim2, false, 1) + "</div>" : "") + "</body></html>");
         w.document.close();
         setTimeout(() => {
           try {
