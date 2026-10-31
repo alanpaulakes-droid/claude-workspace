@@ -9,26 +9,26 @@
 <title>Biblia del Ingeniero Industrial</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 <style>
-/* Layout: manual de ingeniería — menú lateral por áreas (carrera, cálculos, gestión, informes, aprender); cada herramienta = Datos → Calcular → Resultado con desarrollo numerado → Aprende más */
+/* Layout: herramienta técnica de consulta — barra superior y menú lateral sobrios, contenido en una columna de lectura; secciones como listas desplegables con divisores, sin cajas de colores. Un solo acento azul; los colores de estado solo comunican estado. */
 :root{
-  --bg:#EDF1F4; --surface:#FFFFFF; --surface2:#F5F7F9; --ink:#14202C; --muted:#56657A; --line:#D2DAE2;
-  --blue:#1E4E78; --blue-soft:#E2EBF4; --copper:#B0522A; --copper-soft:#F7E8DF;
-  --ok:#2A7848; --ok-soft:#E3F1E8; --warn:#93600A; --warn-soft:#F9EED7; --bad:#AE2A21; --bad-soft:#FAE4E2;
-  --c3:#6A4C93; --c4:#2B8A8A;
-  --f-display:"Archivo","Arial Narrow",Arial,sans-serif; --f-body:"Source Sans 3","Segoe UI",Arial,sans-serif; --f-mono:"JetBrains Mono",Consolas,"Courier New",monospace;
+  --bg:#F5F6F8; --surface:#FFFFFF; --surface2:#F2F4F7; --ink:#111827; --muted:#5B6474; --line:#E3E6EB; --line2:#CDD2DA;
+  --blue:#2350C4; --blue-soft:#ECF1FC; --copper:#B95A1E; --copper-soft:#FBF0E8;
+  --ok:#17724A; --ok-soft:#EAF6EF; --warn:#9A5B07; --warn-soft:#FDF4E3; --bad:#B42318; --bad-soft:#FDECEA;
+  --c3:#6E56B8; --c4:#0E7C86; --shadow:0 1px 2px rgba(17,24,39,.05);
+  --f-display:"IBM Plex Sans","Segoe UI",Roboto,Arial,sans-serif; --f-body:"IBM Plex Sans","Segoe UI",Roboto,Arial,sans-serif; --f-mono:"IBM Plex Mono",Consolas,"Courier New",monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0F161D; --surface:#17212B; --surface2:#1D2935; --ink:#E6ECF2; --muted:#9AA9B8; --line:#2C3A48;
-  --blue:#8DB8E0; --blue-soft:#1C3046; --copper:#E89366; --copper-soft:#3A2519;
-  --ok:#6CC490; --ok-soft:#173326; --warn:#E5B357; --warn-soft:#382A11; --bad:#F08A80; --bad-soft:#3D1C1A;
-  --c3:#B79CE0; --c4:#6FD0CF; color-scheme:dark}}
+  --bg:#0E1116; --surface:#151A21; --surface2:#1B2129; --ink:#E7EAEE; --muted:#97A0AD; --line:#262D37; --line2:#38414D;
+  --blue:#8DB0FF; --blue-soft:#1A2338; --copper:#F0A36E; --copper-soft:#33231A;
+  --ok:#6FCF9A; --ok-soft:#14281E; --warn:#E8B45C; --warn-soft:#2D2412; --bad:#F2897F; --bad-soft:#331A18;
+  --c3:#B6A2F0; --c4:#5FCFD6; --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0F161D; --surface:#17212B; --surface2:#1D2935; --ink:#E6ECF2; --muted:#9AA9B8; --line:#2C3A48;
-  --blue:#8DB8E0; --blue-soft:#1C3046; --copper:#E89366; --copper-soft:#3A2519;
-  --ok:#6CC490; --ok-soft:#173326; --warn:#E5B357; --warn-soft:#382A11; --bad:#F08A80; --bad-soft:#3D1C1A;
-  --c3:#B79CE0; --c4:#6FD0CF; color-scheme:dark}
+  --bg:#0E1116; --surface:#151A21; --surface2:#1B2129; --ink:#E7EAEE; --muted:#97A0AD; --line:#262D37; --line2:#38414D;
+  --blue:#8DB0FF; --blue-soft:#1A2338; --copper:#F0A36E; --copper-soft:#33231A;
+  --ok:#6FCF9A; --ok-soft:#14281E; --warn:#E8B45C; --warn-soft:#2D2412; --bad:#F2897F; --bad-soft:#331A18;
+  --c3:#B6A2F0; --c4:#5FCFD6; --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
 body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
@@ -360,6 +360,136 @@ details.usados{margin:0 0 12px}tr.act td{font-weight:600}tr.mu td{color:var(--mu
 .gd-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px}.gd-item{display:flex;flex-direction:column;gap:2px;border:1px solid var(--line);border-radius:7px;padding:5px 6px;background:var(--surface2)}.gd-item span{font-size:.76rem;color:var(--muted);font-weight:600}.gd-item input{padding:5px 6px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--ink);text-align:right;font:inherit;width:100%;box-sizing:border-box}
 .howto{border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:0 10px 10px 0;background:var(--surface2);padding:8px 14px;margin:0 0 14px}.howto summary{font-weight:700;cursor:pointer;color:var(--ok)}.howto ol{margin:8px 0 4px;padding-left:20px}.howto li{margin:5px 0}
 .abtab td:first-child{font-weight:700;white-space:nowrap}
+
+/* ===== Capa visual: sobria y consistente ===== */
+body{font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--blue-soft)}
+h1{font-size:28px;font-weight:600;letter-spacing:-.018em;line-height:1.25;margin:0 0 8px}
+h2{font-size:19px;font-weight:600;letter-spacing:-.01em}
+h3{font-size:16px;font-weight:600}
+h4{font-weight:600}
+.eyebrow{font-family:var(--f-body);font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin:0 0 8px}
+.lead{font-size:16.5px;color:var(--muted);line-height:1.6;margin-bottom:24px}
+/* barra superior */
+.top{background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:saturate(1.4) blur(8px)}
+.top-in{padding-block:9px}
+.brand{font-family:var(--f-body);font-weight:600;font-size:15.5px;letter-spacing:-.005em;gap:10px}
+.brand b{color:inherit;font-weight:600}
+.brand::before{content:"BI";width:28px;height:28px;border-radius:7px;background:var(--ink);color:var(--surface);display:grid;place-items:center;font:600 12px/1 var(--f-mono);letter-spacing:.02em}
+.crumb{font-size:13.5px}
+/* menú lateral */
+.side{padding-right:4px}
+.side button{font-size:14px;padding:6px 10px;border-radius:6px;color:var(--ink)}
+.side button:hover{background:var(--surface2)}
+.side button[aria-current="true"]{background:var(--blue-soft);color:var(--blue);font-weight:600}
+.side button[aria-current="true"] .k{color:var(--blue)}
+.side button[aria-current="true"] .done{color:var(--blue)}
+.side button .k{font-size:11px;min-width:22px;opacity:.85}
+.side details.sgp>summary{font-size:11px;font-weight:600;letter-spacing:.07em;padding:14px 10px 6px}
+.gsw input{border-radius:7px;background:var(--surface);font-size:14px}
+/* tarjetas y secciones */
+.card{border-radius:10px;padding:22px;box-shadow:var(--shadow)}
+.card.form,.card.result{border-top:1px solid var(--line)}
+.sechead .tag,.card.result .sechead .tag{font-family:var(--f-body);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--surface2);color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:5px}
+.sechead h2{font-size:18px}
+/* desplegables: lista con divisores */
+details.learn,details.item{border-radius:10px;margin-bottom:8px;box-shadow:var(--shadow)}
+details.learn{background:var(--surface)}
+details.learn>summary,details.item>summary{padding:13px 16px;font-weight:600;font-family:var(--f-body);font-size:15px}
+details.learn>summary::before,details.item>summary::before{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg) translate(-1px,-1px);margin:0 6px 0 2px;flex:none;transition:transform .15s}
+details[open].item>summary::before,details[open].learn>summary::before{transform:rotate(45deg)}
+details[open].item>summary,details[open].learn>summary{border-bottom:1px solid var(--line);margin-bottom:14px}
+details.item>summary:hover,details.learn>summary:hover{background:var(--surface2);border-radius:10px}
+details[open].item>summary:hover,details[open].learn>summary:hover{border-radius:10px 10px 0 0}
+/* bloques explicativos: sin rieles de color */
+.deep-b,.deep-b.why,.deep-b.use{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:14px 16px;margin:12px 0}
+.deep-b h4,.deep-b.why h4,.deep-b.use h4{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.deep-b.why h4{color:var(--blue)}
+.deep-b.use h4{color:var(--ok)}
+.deep-b.ejr{background:var(--surface2)}
+.howto{border:1px solid var(--line);border-radius:10px;background:var(--surface2)}
+.howto summary{color:var(--ink);font-weight:600}
+.chain div{border-left:2px solid var(--line2);border-radius:0}
+.chain div.root{border-color:var(--blue);background:var(--blue-soft)}
+/* avisos */
+.note{font-size:14.5px;border:1px solid color-mix(in srgb,var(--warn) 28%,transparent);border-radius:8px;padding:10px 14px}
+.note.info{border-color:color-mix(in srgb,var(--blue) 25%,transparent)}
+.note.bad{border-color:color-mix(in srgb,var(--bad) 28%,transparent)}
+.note.ok{border-color:color-mix(in srgb,var(--ok) 28%,transparent)}
+/* botones y campos */
+.btn{font-weight:600;font-size:14.5px;padding:9px 16px;border-radius:7px;transition:background .15s,border-color .15s}
+.btn:hover{filter:brightness(1.06)}
+.btn.calc{background:var(--blue);border-color:var(--blue);font-size:15px;padding:10px 22px}
+.btn.ghost{background:var(--surface);color:var(--ink);border-color:var(--line2)}
+.btn.ghost:hover{border-color:var(--muted);filter:none}
+.btn.small{padding:5px 11px;font-size:13px;border-radius:6px}
+.btn.danger{border-color:color-mix(in srgb,var(--bad) 45%,transparent)}
+.btn:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+input,select,textarea{background:var(--surface);border-color:var(--line2);border-radius:7px;font-size:15px;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft);outline:none}
+.field label{font-size:14px;font-weight:600}
+.actions{border-top:1px solid var(--line)}
+.linkb{color:var(--blue);text-underline-offset:2px}
+.chip{background:var(--surface);font-weight:500;font-size:13.5px;padding:6px 12px;border-color:var(--line2)}
+.chip:hover{border-color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.resume{border-color:var(--line2);font-weight:500}
+/* indicadores */
+.kpi{background:var(--surface);border-radius:8px;padding:12px 14px}
+.kpi .l{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.kpi .v{font-size:21px;font-weight:600;letter-spacing:-.01em}
+.kpi.hi{border-color:var(--blue);background:var(--blue-soft)}
+.r span{color:var(--ink);font-weight:600}
+.step .sn{width:28px;height:28px;font-size:12.5px;background:var(--surface2);color:var(--ink);border:1px solid var(--line2)}
+.step.ok .sn{background:var(--ok-soft);color:var(--ok);border-color:transparent}.step.bad .sn{background:var(--bad-soft);color:var(--bad);border-color:transparent}.step.warn .sn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.step{grid-template-columns:28px minmax(0,1fr)}
+.f{background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
+.gl dt{color:var(--ink)}
+/* tablas */
+th{font-size:11.5px;font-weight:600;letter-spacing:.05em;border-bottom:1px solid var(--line2);padding:9px 8px;background:transparent}
+td{padding:8px}
+tbody tr:hover td{background:color-mix(in srgb,var(--surface2) 60%,transparent)}
+tr.tot td{border-top:1px solid var(--ink)}
+/* portada y mosaicos */
+.mods{gap:10px}
+.mod{border-radius:10px;padding:16px;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
+.mod:hover{border-color:var(--line2);transform:none;box-shadow:0 4px 14px rgba(17,24,39,.07)}
+.mod .mi{width:40px;height:40px;border-radius:9px;background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
+.mod .mi svg,.tile .ti svg{width:20px;height:20px}
+.mod .mt{font-family:var(--f-body);font-weight:600;font-size:15.5px}
+.mod{grid-template-columns:40px minmax(0,1fr)}
+.tile{border-radius:10px;box-shadow:var(--shadow);transition:border-color .15s}
+.tile:hover{border-color:var(--line2)}
+.tile .ti{width:40px;height:40px;border-radius:9px;background:var(--surface2);color:var(--ink);border:1px solid var(--line);font-size:12px;font-weight:500}
+.tile{grid-template-columns:40px minmax(0,1fr)}
+.tile .tt{font-family:var(--f-body);font-weight:600;font-size:14.5px}
+.tile.done .ti{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.flow button span{background:var(--ink);color:var(--surface)}
+.sh{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:26px 0 10px}
+h2.sh{font-family:var(--f-body)}
+/* figuras */
+figure.ch{background:var(--surface);border-radius:8px}
+figure.dg{background:var(--surface)}
+.canvas9 h4{color:var(--muted)}
+/* simuladores */
+.sw{border-radius:10px;box-shadow:var(--shadow)}
+.sw-dots i,.sw-dots i:first-child,.sw-dots i:nth-child(2),.sw-dots i:nth-child(3){background:var(--line2)}
+.sw-top{font-size:13px}
+/* barra inferior (celular) */
+.tabbar .ic svg{width:21px;height:21px;display:block}
+@media (max-width:900px){
+  .tabbar{box-shadow:none}
+  .tabbar button{font-weight:500;font-size:10.5px;gap:3px}
+  .tabbar .ic{font-size:0;line-height:0;padding:3px 12px;border-radius:999px}
+  .tabbar button[aria-current="true"]{color:var(--blue)}
+  .tabbar button[aria-current="true"] .ic{background:var(--blue-soft);padding:3px 12px}
+  .brand{font-size:15px}.brand::before{width:26px;height:26px}
+  h1{font-size:24px}
+}
+.mod,.tile{align-items:start}.mod .mi,.tile .ti{align-self:start}.mod .mt,.tile .tt{align-self:end}
+.mods{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:640px){.mods{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
 <header class="top"><div class="top-in">
@@ -10200,6 +10330,22 @@ XP("fund-estrategia", {
 "Modelos de negocio":XB({ d:"<p>Un modelo de negocio describe <b>cómo una empresa crea valor para sus clientes y cómo gana dinero con eso</b>. El Business Model Canvas lo resume en nueve bloques: segmentos de clientes, propuesta de valor, canales, relación con clientes, fuentes de ingreso, recursos clave, actividades clave, socios clave y estructura de costos. Dos empresas pueden vender el mismo producto con modelos distintos: vender una máquina, arrendarla o cobrar por cada hora de uso.</p>",
   e:"<p>Un fabricante de compresores cambia de vender equipos a vender «aire comprimido como servicio»: instala y mantiene los compresores en la planta del cliente y cobra por metro cúbico de aire. El cliente no invierte y paga según su uso; el fabricante gana ingresos recurrentes y tiene incentivo para que sus equipos sean eficientes y duren. Es el mismo producto con otro modelo de negocio. Prueba con la calculadora del modelo Canvas.</p>" })
 });
+/* ============ ÍCONOS DE LÍNEA (navegación y portada) ============ */
+const SVGP = {
+  inicio:'<path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v11.5h13V9"/><path d="M10 20.5v-6h4v6"/>',
+  "mi-malla":'<rect x="3.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.2"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.2"/>',
+  herramientas:'<rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8.5 6.5h7"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h.01M15.5 18h.01"/>',
+  gestion:'<path d="M3.5 3.5v17h17"/><path d="m7.5 14.5 4-4 3 3 5.5-6"/>',
+  informes:'<path d="M14 2.5H6.5A1.5 1.5 0 0 0 5 4v16a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 20V7.5z"/><path d="M14 2.5v5h5"/><path d="M8.5 13h7M8.5 16.5h5"/>',
+  aprender:'<path d="M2.5 5.5A1.5 1.5 0 0 1 4 4h5a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H4A1.5 1.5 0 0 1 2.5 16z"/><path d="M21.5 5.5A1.5 1.5 0 0 0 20 4h-5a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H20a1.5 1.5 0 0 0 1.5-1.5z"/>',
+  carrera:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2"/><path d="M3 12.5h18"/>',
+  industrias:'<path d="M2.5 20.5h19"/><path d="M4 20.5v-9l5 3v-3l5 3v-9h3.5v15"/>',
+  ofimatica:'<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9.5h18M9 4v16"/>',
+  simuladores:'<rect x="2.5" y="4" width="19" height="13" rx="1.5"/><path d="M8 20.5h8M12 17v3.5"/><path d="m10.2 8.3 4.3 2.2-4.3 2.2z"/>',
+  desarrollo:'<circle cx="12" cy="7.5" r="3.5"/><path d="M5 20.5a7 7 0 0 1 14 0"/>',
+  saberes:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>'
+};
+const svgIco = id => SVGP[id] ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + SVGP[id] + "</svg>" : null;
 /* ============ PÁGINAS Y NAVEGACIÓN ============ */
 const GROUPS = { malla:"Mi malla (UNAB)", carrera:"Carrera y trabajo", eco:"Economía y finanzas", ops:"Producción y logística", trab:"Estudio del trabajo", cal:"Calidad y estadística", io:"Investigación de operaciones", seg:"Seguridad y ambiente", ges:"Gestión y mejora", inf:"Informes", rep:"Reportes", ind:"Industrias", sab:"Saberes de otras disciplinas", des:"Desarrollo personal y profesional", ofi:"Excel y Word", learn:"Aprender", sim:"Simuladores de software" };
 const indId = x => "ind-" + x[0].normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -10245,7 +10391,7 @@ function pgHome(){
   return '<p class="eyebrow">Ingeniería Industrial · Chile</p><h1>Biblia del Ingeniero Industrial</h1><p class="lead">Estudiar, calcular, decidir y documentar en un solo lugar: tu malla con apuntes por ramo, herramientas con desarrollo paso a paso y guías de estudio, métodos de gestión, informes descargables en Word y PDF, y el conocimiento de cada industria.</p>' +
     '<div class="mob-search gsw"><input type="search" id="gsearch2" placeholder="Buscar ramo, herramienta, tema o término…" aria-label="Buscar en la app" autocomplete="off"><div id="gsres2"></div></div>' +
     (lp ? '<button class="resume" type="button" data-go="' + lp.id + '">↻ Continuar: <b>' + esc(lp.t) + "</b></button>" : "") +
-    '<div class="mods">' + M.map(m => '<button class="mod" type="button" data-go="' + m[0] + '"><span class="mi">' + m[1] + '</span><span class="mt">' + m[2] + '</span><span class="md">' + m[3] + "</span></button>").join("") + "</div>" +
+    '<div class="mods">' + M.map(m => '<button class="mod" type="button" data-go="' + m[0] + '"><span class="mi">' + (typeof svgIco === "function" && svgIco(m[0]) || m[1]) + '</span><span class="mt">' + m[2] + '</span><span class="md">' + m[3] + "</span></button>").join("") + "</div>" +
     '<h2 class="sh">Flujo de un proyecto de mejora</h2><ol class="flow">' + flow.map((f, i) => '<li><button type="button" data-go="' + f[0] + '"><span>' + (i + 1) + "</span>" + f[1] + "</button></li>").join("") + "</ol>" +
     '<h2 class="sh">Más usadas</h2><div class="tiles">' + top.map(id => tile(pageOf(id))).join("") + "</div>" +
     note("Cada herramienta abre con un ejemplo resuelto y una guía de estudio desplegable. Reemplaza los datos por los tuyos y presiona <b>Calcular</b>; los resultados se guardan en este navegador y se pueden descargar en Word o PDF.", "info");
@@ -10367,7 +10513,7 @@ function renderSide(){
   document.getElementById("crumb").textContent = cur === "inicio" ? "" : (GROUPS[p.g] ? GROUPS[p.g] + " › " : "") + p.t;
   document.getElementById("backBtn").hidden = cur === "inicio" && !NAV.length;
   const tb = tabOf(cur);
-  document.getElementById("tabbar").innerHTML = TABS.map(t => '<button type="button" data-go="' + t[0] + '" aria-current="' + (t[0] === tb) + '"><span class="ic">' + t[1] + "</span><span>" + t[2] + "</span></button>").join("");
+  document.getElementById("tabbar").innerHTML = TABS.map(t => '<button type="button" data-go="' + t[0] + '" aria-current="' + (t[0] === tb) + '"><span class="ic">' + (typeof svgIco === "function" && svgIco(t[0]) || t[1]) + "</span><span>" + t[2] + "</span></button>").join("");
 }
 function goBack(){
   const sn = NAV.pop();
