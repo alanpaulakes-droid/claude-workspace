@@ -43,8 +43,7 @@ h3{font-size:1rem;margin-bottom:6px}
 .sets{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .sets button{width:44px;height:40px;border-radius:10px;border:2px solid var(--line);background:var(--card2);cursor:pointer;font-weight:700}
 .sets button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
-.vid{display:inline-flex;align-items:center;gap:4px;margin-top:8px;font-size:.8rem;font-weight:700;color:var(--acc);text-decoration:none;padding:5px 10px;border-radius:99px;border:1px solid var(--acc)}
-.vid:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.demo{display:block;width:100%;max-width:300px;aspect-ratio:3/2;margin:10px auto 0;background:var(--card2);border-radius:12px}
 .kg{display:flex;gap:6px;align-items:center;margin-top:8px;font-size:.8rem;color:var(--mute)}
 .kg input{width:80px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card2)}
 ul.plain{padding-left:18px;font-size:.9rem}
@@ -106,6 +105,7 @@ label.f{display:block;font-size:.82rem;color:var(--mute);margin:10px 0 4px}
   <button data-v="obj"><span>🎯</span>Objetivos</button>
   <button data-v="ajustes"><span>⚙️</span>Ajustes</button>
 </nav>
+<script src="anims.js"></script>
 <script>
 "use strict";
 /* ===================== DATOS ===================== */
@@ -271,8 +271,6 @@ const TESTS=[
  ['br','Puente: distancia manos–pies','cm'],['pc','Peso corporal','kg'],['ci','Cintura','cm']
 ];
 
-const VQ={'Toe touch':'toe touch cheer jump tutorial','Hurdler y pike':'hurdler pike jump cheer tutorial','Toe touch repetidos':'toe touch drills cheer','Heel stretch con banda':'heel stretch flexibility cheer stretch','Scorpion / needle':'scorpion needle flexibility cheer stretches','Liberty en relevé (equilibrio)':'liberty balance drill flyer cheer','Heel stretch / arabesque en equilibrio':'flyer balance drills heel stretch arabesque','Hollow en barra (body tight)':'hollow body hang bar','Rondada (round-off) técnica':'round off tutorial gymnastics','Rondada con rebote':'round off rebound drill','Back walkover':'back walkover tutorial','Front walkover':'front walkover tutorial','Flick parado con spotter':'standing back handspring spotting','Flick parado (standing BHS)':'standing back handspring tutorial','Rondada–flick':'round off back handspring tutorial','Serie de flicks (2–3)':'back handspring series tutorial','Rondada–flick–flick':'round off back handspring back handspring drills','Mortal atrás agrupado (standing tuck) con spotter':'standing back tuck drills spotting','Progresión rondada–flick–mortal agrupado':'round off back handspring tuck progression','Drill de mortal adelante (punch front)':'punch front tuck drills','Drill de flick adelante':'front handspring drills','Drill de flick: salto atrás a cuña/colchoneta':'back handspring drills mat','Drill de mortal atrás: tuck jump + rotación en colchoneta':'back tuck drills beginner','Toe touch – flick (salto + tumbling)':'toe touch back handspring','Puente con patada (bridge kickover)':'bridge kickover tutorial','Bajada a puente desde de pie (con apoyo)':'standing bridge backbend tutorial','Rueda (cartwheel) ambos lados':'perfect cartwheel tutorial','Hang power clean':'hang power clean técnica','Pallof press':'pallof press técnica','Face pull':'face pull técnica','Nordic curl':'nordic curl progresión','Pogo jumps (saltos de tobillo)':'pogo jumps plyometrics','Plancha Copenhague':'copenhagen plank técnica','Hollow hold':'hollow body hold técnica','Hollow rocks':'hollow rocks técnica','Arch hold':'arch hold superman técnica'};
-const vidUrl=e=>'https://www.youtube.com/results?search_query='+encodeURIComponent(VQ[e.n]||(e.n.replace(/\s*\(.*?\)/g,'')+(['skill','flex','bal'].includes(e.t)?' cheer tutorial':' técnica correcta')));
 /* ===================== ESTADO ===================== */
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const iso=d=>{const x=new Date(d);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,10)};
@@ -374,14 +372,14 @@ function vHoy(){
   const last=(LS.get('cheer.kg',{})[e.n]||[]).slice(-1)[0];
   html+=`<div class="ex ${n>=e.s?'done':''}"><div class="top"><div><div class="nm">${i+1}. ${e.n}</div>
   <div class="rx"><b>${e.s} × ${fmtRep(e.rep)}</b>${e.side?' por lado':''} · descanso <b>${e.rest?restTxt(e.rest):'—'}</b></div></div><span class="tag">${TYPE[e.t]}</span></div>
+  ${animKey(e.n)?`<canvas class="demo" data-a="${animKey(e.n)}" role="img" aria-label="Demostración animada: ${e.n}"></canvas>`:''}
   <div class="tip">${e.tip||''}</div>
-  <a class="vid" href="${vidUrl(e)}" target="_blank" rel="noopener">▶ Ver técnica en video</a>
   <div class="sets">${Array.from({length:e.s},(_,j)=>`<button data-ex="${i}" data-set="${j}" class="${j<n?'ok':''}">${j<n?'✓':(hold?'▶':j+1)}</button>`).join('')}</div>
   ${e.kg&&p.v==='pesas'?`<div class="kg">Carga: <input type="number" inputmode="decimal" step="0.5" data-kg="${i}" placeholder="kg"> ${last?`Último: <b>${last.kg} kg</b> (${last.d})`:''}</div>`:''}</div>`});
  html+=`<details class="card"><summary><b>🧊 Vuelta a la calma</b></summary><ul class="plain" style="margin-top:8px">${COOL.map(x=>'<li>'+x+'</li>').join('')}</ul></details>
  ${p.k!=='G_FLEX'?'<div class="card mute">➕ Flexibilidad diaria mínima: 10 min de splits (3 lados) y puente al final, aunque hoy no toque sesión de flexibilidad.</div>':''}
  <div class="card mute">Progresión: si completas todas las series con el RPE indicado, sube 2,5–5 % la carga (o 1–2 reps / 5 s) la próxima vez. Dolor articular agudo (muñeca, lumbar, rodilla) = parar ese ejercicio.</div>`;
- app.innerHTML=html;bindDays();
+ app.innerHTML=html;bindDays();initDemos(app);
  app.querySelectorAll('.sets button').forEach(b=>b.onclick=()=>{audio();setTap(exs,+b.dataset.ex,+b.dataset.set,key)});
  app.querySelectorAll('[data-kg]').forEach(inp=>inp.onchange=()=>{const v=parseFloat(inp.value);if(!v)return;const db=LS.get('cheer.kg',{});const nm=exs[+inp.dataset.kg].n;(db[nm]=db[nm]||[]).push({d:iso(new Date()),kg:v});LS.set('cheer.kg',db);toast('Carga guardada: '+v+' kg')});
 }
