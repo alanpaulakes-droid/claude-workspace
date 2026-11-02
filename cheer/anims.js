@@ -168,7 +168,7 @@ const MU={};
  [['rolls','rollFwd','cartwheel','backWalk','frontWalk','bhs','frontHs','backTuck','frontTuck'],'a b','Técnica de tumbling']
 ].forEach(([ks,c,l,st])=>ks.forEach(k=>MU[k]={c:c.split(' '),l,st:!!st}));
 function demoHTML(n){const k=animKey(n);if(!k||!AN[k])return '';const m=MU[k];
- return `<figure class="demo-w"><canvas class="demo" data-a="${k}" role="img" aria-label="Demostración animada: ${n}"></canvas><figcaption>${m?`<span class="mu ${m.st?'st':''}">${m.st?'Estira':'Trabaja'}: ${m.l}</span>`:''}<span class="slow">Toca: cámara lenta</span></figcaption></figure>`}
+ return `<figure class="demo-w"><canvas class="demo" data-a="${k}" role="img" aria-label="Demostración animada: ${n}"></canvas><figcaption>${m?`<span class="mu ${m.st?'st':''}">${m.st?'Estira':'Trabaja'}: ${m.l}</span>`:''}<span class="slow">Toca: lento · Arrastra: girar</span></figcaption></figure>`}
 
 const NOGHOST=new Set(['run','jog','farmer','jacks','pogo','bear','lungeJump','hollowRock','liberty','balanceRelevé','plank','hollow','superman','sidePlank','copenhagen','lockout','handstandWall','hangHollow','splitR','splitL','middle','bridge','heelArab']);
 /* ---- encuadre automático ---- */
@@ -260,17 +260,22 @@ function drawDemo(cv,key,ms){
 const DEMO=new Set();let demoRAF=null;const demoT0=performance.now();
 const demoIO='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)DEMO.add(e.target);else DEMO.delete(e.target)})):null;
 const reduceMotion=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function drawAny(cv,k,t){if(window.THREE&&typeof draw3D==='function')draw3D(cv,k,t);else drawDemo(cv,k,t)}
 function initDemos(root){
  root.querySelectorAll('canvas.demo').forEach(cv=>{const key=cv.dataset.a;if(!AN[key])return;
-  const dpr=Math.min(2.5,window.devicePixelRatio||1);const w=cv.clientWidth||300;cv.width=Math.round(w*dpr);cv.height=Math.round(w*dpr*180/240);
-  cv._t=0;cv._last=null;cv._speed=1;
-  const fig=cv.closest('.demo-w');
-  cv.onclick=()=>{if(reduceMotion){cv._play=!cv._play;if(cv._play){DEMO.add(cv);startDemo()}else DEMO.delete(cv);return}
-   cv._speed=cv._speed===1?.35:1;if(fig)fig.classList.toggle('slowon',cv._speed<1)};
-  if(reduceMotion){const an=AN[key];drawDemo(cv,key,an.fr[0][1]+(an.fr[1]?an.fr[1][1]:0));return}
-  drawDemo(cv,key,0);if(demoIO)demoIO.observe(cv);else DEMO.add(cv)});
+  const dpr=Math.min(2,window.devicePixelRatio||1);const w=cv.clientWidth||300;cv.width=Math.round(w*dpr);cv.height=Math.round(w*dpr*180/240);
+  cv._t=0;cv._last=null;cv._speed=1;cv._az=0;const fig=cv.closest('.demo-w');
+  let down=null,moved=0;
+  cv.addEventListener('pointerdown',e=>{down=e.clientX;moved=0;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+  cv.addEventListener('pointermove',e=>{if(down==null)return;const dx=e.clientX-down;down=e.clientX;moved+=Math.abs(dx);cv._az+=dx*0.012;if(reduceMotion||!DEMO.has(cv))drawAny(cv,key,cv._t)});
+  const end=()=>{if(down==null)return;down=null;if(moved<6){if(reduceMotion){cv._play=!cv._play;if(cv._play){DEMO.add(cv);startDemo()}else DEMO.delete(cv);return}
+   cv._speed=cv._speed===1?.35:1;if(fig)fig.classList.toggle('slowon',cv._speed<1)}};
+  cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',()=>{down=null});
+  cv.style.touchAction='pan-y';
+  if(reduceMotion){const an=AN[key];cv._t=an.fr[0][1]+(an.fr[1]?an.fr[1][1]:0);drawAny(cv,key,cv._t);return}
+  drawAny(cv,key,0);if(demoIO)demoIO.observe(cv);else DEMO.add(cv)});
  if(!reduceMotion)startDemo()}
 function startDemo(){if(!demoRAF)demoRAF=requestAnimationFrame(demoLoop)}
-function demoLoop(now){for(const cv of DEMO){if(!cv.isConnected){DEMO.delete(cv);continue}if(cv._last!=null)cv._t+=Math.min(100,now-cv._last)*cv._speed;cv._last=now;drawDemo(cv,cv.dataset.a,cv._t)}
+function demoLoop(now){for(const cv of DEMO){if(!cv.isConnected){DEMO.delete(cv);continue}if(cv._last!=null)cv._t+=Math.min(100,now-cv._last)*cv._speed;cv._last=now;drawAny(cv,cv.dataset.a,cv._t)}
  for(const cv of document.querySelectorAll('canvas.demo'))if(!DEMO.has(cv))cv._last=null;
  demoRAF=requestAnimationFrame(demoLoop)}
