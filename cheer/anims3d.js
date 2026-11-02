@@ -37,83 +37,101 @@ function r3init(){
   const T=THREE;const cv=document.createElement('canvas');
   const renderer=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:false,preserveDrawingBuffer:true});
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+  renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;
   const scene=new T.Scene();const cam=new T.PerspectiveCamera(30,4/3,1,3000);
-  const hemi=new T.HemisphereLight(0xffffff,0x8d86a0,0.55);scene.add(hemi);
-  const sun=new T.DirectionalLight(0xfff6ec,1.0);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);
-  Object.assign(sun.shadow.camera,{left:-170,right:170,top:170,bottom:-170,near:10,far:700});sun.shadow.bias=-0.0006;
+  /* entorno de estudio para reflejos suaves en piel y tela */
+  try{const pm=new T.PMREMGenerator(renderer);const env=new T.Scene();
+   env.add(new T.Mesh(new T.BoxGeometry(60,40,60),new T.MeshBasicMaterial({color:0x3e3b46,side:T.BackSide})));
+   const panel=(w,h,x,y,z,rx,ry,k)=>{const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({color:new T.Color(k,k,k),side:T.DoubleSide}));m.position.set(x,y,z);m.rotation.set(rx,ry,0);env.add(m)};
+   panel(34,14,0,19.5,0,Math.PI/2,0,5);panel(18,22,-29.5,6,8,0,Math.PI/2,3.2);panel(16,18,29.5,6,-6,0,-Math.PI/2,1.6);panel(30,14,0,7,-29.5,0,0,2.2);
+   scene.environment=pm.fromScene(env,0.04).texture;pm.dispose()}catch(e){}
+  const hemi=new T.HemisphereLight(0xffffff,0x6d667c,0.28);scene.add(hemi);
+  const sun=new T.DirectionalLight(0xfff1e2,1.55);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);
+  Object.assign(sun.shadow.camera,{left:-170,right:170,top:170,bottom:-170,near:10,far:700});sun.shadow.bias=-0.0006;sun.shadow.normalBias=0.4;
   scene.add(sun);scene.add(sun.target);
-  const rim=new T.DirectionalLight(0xcfe0ff,0.55);scene.add(rim);
-  const fillL=new T.DirectionalLight(0xffffff,0.22);scene.add(fillL);
-  const M=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.7,metalness:0},o||{}));
-  const floorM=M(0xe9e6f2,{roughness:1});const floor=new T.Mesh(new T.CircleGeometry(1400,72),floorM);floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
-  const matM=M(0x3f6fd8,{roughness:.95});const mat=new T.Mesh(new T.BoxGeometry(260,2.4,96),matM);mat.position.y=1.2;mat.receiveShadow=true;scene.add(mat);
+  const rim=new T.DirectionalLight(0xd6e4ff,0.9);scene.add(rim);
+  const fillL=new T.DirectionalLight(0xffffff,0.18);scene.add(fillL);
+  const M=(c,o)=>{const m=new T.MeshStandardMaterial(Object.assign({roughness:.7,metalness:0,envMapIntensity:.6},o||{}));m.color.setHex(c).convertSRGBToLinear();return m};
+  const floorM=M(0xe9e6f2,{roughness:1,envMapIntensity:.2});const floor=new T.Mesh(new T.CircleGeometry(1400,72),floorM);floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
+  const matM=M(0x3f6fd8,{roughness:.95,envMapIntensity:.2});const mat=new T.Mesh(new T.BoxGeometry(260,2.4,96),matM);mat.position.y=1.2;mat.receiveShadow=true;scene.add(mat);
 
-  const SKIN=0xb47552,BLACK=0x18181c,BLACK2=0x111114;
-  const skinM=()=>M(SKIN,{roughness:.48}),clothM=()=>M(BLACK,{roughness:.88}),shortM=()=>M(BLACK2,{roughness:.92});
+  const SKIN=0xbb7b57;
+  const skinM=()=>{const m=new T.MeshPhysicalMaterial({roughness:.52,metalness:0,clearcoat:.12,clearcoatRoughness:.55,envMapIntensity:.7});m.color.setHex(SKIN).convertSRGBToLinear();return m};
+  const clothM=()=>M(0x17171b,{roughness:.82,envMapIntensity:.45}),shortM=()=>M(0x101013,{roughness:.86,envMapIntensity:.4});
   const fig=new T.Group();scene.add(fig);
-  const cyl=(rt,rb)=>new T.CylinderGeometry(rt,rb,1,24,1);const SPH=new T.SphereGeometry(1,28,20);
-  const segs=[],balls=[],muscles=[];
-  function seg(a,b,r1,r2,mat){const m=new T.Mesh(cyl(r2,r1),mat);m.castShadow=true;m.receiveShadow=true;fig.add(m);segs.push({m,a,b});return m}
-  function ball(at,r,mat,sc){const m=new T.Mesh(SPH,mat);m.scale.set(r*(sc?sc[0]:1),r*(sc?sc[1]:1),r*(sc?sc[2]:1));m.userData.base=m.scale.clone();m.castShadow=true;fig.add(m);balls.push({m,at});return m}
-  /* músculo: elipsoide en el marco local de un segmento (t a lo largo, ox hacia afuera, oz hacia adelante) */
-  function mus(id,side,a,b,t,ox,oz,rx,ry,rz,mat,frame){const m=new T.Mesh(SPH,mat);m.castShadow=true;m.receiveShadow=true;fig.add(m);
-   const o={m,id,side,a,b,t,ox,oz,r:[rx,ry,rz],frame:frame||'limb'};muscles.push(o);return o}
+  const SPH=new T.SphereGeometry(1,32,24);
+  const lathe=(pts,seg)=>{const v=[new T.Vector2(0,pts[0][0]-.015)];for(const [t,r] of pts)v.push(new T.Vector2(r,t));v.push(new T.Vector2(0,pts[pts.length-1][0]+.015));return new T.LatheGeometry(v,seg||32)};
+  const segs=[],balls=[],muscles=[],hands=[],shoes=[];
+  function seg(a,b,geo,mat){const m=new T.Mesh(geo,mat);m.castShadow=true;m.receiveShadow=true;fig.add(m);segs.push({m,a,b});return m}
+  function ball(at,r,mat,sc){const m=new T.Mesh(SPH,mat);m.scale.set(r*(sc?sc[0]:1),r*(sc?sc[1]:1),r*(sc?sc[2]:1));m.castShadow=true;fig.add(m);balls.push({m,at});return m}
+  function mus(id,side,a,b,t,ox,oz,rx,ry,rz,mat){const m=new T.Mesh(SPH,mat);m.castShadow=true;m.receiveShadow=true;fig.add(m);const o={m,id,side,a,b,t,ox,oz,r:[rx,ry,rz]};muscles.push(o);return o}
+  /* perfiles anatómicos (t a lo largo del hueso, radio) */
+  const G={
+   thigh:lathe([[0,6.5],[.1,6.9],[.3,6.6],[.55,5.9],[.78,4.9],[.92,4.3],[1,4.2]]),
+   shin:lathe([[0,4.3],[.1,4.1],[.24,4.7],[.36,4.5],[.58,3.4],[.82,2.5],[1,2.35]]),
+   uarm:lathe([[0,4.5],[.15,4.3],[.42,3.9],[.62,3.75],[.85,3.1],[1,2.9]]),
+   farm:lathe([[0,2.9],[.14,3.3],[.32,3.15],[.65,2.45],[1,2.0]]),
+   shorts:lathe([[0,7.3],[.18,7.6],[.4,7.2],[.46,7.0]]),
+   sleeve:lathe([[0,4.55],[.2,4.5],[.36,4.3],[.4,4.25]]),
+   neck:lathe([[0,4.4],[.3,3.6],[.7,3.4],[1,3.3]]),
+   abs:lathe([[0,1],[.3,.93],[.65,.9],[1,.98]],40),
+   chest:lathe([[0,.89],[.3,1.0],[.6,1.08],[.82,1.1],[.94,.98],[1,.62]],40)};
   for(const n of [1,2]){
-   const P='p'+n,K='K'+n,A='A'+n,Tt='T'+n,S='s'+n,E='E'+n,W='W'+n;
-   // pierna base
-   seg(P,K,5.4,4.3,skinM());ball(K,4.3,skinM());seg(K,A,3.9,2.7,skinM());ball(A,2.9,skinM());
-   const shoe=M(0xf2f2f5,{roughness:.5}),sole=M(0x2a2a30,{roughness:.8});seg(A,Tt,3.5,2.9,shoe);ball(Tt,2.9,shoe);
-   // músculos de la pierna (bajo el short la parte alta va negra)
-   mus('Q',n,P,K,.52,0,2.1,4.5,9.8,3.5,skinM());              // cuádriceps (recto/vasto)
-   mus('Q',n,P,K,.6,2.4,.9,3.2,8.5,3.2,skinM());              // vasto lateral
-   mus('Q',n,P,K,.8,-2.1,1.5,2.7,4.2,2.6,skinM());            // vasto medial (gota)
-   mus('H',n,P,K,.5,0,-2.3,4.2,9.5,3.4,skinM());              // isquiotibiales
-   mus('AD',n,P,K,.3,-2.6,0,3.1,8,3.6,skinM());               // aductores
-   mus('C',n,K,A,.27,1.2,-2.3,2.8,6.5,3,skinM());             // gemelo lateral
-   mus('C',n,K,A,.3,-1.3,-2.4,3,7,3.1,skinM());               // gemelo medial
-   mus('C',n,K,A,.38,.4,1.5,1.7,6,1.6,skinM());               // tibial anterior
-   seg(P,'mT'+n,7.1,6.7,shortM());                             // short
-   // brazo
-   seg(S,E,3.5,2.9,skinM());ball(E,2.9,skinM());seg(E,W,3.0,2.2,skinM());ball(W,2.6,skinM(),[1,1.2,.75]);
-   mus('B',n,S,E,.58,0,1.9,2.8,6.6,2.7,skinM());             // bíceps
-   mus('TR',n,S,E,.45,0,-2.0,3,7.8,2.8,skinM());             // tríceps
-   mus('F',n,E,W,.25,0,.6,2.9,5.2,2.6,skinM());              // antebrazo
-   mus('D',n,S,E,.12,.6,0,4.5,5.4,4.4,clothM());               // deltoides (bajo la manga)
-   seg(S,'mU'+n,5.3,4.7,clothM());                            // manga
+   const P='p'+n,K='K'+n,A='A'+n,S='s'+n,E='E'+n,W='W'+n;
+   const sk=skinM();
+   seg(P,K,G.thigh,sk);ball(K,4.3,sk);seg(K,A,G.shin,sk);ball(A,2.5,sk);
+   seg(P,K,G.shorts,shortM());
+   mus('Q',n,P,K,.42,0,3.3,4.1,9,3.4,skinM());mus('Q',n,P,K,.55,3.5,1.2,3,8,3,skinM());mus('Q',n,P,K,.78,-2.7,1.7,2.6,4,2.6,skinM());
+   mus('H',n,P,K,.5,0,-3.3,4,9,3.2,skinM());mus('AD',n,P,K,.3,-3.5,0,3,7,3.4,skinM());
+   mus('C',n,K,A,.27,1.4,-2.85,2.5,6,2.7,skinM());mus('C',n,K,A,.3,-1.5,-2.95,2.7,6.5,2.8,skinM());mus('C',n,K,A,.36,.6,2.35,1.6,6,1.5,skinM());
+   seg(S,E,G.uarm,sk);ball(E,2.95,sk);seg(E,W,G.farm,sk);
+   seg(S,E,G.sleeve,clothM());
+   mus('B',n,S,E,.58,0,2.25,2.4,6,2.3,skinM());mus('TR',n,S,E,.45,0,-2.35,2.6,7,2.4,skinM());mus('F',n,E,W,.22,.4,.9,2.6,5,2.4,skinM());
+   mus('D',n,S,E,.1,.6,0,3.9,4.6,3.9,clothM());
+   // mano con dedos
+   const hg=new T.Group();fig.add(hg);const palm=new T.Mesh(SPH,sk);palm.scale.set(2.25,2.7,1.15);palm.position.set(0,2.4,0);palm.castShadow=true;hg.add(palm);
+   for(let i=0;i<4;i++){const f=new T.Mesh(SPH,sk);f.scale.set(.58,1.9-(i===3?.35:0)-(i===0?.15:0),.55);f.position.set(-1.55+i*1.03,5.6-(i===3?.3:0),.15);f.castShadow=true;hg.add(f)}
+   const th=new T.Mesh(SPH,sk);th.scale.set(.62,1.6,.62);th.position.set(2.15,1.9,.7);th.rotation.z=-.6;hg.add(th);
+   hands.push({g:hg,n});
+   // zapatilla
+   const sg=new T.Group();fig.add(sg);const up=new T.Mesh(SPH,M(0xf3f3f6,{roughness:.55}));up.scale.set(3.1,6.2,2.7);up.position.set(0,3.4,.5);up.castShadow=true;sg.add(up);
+   const sole=new T.Mesh(SPH,M(0x26262c,{roughness:.9}));sole.scale.set(3.0,6.4,.8);sole.position.set(0,3.4,-1.75);sole.castShadow=true;sg.add(sole);
+   const sw=new T.Mesh(SPH,M(0x101014));sw.scale.set(.25,3,.7);sw.position.set(2.95,3.8,.3);sg.add(sw);
+   shoes.push({g:sg,n});
   }
-  /* tronco */
   const torso={};const tp=(geo,mat)=>{const m=new T.Mesh(geo,mat);m.castShadow=true;m.receiveShadow=true;fig.add(m);return m};
-  torso.abs=tp(cyl(1,0.92),clothM());torso.chest=tp(cyl(1,0.84),clothM());torso.pelvis=tp(SPH,shortM());
+  torso.abs=tp(G.abs,clothM());torso.chest=tp(G.chest,clothM());torso.pelvis=tp(SPH,shortM());
   const tmus=[];const tm=(id,part,t,ox,oz,rx,ry,rz,mat,mirror)=>{for(const sx of mirror?[1,-1]:[1]){const m=new T.Mesh(SPH,mat);m.castShadow=true;fig.add(m);tmus.push({m,id,part,t,ox:ox*sx,oz,r:[rx,ry,rz]})}};
-  tm('P','chest',.62,4.4,5.6,5.2,3.6,1.9,clothM(),1);        // pectorales
-  tm('L','chest',.45,8.6,-1.5,2.6,8,4.2,clothM(),1);         // dorsales
-  tm('T','chest',.95,3.6,-3.5,4,3,2.6,clothM(),1);           // trapecios
-  tm('AB','abs',.5,0,5.6,5.4,9,2.2,clothM());                 // abdomen
-  tm('OB','abs',.5,6.6,2.4,2.4,8,3.6,clothM(),1);            // oblicuos
-  tm('LB','abs',.45,2.6,-5.2,2.4,8.5,2.4,clothM(),1);        // lumbares
-  tm('G','pelvis',0,4.6,-5.6,5.4,6,4.6,shortM(),1);          // glúteos
-  tm('HF','pelvis',0,4.2,4.4,2.6,4,2.4,shortM(),1);          // flexores de cadera
-  seg('S','mN',3.7,3.4,skinM());
+  tm('P','chest',.62,4.4,6.3,5.2,3.6,1.9,clothM(),1);
+  tm('L','chest',.45,9.2,-1.6,2.6,8,4,clothM(),1);
+  tm('T','chest',.9,4.6,-1.6,4.6,3.6,3.2,clothM(),1);
+  tm('AB','abs',.5,0,6.2,5.2,8.6,2,clothM());
+  tm('OB','abs',.5,8.2,2,2.3,8,3.4,clothM(),1);
+  tm('LB','abs',.45,2.6,-6,2.3,8.4,2.2,clothM(),1);
+  tm('G','pelvis',0,4.6,-5.8,5.4,6,4.6,shortM(),1);
+  tm('HF','pelvis',0,4.2,4.6,2.6,4,2.4,shortM(),1);
+  seg('S','N',G.neck,skinM());
   /* cabeza */
   const head=new T.Group();fig.add(head);const hs=skinM();
-  const skull=new T.Mesh(SPH,hs);skull.scale.set(6.2,7.3,6.9);skull.castShadow=true;head.add(skull);
-  const jaw=new T.Mesh(SPH,hs);jaw.position.set(0,-3.6,1.8);jaw.scale.set(5.1,3.9,5);head.add(jaw);
-  const chin=new T.Mesh(SPH,hs);chin.position.set(0,-5.6,4.2);chin.scale.set(2.4,1.6,1.8);head.add(chin);
-  const hairM=M(0x1c130e,{roughness:.95});
-  const hair=new T.Mesh(new T.SphereGeometry(1,32,20,0,Math.PI*2,0,Math.PI*0.5),hairM);hair.scale.set(6.6,7.5,7.25);hair.rotation.x=-0.38;hair.position.set(0,.7,-.5);head.add(hair);
-  const eyeW=M(0xf4f1ec,{roughness:.25}),irisM=M(0x3a2414,{roughness:.25});
+  const skull=new T.Mesh(SPH,hs);skull.scale.set(5.8,7.0,6.7);skull.castShadow=true;head.add(skull);
+  const jaw=new T.Mesh(SPH,hs);jaw.position.set(0,-3.5,1.9);jaw.scale.set(5.1,3.9,5);head.add(jaw);
+  const chin=new T.Mesh(SPH,hs);chin.position.set(0,-5.5,4.2);chin.scale.set(2.4,1.6,1.8);head.add(chin);
+  const hairM=M(0x18100b,{roughness:.95,envMapIntensity:.3});
+  const hair=new T.Mesh(new T.SphereGeometry(1,40,24,0,Math.PI*2,0,Math.PI*0.5),hairM);hair.scale.set(5.95,7.08,6.85);hair.rotation.x=-0.38;hair.position.set(0,.75,-.5);head.add(hair);
+  const eyeW=M(0xf4f1ec,{roughness:.2}),irisM=M(0x2f1c10,{roughness:.2});
   for(const sx of [-1,1]){
-   const e=new T.Mesh(SPH,eyeW);e.position.set(sx*2.3,.9,5.75);e.scale.set(.95,.62,.45);head.add(e);
-   const ir=new T.Mesh(SPH,irisM);ir.position.set(sx*2.3,.88,6.12);ir.scale.set(.52,.52,.25);head.add(ir);
-   const br=new T.Mesh(new T.BoxGeometry(2.6,.38,.6),hairM);br.position.set(sx*2.35,2.25,6.0);br.rotation.z=sx*-0.1;head.add(br);
-   const ear=new T.Mesh(SPH,hs);ear.position.set(sx*6.1,.1,-.2);ear.scale.set(.9,1.9,1.3);head.add(ear);
+   const sock=new T.Mesh(SPH,hs);sock.position.set(sx*2.3,1.35,5.5);sock.scale.set(1.5,.55,.9);head.add(sock);
+   const e=new T.Mesh(SPH,eyeW);e.position.set(sx*2.3,.85,5.7);e.scale.set(.95,.55,.45);head.add(e);
+   const ir=new T.Mesh(SPH,irisM);ir.position.set(sx*2.3,.83,6.05);ir.scale.set(.48,.48,.22);head.add(ir);
+   const br=new T.Mesh(new T.BoxGeometry(2.6,.36,.6),hairM);br.position.set(sx*2.35,2.25,6.0);br.rotation.z=sx*-0.1;head.add(br);
+   const ear=new T.Mesh(SPH,hs);ear.position.set(sx*6.05,.1,-.2);ear.scale.set(.85,1.9,1.3);head.add(ear);
    const cheek=new T.Mesh(SPH,hs);cheek.position.set(sx*3.3,-1.6,4.6);cheek.scale.set(1.9,1.6,1.4);head.add(cheek);
   }
-  const nose=new T.Mesh(SPH,hs);nose.position.set(0,-.7,6.9);nose.scale.set(1,2,1.25);head.add(nose);
-  const mouth=new T.Mesh(new T.BoxGeometry(2.7,.45,.5),M(0x8a4a3a));mouth.position.set(0,-3.3,6.2);head.add(mouth);
-  const beard=new T.Mesh(SPH,M(0x2a1d16,{roughness:1,transparent:true,opacity:.28}));beard.position.set(0,-4.2,3.4);beard.scale.set(5.2,3.2,4.2);head.add(beard);
+  const nose=new T.Mesh(SPH,hs);nose.position.set(0,-.7,6.85);nose.scale.set(.95,2,1.25);head.add(nose);
+  const lip=M(0x8a4c3c,{roughness:.5});const ul=new T.Mesh(SPH,lip);ul.position.set(0,-3.05,6.05);ul.scale.set(1.5,.32,.5);head.add(ul);const ll=new T.Mesh(SPH,lip);ll.position.set(0,-3.55,5.95);ll.scale.set(1.3,.38,.5);head.add(ll);
+  const beard=new T.Mesh(SPH,M(0x24180f,{roughness:1,transparent:true,opacity:.3}));beard.position.set(0,-4.2,3.4);beard.scale.set(5.25,3.2,4.25);head.add(beard);
 
-  R3={T,renderer,scene,cam,sun,rim,fillL,hemi,floor,floorM,mat,matM,fig,segs,balls,muscles,tmus,torso,head,props:{},M};
+  R3={T,renderer,scene,cam,sun,rim,fillL,hemi,floor,floorM,mat,matM,fig,segs,balls,muscles,tmus,torso,head,hands,shoes,props:{},M};
   return R3;
  }catch(e){console.warn('3D no disponible',e);R3=false;return R3}
 }
@@ -155,25 +173,24 @@ function limbFrame(a,b,ant,out){const T=THREE;const y=_v().subVectors(b,a);const
  return {y,z,x,len,sg,q:new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x,y,z))}}
 function pose3(J,an,act,pulse){const R=R3,T=R.T,L=(a,b,t)=>a.clone().lerp(b,t);
  for(const n of [1,2]){J['mT'+n]=L(J['p'+n],J['K'+n],.42);J['mU'+n]=L(J['s'+n],J['E'+n],.3)}
- J.mN=L(J.S,J.N,.55);
  const Y=new T.Vector3(0,1,0);
- for(const s of R.segs){const a=J[s.a],b=J[s.b];const d=_v().subVectors(b,a);const len=d.length()||.01;s.m.position.copy(a).addScaledVector(d,.5);s.m.quaternion.setFromUnitVectors(Y,d.divideScalar(len));s.m.scale.set(1,len,1)}
+ for(const s of R.segs){const a=J[s.a],b=J[s.b];const d=_v().subVectors(b,a);const len=d.length()||.01;s.m.position.copy(a);s.m.quaternion.setFromUnitVectors(Y,d.divideScalar(len));s.m.scale.set(1,len,1)}
  for(const o of R.balls)o.m.position.copy(J[o.at]);
  const fv=an.v==='f';
  const up=_v().subVectors(J.S,J.H).normalize();
  let lat=fv?_v().subVectors(J.s2,J.s1).normalize():new T.Vector3(0,0,J._m?-1:1);
  lat.addScaledVector(up,-lat.dot(up)).normalize();const fw=_v().crossVectors(up,lat).normalize();
  // partes del tronco con columna flexible
- const part=(m,a,b,sx,sz)=>{const f=limbFrame(a,b,fw,lat);const len=a.distanceTo(b);m.position.copy(a).lerp(b,.5);
+ const part=(m,a,b,sx,sz)=>{const f=limbFrame(a,b,fw,lat);const len=a.distanceTo(b);m.position.copy(a);
   m.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(_v().crossVectors(f.y,f.z),f.y,f.z));m.scale.set(sz,len,sx);return f};
- const top=J.M.clone().lerp(J.S,.86);
- const fA=part(R.torso.abs,J.H,J.M,7.6,10);const fC=part(R.torso.chest,J.M,top,8.8,12.6);
- R.torso.pelvis.position.copy(J.H).addScaledVector(up,1.2);R.torso.pelvis.quaternion.copy(R.torso.abs.quaternion);R.torso.pelvis.scale.set(10.8,7.2,7.6);
+ const top=J.M.clone().lerp(J.S,1.04);
+ const fA=part(R.torso.abs,J.H,J.M,7.6,10.2);const fC=part(R.torso.chest,J.M,top,8,11.4);
+ R.torso.pelvis.position.copy(J.H).addScaledVector(up,1.2);R.torso.pelvis.quaternion.copy(R.torso.abs.quaternion);R.torso.pelvis.scale.set(9.6,6.6,7.0);
  const frames={abs:[J.H,J.M,fA],chest:[J.M,top,fC],pelvis:[J.H,J.H,fA]};
  for(const o of R.tmus){const [a,b,f]=frames[o.part];const xa=_v().crossVectors(f.y,f.z);
   const pos=a.clone().lerp(b,o.t).addScaledVector(xa,o.ox).addScaledVector(f.z,o.oz);if(o.part==='pelvis')pos.addScaledVector(f.y,1);
   o.m.position.copy(pos);o.m.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(xa,f.y,f.z));
-  const on=act&&act.includes(o.id),k=on?1+.06*pulse:1;o.m.scale.set(o.r[0]*k,o.r[1],o.r[2]*k)}
+  const on=act&&act.includes(o.id),k=on?1+.06*pulse:1;o.m.visible=!!on||o.id==='T';o.m.scale.set(o.r[0]*k,o.r[1],o.r[2]*k)}
  // músculos de extremidades
  const outv={};for(const n of [1,2]){outv[n]=_v().subVectors(J['s'+n],J.S);if(outv[n].lengthSq()<1e-3)outv[n]=lat.clone().multiplyScalar(n===1?1:-1);outv[n].normalize()}
  const antCache={};
@@ -184,18 +201,20 @@ function pose3(J,an,act,pulse){const R=R3,T=R.T,L=(a,b,t)=>a.clone().lerp(b,t);
  for(const o of R.muscles){const a=J[o.a],b=J[o.b];const isLeg=o.a[0]==='p'||o.a[0]==='K';const f=limbFrame(a,b,ant(o.side,isLeg),outv[o.side]);
   const pos=a.clone().addScaledVector(f.y,f.len*o.t).addScaledVector(f.x,o.ox*f.sg).addScaledVector(f.z,o.oz);
   o.m.position.copy(pos);o.m.quaternion.copy(f.q);const on=act&&act.includes(o.id),k=on?1+.07*pulse:1;o.m.scale.set(o.r[0]*k,o.r[1]*Math.min(1.15,f.len/24+.1),o.r[2]*k)}
+ for(const h of R.hands){const n=h.n;const f=limbFrame(J['E'+n],J['W'+n],ant(n,false),outv[n]);h.g.position.copy(J['W'+n]).addScaledVector(f.y,-.6);h.g.quaternion.copy(f.q);h.g.scale.set(f.sg,1,1)}
+ for(const sh of R.shoes){const n=sh.n;const A=J['A'+n],Tt=J['T'+n],K=J['K'+n];const upv=_v().subVectors(K,A).normalize();const f=limbFrame(A,Tt,upv,outv[n]);sh.g.position.copy(A).addScaledVector(f.y,-2);sh.g.quaternion.copy(f.q)}
  // cabeza
  const hu=_v().subVectors(J.N,J.S).normalize();const chestUp=_v().subVectors(J.S,J.M).normalize();
  let fwC=_v().crossVectors(chestUp,lat).normalize();const hf=fv?new T.Vector3(1,0,0):fwC;
  hf.addScaledVector(hu,-hf.dot(hu)).normalize();const hx=_v().crossVectors(hu,hf).normalize();
- R.head.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(hx,hu,hf));R.head.position.copy(J.N).addScaledVector(hu,-1.2);
+ R.head.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(hx,hu,hf));R.head.position.copy(J.N).addScaledVector(hu,.2);R.head.scale.setScalar(.9);
 }
 
 let R3theme='';
 function theme3(){const R=R3,C=dcols();const key=[C.bg2,C.floor,C.mat].join();if(key===R3theme)return;R3theme=key;const T=R.T;
  const col=s=>{try{return new T.Color(s)}catch(e){return new T.Color(0x888888)}};
- R.renderer.setClearColor(col(C.bg2),1);R.scene.fog=new T.Fog(col(C.bg2),300,900);R.floorM.color=col(C.floor);R.matM.color=col(C.mat);
- const dark=col(C.bg2).getHSL({}).l<.3;R.hemi.intensity=dark?.5:.55;R.rim.intensity=dark?.9:.55}
+ R.renderer.setClearColor(col(C.bg2),1);R.scene.fog=new T.Fog(col(C.bg2).convertSRGBToLinear(),300,900);R.floorM.color=col(C.floor).convertSRGBToLinear();R.matM.color=col(C.mat).convertSRGBToLinear();
+ const dark=col(C.bg2).getHSL({}).l<.3;R.hemi.intensity=dark?.3:.28;R.rim.intensity=dark?1.2:.9}
 
 function draw3D(cv,key,ms){
  const R=r3init();if(!R)return drawDemo(cv,key,ms);
@@ -204,7 +223,7 @@ function draw3D(cv,key,ms){
  const p=poseAt(an,ms);const J2=solveJ(p,an);J2._p=p;const J=to3(an,J2);J._m=p.m>0.5;
  const act=MU3[key]||[],st=MU[key]&&MU[key].st,pulse=.5+.5*Math.sin(ms/240);
  pose3(J,an,act,pulse);
- const hc=new T.Color(st?0x1f8bff:0xff3b1f);
+ const hc=new T.Color(st?0x1f8bff:0xff3b1f).convertSRGBToLinear();
  for(const o of R.muscles.concat(R.tmus)){const mt=o.m.material;if(act.includes(o.id)){mt.emissive.copy(hc);mt.emissiveIntensity=.35+.45*pulse}else mt.emissiveIntensity=0}
  for(const k in R.props)R.props[k].g.visible=(k===key);
  const pr=props3(key);pr.g.visible=true;for(const u of pr.ups)u(J,an);
