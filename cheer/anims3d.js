@@ -19,6 +19,7 @@ function to3(an,J){const T=THREE,o={},fv=an.v==='f',z3=an.z3||{};
  for(const k in J){if(k[0]==='_')continue;const [x,y]=J[k];
   let z=ZOFF[k]||0;if(z3.E&&/^E[12]$/.test(k))z=Math.sign(z)*z3.E;if(z3.W&&/^W[12]$/.test(k))z=Math.sign(z)*z3.W;
   o[k]=fv?new T.Vector3(0,GY-y,-(x-120)):new T.Vector3(x-120,GY-y,z)}
+ if(fv&&an.fwArm){o.E2.x=0;o.W2=new T.Vector3(LN.fa,o.E2.y,o.E2.z);o.E2.y=Math.max(o.E2.y,2.5);o.W2.y=o.E2.y}
  if(!fv){const pz=J._p||{};for(const n of [1,2]){const sg=n===1?1:-1,s=o['s'+n];
   const zE=sg*(pz.ez!=null?pz.ez:(z3.E||11)),zW=sg*(pz.wz!=null?pz.wz:(z3.W||11));
   const fix=(a,b,L,zb)=>{const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,dz=zb-a.z,k=Math.sqrt(Math.max(L*L-dz*dz,9))/d;return new T.Vector3(a.x+dx*k,a.y+dy*k,zb)};
@@ -133,9 +134,10 @@ function props3(key){const R=R3,T=R.T;if(R.props[key])return R.props[key];const 
   if(q.k==='box'){const b=sh(new T.Mesh(new T.BoxGeometry(q.w,q.h,42),R.M(0x8f6440,{roughness:.8})));b.position.set(q.x+q.w/2-120,q.h/2,0)}
   if(q.k==='wall'){const w=sh(new T.Mesh(new T.BoxGeometry(5,220,120),R.M(0xcfcadf,{roughness:1})));w.position.set(q.x-120+2.5,110,0)}
   if(q.k==='cone'){const c=sh(new T.Mesh(new T.ConeGeometry(6,14,24),R.M(0xff7a1a,{roughness:.6})));c.position.set(q.x-120,7,0)}
-  if(q.k==='bench'){const top=sh(new T.Mesh(new T.BoxGeometry(1,4,22),pad)),l1=sh(new T.Mesh(new T.BoxGeometry(3,1,16),eq)),l2=sh(new T.Mesh(new T.BoxGeometry(3,1,16),eq));
-   ups.push(J=>{const xs=q.of.map(k=>J[k].x),ys=q.of.map(k=>J[k].y);let x0=Math.min(...xs)-6,x1=Math.max(...xs)+6;if(q.w&&x1-x0<q.w){const c=(x0+x1)/2;x0=c-q.w/2;x1=c+q.w/2}const y=Math.max(1,Math.min(...ys)-6);
-    top.scale.x=x1-x0;top.position.set((x0+x1)/2,y-2,0);for(const [l,x] of [[l1,x0+3],[l2,x1-3]]){l.scale.y=Math.max(.1,y-4);l.position.set(x,(y-4)/2,0)}})}
+  if(q.k==='bench'){const top=sh(new T.Mesh(new T.BoxGeometry(1,1,1),pad)),l1=sh(new T.Mesh(new T.BoxGeometry(1,1,1),eq)),l2=sh(new T.Mesh(new T.BoxGeometry(1,1,1),eq));let done=false;
+   ups.push((J,an)=>{if(q.fix&&done)return;done=true;const fv=an.v==='f';const H=k=>fv?-J[k].z:J[k].x;const xs=q.of.map(H),ys=q.of.map(k=>J[k].y);let x0=Math.min(...xs)-6,x1=Math.max(...xs)+6;if(q.w&&x1-x0<q.w){const c=(x0+x1)/2;x0=c-q.w/2;x1=c+q.w/2}const y=Math.max(1,Math.min(...ys)-(fv?3.2:6));
+    const D=fv?40:22;const place=(m,cx,cy,sx,sy,sz)=>{m.scale.set(fv?sz:sx,sy,fv?sx:sz);m.position.set(fv?0:cx,cy,fv?-cx:0)};
+    place(top,(x0+x1)/2,y-2,x1-x0,4,D);place(l1,x0+3,(y-4)/2,3,Math.max(.1,y-4),D-6);place(l2,x1-3,(y-4)/2,3,Math.max(.1,y-4),D-6)})}
   if(q.k==='pbar'){const par=q.w===14;const bars=[],posts=[];
    if(par){for(const z of [-12,12])bars.push([sh(new T.Mesh(new T.CylinderGeometry(1.3,1.3,60,10),eq2)),z]);bars.forEach(([b])=>b.rotation.z=Math.PI/2);for(let i=0;i<4;i++)posts.push(sh(new T.Mesh(new T.CylinderGeometry(1.3,1.3,1,8),eq)))}
    else{bars.push([sh(new T.Mesh(new T.CylinderGeometry(1.3,1.3,64,10),eq2)),0]);bars[0][0].rotation.x=Math.PI/2;for(let i=0;i<2;i++)posts.push(sh(new T.Mesh(new T.CylinderGeometry(1.6,1.6,1,8),eq)))}

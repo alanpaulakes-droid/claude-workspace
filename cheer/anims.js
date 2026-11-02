@@ -28,8 +28,8 @@ const AN={
  hipThrust:{p:[{k:'bench',of:['S'],w:26},{k:'plate',at:'H',dy:-7}],fr:[[{t:-125,h:-125,l1:125,k1:-5,l2:122,k2:-8,a1:65,e1:72,a2:62,e2:69},800,200],[{t:-95,h:-100,l1:95,k1:0,l2:92,k2:-3,a1:95,e1:102,a2:92,e2:99},700,600]]},
  calf:{p:[{k:'db'}],fr:[[{...DN,f1:90,f2:90},500,200],[{...DN,f1:30,f2:28},500,500]]},
  calfSingle:{fr:[[{...DN,l2:-10,k2:-90,f2:-60,f1:90},500,200],[{...DN,l2:-10,k2:-90,f2:-60,f1:30},500,500]]},
- copenhagen:{v:'f',p:[{k:'bench',of:['A1'],w:16}],fr:[[{t:-78,h:-78,a1:178,e1:178,a2:0,e2:-90,l1:95,k1:95,l2:70,k2:70,f1:95,f2:70},900,600],[{t:-70,h:-70,a1:178,e1:178,a2:5,e2:-85,l1:97,k1:97,l2:72,k2:72,f1:97,f2:72},900,600]]},
- sidePlank:{v:'f',fr:[[{t:-82,h:-82,a1:178,e1:178,a2:0,e2:-90,l1:80,k1:80,l2:84,k2:84,f1:80,f2:84},900,500],[{t:-74,h:-74,a1:178,e1:178,a2:4,e2:-86,l1:76,k1:76,l2:80,k2:80,f1:76,f2:80},900,500]]},
+ copenhagen:{v:'f',fwArm:1,p:[{k:'bench',of:['A1'],w:22,fix:1}],fr:[[{t:-99,h:-96,a1:178,e1:178,a2:0,e2:-90,l1:115,k1:115,l2:75,k2:75,f1:115,f2:75},1000,300],[{t:-80,h:-80,a1:178,e1:178,a2:0,e2:-90,l1:100,k1:100,l2:60,k2:60,f1:100,f2:60},1000,900]]},
+ sidePlank:{v:'f',fwArm:1,fr:[[{t:-82,h:-82,a1:178,e1:178,a2:0,e2:-90,l1:80,k1:80,l2:84,k2:84,f1:80,f2:84},900,500],[{t:-74,h:-74,a1:178,e1:178,a2:4,e2:-86,l1:76,k1:76,l2:80,k2:80,f1:76,f2:80},900,500]]},
  pallof:{p:[{k:'band',at:'W1',to:[30,82]}],fr:[[{...am(20,150)},600,200],[{...am(90,90)},600,900]]},
  ohp:{p:[{k:'plate',at:'W1'}],fr:[[{...am(40,165)},800,250],[{h:175,...UP},800,400]]},
  pushPress:{p:[{k:'plate',at:'W1'}],fr:[[{...am(40,165)},700,300],[{...am(40,165),...lg(18,-14)},350,0],[{...am(130,175),y:3,f1:45,f2:43},250,0],[{h:175,...UP},350,500]]},
@@ -121,7 +121,7 @@ function animKey(n){
 
 const Z3={squat:{E:21,W:25},squatPause:{E:21,W:25},pullup:{E:20,W:22},hangHollow:{E:16,W:20},ohp:{E:16,W:15},pushPress:{E:16,W:15},lockout:{E:18,W:20},row:{E:14,W:13},invRow:{E:18,W:19},pushup:{E:15,W:15},pushupPause:{E:15,W:15},pike:{E:14,W:14},dips:{E:12,W:12},clean:{E:14,W:13},frontSquat:{E:14,W:13},dbBench:{E:17,W:15},wheel:{E:10,W:8},benchDip:{E:12,W:11}};for(const k in Z3)AN[k].z3=Z3[k];
 for(const k of ['squat','squatPause','rdl','row','clean','frontSquat','ohp','pushPress','lockout'])AN[k].cam=[0.78,0.2,0.6];
-AN.hipThrust.cam=[0.12,0.6,0.79];AN.handstandWall.cam=[0.05,0.22,1];AN.facePull.cam=[0.55,0.25,0.8];
+AN.copenhagen.cam=[0.8,0.38,0.46];AN.sidePlank.cam=[0.8,0.32,0.5];AN.hipThrust.cam=[0.12,0.6,0.79];AN.handstandWall.cam=[0.05,0.22,1];AN.facePull.cam=[0.55,0.25,0.8];
 /* preparar frames */
 for(const k in AN){const an=AN[k];an.fr=an.fr.map(([p,mv,hd])=>{const q=Object.assign({},PB,p);
  if(q.h==null)q.h=q.t;

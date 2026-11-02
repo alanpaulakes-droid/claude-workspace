@@ -1,4 +1,4 @@
-const CACHE='cheer-v5';
+const CACHE='cheer-v6';
 const ASSETS=['./','index.html','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png','anims.js','anims3d.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.map(k=>k!==CACHE?caches.delete(k):null))).then(()=>self.clients.claim())));
