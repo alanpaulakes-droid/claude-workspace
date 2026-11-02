@@ -15,15 +15,18 @@ const MU3={};
  [['rolls','rollFwd','cartwheel','backWalk','frontWalk','bhs','frontHs','backTuck','frontTuck'],'D TR AB Q']
 ].forEach(([ks,c])=>ks.forEach(k=>MU3[k]=c.split(' ')));
 
+const RAD3={H:6.6,M:7.2,S:7.2,N:7,p1:6.4,p2:6.4,K1:4.3,K2:4.3,A1:3.3,A2:3.3,T1:2.7,T2:2.7,E1:2.9,E2:2.9,W1:1.6,W2:1.6,s1:4.4,s2:4.4};
 function to3(an,J){const T=THREE,o={},fv=an.v==='f',z3=an.z3||{};
  for(const k in J){if(k[0]==='_')continue;const [x,y]=J[k];
   let z=ZOFF[k]||0;if(z3.E&&/^E[12]$/.test(k))z=Math.sign(z)*z3.E;if(z3.W&&/^W[12]$/.test(k))z=Math.sign(z)*z3.W;
   o[k]=fv?new T.Vector3(0,GY-y,-(x-120)):new T.Vector3(x-120,GY-y,z)}
+ if(fv&&an.bend2){const K=o.K2;const tgt=new T.Vector3(K.x+22,Math.max(2.6,K.y-14),K.z);const d=tgt.sub(K).normalize();o.A2=K.clone().addScaledVector(d,LN.sh);o.A2.y=Math.max(o.A2.y,3.3);o.T2=o.A2.clone().add(new T.Vector3(1,-.5,-7.5))}
  if(fv&&an.fwArm){o.E2.x=0;o.W2=new T.Vector3(LN.fa,o.E2.y,o.E2.z);o.E2.y=Math.max(o.E2.y,2.5);o.W2.y=o.E2.y}
  if(!fv){const pz=J._p||{};for(const n of [1,2]){const sg=n===1?1:-1,s=o['s'+n];
   const zE=sg*(pz.ez!=null?pz.ez:(z3.E||11)),zW=sg*(pz.wz!=null?pz.wz:(z3.W||11));
   const fix=(a,b,L,zb)=>{const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,dz=zb-a.z,k=Math.sqrt(Math.max(L*L-dz*dz,9))/d;return new T.Vector3(a.x+dx*k,a.y+dy*k,zb)};
   const E=fix(s,o['E'+n],LN.ua,zE),W=fix(E,o['W'+n],LN.fa,zW);o['E'+n]=E;o['W'+n]=W}}
+ if(!(J._p&&J._p.pin)){let lo=1e9;for(const k in RAD3)if(o[k])lo=Math.min(lo,o[k].y-RAD3[k]);if(lo<0)for(const k in o)o[k].y-=lo}
  return o}
 function bbox2(key){const an=AN[key];if(an._bb)return an._bb;let x0=1e9,x1=-1e9,y0=1e9;
  for(let i=0;i<48;i++){const J=solveJ(poseAt(an,an.total*i/48),an);for(const k in J){const [x,y]=J[k];x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y-(k==='N'?9:5))}}
@@ -92,7 +95,11 @@ function r3init(){
    const hg=new T.Group();fig.add(hg);const palm=new T.Mesh(SPH,sk);palm.scale.set(2.25,2.7,1.15);palm.position.set(0,2.4,0);palm.castShadow=true;hg.add(palm);
    for(let i=0;i<4;i++){const f=new T.Mesh(SPH,sk);f.scale.set(.58,1.9-(i===3?.35:0)-(i===0?.15:0),.55);f.position.set(-1.55+i*1.03,5.6-(i===3?.3:0),.15);f.castShadow=true;hg.add(f)}
    const th=new T.Mesh(SPH,sk);th.scale.set(.62,1.6,.62);th.position.set(2.15,1.9,.7);th.rotation.z=-.6;hg.add(th);
-   hands.push({g:hg,n});
+   const open=[...hg.children];const fist=new T.Group();hg.add(fist);
+   const fb=new T.Mesh(SPH,sk);fb.scale.set(2.35,2.3,2.2);fb.position.set(0,2.5,.2);fb.castShadow=true;fist.add(fb);
+   for(let i=0;i<4;i++){const k=new T.Mesh(SPH,sk);k.scale.set(.62,.7,.75);k.position.set(-1.45+i*.97,4.3,.9);fist.add(k)}
+   const tf=new T.Mesh(SPH,sk);tf.scale.set(.65,1.5,.65);tf.position.set(1.6,2.9,1.6);tf.rotation.set(.9,0,-.5);fist.add(tf);
+   hands.push({g:hg,n,open,fist});
    // zapatilla
    const sg=new T.Group();fig.add(sg);const up=new T.Mesh(SPH,M(0xf3f3f6,{roughness:.55}));up.scale.set(3.1,6.2,2.7);up.position.set(0,3.4,.5);up.castShadow=true;sg.add(up);
    const sole=new T.Mesh(SPH,M(0x26262c,{roughness:.9}));sole.scale.set(3.0,6.4,.8);sole.position.set(0,3.4,-1.75);sole.castShadow=true;sg.add(sole);
@@ -136,6 +143,31 @@ function r3init(){
  }catch(e){console.warn('3D no disponible',e);R3=false;return R3}
 }
 
+/* --- agarre de barra: posición sin atravesar el cuerpo + IK de brazos --- */
+function ik2(s,t,l1,l2,pole){const T=THREE;const d=_v().subVectors(t,s);let L=d.length();const mx=l1+l2-0.05;let tt=t.clone();if(L>mx){d.setLength(mx);tt=s.clone().add(d);L=mx}
+ const dir=d.clone().normalize();const a=(l1*l1+L*L-l2*l2)/(2*L);const h=Math.sqrt(Math.max(0,l1*l1-a*a));
+ const pv=_v().subVectors(pole,s);pv.addScaledVector(dir,-pv.dot(dir));if(pv.lengthSq()<1e-6)pv.set(0,-1,0);pv.normalize();
+ return [s.clone().addScaledVector(dir,a).addScaledVector(pv,h),tt]}
+function segDist2(P,A,B){const ax=B.x-A.x,ay=B.y-A.y,L=ax*ax+ay*ay;let t=L?((P.x-A.x)*ax+(P.y-A.y)*ay)/L:0;t=Math.max(0,Math.min(1,t));const dx=P.x-(A.x+ax*t),dy=P.y-(A.y+ay*t);return Math.sqrt(dx*dx+dy*dy)}
+function barIK(J,an){const b=an.bar;if(!b)return;const T=THREE;
+ const up=_v().subVectors(J.S,J.M).normalize();const lat=new T.Vector3(0,0,J._m?-1:1);lat.addScaledVector(up,-lat.dot(up)).normalize();const fw=_v().crossVectors(up,lat).normalize();
+ let C,push;
+ if(b.t==='back'){C=J.S.clone().addScaledVector(fw,-9.8).addScaledVector(up,2.4);push=fw.clone().negate()}
+ else if(b.t==='front'){C=J.S.clone().addScaledVector(fw,8.4).addScaledVector(up,2.6);push=fw.clone()}
+ else if(b.t==='hip'){C=J.H.clone();C.y+=9.5;push=new T.Vector3(0,1,0)}
+ else{C=J.W1.clone().lerp(J.W2,.5);push=b.push==='up'?new T.Vector3(0,1,0):fw.clone();push.z=0;if(push.lengthSq()<1e-4)push.set(1,0,0);push.normalize()}
+ C.z=0;
+ const caps=[[J.H,J.M,7.4],[J.M,J.S,7.8],[J.S,J.N,4],[J.N,J.N,8],[J.p1,J.K1,6.6],[J.K1,J.A1,4.6],[J.p2,J.K2,6.6],[J.K2,J.A2,4.6]];
+ for(let i=0;i<60;i++){let bad=false;for(const [A,B,r] of caps)if(segDist2(C,A,B)<r+1.3){bad=true;break}if(!bad)break;C.addScaledVector(push,.5)}
+ const g=b.g||22;J.BAR=C;
+ for(const n of [1,2]){const sg=Math.sign(J['s'+n].z)||(n===1?1:-1),s=J['s'+n];const G=C.clone();G.z=sg*g;
+  const out=new T.Vector3(0,0,sg);let pole;
+  if(b.t==='back')pole=s.clone().addScaledVector(up,-1).addScaledVector(fw,-.6).addScaledVector(out,1.2);
+  else if(b.t==='front')pole=s.clone().addScaledVector(fw,1.3).addScaledVector(out,.5).addScaledVector(up,-.2);
+  else pole=J['E'+n].clone().addScaledVector(out,.6);
+  let [E,W]=ik2(s,G,LN.ua,LN.fa,pole);const fd=_v().subVectors(G,E).normalize();[E,W]=ik2(s,G.clone().addScaledVector(fd,-2.4),LN.ua,LN.fa,pole);
+  J['E'+n]=E;J['W'+n]=W}
+}
 /* --- props 3D --- */
 function props3(key){const R=R3,T=R.T;if(R.props[key])return R.props[key];const an=AN[key];const g=new T.Group();R.scene.add(g);const ups=[];
  const eq=R.M(0x2f2c3b,{roughness:.4,metalness:.4}),eq2=R.M(0xa5a1b8,{roughness:.35,metalness:.6}),pad=R.M(0x26232f,{roughness:.8});
@@ -143,18 +175,19 @@ function props3(key){const R=R3,T=R.T;if(R.props[key])return R.props[key];const 
  const cylBetween=(m,a,b)=>{const d=new T.Vector3().subVectors(b,a),L=d.length()||.01;m.position.copy(a).addScaledVector(d,.5);m.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize());m.scale.set(1,L,1)};
  for(const q of an.p||[]){
   if(q.k==='plate'){const bar=sh(new T.Mesh(new T.CylinderGeometry(1.1,1.1,78,12),eq2));bar.rotation.x=Math.PI/2;const ps=[];for(const z of [-31,-27,27,31]){const big=Math.abs(z)>29;const p=sh(new T.Mesh(new T.CylinderGeometry(big?11.5:9,big?11.5:9,3.2,32),big?eq:R.M(0x7a1f2b,{roughness:.6})));p.rotation.x=Math.PI/2;ps.push([p,z])}
-   ups.push(J=>{const P=J[q.at].clone();P.x+=(q.dx||0);P.y-=(q.dy||0);P.z=0;bar.position.copy(P);for(const [p,z] of ps)p.position.set(P.x,P.y,z)})}
+   ups.push(J=>{const P=J.BAR?J.BAR.clone():J[q.at].clone();if(!J.BAR){P.x+=(q.dx||0);P.y-=(q.dy||0)}P.z=0;bar.position.copy(P);for(const [p,z] of ps)p.position.set(P.x,P.y,z)})}
   if(q.k==='db'){for(const w of ['W1','W2']){const h=sh(new T.Mesh(new T.CylinderGeometry(1,1,12,10),eq2));h.rotation.x=Math.PI/2;const pl=[-5.2,5.2].map(z=>{const p=sh(new T.Mesh(new T.CylinderGeometry(4.6,4.6,3.6,6),eq));p.rotation.x=Math.PI/2;return [p,z]});
    ups.push(J=>{const P=J[w];h.position.set(P.x,P.y,P.z);for(const [p,z] of pl)p.position.set(P.x,P.y,P.z+z)})}}
   if(q.k==='ball'){const b=sh(new T.Mesh(new T.SphereGeometry(8.5,28,20),R.M(0x5b3fd1,{roughness:.7})));ups.push(J=>{const P=J[q.at];b.position.set(P.x+3,P.y,0)})}
   if(q.k==='wheel'){const w=sh(new T.Mesh(new T.TorusGeometry(5.5,2,14,28),eq));const ax=sh(new T.Mesh(new T.CylinderGeometry(.9,.9,26,8),eq2));ax.rotation.x=Math.PI/2;ups.push(J=>{const P=J[q.at];w.position.set(P.x,Math.max(7.5,P.y),0);ax.position.copy(w.position)})}
-  if(q.k==='pad'){const p=sh(new T.Mesh(new T.BoxGeometry(10,6,30),pad));ups.push(J=>{const P=J[q.at];p.position.set(P.x,P.y+6,0)})}
+  if(q.k==='pad'){const p=sh(new T.Mesh(new T.BoxGeometry(10,6,30),pad));ups.push(J=>{const P=J[q.at];p.position.set(P.x,P.y+7.6,0)})}
   if(q.k==='box'){const b=sh(new T.Mesh(new T.BoxGeometry(q.w,q.h,42),R.M(0x8f6440,{roughness:.8})));b.position.set(q.x+q.w/2-120,q.h/2,0)}
   if(q.k==='wall'){const w=sh(new T.Mesh(new T.BoxGeometry(5,220,120),R.M(0xcfcadf,{roughness:1})));w.position.set(q.x-120+2.5,110,0)}
   if(q.k==='cone'){const c=sh(new T.Mesh(new T.ConeGeometry(6,14,24),R.M(0xff7a1a,{roughness:.6})));c.position.set(q.x-120,7,0)}
   if(q.k==='bench'){const top=sh(new T.Mesh(new T.BoxGeometry(1,1,1),pad)),l1=sh(new T.Mesh(new T.BoxGeometry(1,1,1),eq)),l2=sh(new T.Mesh(new T.BoxGeometry(1,1,1),eq));let done=false;
-   ups.push((J,an)=>{if(q.fix&&done)return;done=true;const fv=an.v==='f';const H=k=>fv?-J[k].z:J[k].x;const xs=q.of.map(H),ys=q.of.map(k=>J[k].y);let x0=Math.min(...xs)-6,x1=Math.max(...xs)+6;if(q.w&&x1-x0<q.w){const c=(x0+x1)/2;x0=c-q.w/2;x1=c+q.w/2}const y=Math.max(1,Math.min(...ys)-(fv?3.2:6));
-    const D=fv?40:22;const place=(m,cx,cy,sx,sy,sz)=>{m.scale.set(fv?sz:sx,sy,fv?sx:sz);m.position.set(fv?0:cx,cy,fv?-cx:0)};
+   let fixJ=null;if(q.fix){let best=null;for(let i=0;i<24;i++){const pp=poseAt(an,an.total*i/24);const j2=solveJ(pp,an);j2._p=pp;const jj=to3(an,j2);const lo=Math.min(...q.of.map(k=>jj[k].y-(RAD3[k]||3)));if(!best||lo<best.lo)best={lo,jj}}fixJ=best.jj}
+   ups.push((J0,an)=>{if(q.fix&&done)return;done=true;const J=fixJ||J0;const fv=an.v==='f';const H=k=>fv?-J[k].z:J[k].x;const xs=q.of.map(H),ys=q.of.map(k=>J[k].y);let x0=Math.min(...xs)-6,x1=Math.max(...xs)+6;if(q.ext){x0=Math.min(...xs)+q.ext[0];x1=Math.max(...xs)+q.ext[1]}else if(q.w&&x1-x0<q.w){const c=(x0+x1)/2;x0=c-q.w/2;x1=c+q.w/2}const y=Math.max(1,Math.min(...q.of.map(k=>J[k].y-(RAD3[k]||3)))-.2);
+    const D=q.d||(fv?40:22);const place=(m,cx,cy,sx,sy,sz)=>{m.scale.set(fv?sz:sx,sy,fv?sx:sz);m.position.set(fv?0:cx,cy,fv?-cx:0)};
     place(top,(x0+x1)/2,y-2,x1-x0,4,D);place(l1,x0+3,(y-4)/2,3,Math.max(.1,y-4),D-6);place(l2,x1-3,(y-4)/2,3,Math.max(.1,y-4),D-6)})}
   if(q.k==='pbar'){const par=q.w===14;const bars=[],posts=[];
    if(par){for(const z of [-12,12])bars.push([sh(new T.Mesh(new T.CylinderGeometry(1.3,1.3,60,10),eq2)),z]);bars.forEach(([b])=>b.rotation.z=Math.PI/2);for(let i=0;i<4;i++)posts.push(sh(new T.Mesh(new T.CylinderGeometry(1.3,1.3,1,8),eq)))}
@@ -201,7 +234,7 @@ function pose3(J,an,act,pulse){const R=R3,T=R.T,L=(a,b,t)=>a.clone().lerp(b,t);
  for(const o of R.muscles){const a=J[o.a],b=J[o.b];const isLeg=o.a[0]==='p'||o.a[0]==='K';const f=limbFrame(a,b,ant(o.side,isLeg),outv[o.side]);
   const pos=a.clone().addScaledVector(f.y,f.len*o.t).addScaledVector(f.x,o.ox*f.sg).addScaledVector(f.z,o.oz);
   o.m.position.copy(pos);o.m.quaternion.copy(f.q);const on=act&&act.includes(o.id),k=on?1+.07*pulse:1;o.m.scale.set(o.r[0]*k,o.r[1]*Math.min(1.15,f.len/24+.1),o.r[2]*k)}
- for(const h of R.hands){const n=h.n;const f=limbFrame(J['E'+n],J['W'+n],ant(n,false),outv[n]);h.g.position.copy(J['W'+n]).addScaledVector(f.y,-.6);h.g.quaternion.copy(f.q);h.g.scale.set(f.sg,1,1)}
+ for(const h of R.hands){const n=h.n;const f=limbFrame(J['E'+n],J['W'+n],ant(n,false),outv[n]);h.g.position.copy(J['W'+n]).addScaledVector(f.y,-.6);h.g.quaternion.copy(f.q);h.g.scale.set(f.sg,1,1);const gp=!!an.grip;h.fist.visible=gp;for(const m of h.open)m.visible=!gp}
  for(const sh of R.shoes){const n=sh.n;const A=J['A'+n],Tt=J['T'+n],K=J['K'+n];const upv=_v().subVectors(K,A).normalize();const f=limbFrame(A,Tt,upv,outv[n]);sh.g.position.copy(A).addScaledVector(f.y,-2);sh.g.quaternion.copy(f.q)}
  // cabeza
  const hu=_v().subVectors(J.N,J.S).normalize();const chestUp=_v().subVectors(J.S,J.M).normalize();
@@ -220,7 +253,7 @@ function draw3D(cv,key,ms){
  const R=r3init();if(!R)return drawDemo(cv,key,ms);
  const T=R.T,an=AN[key];theme3();
  if(R.renderer.domElement.width!==cv.width||R.renderer.domElement.height!==cv.height){R.renderer.setPixelRatio(1);R.renderer.setSize(cv.width,cv.height,false);R.cam.aspect=cv.width/cv.height;R.cam.updateProjectionMatrix()}
- const p=poseAt(an,ms);const J2=solveJ(p,an);J2._p=p;const J=to3(an,J2);J._m=p.m>0.5;
+ const p=poseAt(an,ms);const J2=solveJ(p,an);J2._p=p;const J=to3(an,J2);J._m=p.m>0.5;barIK(J,an);
  const act=MU3[key]||[],st=MU[key]&&MU[key].st,pulse=.5+.5*Math.sin(ms/240);
  pose3(J,an,act,pulse);
  const hc=new T.Color(st?0x1f8bff:0xff3b1f).convertSRGBToLinear();
