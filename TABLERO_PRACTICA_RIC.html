@@ -7317,6 +7317,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
     pn: { n: "Peine de conexi\xF3n", pre: "PN", ic: "⫶", d: "Barra prefabricada que se aprieta en las entradas de varios equipos seguidos del mismo riel. Es la forma correcta de alimentar varios disyuntores desde un diferencial: el RIC N\xB002 (6.2.4) no acepta puentes de cable de equipo a equipo." },
     pl: { n: "Luz piloto", pre: "PL", ic: "●", d: "Indica que el tablero tiene tensi\xF3n. Obligatoria en tableros de m\xE1s de 3 circuitos y con su propia protecci\xF3n de 10 A como m\xE1ximo (RIC N\xB002, 6.2.14 y 6.2.15)." },
     bn: { n: "Barra de neutro", pre: "BN", ic: "▭", d: "Bornera aislada para repartir el neutro de un diferencial a sus circuitos. Una por diferencial." },
+    bf: { n: "Barra de fase", pre: "BF", ic: "\u2261", d: "Regleta de distribuci\xF3n de fase (L): reparte la fase de la salida del general o de un diferencial a varios disyuntores con un cable a cada uno. Alternativa al peine; evita los puentes de cable de equipo a equipo que el RIC N\xB002 (6.2.4) no acepta. Marca la fase en rojo, negro o caf\xE9 (criterio usual)." },
     pe: { n: "Barra de tierra", pre: "PE", ic: "⏚", d: "Bornera para repartir la tierra de protecci\xF3n a todos los circuitos, unida al electrodo." },
     rp: { n: "Repartidor L–N", pre: "RP", ic: "≡", d: "Bornera de distribuci\xF3n modular: una barra de fase (L) y una de neutro (N) con varios bornes. Alternativa al peine para repartir desde el general." }
   };
@@ -7328,6 +7329,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
     pn: [["p", "Tipo", [["1P", "1 polo \xB7 fase (para disyuntores 1P)"], ["2P", "2 polos \xB7 L+N (para diferenciales y 1P+N)"]]], ["n", "Largo", [2, 3, 4, 5, 6, 8, 10, 12].map((x) => [x, x + " m\xF3dulos"])]],
     pl: [],
     bn: [],
+    bf: [],
     pe: [],
     rp: []
   };
@@ -7339,7 +7341,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
     if (k === "dr") return ({ 25: 28e3, 40: 32e3, 63: 45e3 }[sp.In] || 32e3) + (+sp.s === 10 ? 6e3 : +sp.s === 300 ? -4e3 : 0) + ({ AC: -6e3, A: 0, F: 15e3, B: 9e4 }[sp.cl] || 0);
     if (k === "tm") return (sp.p === "1P" ? 4500 : sp.p === "1P+N" ? 9e3 : 11e3) + (+sp.In >= 25 ? 1e3 : 0) + (sp.cv === "D" ? 3e3 : 0);
     if (k === "pn") return (sp.p === "2P" ? 3500 : 2e3) + (+sp.n || 2) * (sp.p === "2P" ? 700 : 450);
-    return k === "pl" ? 6e3 : k === "rp" ? 12e3 : 4500;
+    return k === "pl" ? 6e3 : k === "rp" ? 12e3 : k === "bf" ? 5500 : 4500;
   }
   const tgCost = (st) => st.parts.reduce((a, p) => a + tgPrice(p.k, p.spec), 0);
   function tgSpecTxt(k, sp) {
@@ -7397,6 +7399,8 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
       const nd = regNeed(s), sz = (n) => [4, 7, 12, 15].find((x) => x >= n) || 15, R = [];
       st.parts.filter((p) => p.k === "bn").forEach((p, i) => R.push({ t: "N", n: i ? 7 : sz(nd.N) }));
       st.parts.filter((p) => p.k === "pe").forEach((p, i) => R.push({ t: "PE", n: i ? 7 : sz(nd.PE) }));
+      st.parts.filter((p) => p.k === "bf" || p.k === "rp").forEach(() => R.push({ t: "F", n: 7 }));
+      st.parts.filter((p) => p.k === "rp").forEach(() => R.push({ t: "N", n: 7 }));
       st.parts.filter((p) => p.k === "pn").forEach((p) => R.push({ t: "peine", n: Math.max(12, (+p.spec.n || 2) * 2) }));
       if (R.length) s.reg = R;
       const hv = tgHintPn, vb = tgVB, ht = tgHintT, L2 = tgLayout(lv, st);
@@ -7479,6 +7483,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
     if (pre === "BN") return "Barra de neutro N" + nn;
     if (pre === "RP") return "Repartidor R" + nn;
     if (pre === "PN") return "Peine P" + nn;
+    if (pre === "BF") return "Barra de fase F" + nn;
     if (pre === "PE") return "Barra de tierra" + (nn !== "1" ? " " + nn : "");
     return id;
   }
@@ -7552,7 +7557,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
         term(p.id + ".N", p.id, x + w * MW / 2, ry + 24, "b", "N", { bar: 1, x0: x + 8, x1: x + w * MW - 8 });
         return;
       }
-      if (p.k === "bn" || p.k === "pe") {
+      if (p.k === "bn" || p.k === "pe" || p.k === "bf") {
         D[p.id] = { id: p.id, k: p.k, x: x + 4, y: ry - 7, w: w * MW - 8, h: 14 };
         term(p.id, p.id, x + w * MW / 2, ry, "b", "", { bar: 1, x0: x + 4, x1: x + w * MW - 4 });
         return;
@@ -7831,8 +7836,14 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
     tms.forEach((p) => {
       if (!tmOf.includes(p.id) && p.id !== plTM && ws.length) add("warn", "".concat(tgDN(p.id, lv), " no alimenta ninguna salida"), "Su salida no llega a ning\xFAn circuito.", "Un disyuntor sin circuito ocupa lugar, cuesta dinero y confunde al rotular.", "\xDAsalo para un circuito o qu\xEDtalo.", [p.id]);
     });
-    st.parts.filter((p) => p.k === "bn" || p.k === "pe").forEach((p) => {
+    st.parts.filter((p) => p.k === "bn" || p.k === "pe" || p.k === "bf").forEach((p) => {
       const s0 = sig[p.id];
+      if (p.k === "bf") {
+        if (!conn(p.id)) {
+          if (ws.length) add("warn", "".concat(tgDN(p.id, lv), " sin usar"), "La barra no tiene cables.", "Una pieza que no se usa es dinero perdido.", "\xDAsala o qu\xEDtala.", [p.id]);
+        } else if (s0 && s0.size && !s0.has("L")) add("bad", "".concat(tgDN(p.id, lv), " con ").concat(sg(s0)), "La barra de fase solo debe llevar la fase (L).", s0.has("N") ? "Con el neutro en la barra de fase, los disyuntores quedan sin tensi\xF3n y se confunde la polaridad." : "La tierra va en su propia barra verde: nunca se mezcla con un activo.", "Alimenta la barra con la fase que sale del general o del diferencial.", [p.id]);
+        return;
+      }
       if (!conn(p.id)) {
         if (ws.length && (p.k === "bn" || !of("pe").some((q) => conn(q.id)))) add("warn", "".concat(tgDN(p.id, lv), " sin usar"), "La barra no tiene cables.", "Una pieza que no se usa es dinero perdido.", "\xDAsala o qu\xEDtala.", [p.id]);
         if (p.k === "bn") return;
@@ -8320,10 +8331,10 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
         });
         return;
       }
-      if (p.k === "bn" || p.k === "pe") {
+      if (p.k === "bn" || p.k === "pe" || p.k === "bf") {
         const pe = p.k === "pe", sel = tgSel === id, hb = hint.includes(id), sk = sel || cur2 ? "#e8823a" : isBad ? "#c0392b" : hb ? "#2e7d32" : "#6d7680", n = Math.floor((d.w - 8) / 18);
         g += '<g class="tgd" data-tgd="'.concat(id, '" tabindex="0" role="button" aria-label="').concat(esc(tgDN(id, lv)), ': opciones"><rect x="').concat(d.x, '" y="').concat(d.y - 34, '" width="').concat(d.w, '" height="22" rx="5" fill="').concat(pe ? "#d7efdc" : "#f4f4f1", '" stroke="').concat(cur2 ? "#e8823a" : "#9aa3ab", '"/>').concat(tx2(cx, d.y - 19, (pe ? "⏚ " : "") + tgDN(id, lv).replace("Barra de ", "Barra "), { s: 11.5, b: 1, c: pe ? "#1d6b2f" : "#3d4651" }), "</g>");
-        g += '<g class="tgt" data-tgt="'.concat(id, '" tabindex="0" role="button" aria-label="').concat(esc(tgDN(id, lv)), ': conectar"><rect x="').concat(d.x - 4, '" y="').concat(d.y - 10, '" width="').concat(d.w + 8, '" height="').concat(d.h + 20, '" fill="transparent"/><rect x="').concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="3" fill="').concat(pe ? "#2E9E44" : "#f1f1ee", '" stroke="').concat(sk, '" stroke-width="').concat(sel || hb || cur2 ? 4 : 2, '"/>');
+        g += '<g class="tgt" data-tgt="'.concat(id, '" tabindex="0" role="button" aria-label="').concat(esc(tgDN(id, lv)), ': conectar"><rect x="').concat(d.x - 4, '" y="').concat(d.y - 10, '" width="').concat(d.w + 8, '" height="').concat(d.h + 20, '" fill="transparent"/><rect x="').concat(d.x, '" y="').concat(d.y, '" width="').concat(d.w, '" height="').concat(d.h, '" rx="3" fill="').concat(pe ? "#2E9E44" : p.k === "bf" ? "#c94a3c" : "#f1f1ee", '" stroke="').concat(sk, '" stroke-width="').concat(sel || hb || cur2 ? 4 : 2, '"/>');
         for (let i = 0; i < n; i++) g += '<circle cx="'.concat(d.x + 13 + i * 18, '" cy="').concat(d.y + 7, '" r="3.4" fill="').concat(pe ? "#cfe9d4" : "#9aa3ad", '"/>');
         if (pe) for (let i = 0; i < n; i++) g += '<rect x="'.concat(d.x + 4 + i * 18, '" y="').concat(d.y, '" width="5" height="').concat(d.h, '" fill="#E8C300" opacity=".55"/>');
         g += "</g>";
@@ -8375,7 +8386,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
         H(cx, d.y + 44, "Repartidor", { s: 11, b: 1, h: "#f3efe6" });
         H(d.x + 9, d.y + 21, "L", { s: 10, b: 1, c: "#8a5a1f", h: "#f3efe6" });
         H(d.x + 9, d.y + 69, "N", { s: 10, b: 1, c: "#3d4651", h: "#f3efe6" });
-      } else if (p.k === "bn" || p.k === "pe") H(cx, d.y - 19, (p.k === "pe" ? "⏚ " : "") + tgDN(p.id, lv).replace("Barra de ", "Barra "), { s: 11.5, b: 1, c: p.k === "pe" ? "#1d6b2f" : "#3d4651" });
+      } else if (p.k === "bn" || p.k === "pe" || p.k === "bf") H(cx, d.y - 19, (p.k === "pe" ? "⏚ " : "") + tgDN(p.id, lv).replace("Barra de ", "Barra "), { s: 11.5, b: 1, c: p.k === "pe" ? "#1d6b2f" : p.k === "bf" ? "#a8322b" : "#3d4651" });
       else {
         H(cx, d.y + 36, p.k === "ig" ? d.w < 60 ? "GRAL" : "GENERAL" : p.k === "dr" ? p.id : "D" + p.id.slice(2), { b: 1, s: 13.5 });
         if (p.k === "dr") {
@@ -8799,7 +8810,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
         let at = null;
         if (k === "pn") at = tgAutoPn(st, sp);
         else {
-          const w = tgWd(k, sp), r0 = k === "tm" ? 1 : k === "bn" || k === "pe" || k === "rp" ? 2 : 0;
+          const w = tgWd(k, sp), r0 = k === "tm" ? 1 : k === "bn" || k === "pe" || k === "bf" || k === "rp" ? 2 : 0;
           for (let i = 0; i < TG_RAILS && !at; i++) {
             const r = (r0 + i) % TG_RAILS, o = tgOcc(st, null);
             for (let m = 0; m + w <= TG_MODS && !at; m++) if (o[r].slice(m, m + w).every((x) => !x)) at = [r, m];
@@ -8811,7 +8822,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
           const id = tgNewId(st, k);
           st.parts.push({ id, k, r: at[0], m: at[1], spec: sp });
           tgHintPn = null;
-          tgMsg = "✓ ".concat(tgDN(id, lv), " puesto en el riel ").concat(at[0] + 1, ". Si quieres otro lugar, t\xF3calo y usa ↔ Mover.");
+          tgMsg = "✓ ".concat(tgDN(id, lv), /^(Barra|Luz)/.test(tgDN(id, lv)) ? " puesta en el riel " : " puesto en el riel ").concat(at[0] + 1, ". Si quieres otro lugar, t\xF3calo y usa ↔ Mover.");
           save();
         }
       }
