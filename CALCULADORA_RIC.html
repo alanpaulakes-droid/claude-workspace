@@ -1822,6 +1822,17 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     const nDR = simDRs(s).length, sinDR = s.circuits.filter((c) => c.dr === "none" || c.nc === "bar").length;
     return { N: nDR + sinDR + 1, PE: s.circuits.length + 1 };
   };
+  const REG_DEF = { N: [-0.17, 1.1], PE: [0.17, 1.1], F: [-0.3, 1.0], peine: [0, 1.43] };
+  const regLen = (r) => r.t === "peine" ? r.n * 0.018 : Math.min(0.42, 0.03 + r.n * 0.024);
+  function regPos(s, r, i) {
+    const W = tabW(s), d = REG_DEF[r.t] || [0, 1.1], same = regOf(s).slice(0, i).filter((q) => q.t === r.t && q.x == null).length, L = regLen(r);
+    let x = r.x != null ? +r.x : r.t === "peine" ? -W / 2 + 0.09 + L / 2 : d[0], y = r.y != null ? +r.y : d[1] + (r.t === "peine" ? same * 0.012 : -same * 0.05);
+    const lim = Math.max(0, W / 2 - 0.05 - L / 2);
+    x = Math.max(-lim, Math.min(lim, x));
+    y = Math.max(1.06, Math.min(1.94, y));
+    return { x, y, L };
+  }
+  let simRegSel = -1;
   const regHave = (s, t) => regOf(s).filter((r) => r.t === t).reduce((a, r) => a + (+r.n || 0), 0);
   const varOf = (it) => {
     const L = VAR[it.t];
@@ -3028,13 +3039,26 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   }
   let simRegT = "N";
   function regBar(s) {
-    const L = regOf(s), nd = regNeed(s);
-    return '<div class="pb-t pb-v">' + Object.entries(REG_T).map(([k, v]) => '<button type="button" data-sa="regt" data-k="' + k + '" aria-pressed="' + (simRegT === k) + '">' + v[1] + "</button>").join("") + '</div><div class="pb-t pb-v">' + (simRegT === "peine" ? [12, 24] : simRegT === "F" ? [4, 7] : [4, 7, 12, 15]).map((n) => '<button type="button" data-sa="regadd" data-n="' + n + '">\uFF0B ' + n + (simRegT === "peine" ? " m\xF3d." : " bornes") + "</button>").join("") + "</div>" + '<div class="pb-t pb-v" style="flex-wrap:wrap">' + (L.length ? L.map((r, i) => '<button type="button" data-sa="regdel" data-i="' + i + '" title="Quitar">' + REG_T[r.t][1] + " " + r.n + " \u2715</button>").join("") : '<span class="pb-w">Tablero sin regletas</span>') + '<span class="pb-w">Bornes necesarios: N ' + nd.N + " \xB7 PE " + nd.PE + "</span></div>";
+    const L = regOf(s), nd = regNeed(s), sel = L[simRegSel];
+    const ctl = sel ? '<div class="pb-t pb-v" role="group" aria-label="Mover regleta seleccionada"><span class="pb-w"><b>' + REG_T[sel.t][1] + " " + sel.n + '</b> \xB7 toca el tablero en el 3D para ubicarla o mu\xE9vela:</span><button type="button" data-sa="regmv" data-k="-1,0" aria-label="Mover a la izquierda">\u2190</button><button type="button" data-sa="regmv" data-k="0,1" aria-label="Mover hacia arriba">\u2191</button><button type="button" data-sa="regmv" data-k="0,-1" aria-label="Mover hacia abajo">\u2193</button><button type="button" data-sa="regmv" data-k="1,0" aria-label="Mover a la derecha">\u2192</button>' + [["top", "Arriba"], ["mid", "Centro"], ["bot", "Abajo"], ["izq", "Izquierda"], ["der", "Derecha"]].map(([k, l]) => '<button type="button" data-sa="regz" data-k="' + k + '">' + l + "</button>").join("") + '<button type="button" data-sa="regdel" data-i="' + simRegSel + '">\u2715 Quitar</button></div>' : "";
+    return '<div class="pb-t pb-v">' + Object.entries(REG_T).map(([k, v]) => '<button type="button" data-sa="regt" data-k="' + k + '" aria-pressed="' + (simRegT === k) + '">' + v[1] + "</button>").join("") + '</div><div class="pb-t pb-v">' + (simRegT === "peine" ? [12, 24] : simRegT === "F" ? [4, 7] : [4, 7, 12, 15]).map((n) => '<button type="button" data-sa="regadd" data-n="' + n + '">\uFF0B ' + n + (simRegT === "peine" ? " m\xF3d." : " bornes") + "</button>").join("") + "</div>" + '<div class="pb-t pb-v" style="flex-wrap:wrap">' + (L.length ? L.map((r, i) => '<button type="button" data-sa="regsel" data-i="' + i + '" aria-pressed="' + (i === simRegSel) + '" title="Seleccionar para moverla">' + REG_T[r.t][1] + " " + r.n + "</button>").join("") : '<span class="pb-w">Tablero sin regletas</span>') + '<span class="pb-w">Bornes necesarios: N ' + nd.N + " \xB7 PE " + nd.PE + "</span></div>" + ctl;
   }
   function simPlace(hit) {
     const s = S.sim2;
     if (simPT === "reg") {
-      simToast([["ok", "Las regletas van dentro del tablero: elige el tipo y toca \xAB\uFF0B bornes\xBB en la barra de abajo."]]);
+      const L = regOf(s), r = L[simRegSel];
+      if (hit && hit.k === "regpos" && r) {
+        if (!Array.isArray(s.reg)) s.reg = L.map((q) => Object.assign({}, q));
+        const q = s.reg[simRegSel];
+        q.x = Math.round((hit.p[0] - TX) * 100) / 100;
+        q.y = Math.round(hit.p[1] * 100) / 100;
+        const P2 = regPos(s, q, simRegSel);
+        q.x = P2.x;
+        q.y = P2.y;
+        simToast([["ok", REG_T[q.t][0] + " ubicada. Puedes afinar con las flechas."]]);
+      } else simToast([["ok", L.length ? "Selecciona una regleta en la barra de abajo y toca el tablero donde quieres ponerla." : "Primero agrega una regleta: elige el tipo y toca \xAB\uFF0B bornes\xBB en la barra de abajo."]]);
+      const pl = document.getElementById("simplace");
+      if (pl) pl.innerHTML = placeBar();
       return;
     }
     if (!s.circuits.length) {
@@ -3241,6 +3265,13 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     });
     if (s.circuits.length) {
       const nd = regNeed(s), hN = regHave(s, "N"), hP = regHave(s, "PE");
+      const RP = regOf(s).map((r, i) => Object.assign({ r }, regPos(s, r, i))), x0r = -tabW(s) / 2 + 0.09, nMod = Math.max(2 + 2 * simDRs(s).length, s.circuits.length) * 0.09 + 0.06;
+      RP.forEach((a, i) => {
+        if (a.r.t === "peine") return;
+        const ov = RP.find((b2, j) => j < i && b2.r.t !== "peine" && Math.abs(a.x - b2.x) < (a.L + b2.L) / 2 && Math.abs(a.y - b2.y) < 0.035);
+        if (ov) add("Regletas superpuestas en el tablero", REG_T[a.r.t][0] + " queda encima de " + REG_T[ov.r.t][0].toLowerCase() + ".", "Separa las regletas para poder apretar cada borne y leer su identificaci\xF3n.", { tab: 1 });
+        if ([1.72, 1.33].some((yr) => Math.abs(a.y - yr) < 0.13) && a.x - a.L / 2 < x0r + nMod && a.x + a.L / 2 > x0r) add(REG_T[a.r.t][0] + " tapa los aparatos del riel", "Est\xE1 sobre la fila del general, diferenciales o autom\xE1ticos.", "Mu\xE9vela a una zona libre del tablero (Colocar \u2192 Regleta \u2192 flechas o tocando el tablero).", { tab: 1 });
+      });
       if (!hN) add("Tablero sin regleta de neutro", "Agrega una regleta o barra de neutro en el tablero (Colocar \u2192 Regleta).", "El RIC N\xB002 exige barras de neutro y de tierra separadas e identificadas.", { tab: 1 });
       else if (hN < nd.N) add("Regleta de neutro con pocos bornes", "Tiene " + hN + " bornes; se necesitan " + nd.N + ".", "Cada conductor va en su propio borne: nunca dos cables bajo el mismo tornillo.", { tab: 1 });
       if (!hP) add("Tablero sin regleta de tierra", "Agrega una regleta de tierra (PE) en el tablero (Colocar \u2192 Regleta).", "El conductor de protecci\xF3n de cada circuito y el que va al electrodo llegan a la barra PE (RIC N\xB002 y N\xB006).", { tab: 1 });
@@ -4782,8 +4813,12 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     };
     const pickAt = (cx, cy) => {
       var _a;
+      if (simTool === "place" && simPT === "reg") {
+        const tp = V.pick.filter((o) => o.userData && o.userData.k === "tab"), h = cast(cx, cy, tp)[0];
+        return h ? { k: "regpos", p: [h.point.x, h.point.y, h.point.z] } : null;
+      }
       if (simTool === "place") {
-        const KS = simPT === "lamp" ? ["floor", "ceil"] : simPT === "box" ? ["wall", "ceil"] : ["wall"];
+        const KS = simPT === "lamp" ? PANEL || simPV.lamp === "pm" ? ["wall"] : ["floor", "ceil"] : simPT === "box" ? ["wall", "ceil"] : ["wall"];
         for (const h of cast(cx, cy, V.place.filter((o) => KS.includes(o.userData.k) && flPick(o.userData.fl || 0) && (o.userData.k !== "ceil" || simCeil > 0)))) {
           const u = h.object.userData, hf = u.fl || 0;
           if (u.k === "ceil") return { k: "ceil", p: [h.point.x, WH + hf * FH, h.point.z], n: [0, -1, 0] };
@@ -4895,7 +4930,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       if (!p) {
         if (simTool === "place" && e.pointerType === "mouse") {
           const h = pickAt(e.clientX, e.clientY);
-          if (h && simPT === "lamp" === (h.k === "floor")) {
+          if (h && h.k !== "regpos" && (simPT === "lamp" && !(PANEL || simPV.lamp === "pm")) === (h.k === "floor")) {
             ghost.position.set(h.p[0], PANEL || simPT === "lamp" && simPV.lamp === "pm" ? h.p[1] : (simPT === "lamp" ? 2.42 : T_Y[simPT] || 0.3) + flY(h.p[1]) * FH, h.p[2]);
             ghost.visible = true;
           } else ghost.visible = false;
@@ -5297,8 +5332,14 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     }
     if (!simConn) {
       const cnt = { N: 0, PE: 0, F: 0, peine: 0 }, REGM = { N: tm(M(2051496)), PE: tm(M(3055172)), F: tm(M(13840175)), peine: tm(M(13136949, { metalness: 0.6, roughness: 0.35 })) };
-      regOf(s).forEach((r) => {
-        const i = cnt[r.t]++, ln2 = r.t === "peine" ? Math.min(W - 0.1, r.n * 0.018) : Math.min(0.42, 0.03 + r.n * 0.024), x = r.t === "N" ? TX - 0.17 : r.t === "PE" ? TX + 0.17 : r.t === "F" ? TX - W / 2 + 0.05 + ln2 / 2 : x0 + ln2 / 2, y = r.t === "peine" ? 1.43 + i * 0.012 : r.t === "F" ? 1.0 : 1.1 - i * 0.05;
+      regOf(s).forEach((r, ri) => {
+        cnt[r.t]++;
+        const P2 = regPos(s, r, ri), ln2 = P2.L, x = TX + P2.x, y = P2.y;
+        if (simTool === "place" && simPT === "reg" && ri === simRegSel) {
+          const hl = box(ln2 + 0.03, 0.05, 0.004, MAT.sel);
+          hl.position.set(x, y, cz + 0.045);
+          g.add(hl);
+        }
         const bb = box(ln2, r.t === "peine" ? 0.008 : 0.026, r.t === "peine" ? 0.01 : 0.022, REGM[r.t]);
         bb.position.set(x, y, cz + (r.t === "peine" ? 0.12 : 0.05));
         g.add(bb);
@@ -5889,6 +5930,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (a === "tool") {
       if (b.dataset.k === "wire") setTimeout(simWireHud, 0);
       simTool = b.dataset.k;
+      if (simTool !== "place" && simRegSel >= 0) {
+        simRegSel = -1;
+        simBuild();
+      }
       if (simTool !== "route") simRoute = null;
       if (simTool !== "wire") simSrc = null;
       if (b.closest("#simsheet")) {
@@ -5920,15 +5965,35 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       if (pl) pl.innerHTML = placeBar();
       return;
     }
-    if (a === "regt" || a === "regadd" || a === "regdel") {
+    if (a === "regt" || a === "regadd" || a === "regdel" || a === "regsel" || a === "regmv" || a === "regz") {
       const s2 = S.sim2;
       if (a === "regt") simRegT = b.dataset.k;
-      else {
+      else if (a === "regsel") {
+        simRegSel = +b.dataset.i === simRegSel ? -1 : +b.dataset.i;
+        simBuild();
+      } else {
         if (!Array.isArray(s2.reg)) s2.reg = regOf(s2).map((r) => Object.assign({}, r));
-        if (a === "regadd") {
+        if (a === "regmv" || a === "regz") {
+          const r = s2.reg[simRegSel];
+          if (r) {
+            const P0 = regPos(s2, r, simRegSel), W2 = tabW(s2) / 2 - 0.05 - P0.L / 2;
+            if (a === "regmv") {
+              const [dx, dy] = b.dataset.k.split(",").map(Number);
+              r.x = Math.round((P0.x + dx * 0.02) * 100) / 100;
+              r.y = Math.round((P0.y + dy * 0.02) * 100) / 100;
+            } else Object.assign(r, { top: { x: P0.x, y: 1.94 }, mid: { x: 0, y: P0.y }, bot: { x: P0.x, y: 1.06 }, izq: { x: -W2, y: P0.y }, der: { x: W2, y: P0.y } }[b.dataset.k]);
+            const P2 = regPos(s2, r, simRegSel);
+            r.x = P2.x;
+            r.y = P2.y;
+          }
+        } else if (a === "regadd") {
           s2.reg.push({ t: simRegT, n: +b.dataset.n });
+          simRegSel = s2.reg.length - 1;
           simToast([["ok", REG_T[simRegT][0] + " de " + b.dataset.n + (simRegT === "peine" ? " m\xF3dulos" : " bornes") + " agregada al tablero."]]);
-        } else s2.reg.splice(+b.dataset.i, 1);
+        } else {
+          s2.reg.splice(+b.dataset.i, 1);
+          simRegSel = -1;
+        }
         save();
         simRefresh([]);
         simBuild();
