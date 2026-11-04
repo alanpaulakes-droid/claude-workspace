@@ -7303,14 +7303,18 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (k === "pn") return "".concat(sp.p === "2P" ? "L+N" : "1 polo", " \xB7 ").concat(sp.n, " m\xF3dulos");
     return "";
   }
-  function tgFreeDef() {
-    return { alimS: 10, emer: true, circ: TG_LV.n3.circ.map((c) => ({ n: c[0], t: c[5], P: c[2], S: c[1] })) };
+  function tgFreeDef(ex) {
+    return { v2: 1, alimS: 10, emer: false, circ: ex ? TG_LV.n3.circ.map((c) => ({ n: c[0], t: c[5], P: c[2], S: c[1] })) : [] };
   }
   function tgInit() {
     if (!S.tg || !S.tg.st || S.tg.v !== 2) S.tg = { v: 2, lv: S.tg && S.tg.lv || "n1", col: "R", st: {}, best: {}, cat: { k: "ig" } };
     if (!S.tg.best) S.tg.best = {};
     if (!S.tg.cat) S.tg.cat = { k: "ig" };
     if (!S.tg.free || !Array.isArray(S.tg.free.circ)) S.tg.free = tgFreeDef();
+    if (!S.tg.free.v2) {
+      S.tg.free.v2 = 1;
+      S.tg.free.emer = false;
+    }
     return S.tg;
   }
   let tgSimConf = false;
@@ -8423,11 +8427,11 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   function tgFreeCard(lv) {
     const f = S.tg.free, rows = f.circ.map((c, k) => {
       const T0 = TG_TIPOS[c.t] || TG_TIPOS.otro, low = (+c.S || 0) < (c.t === "alumbrado" ? 1.5 : 2.5);
-      return '<tr><td><b>C'.concat(k + 1, '</b></td><td><input type="text" data-tgf="n" data-i="').concat(k, '" value="').concat(esc(c.n || ""), '" placeholder="').concat(esc(T0[0]), '" maxlength="26" aria-label="Nombre C').concat(k + 1, '"></td><td><select data-tgf="t" data-i="').concat(k, '" aria-label="Uso">').concat(Object.keys(TG_TIPOS).map((t) => '<option value="'.concat(t, '"').concat(t === c.t ? " selected" : "", ">").concat(TG_TIPOS[t][0], "</option>")).join(""), '</select></td><td><input type="number" inputmode="numeric" min="0" step="50" data-tgf="P" data-i="').concat(k, '" value="').concat(+c.P || 0, '" aria-label="Potencia W" style="width:96px"></td><td><select data-tgf="S" data-i="').concat(k, '" aria-label="Secci\xF3n"').concat(low ? ' class="bad"' : "", ">").concat([1, 1.5, 2.5, 4, 6, 10].map((s) => '<option value="'.concat(s, '"').concat(+c.S === s ? " selected" : "", ">").concat(sStr(s), " mm\xB2</option>")).join(""), '</select></td><td class="num">').concat(nf((+c.P || 0) / V0, 1), ' A</td><td><button type="button" class="btn ghost small" data-tg="fdel" data-i="').concat(k, '" aria-label="Quitar C').concat(k + 1, '"').concat(f.circ.length < 2 ? " disabled" : "", ">✕</button></td></tr>");
+      return '<tr><td><b>C'.concat(k + 1, '</b></td><td><input type="text" data-tgf="n" data-i="').concat(k, '" value="').concat(esc(c.n || ""), '" placeholder="').concat(esc(T0[0]), '" maxlength="26" aria-label="Nombre C').concat(k + 1, '"></td><td><select data-tgf="t" data-i="').concat(k, '" aria-label="Uso">').concat(Object.keys(TG_TIPOS).map((t) => '<option value="'.concat(t, '"').concat(t === c.t ? " selected" : "", ">").concat(TG_TIPOS[t][0], "</option>")).join(""), '</select></td><td><input type="number" inputmode="numeric" min="0" step="50" data-tgf="P" data-i="').concat(k, '" value="').concat(+c.P || 0, '" aria-label="Potencia W" style="width:96px"></td><td><select data-tgf="S" data-i="').concat(k, '" aria-label="Secci\xF3n"').concat(low ? ' class="bad"' : "", ">").concat([1, 1.5, 2.5, 4, 6, 10].map((s) => '<option value="'.concat(s, '"').concat(+c.S === s ? " selected" : "", ">").concat(sStr(s), " mm\xB2</option>")).join(""), '</select></td><td class="num">').concat(nf((+c.P || 0) / V0, 1), ' A</td><td><button type="button" class="btn ghost small" data-tg="fdel" data-i="').concat(k, '" aria-label="Quitar C').concat(k + 1, '"', ">✕</button></td></tr>");
     }).join("");
     const al = [4, 6, 10, 16].map((s) => '<option value="'.concat(s, '"').concat(+f.alimS === s ? " selected" : "", ">").concat(s, " mm\xB2 (Iz ").concat(ampOf(s), " A)</option>")).join("");
     const cs = S.casa && Array.isArray(S.casa.circ) && S.casa.circ.length;
-    return '<section class="card tgfree"><div class="sechead"><span class="tag">Tu proyecto</span><h2 style="margin:0">Circuitos del tablero</h2></div><p class="hint" style="margin-top:0">Define la cantidad de circuitos, su uso, la potencia y la secci\xF3n del cable. M\xEDnimos RIC N\xB004: 1,5 mm\xB2 en alumbrado y 2,5 mm\xB2 en enchufes y equipos. Con m\xE1s de 3 circuitos el tablero lleva luz piloto (RIC N\xB002, 6.2.14) y con m\xE1s de 3 por diferencial necesitas otro diferencial.</p><div class="tbl-wrap"><table class="pt tgft"><thead><tr><th></th><th>Nombre</th><th>Uso</th><th>Potencia (W)</th><th>Cable</th><th class="num">I</th><th></th></tr></thead><tbody>'.concat(rows, '</tbody></table></div><div class="tgfopt"><label>Alimentador <select data-tgf="alimS" aria-label="Alimentador">').concat(al, '</select></label><label class="tgchk"><input type="checkbox" data-tgf="emer"').concat(f.emer ? " checked" : "", '> Luz de emergencia en el alumbrado</label><button type="button" class="btn small" data-tg="fadd"').concat(f.circ.length >= 9 ? " disabled" : "", '>+ Circuito</button>').concat(cs ? '<button type="button" class="btn ghost small" data-tg="fcasa">⬇ Usar los de \xABDise\xF1ar mi vivienda\xBB</button>' : "", '<button type="button" class="btn ghost small" data-tg="fdef">↺ Ejemplo</button></div><p class="hint" style="margin:6px 0 0">').concat(lv.circ.length, " circuito(s) \xB7 ").concat(Math.max(1, Math.ceil(lv.circ.length / 3)), " diferencial(es) m\xEDnimo \xB7 luz piloto ").concat(tgNeedPL(lv) ? "<b>obligatoria</b>" : "opcional", "</p></section>");
+    return '<section class="card tgfree"><div class="sechead"><span class="tag">Tu proyecto</span><h2 style="margin:0">Circuitos del tablero</h2></div><p class="hint" style="margin-top:0">Define la cantidad de circuitos, su uso, la potencia y la secci\xF3n del cable. M\xEDnimos RIC N\xB004: 1,5 mm\xB2 en alumbrado y 2,5 mm\xB2 en enchufes y equipos. Con m\xE1s de 3 circuitos el tablero lleva luz piloto (RIC N\xB002, 6.2.14) y con m\xE1s de 3 por diferencial necesitas otro diferencial.</p><div class="tbl-wrap"><table class="pt tgft"><thead><tr><th></th><th>Nombre</th><th>Uso</th><th>Potencia (W)</th><th>Cable</th><th class="num">I</th><th></th></tr></thead><tbody>'.concat(rows || '<tr><td colspan="7" class="hint">A\xFAn no hay circuitos: agr\xE9galos con \xAB+ Circuito\xBB, tr\xE1elos de \xABDise\xF1ar mi vivienda\xBB o carga el \xABEjemplo\xBB.</td></tr>', '</tbody></table></div><div class="tgfopt"><label>Alimentador <select data-tgf="alimS" aria-label="Alimentador">').concat(al, '</select></label><label class="tgchk"><input type="checkbox" data-tgf="emer"').concat(f.emer ? " checked" : "", '> Luz de emergencia en el alumbrado</label><button type="button" class="btn small" data-tg="fadd"').concat(f.circ.length >= 9 ? " disabled" : "", '>+ Circuito</button>').concat(cs ? '<button type="button" class="btn ghost small" data-tg="fcasa">⬇ Usar los de \xABDise\xF1ar mi vivienda\xBB</button>' : "", '<button type="button" class="btn ghost small" data-tg="fdef">↺ Ejemplo</button></div><p class="hint" style="margin:6px 0 0">').concat(lv.circ.length, " circuito(s) \xB7 ").concat(Math.max(1, Math.ceil(lv.circ.length / 3)), " diferencial(es) m\xEDnimo \xB7 luz piloto ").concat(tgNeedPL(lv) ? "<b>obligatoria</b>" : "opcional", "</p></section>");
   }
   function tgOrder(lv, A) {
     const { req } = A, needPL = tgNeedPL(lv);
@@ -8789,13 +8793,13 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     } else if (a === "fadd" && S.tg.free.circ.length < 9) {
       S.tg.free.circ.push({ n: "", t: "enchufes", P: 2e3, S: 2.5 });
       save();
-    } else if (a === "fdel" && S.tg.free.circ.length > 1) {
+    } else if (a === "fdel" && S.tg.free.circ.length > 0) {
       tgPush();
       S.tg.free.circ.splice(+el.dataset.i, 1);
       tgPrune(st);
       save();
     } else if (a === "fdef") {
-      S.tg.free = tgFreeDef();
+      S.tg.free = tgFreeDef(true);
       tgPrune(st);
       save();
     } else if (a === "fcasa" && S.casa && Array.isArray(S.casa.circ)) {
