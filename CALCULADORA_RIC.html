@@ -1890,9 +1890,9 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   const FAULTS = { aisl: "Aislamiento da\xF1ado", pe: "Tierra (PE) cortada", floja: "Empalme flojo", carcasa: "Falla a carcasa en un equipo", drMalo: "Diferencial defectuoso", tierraAlta: "Puesta a tierra fuera de norma" };
   const FHINT = { aisl: "En la inspecci\xF3n peri\xF3dica hay que revisar el aislamiento de cada circuito. En uno se da\xF1\xF3 un cable al pasarlo por el ducto.", pe: "Un enchufe o equipo no est\xE1 protegido contra contactos indirectos: algo pasa con su conductor de tierra.", floja: "El cliente dice que en una parte de la casa la tensi\xF3n baja cuando enciende equipos. Sospecha de un empalme mal hecho.", carcasa: "Al encender cierto equipo, salta el diferencial.", drMalo: "Hay que comprobar que las protecciones de las personas funcionen.", tierraAlta: "La medici\xF3n anual de la puesta a tierra est\xE1 pendiente." };
   const FSOL = { aisl: "Se detecta con el meg\xF3hmetro: con el circuito apagado marca menos de 0,5 M\u03A9.", pe: "Se detecta con la prueba de continuidad: ese punto marca OL (abierto) hasta la barra PE. Con el mult\xEDmetro, fase\u2013tierra da 0 V.", floja: "Se detecta con el mult\xEDmetro: con carga encendida, la tensi\xF3n cae mucho en todos los puntos que se alimentan desde esa caja. El empalme flojo se calienta y puede provocar un incendio.", carcasa: "Se detecta encendiendo los equipos uno a uno: al encender el que tiene la falla, el diferencial dispara.", drMalo: "Se detecta con el probador de diferenciales: no dispara con 30 mA.", tierraAlta: "Se detecta con el telur\xF3metro: marca m\xE1s de 20 \u03A9." };
-  const TOOLS3D = [["wire", "\u{1F517}", "Conectar", "1) Toca la caja o el autom\xE1tico del tablero de donde sale el cable. 2) Toca los puntos que quieres alimentar desde ah\xED. Tocar de nuevo un punto ya conectado a ese origen lo desconecta. El tubo sigue solo el recorrido m\xE1s corto por muro o entretecho."], ["mano", "\u21BB", "Mano", "Toca el general, un diferencial, un autom\xE1tico, un interruptor o un equipo para encenderlo o apagarlo."], ["place", "+", "Colocar", "Elige qu\xE9 colocar y en qu\xE9 circuito. Toca un muro para enchufes, interruptores, cajas u horno; toca el piso para una luz."], ["del", "\u2715", "Quitar", "Toca un punto para quitarlo. Lo que colgaba de \xE9l se conecta a la caja anterior."], ["info", "i", "Identificar", "Toca un ducto para ver sus conductores, o cualquier elemento para ver sus datos."], ["look", "\u25CE", "Mirar", "Toca cualquier lugar para acercar la c\xE1mara ah\xED."], ["volt", "V", "Mult\xEDmetro", "Toca un enchufe, luz, interruptor, caja, tablero o medidor."], ["pinza", "A", "Pinza", "Toca un ducto o un equipo para medir la corriente que pasa por ah\xED."], ["cont", "\u03A9", "Continuidad", "Con el circuito apagado, toca un enchufe, luz, caja u horno."], ["megger", "M\u03A9", "Meg\xF3hmetro", "Con el circuito apagado, toca un ducto o el autom\xE1tico del circuito."], ["telu", "\u23DA", "Telur\xF3metro", "Toca la barra de tierra en la c\xE1mara, afuera junto al medidor."], ["drt", "\u0394I", "Probador DR", "Toca un diferencial del tablero."]];
-  const INSTR = ["volt", "pinza", "cont", "megger", "telu", "drt"], MAINT = ["mano", "place", "wire", "del", "info", "meas"];
-  const SHORT = { wire: "toca el origen y luego los puntos", info: "toca algo (o mant\xE9n el dedo con cualquier herramienta)", mano: "toca para encender o apagar", place: "toca un muro o el piso", del: "toca un punto para quitarlo", look: "toca para acercar", volt: "toca un punto", pinza: "toca un ducto o equipo", cont: "apaga el circuito y toca un punto", megger: "apaga el circuito y toca un ducto", telu: "toca la barra de tierra", drt: "toca un diferencial" };
+  const TOOLS3D = [["route", "\u2310", "Ducto", "1) Toca un tubo (o el punto al que llega). 2) Elige una forma r\xE1pida (por arriba, por abajo, vertical u horizontal primero) o toca la pared por donde quieres que pase: cada cambio de direcci\xF3n es un codo de 90\xB0. M\xE1ximo 3 codos entre cajas (RIC N\xB004)."], ["wire", "\u{1F517}", "Conectar", "1) Toca la caja o el autom\xE1tico del tablero de donde sale el cable. 2) Toca los puntos que quieres alimentar desde ah\xED. Tocar de nuevo un punto ya conectado a ese origen lo desconecta. El tubo sigue solo el recorrido m\xE1s corto por muro o entretecho."], ["mano", "\u21BB", "Mano", "Toca el general, un diferencial, un autom\xE1tico, un interruptor o un equipo para encenderlo o apagarlo."], ["place", "+", "Colocar", "Elige qu\xE9 colocar y en qu\xE9 circuito. Toca un muro para enchufes, interruptores, cajas u horno; toca el piso para una luz."], ["del", "\u2715", "Quitar", "Toca un punto para quitarlo. Lo que colgaba de \xE9l se conecta a la caja anterior."], ["info", "i", "Identificar", "Toca un ducto para ver sus conductores, o cualquier elemento para ver sus datos."], ["look", "\u25CE", "Mirar", "Toca cualquier lugar para acercar la c\xE1mara ah\xED."], ["volt", "V", "Mult\xEDmetro", "Toca un enchufe, luz, interruptor, caja, tablero o medidor."], ["pinza", "A", "Pinza", "Toca un ducto o un equipo para medir la corriente que pasa por ah\xED."], ["cont", "\u03A9", "Continuidad", "Con el circuito apagado, toca un enchufe, luz, caja u horno."], ["megger", "M\u03A9", "Meg\xF3hmetro", "Con el circuito apagado, toca un ducto o el autom\xE1tico del circuito."], ["telu", "\u23DA", "Telur\xF3metro", "Toca la barra de tierra en la c\xE1mara, afuera junto al medidor."], ["drt", "\u0394I", "Probador DR", "Toca un diferencial del tablero."]];
+  const INSTR = ["volt", "pinza", "cont", "megger", "telu", "drt"], MAINT = ["mano", "place", "wire", "route", "del", "info", "meas"];
+  const SHORT = { route: "toca un tubo y elige su forma o los puntos por donde pasa", wire: "toca el origen y luego los puntos", info: "toca algo (o mant\xE9n el dedo con cualquier herramienta)", mano: "toca para encender o apagar", place: "toca un muro o el piso", del: "toca un punto para quitarlo", look: "toca para acercar", volt: "toca un punto", pinza: "toca un ducto o equipo", cont: "apaga el circuito y toca un punto", megger: "apaga el circuito y toca un ducto", telu: "toca la barra de tierra", drt: "toca un diferencial" };
   let simCeil = 1, simDuctSolid = false, simLP = false, simRoute = null, simSrc = null, simHeat = 0, simCut = null, simNewDR = "auto", simMode = "orbit", simWallPrev = null, simRO = /* @__PURE__ */ new Set(), simWall = 1, simConn = false, simSheet = null, simPrevErr = null;
   let simFl = -1, simPV = { sw: "s", out: "s", lamp: "s" }, simWS = 0, simWCut = false;
   let simTool = "mano", SIMV = null, simInsp = null, simToastT = 0, simSel = null, simPT = "lamp", simPC = null, simRep = { t: "", f: "aisl" }, simConfirm = "";
@@ -2812,12 +2812,12 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     }
     const ev = simEval(s), e = ev.ed.get(it.id), ck = e ? edgeChecks(s, e) : { curv: 0, warn: [], fill: 0, d: 16 }, par = it.par != null ? s.items.find((i) => i.id === it.par) : null;
     simShowHud({
-      name: "Trazar tubo",
+      name: "Ducto: recorrido y codos",
       val: e ? n1(e.L) : "",
       unit: "m",
-      sub: "".concat(par ? par.name : "Tablero", " \u2192 ").concat(it.name, " \xB7 ").concat((it.route || []).length, " punto(s) \xB7 ").concat(ck.curv, " curva(s) \xB7 tubo ").concat(ck.d, " mm \xB7 llenado ").concat(n0(ck.fill), " %"),
+      sub: "".concat(par ? par.name : "Tablero", " \u2192 ").concat(it.name, " \xB7 ").concat((it.route || []).length, " punto(s) \xB7 ").concat(ck.curv, " codo(s) de 90\xB0 \xB7 tubo ").concat(ck.d, " mm \xB7 llenado ").concat(n0(ck.fill), " %"),
       ok: ck.warn.length ? false : true,
-      html: "".concat(ck.warn.map((x) => '<div class="hud-s" style="color:var(--bad)">\u2717 '.concat(esc(x.t), ": ").concat(esc(x.d), "</div>")).join(""), '<div class="hud-btns"><button type="button" class="btn ghost small" data-sa="rundo">\u21B6 Quitar punto</button><button type="button" class="btn ghost small" data-sa="rclear">Recorrido autom\xE1tico</button><button type="button" class="btn small" data-sa="rdone">\u2713 Listo</button></div>'),
+      html: "".concat(ck.warn.map((x) => '<div class="hud-s" style="color:var(--bad)">\u2717 '.concat(esc(x.t), ": ").concat(esc(x.d), "</div>")).join(""), '<div class="hud-btns"><button type="button" class="btn ghost small" data-sa="rshape" data-k="up">\u2934 Por arriba</button><button type="button" class="btn ghost small" data-sa="rshape" data-k="dn">\u2935 Por abajo</button><button type="button" class="btn ghost small" data-sa="rshape" data-k="vf">\u2195 Vertical primero</button><button type="button" class="btn ghost small" data-sa="rshape" data-k="hf">\u2194 Horizontal primero</button></div><div class="hud-btns"><button type="button" class="btn ghost small" data-sa="rundo">\u21B6 Quitar punto</button><button type="button" class="btn ghost small" data-sa="rclear">Recorrido autom\xE1tico</button><button type="button" class="btn small" data-sa="rdone">\u2713 Listo</button></div>'),
       exp: "Toca muros o el piso para marcar por d\xF3nde pasa el tubo. En un muro el tubo baja o sube por ese muro; en el piso queda en el entretecho sobre ese punto. El largo cambia la ca\xEDda de tensi\xF3n y el listado de materiales.",
       open: false
     });
@@ -5255,7 +5255,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         grp.add(du);
         grp.add(seg(a, b, G.hit, MAT.hit));
         if (i > 0) {
-          const j = new THREE.Mesh(G.joint, dm);
+          const pd = new V3().subVectors(a, v(pts[i - 1])), bend = pd.length() > 1e-4 && Math.abs(pd.normalize().dot(d)) < 0.7, j = new THREE.Mesh(bend ? geoC("elb", () => new THREE.SphereGeometry(0.041, 14, 10)) : G.joint, dm);
           j.position.copy(a);
           j.renderOrder = 2;
           grp.add(j);
@@ -5650,6 +5650,18 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (a === "dtype") {
       s.duct = b.dataset.v;
       msgs.push(["ok", { pvc: "Tubo PVC conduit: r\xEDgido, liviano, sirve embutido o a la vista.", emt: "Tubo met\xE1lico EMT: resistente a golpes, t\xEDpico a la vista.", flex: "Tubo flexible corrugado: se curva f\xE1cil, solo embutido." }[s.duct]]);
+    }
+    if (a === "rshape") {
+      const it = s.items.find((i) => i.id === simRoute);
+      if (it && it.n && Math.abs(it.n[1]) < 0.5 && simEval(s).ed.get(it.id)) {
+        delete it.route;
+        const e0 = simEval(s).ed.get(it.id), A = e0.pts[0], B = e0.pts[e0.pts.length - 1], px = Math.abs(it.n[0]) > 0.5, au = px ? A[2] : A[0], bu = px ? B[2] : B[0], mk = (u, y) => px ? [B[0], y, u] : [u, y, B[2]], fo = flY(it.p[1]) * FH, top = Math.min(WH - 0.12 + fo, Math.max(A[1], B[1]) + 0.3), bot = Math.max(0.15 + fo, Math.min(A[1], B[1]) - 0.3);
+        it.route = { vf: [mk(au, B[1])], hf: [mk(bu, A[1])], up: [mk(au, top), mk(bu, top)], dn: [mk(au, bot), mk(bu, bot)] }[b.dataset.k];
+      } else simToast([["warn", "Las formas r\xE1pidas sirven para tubos que llegan a un muro. Para luces de techo, toca los puntos a mano."]]);
+      save();
+      simRefresh();
+      simRouteHud();
+      return;
     }
     if (a === "rundo" || a === "rclear") {
       const it = s.items.find((i) => i.id === simRoute);
@@ -6597,7 +6609,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       const d = e.S >= 4 || e.cond.length > 3 ? 20 : 16, tk = "Tubo ".concat({ pvc: "PVC conduit", emt: "met\xE1lico EMT", flex: "flexible corrugado" }[s.duct || "pvc"], " ").concat(d, " mm").concat(s.inst === "vista" ? " (a la vista)" : " (embutido)");
       add(tubo, tk, e.L);
       tK[tk] = "tub:" + (s.duct || "pvc") + d;
-      curvas += Math.max(0, e.pts.length - 2);
+      curvas += edgeChecks(s, e).curv;
     });
     const La = +s.alim.L || 0;
     if (s.sys === "tri") {
@@ -6615,7 +6627,9 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     const P = (g, d, q, u, k) => R.push({ g, d, q, u, k });
     Object.entries(cond).sort().forEach(([k, v]) => P("Conductores", "Cable ".concat(k), Math.ceil(v * 1.1), "m", cK[k] || "cab:" + +s.alim.S));
     Object.entries(tubo).forEach(([k, v]) => P("Canalizaci\xF3n", k, Math.ceil(v * 1.1), "m", tK[k]));
-    P("Canalizaci\xF3n", "Curvas y uniones", curvas, "u", "curva");
+    P("Canalizaci\xF3n", "Codos (curvas) 90\xB0", curvas, "u", "curva");
+    P("Canalizaci\xF3n", "Coplas de uni\xF3n (tiras de 3 m)", ev.E.reduce((a, e) => a + Math.max(0, Math.ceil(e.L / 3) - 1), 0), "u", "copla");
+    P("Canalizaci\xF3n", "Terminales o conectores de tubo a caja", ev.E.length * 2, "u", "term");
     if (s.inst === "vista") P("Canalizaci\xF3n", "Abrazaderas de fijaci\xF3n (\u2248 1 cada metro)", Math.ceil(Object.values(tubo).reduce((a, v) => a + v, 0)), "u", "abraz");
     P("Cajas", "Cajas de derivaci\xF3n", it("box"), "u", "cdev");
     P("Cajas", "Cajas de embutir (interruptores y enchufes)", it("sw") + it("out") + it("horno"), "u", "cemb");
@@ -9324,7 +9338,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     save();
     render(true);
   });
-  const PREC0 = { "cab:1.5": 300, "cab:2.5": 440, "cab:4": 720, "cab:6": 1050, "cab:10": 1800, "cab:16": 2900, "cab:25": 4500, "tub:pvc16": 290, "tub:pvc20": 300, "tub:emt16": 1500, "tub:emt20": 1900, "tub:flex16": 190, "tub:flex20": 230, curva: 250, abraz: 120, cdev: 1200, cemb: 890, ccen: 900, sw: 3190, out: 3390, horno: 6490, lamp: 1990, conec: 300, ig2: 12990, ig4: 34990, "dr:AC": 23590, "dr:A": 39990, "dr:F": 69990, "dr:B": 249990, tm: 5990, tab8: 9990, tab12: 13990, tab18: 22990, tab24: 29990, tab36: 49990, tab48: 69990, barra: 4990, peine: 6500, pil: 12990, copper: 16990, tierra: 1800, mo: 18e3, sw15: 4990, sw24: 4590, swip: 6490, dim: 14990, out2: 5190, outip: 6990, outusb: 13990, out16: 4990, outdat: 6990, pm: 1490, pir: 14990, pul: 2990, ext: 19990, tim: 9990, plaf: 9990, foco: 5990, tubo: 14990 };
+  const PREC0 = { "cab:1.5": 300, "cab:2.5": 440, "cab:4": 720, "cab:6": 1050, "cab:10": 1800, "cab:16": 2900, "cab:25": 4500, "tub:pvc16": 290, "tub:pvc20": 300, "tub:emt16": 1500, "tub:emt20": 1900, "tub:flex16": 190, "tub:flex20": 230, curva: 250, copla: 190, term: 150, abraz: 120, cdev: 1200, cemb: 890, ccen: 900, sw: 3190, out: 3390, horno: 6490, lamp: 1990, conec: 300, ig2: 12990, ig4: 34990, "dr:AC": 23590, "dr:A": 39990, "dr:F": 69990, "dr:B": 249990, tm: 5990, tab8: 9990, tab12: 13990, tab18: 22990, tab24: 29990, tab36: 49990, tab48: 69990, barra: 4990, peine: 6500, pil: 12990, copper: 16990, tierra: 1800, mo: 18e3, sw15: 4990, sw24: 4590, swip: 6490, dim: 14990, out2: 5190, outip: 6990, outusb: 13990, out16: 4990, outdat: 6990, pm: 1490, pir: 14990, pul: 2990, ext: 19990, tim: 9990, plaf: 9990, foco: 5990, tubo: 14990 };
   const precio = (k) => {
     const v = S.precios && S.precios[k];
     return v != null && v !== "" && isFinite(+v) ? +v : PREC0[k] || 0;
@@ -10580,7 +10594,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   const INF_TIPO = { nueva: "Instalaci\xF3n nueva", ampliacion: "Ampliaci\xF3n", modificacion: "Modificaci\xF3n" };
   function infQty(s) {
     const ev = simEval(s), B = simBOM(s), it = (t) => s.items.filter((i) => i.t === t).length, sum = (g, u) => B.filter((b) => b.g === g && b.u === u).reduce((a, b) => a + b.q, 0);
-    const curv = (B.find((b) => b.d === "Curvas y uniones") || {}).q || 0, regl = (B.find((b) => b.k === "conec") || {}).q || 0;
+    const curv = (B.find((b) => b.k === "curva") || {}).q || 0, regl = (B.find((b) => b.k === "conec") || {}).q || 0;
     return { ev, B, area: ROOMS.reduce((a, r) => a + rArea(r), 0), tubo: sum("Canalizaci\xF3n", "m"), cable: sum("Conductores", "m"), curv, regl, box: it("box"), lamp: it("lamp"), sw: it("sw"), out: it("out"), hor: it("horno"), nc: s.circuits.length, ndr: simDRs(s).length, La: +s.alim.L || 0, emb: s.inst !== "vista" };
   }
   function infTasks(s) {
