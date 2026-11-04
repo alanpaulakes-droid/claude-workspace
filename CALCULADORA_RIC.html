@@ -7131,7 +7131,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     }
     ["n1", "n2", "n3", "libre"].forEach((k) => ["1P", "1P+N"].forEach((p) => {
       try {
-        const lv = k === "libre" ? tgFreeLv() : TG_LV[k], so = tgFresh(lv, p), A = tgCheck(lv, so);
+        const lv = k === "libre" ? tgFreeLv(Object.assign(tgFreeDef(true), { emer: true })) : TG_LV[k], so = tgFresh(lv, p), A = tgCheck(lv, so);
         chk("Tablero \xAB".concat(k, "\xBB (").concat(p, "): la soluci\xF3n no tiene errores"), A.errs.length + A.warns.length === 0, A.errs.concat(A.warns).map((x) => x.t).join("; ") || "0", "0");
         const bad = JSON.parse(JSON.stringify(so));
         bad.wires.push({ a: "BN1", b: "PE1", c: "W" });
@@ -7378,8 +7378,8 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     simToast([["ok", "Tablero traspasado tal como lo armaste: general ".concat(s.gen.In, " A, ").concat(s.circuits.length, " circuitos y ").concat(drs.length, " diferencial(es), con sus barras y cables. En \xABVista\xBB puedes alternar entre el dise\xF1o y la vista simple.")]]);
     setTimeout(() => SIMV && SIMV.view("t"), 400);
   }
-  function tgFreeLv() {
-    const f = tgInit().free, circ = f.circ.slice(0, 9).map((c, k) => {
+  function tgFreeLv(fx) {
+    const f = fx || tgInit().free, circ = f.circ.slice(0, 9).map((c, k) => {
       const T0 = TG_TIPOS[c.t] || TG_TIPOS.otro;
       return [String(c.n || T0[0] + " " + (k + 1)).slice(0, 26), +c.S || T0[3], Math.max(0, +c.P || 0), T0[1], T0[2], c.t in TG_TIPOS ? c.t : "otro"];
     });
