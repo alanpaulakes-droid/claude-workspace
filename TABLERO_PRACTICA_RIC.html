@@ -21,7 +21,7 @@
 .sim-nav .nbq{grid-template-columns:repeat(3,1fr)}
 .sim-nav .nbq button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:3px 0;min-height:40px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;cursor:pointer;line-height:1.05}
 .sim-nav .nbq button .ic{font-size:15px}.sim-nav .nbq button small{font:700 8.5px var(--f-body);opacity:.85}
-.sim-nav .nbq button[aria-pressed="true"]{background:var(--blue);color:var(--surface);border-color:var(--blue)}.sim-nav .nbq button:disabled{opacity:.4}
+.sim-nav .nbq button[aria-pressed="true"]{background:var(--blue);color:var(--surface);border-color:var(--blue)}.sim-nav .nbq button:disabled{opacity:.4}.sim-toast{pointer-events:none}@media (max-width:600px){.simwrap{height:70vh;height:calc(100svh - 140px);min-height:460px}.sim-place{padding:4px 6px!important;gap:4px!important}.sim-place .pb-t{gap:4px}.sim-place .pb-t button,.sim-place .pb-tab,.sim-place select{font-size:12px!important;padding:4px 8px!important;min-height:32px}.sim-place .pb-v{flex-wrap:nowrap!important;overflow-x:auto}.sim-place .pb-v svg{width:18px;height:18px}}.tgbtns [data-need]{opacity:.55}.tgseg.tgmiss{outline:2px solid var(--bad,#c0392b);outline-offset:3px;border-radius:8px}.simwrap{scroll-margin-top:68px}#tgcat{scroll-margin-top:68px}
 .sim-nav .nbq .eb{font:800 12px var(--f-body)!important}
 .sim-vista{position:absolute;right:calc(100% + 6px);top:0;display:flex;flex-direction:column;gap:4px;width:132px;max-height:calc(100% + 120px);overflow:auto;background:color-mix(in srgb,var(--surface) 92%,transparent);border:1px solid var(--line);border-radius:10px;padding:6px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 .sim-vista[hidden]{display:none}.sim-vista button{border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:7px;padding:5px 6px;font:700 11.5px var(--f-body);cursor:pointer;text-align:left}.sim-vista button[aria-pressed="true"]{background:var(--blue);color:var(--surface)}
@@ -3041,7 +3041,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
   let simRegT = "N";
   function regBar(s) {
     const L = regOf(s), nd = regNeed(s), sel = L[simRegSel];
-    const ctl = sel ? '<div class="pb-t pb-v" role="group" aria-label="Mover regleta seleccionada"><span class="pb-w"><b>' + REG_T[sel.t][1] + " " + sel.n + '</b> \xB7 toca el tablero en el 3D para ubicarla o mu\xE9vela:</span><button type="button" data-sa="regmv" data-k="-1,0" aria-label="Mover a la izquierda">\u2190</button><button type="button" data-sa="regmv" data-k="0,1" aria-label="Mover hacia arriba">\u2191</button><button type="button" data-sa="regmv" data-k="0,-1" aria-label="Mover hacia abajo">\u2193</button><button type="button" data-sa="regmv" data-k="1,0" aria-label="Mover a la derecha">\u2192</button>' + [["top", "Arriba"], ["mid", "Centro"], ["bot", "Abajo"], ["izq", "Izquierda"], ["der", "Derecha"]].map(([k, l]) => '<button type="button" data-sa="regz" data-k="' + k + '">' + l + "</button>").join("") + '<button type="button" data-sa="regdel" data-i="' + simRegSel + '">\u2715 Quitar</button></div>' : "";
+    const ctl = sel ? '<div class="pb-w" style="flex:0 0 100%;order:5;margin:2px 0"><b>' + REG_T[sel.t][1] + " " + sel.n + '</b> \xB7 toca el tablero en el 3D para ubicarla o mu\xE9vela:</div><div class="pb-t pb-v" role="group" aria-label="Mover regleta seleccionada"><button type="button" data-sa="regmv" data-k="-1,0" aria-label="Mover a la izquierda">\u2190</button><button type="button" data-sa="regmv" data-k="0,1" aria-label="Mover hacia arriba">\u2191</button><button type="button" data-sa="regmv" data-k="0,-1" aria-label="Mover hacia abajo">\u2193</button><button type="button" data-sa="regmv" data-k="1,0" aria-label="Mover a la derecha">\u2192</button>' + [["top", "Arriba"], ["mid", "Centro"], ["bot", "Abajo"], ["izq", "Izquierda"], ["der", "Derecha"]].map(([k, l]) => '<button type="button" data-sa="regz" data-k="' + k + '">' + l + "</button>").join("") + '<button type="button" data-sa="regdel" data-i="' + simRegSel + '">\u2715 Quitar</button></div>' : "";
     return '<div class="pb-t pb-v">' + Object.entries(REG_T).map(([k, v]) => '<button type="button" data-sa="regt" data-k="' + k + '" aria-pressed="' + (simRegT === k) + '">' + v[1] + "</button>").join("") + '</div><div class="pb-t pb-v">' + (simRegT === "peine" ? [12, 24] : simRegT === "F" ? [4, 7] : [4, 7, 12, 15]).map((n) => '<button type="button" data-sa="regadd" data-n="' + n + '">\uFF0B ' + n + (simRegT === "peine" ? " m\xF3d." : " bornes") + "</button>").join("") + "</div>" + '<div class="pb-t pb-v" style="flex-wrap:wrap">' + (L.length ? L.map((r, i) => '<button type="button" data-sa="regsel" data-i="' + i + '" aria-pressed="' + (i === simRegSel) + '" title="Seleccionar para moverla">' + REG_T[r.t][1] + " " + r.n + "</button>").join("") : '<span class="pb-w">Tablero sin regletas</span>') + '<span class="pb-w">Bornes necesarios: N ' + nd.N + " \xB7 PE " + nd.PE + "</span></div>" + ctl;
   }
   function simPlace(hit) {
@@ -3763,6 +3763,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
     if (!isPan(S.sim2)) S.simCasa = S.sim2 || sim2Blank();
     S.sim2 = isPan(S.sim2) ? S.sim2 : S.panSim || panBlank();
     delete S.panSim;
+    simPV.lamp = "pm";
     simInsp = null;
     simSel = null;
     simPC = null;
@@ -3998,11 +3999,17 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
     const wmh = sysh + '<div class="wm"><span>Empalmes en cajas:</span><button type="button" data-sa="wm" data-v="auto" aria-pressed="'.concat(s.wm !== "man", '">Autom\xE1ticos</button><button type="button" data-sa="wm" data-v="man1" aria-pressed="').concat(s.wm === "man", '">Los hago yo</button></div><p class="hint" style="margin:2px 0 8px">Conexiones del tablero: la fase de cada autom\xE1tico sale de su diferencial; el neutro va a la salida N de ese diferencial; la tierra a la barra PE. C\xE1mbialas para ver qu\xE9 pasa.</p>');
     return add + wmh + tm + dr + '<div class="actions" style="border:0;padding:6px 0 0"><button type="button" class="btn small" data-sa="tool" data-k="place">Ir a colocar puntos</button><button type="button" class="btn ghost small" data-sa="connon">Ver conexiones</button><button type="button" class="btn ghost small" data-sa="tgsim">\u26A1 Cablear el tablero cable a cable</button></div>';
   }
+  let simSheetWas = null;
   function renderSheet() {
     try {
       renderSheet0();
     } finally {
       simWrapCls();
+      if (simSheet && simSheet !== simSheetWas && window.innerWidth < 900) {
+        const w = document.getElementById("simwrap"), r = w && w.getBoundingClientRect();
+        if (r && (r.top < 60 || r.bottom > window.innerHeight)) w.scrollIntoView({ block: "start" });
+      }
+      simSheetWas = simSheet;
     }
   }
   function renderSheet0() {
@@ -4262,6 +4269,10 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
     if (w) w.classList.remove("fs");
     document.body.classList.remove("simfs");
     simFSui();
+    simRefit();
+  }
+  function simRefit() {
+    if (PANEL) setTimeout(() => SIMV && SIMV.mode !== "walk" && SIMV.view("g"), 260);
   }
   function simFS() {
     const w = document.getElementById("simwrap");
@@ -4274,6 +4285,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
       w.classList.add("fs");
       document.body.classList.add("simfs");
       simFSui();
+      simRefit();
     };
     try {
       if (w.requestFullscreen) w.requestFullscreen().then(simFSui).catch(css);
@@ -4288,7 +4300,10 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
     }
     w.focus({ preventScroll: true });
   }
-  document.addEventListener("fullscreenchange", simFSui);
+  document.addEventListener("fullscreenchange", () => {
+    simFSui();
+    simRefit();
+  });
   document.addEventListener("webkitfullscreenchange", simFSui);
   function simMount() {
     simLast = JSON.stringify(S.sim2);
@@ -4738,12 +4753,12 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
         cam.fov = 45;
         V.mode = "orbit";
         V.set({ x: V.w.x + Math.sin(y) * 1.2, y: 0.8, z: V.w.z + Math.cos(y) * 1.2, th: y + Math.PI, ph: 0.6, rad: 4.5 });
-        cam.updateProjectionMatrix();
+        V.offs ? V.offs() : cam.updateProjectionMatrix();
         apply();
         return;
       }
       V.mode = m;
-      cam.updateProjectionMatrix();
+      V.offs ? V.offs() : cam.updateProjectionMatrix();
       apply();
     };
     const clampG = () => {
@@ -4762,11 +4777,17 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
         apply();
       }
     };
+    V.offs = () => {
+      const w = wrap.clientWidth, h = wrap.clientHeight;
+      if (PANEL && V.mode !== "walk" && w && h && w / h < 0.9) cam.setViewOffset(w, h, 0, Math.round(h * 0.2), w, h);
+      else cam.clearViewOffset();
+    };
     V.view = (k) => {
       if (PANEL && (k === "g" || k === "p")) {
         if (V.mode === "walk") simSetMode("orbit");
-        const fit2 = Math.max(1, Math.min(1.8, 1.4 / (cam.aspect || 1.5)));
-        V.set({ x: HW / 2, y: 1.25, z: 0.1, th: 0, ph: 1.42, rad: 4.4 * fit2 });
+        const tv = Math.tan(cam.fov * Math.PI / 360), asp = cam.aspect || 1.5, th2 = tv * asp, rd2 = Math.min(18, Math.max((WH / 2 + 0.45) / (tv * (asp < 0.9 ? 0.6 : 1)), (HW / 2 + 0.6) / th2));
+        V.offs();
+        V.set({ x: HW / 2, y: 1.25, z: 0.1, th: 0, ph: 1.45, rad: rd2 });
         return;
       }
       if (V.mode === "walk") {
@@ -4843,7 +4864,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
       if (!w || !h) return;
       R.setSize(w, h, false);
       cam.aspect = w / h;
-      cam.updateProjectionMatrix();
+      V.offs();
       V.dirty = true;
     };
     const ro = new ResizeObserver(size);
@@ -8390,15 +8411,26 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
     return '<svg class="tgsvg" data-w="'.concat(L.W, '" data-h="').concat(L.H, '" viewBox="').concat([vb.x, vb.y, vb.w, vb.h].map((v) => Math.round(v * 10) / 10).join(" "), '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Interior del tablero para armar y cablear">').concat(g, "</svg>");
   }
   const TG_SHORT = { p: (v) => v, In: (v) => v + " A", cv: (v) => v, s: (v) => v + " mA", cl: (v) => v, n: (v) => v + " m" };
+  let tgNeed = false;
+  function tgNeedMsg() {
+    const k = S.tg.cat.k, sp = S.tg.cat[k] || {}, miss = TG_SPEC[k].filter(([f]) => sp[f] == null || sp[f] === "").map(([, l]) => l);
+    if (!miss.length) return false;
+    tgNeed = true;
+    tgMsg = "Antes de colocar el " + TG_K[k].n.toLowerCase() + " elige: " + miss.join(", ") + " (marcados en rojo en la caja de piezas).";
+    tgRender();
+    const c = document.getElementById("tgcat");
+    if (c) c.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    return true;
+  }
   function tgSpecSel(k, sp, act) {
     return TG_SPEC[k].map(([f, lab, ops]) => {
       const cur3 = ops.find(([v]) => String(sp[f]) === String(v));
-      return '<div class="tgseg" role="group" aria-label="'.concat(esc(lab), '"><span>').concat(lab).concat(cur3 ? ' <em class="hint">\xB7 '.concat(esc(cur3[1]), "</em>") : "", "</span><div>").concat(ops.map(([v, l]) => '<button type="button" class="tgch" data-tg="'.concat(act, '" data-f="').concat(f, '" data-v="').concat(v, '" aria-pressed="').concat(String(sp[f]) === String(v), '" title="').concat(esc(l), '">').concat(TG_SHORT[f](v), "</button>")).join(""), "</div></div>");
+      return '<div class="tgseg' + (tgNeed && !cur3 ? " tgmiss" : "") + '" role="group" aria-label="'.concat(esc(lab), '"><span>').concat(lab).concat(cur3 ? ' <em class="hint">\xB7 '.concat(esc(cur3[1]), "</em>") : "", "</span><div>").concat(ops.map(([v, l]) => '<button type="button" class="tgch" data-tg="'.concat(act, '" data-f="').concat(f, '" data-v="').concat(v, '" aria-pressed="').concat(String(sp[f]) === String(v), '" title="').concat(esc(l), '">').concat(TG_SHORT[f](v), "</button>")).join(""), "</div></div>");
     }).join("");
   }
   function tgCatHTML() {
     const c = S.tg.cat, k = c.k || "ig", sp = c[k] || {}, ready = TG_SPEC[k].every(([f]) => sp[f] != null && sp[f] !== ""), w = tgWd(k, sp);
-    return '<section class="card tgp" id="tgcat"><h3>\u{1F9F0} Caja de piezas</h3><div class="tgkinds">'.concat(Object.keys(TG_K).map((kk) => '<button type="button" class="tgkc" data-tg="catk" data-k="'.concat(kk, '" aria-pressed="').concat(kk === k, '"><b>').concat(TG_K[kk].ic, "</b> ").concat(TG_K[kk].n, "</button>")).join(""), '</div><p class="hint" style="margin:8px 0 4px">').concat(TG_K[k].d, "</p>").concat(tgSpecSel(k, sp, "cspec"), '<div class="tgbuy"><span>').concat(ready ? "<b>".concat(tgMoney(tgPrice(k, sp)), "</b> \xB7 ").concat(k === "pn" ? "va sobre las entradas" : w + " m\xF3dulo" + (w > 1 ? "s" : "")) : '<span class="hint">Toca un valor en cada fila</span>', '</span><span class="tgbtns"><button type="button" class="btn small" data-tg="autoplace" ').concat(ready ? "" : "disabled", ">⚡ ", k === "pn" ? "Poner donde corresponde" : "Poner en el primer lugar libre", '</button><button type="button" class="btn ghost small" data-tg="place" ').concat(ready ? "" : "disabled", ">\u{1F4CD} Elegir el lugar</button></span></div></section>");
+    return '<section class="card tgp" id="tgcat"><h3>\u{1F9F0} Caja de piezas</h3><div class="tgkinds">'.concat(Object.keys(TG_K).map((kk) => '<button type="button" class="tgkc" data-tg="catk" data-k="'.concat(kk, '" aria-pressed="').concat(kk === k, '"><b>').concat(TG_K[kk].ic, "</b> ").concat(TG_K[kk].n, "</button>")).join(""), '</div><p class="hint" style="margin:8px 0 4px">').concat(TG_K[k].d, "</p>").concat(tgSpecSel(k, sp, "cspec"), '<div class="tgbuy"><span>').concat(ready ? "<b>".concat(tgMoney(tgPrice(k, sp)), "</b> \xB7 ").concat(k === "pn" ? "va sobre las entradas" : w + " m\xF3dulo" + (w > 1 ? "s" : "")) : '<span class="hint">Toca un valor en cada fila</span>', '</span><span class="tgbtns"><button type="button" class="btn small" data-tg="autoplace" ').concat(ready ? "" : 'aria-disabled="true" data-need="1"', ">⚡ ", k === "pn" ? "Poner donde corresponde" : "Poner en el primer lugar libre", '</button><button type="button" class="btn ghost small" data-tg="place" ').concat(ready ? "" : 'aria-disabled="true" data-need="1"', ">\u{1F4CD} Elegir el lugar</button></span></div></section>");
   }
   function tgStatus(lv, st, L) {
     if (tgMsg) return tgMsg;
@@ -8758,7 +8790,10 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
     } else if (a === "pspec" && tgDev) {
       tgPSpec(tgDev, el.dataset.f, el.dataset.v);
       return;
+    } else if ((a === "autoplace" || a === "place") && tgNeedMsg()) {
+      return;
     } else if (a === "autoplace") {
+      tgNeed = false;
       const k = S.tg.cat.k, sp = Object.assign({}, S.tg.cat[k] || {});
       if (TG_SPEC[k].every(([f]) => sp[f] != null && sp[f] !== "")) {
         let at = null;
@@ -8796,6 +8831,7 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
       return;
     } else if (a === "catk") S.tg.cat.k = el.dataset.k;
     else if (a === "place") {
+      tgNeed = false;
       const k = S.tg.cat.k, sp = Object.assign({}, S.tg.cat[k] || {});
       if (TG_SPEC[k].every(([f]) => sp[f] != null && sp[f] !== "")) {
         tgPlace = { k, spec: sp };
@@ -12084,8 +12120,13 @@ body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
     TABS.splice(0, TABS.length, ["home", "⌂", "Inicio"], ["tg", "▦", "Tablero"], ["sim", "◈", "3D"], ["pan", "\u{1F4D0}", "Planos"], ["hub_calc", "ƒ", "C\xE1lculos"]);
     tabOf = (id) => id === "home" ? "home" : ["tg", "sim", "pan"].includes(id) ? id : "hub_calc";
     PAGES.find((p) => p.id === "sim").t = "Pared de pr\xE1ctica 3D";
+    {
+      const ps = PAGES.find((p) => p.id === "sim"), r0 = ps.r;
+      ps.r = () => r0().replace("Taller 3D de instalaci\xF3n domiciliaria", "Pared de pr\xE1ctica 3D").replace("\u26A1 Juego: armar tablero", "\u25A6 Armar tablero").replace(/<p class="lead">[^<]*/, '<p class="lead">Toca <b>Colocar</b> y luego la madera para instalar cada componente; con\xE9ctalos con <b>Conectar</b> y ajusta los tubos con <b>Ducto</b>. Tu tablero dise\xF1ado aparece a la izquierda.');
+    }
     PAGES.find((p) => p.id === "pan").t = "Planos, diagramas y materiales";
     PAGES.find((p) => p.id === "home").r = () => '<p class="eyebrow">Pliegos RIC \xB7 SEC Chile</p><h1>Tablero de pr\xE1ctica</h1><p class="lead">Arma el tablero, p\xE1salo a la pared de pr\xE1ctica en 3D, instala y comprueba los circuitos, y obt\xE9n el plano, los diagramas y el listado de materiales.</p><div class="mods">' + [["tg", "▦", "1 \xB7 Armar tablero", "General, diferenciales, autom\xE1ticos, barras, peine y cables, con revisi\xF3n RIC N\xB002"], ["sim", "◈", "2 \xB7 Pared de pr\xE1ctica 3D", "Cajas, tubos y codos, interruptores 9/12 a 9/32, portal\xE1mparas y enchufes; comprobar"], ["pan", "\u{1F4D0}", "3 \xB7 Planos y materiales", "Plano de la pared, unilineal, multilineal y listado de materiales con precios"], ["hub_calc", "ƒ", "Calculadoras", "Corriente, Ohm, potencias, ca\xEDda de tensi\xF3n, conductor y protecciones"]].map(([id, ic, t, d]) => '<button class="mod" type="button" data-go="' + id + '"><span class="mi">' + ic + '</span><span class="mt">' + t + '</span><span class="md">' + d + "</span></button>").join("") + "</div>" + learn("C\xF3mo se usa", '<ol class="hand"><li>En <b>Armar tablero</b> elige \xABDise\xF1o libre\xBB, agrega tus circuitos, coloca las piezas y cabl\xE9alas. Toca <b>Comprobar</b>.</li><li>Toca <b>◈ Pasar este tablero al Simulador 3D</b>: aparece en la pared de pr\xE1ctica.</li><li>En el 3D usa <b>Colocar</b> (toca la madera), <b>Conectar</b> y <b>Ducto</b>. O toca <b>＋ Agregar lo pedido</b>.</li><li>Toca <b>✔ Comprobar</b> y revisa el resultado.</li><li>En <b>Planos</b> ver\xE1s el plano de la pared, el unilineal, el multilineal y los materiales; puedes imprimirlos o guardarlos como PDF.</li></ol><p class="hint">Todo se guarda en este navegador. Funciona sin internet.</p>');
+    simPV.lamp = "pm";
     if (!isPan(S.sim2)) {
       S.sim2 = S.panSim || panBlank();
       delete S.panSim;

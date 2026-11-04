@@ -28,8 +28,13 @@ LITE = r'''
     TABS.splice(0, TABS.length, ["home", "⌂", "Inicio"], ["tg", "▦", "Tablero"], ["sim", "◈", "3D"], ["pan", "\u{1F4D0}", "Planos"], ["hub_calc", "ƒ", "C\xE1lculos"]);
     tabOf = (id) => id === "home" ? "home" : ["tg", "sim", "pan"].includes(id) ? id : "hub_calc";
     PAGES.find((p) => p.id === "sim").t = "Pared de pr\xE1ctica 3D";
+    {
+      const ps = PAGES.find((p) => p.id === "sim"), r0 = ps.r;
+      ps.r = () => r0().replace("Taller 3D de instalaci\xF3n domiciliaria", "Pared de pr\xE1ctica 3D").replace("\u26A1 Juego: armar tablero", "\u25A6 Armar tablero").replace(/<p class="lead">[^<]*/, '<p class="lead">Toca <b>Colocar</b> y luego la madera para instalar cada componente; con\xE9ctalos con <b>Conectar</b> y ajusta los tubos con <b>Ducto</b>. Tu tablero dise\xF1ado aparece a la izquierda.');
+    }
     PAGES.find((p) => p.id === "pan").t = "Planos, diagramas y materiales";
     PAGES.find((p) => p.id === "home").r = () => '<p class="eyebrow">Pliegos RIC \xB7 SEC Chile</p><h1>Tablero de pr\xE1ctica</h1><p class="lead">Arma el tablero, p\xE1salo a la pared de pr\xE1ctica en 3D, instala y comprueba los circuitos, y obt\xE9n el plano, los diagramas y el listado de materiales.</p><div class="mods">' + [["tg", "▦", "1 \xB7 Armar tablero", "General, diferenciales, autom\xE1ticos, barras, peine y cables, con revisi\xF3n RIC N\xB002"], ["sim", "◈", "2 \xB7 Pared de pr\xE1ctica 3D", "Cajas, tubos y codos, interruptores 9/12 a 9/32, portal\xE1mparas y enchufes; comprobar"], ["pan", "\u{1F4D0}", "3 \xB7 Planos y materiales", "Plano de la pared, unilineal, multilineal y listado de materiales con precios"], ["hub_calc", "ƒ", "Calculadoras", "Corriente, Ohm, potencias, ca\xEDda de tensi\xF3n, conductor y protecciones"]].map(([id, ic, t, d]) => '<button class="mod" type="button" data-go="' + id + '"><span class="mi">' + ic + '</span><span class="mt">' + t + '</span><span class="md">' + d + "</span></button>").join("") + "</div>" + learn("C\xF3mo se usa", '<ol class="hand"><li>En <b>Armar tablero</b> elige \xABDise\xF1o libre\xBB, agrega tus circuitos, coloca las piezas y cabl\xE9alas. Toca <b>Comprobar</b>.</li><li>Toca <b>◈ Pasar este tablero al Simulador 3D</b>: aparece en la pared de pr\xE1ctica.</li><li>En el 3D usa <b>Colocar</b> (toca la madera), <b>Conectar</b> y <b>Ducto</b>. O toca <b>＋ Agregar lo pedido</b>.</li><li>Toca <b>✔ Comprobar</b> y revisa el resultado.</li><li>En <b>Planos</b> ver\xE1s el plano de la pared, el unilineal, el multilineal y los materiales; puedes imprimirlos o guardarlos como PDF.</li></ol><p class="hint">Todo se guarda en este navegador. Funciona sin internet.</p>');
+    simPV.lamp = "pm";
     if (!isPan(S.sim2)) {
       S.sim2 = S.panSim || panBlank();
       delete S.panSim;
