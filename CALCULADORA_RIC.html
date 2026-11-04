@@ -3494,8 +3494,8 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       R.push({ t: o.name, d: "Tensi\xF3n " + n0(V) + " V \xB7 tierra " + (c.pe === false ? "cortada" : "conectada") + " \xB7 " + (c.dr !== "none" ? "con diferencial " + c.dr : "sin diferencial"), ok: ok && c.dr !== "none" });
       o.on = false;
     });
-    const E = simInspect(s0).filter((o) => !o.fault);
-    return { R, E, ok: R.length > 0 && R.every((r) => r.ok) && !E.length };
+    const E0 = simInspect(s0).filter((o) => !o.fault), E = E0.filter((o) => !/: sin puntos$/.test(o.t)), A = E0.filter((o) => /: sin puntos$/.test(o.t));
+    return { R, E, A, ok: R.length > 0 && R.every((r) => r.ok) && !E.length };
   }
   function panFixes(s) {
     const F = [], ev = simEval(s), cBy = (id) => s.circuits.find((c) => c.id === id), nextS = (In) => SECC.find((x) => ampOf(x) >= In) || 6;
@@ -3574,9 +3574,11 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   }
   function panAuto(s) {
     const q = s.pan.req || {}, have = panCount(s), zf = WTE / 2 + 6e-3, msgs = [], C = (n, In, cv, Sx) => {
-      let c = s.circuits.find((x) => x.n === n);
+      const al = n === "Alumbrado";
+      let c = s.circuits.find((x) => x.n === n) || s.circuits.find((x) => al ? /alumbr|luz|ilumin/i.test(x.n || "") : /enchuf/i.test(x.n || "")) || s.circuits.find((x) => al ? x.cv === "B" && +x.S <= 1.5 : x.cv === "C" && +x.S >= 2.5 && !/horno|cocina|clima|emerg/i.test(x.n || ""));
       if (!c) {
-        c = { id: s.nid++, n, In, cv, pc: 6, S: Sx, dr: "DR1", ds: 30, cl: "A", nc: "dr", pe: true, on: true };
+        const drs = simDRs(s), d = drs.find((x) => s.circuits.filter((y) => y.dr === x).length < 3) || "DR" + (drs.length + 1);
+        c = { id: s.nid++, n, In, cv, pc: 6, S: Sx, dr: d, ds: 30, cl: "A", nc: "dr", pe: true, on: true };
         s.circuits.push(c);
       }
       return c.id;
@@ -3633,6 +3635,27 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     msgs.push(placed + " grupo(s) agregado(s) con su caja de derivaci\xF3n, cableado y protecci\xF3n" + (cl ? " \xB7 circuito Alumbrado 10 A B 1,5 mm\xB2" : "") + (ce ? " \xB7 circuito Enchufes 16 A C 2,5 mm\xB2" : "") + ".");
     if (full) msgs.push("No cupo todo en el panel: quita elementos o pide menos puntos.");
     return msgs;
+  }
+  function panElevSVG(s) {
+    const ev = simEval(s), K = 170, M = 50, Wd = HW * K + 2 * M, Hd = WH * K + 2 * M + 40, X = (x) => M + x * K, Y = (y) => M + (WH - y) * K, W = tabW(s);
+    let g = '<rect width="' + Wd + '" height="' + Hd + '" fill="#fff"/><text x="' + M + '" y="26" font-size="14" font-weight="800">PLANO DE LA PARED DE PR\xC1CTICA (VISTA FRONTAL)</text>';
+    g += '<rect x="' + X(0) + '" y="' + Y(WH) + '" width="' + HW * K + '" height="' + WH * K + '" fill="#f3e3c8" stroke="#8a6a3a" stroke-width="2"/>';
+    g += '<rect x="' + X(TX - W / 2) + '" y="' + Y(1.975) + '" width="' + W * K + '" height="' + 0.95 * K + '" fill="#e6eaee" stroke="#333" stroke-width="2"/><text x="' + X(TX) + '" y="' + (Y(1.5) + 5) + '" text-anchor="middle" font-size="13" font-weight="800">TABLERO</text><text x="' + X(TX) + '" y="' + (Y(1.5) + 22) + '" text-anchor="middle" font-size="10">General ' + s.gen.In + " A \xB7 " + s.circuits.length + " circuito(s)</text>";
+    ev.E.forEach((e) => {
+      const col = CCOL[e.ci % CCOL.length];
+      g += '<polyline points="' + e.pts.map((q) => X(q[0]).toFixed(1) + "," + Y(q[1]).toFixed(1)).join(" ") + '" fill="none" stroke="#e8661c" stroke-width="7" stroke-linejoin="round" opacity=".85"/><polyline points="' + e.pts.map((q) => X(q[0]).toFixed(1) + "," + Y(q[1]).toFixed(1)).join(" ") + '" fill="none" stroke="' + col + '" stroke-width="1.6" stroke-dasharray="5 3"/>';
+    });
+    s.items.forEach((it) => {
+      const x = X(it.p[0]), y = Y(it.p[1]), col = CCOL[cIdx(s, it.c) % CCOL.length];
+      let sym;
+      if (it.t === "box") sym = '<rect x="-9" y="-9" width="18" height="18" fill="#fff" stroke="' + col + '" stroke-width="2"/><line x1="-9" y1="-9" x2="9" y2="9" stroke="' + col + '" stroke-width="1.5"/>';
+      else if (it.t === "lamp" || it.t === "sw" || it.t === "out") sym = '<g transform="scale(1.4)">' + varSym(it.t, it.v || "s", col) + "</g>";
+      else sym = '<rect x="-10" y="-8" width="20" height="16" fill="#fff" stroke="' + col + '" stroke-width="2"/>';
+      g += '<g transform="translate(' + x.toFixed(1) + " " + y.toFixed(1) + ')">' + sym + '</g><text x="' + (x + 14) + '" y="' + (y - 10) + '" font-size="9.5" font-weight="700">' + esc(it.name) + '</text><text x="' + (x + 14) + '" y="' + (y + 2) + '" font-size="8.5" fill="#555">h = ' + nf(it.p[1], 2) + " m</text>";
+    });
+    g += '<line x1="' + X(0) + '" y1="' + (Y(0) + 22) + '" x2="' + X(HW) + '" y2="' + (Y(0) + 22) + '" stroke="#555" marker-start="url(#ea)" marker-end="url(#ea)"/><text x="' + X(HW / 2) + '" y="' + (Y(0) + 38) + '" text-anchor="middle" font-size="11">' + nf(HW, 2) + ' m</text><line x1="' + (X(0) - 22) + '" y1="' + Y(0) + '" x2="' + (X(0) - 22) + '" y2="' + Y(WH) + '" stroke="#555" marker-start="url(#ea)" marker-end="url(#ea)"/><text transform="translate(' + (X(0) - 28) + " " + Y(WH / 2) + ') rotate(-90)" text-anchor="middle" font-size="11">' + nf(WH, 2) + " m</text>";
+    g += '<text x="' + M + '" y="' + (Hd - 8) + '" font-size="9.5" fill="#555">Tubo PVC naranjo a la vista \xB7 l\xEDnea de color = circuito \xB7 alturas sobre el piso \xB7 escala gr\xE1fica 1 m = ' + K + " px</text>";
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + Wd + " " + Hd + '" font-family="Arial,Helvetica,sans-serif" role="img" aria-label="Plano de la pared de pr\xE1ctica"><defs><marker id="ea" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#555"/></marker></defs>' + g + "</svg>";
   }
   function panMultiSVG(s) {
     const by = new Map(s.items.map((i) => [i.id, i])), RED = "#c62828", BLU = "#1565c0", GRN = "#2e7d32", ink = "#222";
@@ -3713,7 +3736,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   }
   function panTestHTML(r) {
     if (!r) return "";
-    return '<div class="note ' + (r.ok ? "ok" : "bad") + '"><b>' + (r.ok ? "✓ El panel funciona y cumple" : "✗ El panel a\xFAn no pasa la prueba") + "</b></div>" + (r.R.length ? '<ul class="whyl">' + r.R.map((x) => "<li>" + (x.ok ? "✓ " : "✗ ") + "<b>" + esc(x.t) + '</b><br><span class="hint">' + esc(x.d) + "</span></li>").join("") + "</ul>" : '<p class="hint">No hay luces ni enchufes para probar.</p>') + (r.E.length ? '<p style="margin:8px 0 4px"><b>Observaciones del inspector (' + r.E.length + "):</b></p><ul class=\"whyl\">" + r.E.slice(0, 12).map((o) => "<li>✗ " + esc(o.t) + '<br><span class="hint">' + esc(o.w || o.d || "") + "</span></li>").join("") + "</ul>" : "");
+    return '<div class="note ' + (r.ok ? "ok" : "bad") + '"><b>' + (r.ok ? "✓ El panel funciona y cumple" : "✗ El panel a\xFAn no pasa la prueba") + "</b></div>" + (r.R.length ? '<ul class="whyl">' + r.R.map((x) => "<li>" + (x.ok ? "✓ " : "✗ ") + "<b>" + esc(x.t) + '</b><br><span class="hint">' + esc(x.d) + "</span></li>").join("") + "</ul>" : '<p class="hint">No hay luces ni enchufes para probar.</p>') + (r.E.length ? '<p style="margin:8px 0 4px"><b>Observaciones del inspector (' + r.E.length + "):</b></p><ul class=\"whyl\">" + r.E.slice(0, 12).map((o) => "<li>✗ " + esc(o.t) + '<br><span class="hint">' + esc(o.w || o.d || "") + "</span></li>").join("") + "</ul>" : "") + (r.A && r.A.length ? '<p class="hint" style="margin:6px 0 0">Reserva: ' + r.A.map((o) => esc(o.t.replace(/: sin puntos$/, ""))).join(", ") + " no tienen puntos en esta pr\xE1ctica (quedan como circuitos de reserva).</p>" : "");
   }
   function panAskHTML(s) {
     const F = panFixes(s);
@@ -3763,7 +3786,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     let diag = '<p class="hint">Abre el panel para empezar.</p>';
     if (s) diag = withHouse(s.house, () => {
       const B = simBOM(s);
-      return '<section class="card"><h2>Diagrama unilineal</h2>' + simConnSVG(s) + '</section><section class="card"><h2>Esquema multilineal</h2><div class="plan" style="overflow:auto">' + panMultiSVG(s) + '</div><p class="hint">Cada circuito con su fase, neutro y tierra; los interruptores cortan la fase y los 9/24 se unen por dos viajeros.</p></section><section class="card"><h2>Listado de materiales</h2>' + bomTable(B, true) + '</section><div class="actions no-print" style="border:0"><button class="btn" type="button" data-pn="print">\u{1F5A8} Imprimir diagramas y materiales</button></div>';
+      return '<section class="card"><h2>Plano de la pared</h2><div class="plan" style="overflow:auto">' + panElevSVG(s) + '</div><p class="hint">Vista frontal con la ubicaci\xF3n y altura de cada componente y el recorrido de los tubos.</p></section><section class="card"><h2>Diagrama unilineal</h2>' + simConnSVG(s) + '</section><section class="card"><h2>Esquema multilineal</h2><div class="plan" style="overflow:auto">' + panMultiSVG(s) + '</div><p class="hint">Cada circuito con su fase, neutro y tierra; los interruptores cortan la fase y los 9/24 se unen por dos viajeros.</p></section><section class="card"><h2>Listado de materiales</h2>' + bomTable(B, true) + '</section><div class="actions no-print" style="border:0"><button class="btn" type="button" data-pn="print">\u{1F5A8} Imprimir diagramas y materiales</button></div>';
     });
     return '<p class="eyebrow">Simulador 3D \xB7 modo pr\xE1ctico</p><h1>Panel de pr\xE1ctica</h1><p class="lead">Un tablero de madera como el del taller: montas el tablero el\xE9ctrico, cajas, tubos, interruptores, portal\xE1mparas y enchufes, los conectas y compruebas que funcionen. Ideal para practicar circuitos cortos antes de la obra.</p>' +
       '<section class="card"><h2>1 \xB7 Elige el encargo</h2><div class="tpls">' + ex + "</div>" + (s ? '<h3 style="margin:14px 0 6px">Lo pedido (puedes cambiar las cantidades)</h3>' + panReqHTML(s) + '<div class="grid" style="margin-top:10px"><div class="field"><label>Correcci\xF3n de errores</label><select data-pn="fixmode">' + [["ask", "Pedir autorizaci\xF3n antes de corregir"], ["auto", "Corregir autom\xE1ticamente mientras armo"], ["off", "No corregir (modo evaluaci\xF3n)"]].map(([k, l]) => '<option value="' + k + '"' + (s.pan.fix === k ? " selected" : "") + ">" + l + "</option>").join("") + "</select></div></div>" : "") + "</section>" +
@@ -3864,7 +3887,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       if (cur === "sim") return render(true);
     }
     if (a === "print") {
-      const w = window.open("", "_blank"), html = run(() => '<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Panel de pr\xE1ctica</title><style>' + INF_CSS + '</style></head><body><h1>Panel de pr\xE1ctica</h1><h2>Diagrama unilineal</h2>' + simConnSVG(s) + "<h2>Esquema multilineal</h2>" + panMultiSVG(s) + "<h2>Listado de materiales</h2>" + bomTable(simBOM(s), false) + "</body></html>");
+      const w = window.open("", "_blank"), html = run(() => '<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Panel de pr\xE1ctica</title><style>' + INF_CSS + '</style></head><body><h1>Panel de pr\xE1ctica</h1><h2>Plano de la pared</h2>' + panElevSVG(s) + "<h2>Diagrama unilineal</h2>" + simConnSVG(s) + "<h2>Esquema multilineal</h2>" + panMultiSVG(s) + "<h2>Listado de materiales</h2>" + bomTable(simBOM(s), false) + "</body></html>");
       if (w && w.document) {
         w.document.open();
         w.document.write(html);
