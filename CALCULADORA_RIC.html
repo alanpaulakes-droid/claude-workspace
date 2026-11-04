@@ -1812,7 +1812,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   const WH = 2.5, V0 = 220, RHO = 0.018, YC = 2.64, MAXI = 60;
   const T_NAME = { lamp: "Luz", sw: "Interruptor", out: "Enchufe", box: "Caja", horno: "Horno" };
   const VAR = {
-    sw: [["s", "9/12", "Interruptor 9/12 (un efecto)", "sw"], ["d", "9/15", "Interruptor 9/15 (dos efectos)", "sw15"], ["c", "9/24", "Interruptor 9/24 (combinaci\xF3n o escalera)", "sw24"], ["ip", "9/12 IP44", "Interruptor 9/12 estanco IP44", "swip"], ["dim", "Dimmer", "Regulador de intensidad (dimmer)", "dim"], ["pir", "Sensor", "Sensor de movimiento (detector de presencia)", "pir"], ["pul", "Pulsador", "Pulsador de timbre", "pul"]],
+    sw: [["s", "9/12", "Interruptor 9/12 (un efecto)", "sw"], ["d", "9/15", "Interruptor 9/15 (dos efectos)", "sw15"], ["t", "9/32", "Interruptor 9/32 (tres efectos)", "sw32"], ["c", "9/24", "Interruptor 9/24 (combinaci\xF3n o escalera)", "sw24"], ["ip", "9/12 IP44", "Interruptor 9/12 estanco IP44", "swip"], ["dim", "Dimmer", "Regulador de intensidad (dimmer)", "dim"], ["pir", "Sensor", "Sensor de movimiento (detector de presencia)", "pir"], ["pul", "Pulsador", "Pulsador de timbre", "pul"]],
     out: [["s", "Simple", "Enchufe 2P+T 10/16 A", "out"], ["d", "Doble", "Enchufe doble 2P+T 10/16 A", "out2"], ["ip", "IP44", "Enchufe estanco IP44 con tapa", "outip"], ["usb", "USB", "Enchufe 2P+T con cargador USB", "outusb"], ["f", "Fuerza 16 A", "Enchufe de fuerza 2P+T 16 A", "out16"], ["dat", "Datos/TV", "Toma de datos RJ45 / TV (corrientes d\xE9biles)", "outdat"]],
     lamp: [["s", "Centro", "Centro de luz con portal\xE1mpara", "lamp"], ["led", "Plaf\xF3n LED", "Plaf\xF3n LED", "plaf"], ["foco", "Foco embutido", "Foco embutido LED", "foco"], ["tubo", "Tubo LED", "Equipo lineal LED / fluorescente", "tubo"], ["ext", "Extractor", "Extractor de ba\xF1o 25 W", "ext"], ["tim", "Timbre", "Campanilla de timbre 10 W", "tim"], ["pm", "Portal\xE1mpara", "Portal\xE1mpara de muro E27 (aplique)", "pm"]]
   };
@@ -1825,6 +1825,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     if (t === "sw") {
       let g = '<circle r="4" fill="' + col + '"/><line x1="0" y1="0" x2="8" y2="-9" ' + st + "/>";
       if (v === "d") g = '<circle r="4" fill="' + col + '"/><line x1="0" y1="0" x2="5" y2="-10" ' + st + '/><line x1="0" y1="0" x2="10" y2="-4" ' + st + "/>";
+      if (v === "t") g = '<circle r="4" fill="' + col + '"/><line x1="0" y1="0" x2="3" y2="-11" ' + st + '/><line x1="0" y1="0" x2="8" y2="-8" ' + st + '/><line x1="0" y1="0" x2="11" y2="-3" ' + st + "/>";
       if (v === "c") g += '<line x1="0" y1="0" x2="-8" y2="9" ' + st + "/>";
       if (v === "ip") g += '<text x="5" y="10" font-size="7" font-weight="800" fill="' + col + '">IP</text>';
       if (v === "dim") g += '<path d="M-8 8L6 -5M6 -5L2 -5M6 -5L6 -1" stroke="' + col + '" stroke-width="1.3" fill="none"/>';
@@ -1860,10 +1861,19 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       const w2 = l.sw2 != null ? by.get(l.sw2) : null;
       return w2 && w2.v === "c" ? !!w.on !== !!w2.on : !!w.on;
     }
+    if (w.v === "t") return l.k === 2 ? !!w.on3 : l.k === 1 ? !!w.on2 : !!w.on;
     return w.v === "d" && l.k === 1 ? !!w.on2 : !!w.on;
   }
   function swPress(w, key) {
-    if (w.v === "d") {
+    if (w.v === "t") {
+      if (key === 0 || key === 1 || key === 2) w[["on", "on2", "on3"][key]] = !w[["on", "on2", "on3"][key]];
+      else {
+        const n = ((w.on ? 1 : 0) + (w.on2 ? 2 : 0) + (w.on3 ? 4 : 0) + 1) % 8;
+        w.on = !!(n & 1);
+        w.on2 = !!(n & 2);
+        w.on3 = !!(n & 4);
+      }
+    } else if (w.v === "d") {
       if (key === 1) w.on2 = !w.on2;
       else if (key === 0) w.on = !w.on;
       else {
@@ -1884,9 +1894,9 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       }, 1600);
     } else w.on = !w.on;
   }
-  const swState = (w) => w.v === "d" ? "tecla 1 " + (w.on ? "ON" : "OFF") + " \xB7 tecla 2 " + (w.on2 ? "ON" : "OFF") : w.on ? "ON" : "OFF";
+  const swState = (w) => w.v === "t" ? [w.on, w.on2, w.on3].map((x, i) => "tecla " + (i + 1) + " " + (x ? "ON" : "OFF")).join(" \xB7 ") : w.v === "d" ? "tecla 1 " + (w.on ? "ON" : "OFF") + " \xB7 tecla 2 " + (w.on2 ? "ON" : "OFF") : w.on ? "ON" : "OFF";
   const T_Y = { sw: 1.1, box: 2.3, out: 0.3, horno: 0.3 };
-  const CNAME = { F: ["Fase", "rojo", "#D32F2F", 13840175], N: ["Neutro", "blanco", "#F4F4F4", 15921906], PE: ["Tierra de protecci\xF3n", "verde/amarillo", "#2E9E44", 3055172], R: ["Retorno", "rojo oscuro con franja", "#8E1B1B", 9313051], R2: ["Retorno 2", "naranjo (2.\xBA efecto)", "#D9771E", 14251806], C: ["Com\xFAn", "rojo (com\xFAn del 9/24)", "#C62828", 12986408], V1: ["Viajero 1", "negro", "#262626", 2500134], V2: ["Viajero 2", "caf\xE9", "#7B4A2A", 8080938] };
+  const CNAME = { F: ["Fase", "rojo", "#D32F2F", 13840175], N: ["Neutro", "blanco", "#F4F4F4", 15921906], PE: ["Tierra de protecci\xF3n", "verde/amarillo", "#2E9E44", 3055172], R: ["Retorno", "rojo oscuro con franja", "#8E1B1B", 9313051], R2: ["Retorno 2", "naranjo (2.\xBA efecto)", "#D9771E", 14251806], R3: ["Retorno 3", "caf\xE9 claro (3.er efecto)", "#A1887F", 10586239], C: ["Com\xFAn", "rojo (com\xFAn del 9/24)", "#C62828", 12986408], V1: ["Viajero 1", "negro", "#262626", 2500134], V2: ["Viajero 2", "caf\xE9", "#7B4A2A", 8080938] };
   const FAULTS = { aisl: "Aislamiento da\xF1ado", pe: "Tierra (PE) cortada", floja: "Empalme flojo", carcasa: "Falla a carcasa en un equipo", drMalo: "Diferencial defectuoso", tierraAlta: "Puesta a tierra fuera de norma" };
   const FHINT = { aisl: "En la inspecci\xF3n peri\xF3dica hay que revisar el aislamiento de cada circuito. En uno se da\xF1\xF3 un cable al pasarlo por el ducto.", pe: "Un enchufe o equipo no est\xE1 protegido contra contactos indirectos: algo pasa con su conductor de tierra.", floja: "El cliente dice que en una parte de la casa la tensi\xF3n baja cuando enciende equipos. Sospecha de un empalme mal hecho.", carcasa: "Al encender cierto equipo, salta el diferencial.", drMalo: "Hay que comprobar que las protecciones de las personas funcionen.", tierraAlta: "La medici\xF3n anual de la puesta a tierra est\xE1 pendiente." };
   const FSOL = { aisl: "Se detecta con el meg\xF3hmetro: con el circuito apagado marca menos de 0,5 M\u03A9.", pe: "Se detecta con la prueba de continuidad: ese punto marca OL (abierto) hasta la barra PE. Con el mult\xEDmetro, fase\u2013tierra da 0 V.", floja: "Se detecta con el mult\xEDmetro: con carga encendida, la tensi\xF3n cae mucho en todos los puntos que se alimentan desde esa caja. El empalme flojo se calienta y puede provocar un incendio.", carcasa: "Se detecta encendiendo los equipos uno a uno: al encender el que tiene la falla, el diferencial dispara.", drMalo: "Se detecta con el probador de diferenciales: no dispara con 30 mA.", tierraAlta: "Se detecta con el telur\xF3metro: marca m\xE1s de 20 \u03A9." };
@@ -2155,7 +2165,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         const a = by.get(i.sw), w = by.get(i.sw2);
         if (!a || a.v !== "c" || !w || w.t !== "sw" || w.v !== "c" || w.c !== i.c || w.id === a.id) i.sw2 = null;
       }
-      if (i.t === "lamp" && i.k === 1 && (by.get(i.sw) || {}).v !== "d") i.k = 0;
+      if (i.t === "lamp" && i.k >= 1 && !((by.get(i.sw) || {}).v === "t" || i.k === 1 && (by.get(i.sw) || {}).v === "d")) i.k = 0;
     });
     s.items.forEach((i) => {
       let x = i, n = 0;
@@ -2179,7 +2189,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return [it.p[0] + n[0] * 0.035, it.p[1] + (it.t === "box" ? 0 : 0.07), it.p[2] + n[2] * 0.035];
   }
   function simConds(it) {
-    if (it.t === "sw") return it.v === "d" ? ["F", "R", "R2"] : it.v === "c" ? ["C", "V1", "V2"] : ["F", "R"];
+    if (it.t === "sw") return it.v === "t" ? ["F", "R", "R2", "R3"] : it.v === "d" ? ["F", "R", "R2"] : it.v === "c" ? ["C", "V1", "V2"] : ["F", "R"];
     if (it.t === "lamp" && it.sw != null) return ["R", "N", "PE"];
     return ["F", "N", "PE"];
   }
@@ -2338,7 +2348,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     }
     return { E, ed, by, kids, cs, It, dVa, Vtab, V, I, Vp, Ip, fd, dVap, act, shock, W: Wm, deadC, tri, Iph, Pph, Idm };
   }
-  const CL = { F: "fase", N: "neutro", PE: "tierra", R: "retorno", R2: "retorno 2", C: "com\xFAn", V1: "viajero 1", V2: "viajero 2" }, SGN = { L: "fase", N: "neutro", E: "tierra" };
+  const CL = { F: "fase", N: "neutro", PE: "tierra", R: "retorno", R2: "retorno 2", R3: "retorno 3", C: "com\xFAn", V1: "viajero 1", V2: "viajero 2" }, SGN = { L: "fase", N: "neutro", E: "tierra" };
   function boxKids(s, b) {
     return s.items.filter((i) => i.par === b.id);
   }
@@ -2353,10 +2363,11 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     }));
     const lampsOf = (w, f) => kids.filter((l) => l.t === "lamp" && l.sw === w.id && f(l));
     kids.filter((k) => k.t === "sw" && k.v !== "c").forEach((w) => {
-      const ls = lampsOf(w, (l) => !(w.v === "d" && l.k === 1));
+      const mk = (w.v === "d" || w.v === "t"), ls = lampsOf(w, (l) => !(mk && l.k >= 1));
       if (ls.length) R.push([w.id + ":R"].concat(ls.map((l) => l.id + ":R")));
-      const l2 = w.v === "d" ? lampsOf(w, (l) => l.k === 1) : [];
+      const l2 = mk ? lampsOf(w, (l) => l.k === 1) : [], l3 = w.v === "t" ? lampsOf(w, (l) => l.k === 2) : [];
       if (l2.length) R.push([w.id + ":R2"].concat(l2.map((l) => l.id + ":R")));
+      if (l3.length) R.push([w.id + ":R3"].concat(l3.map((l) => l.id + ":R")));
     });
     const cs = kids.filter((k) => k.t === "sw" && k.v === "c"), asB = /* @__PURE__ */ new Set(), pr = /* @__PURE__ */ new Map();
     kids.filter((l) => l.t === "lamp" && l.sw != null).forEach((l) => {
@@ -2401,10 +2412,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         const g = gs.find((g2) => g2.includes(l.id + ":R"));
         if (!g) return;
         if ((by0.get(l.sw) || {}).v === "c") return;
-        const w = kids.find((w2) => w2.t === "sw" && w2.v !== "c" && (g.includes(w2.id + ":R") || g.includes(w2.id + ":R2")));
+        const w = kids.find((w2) => w2.t === "sw" && w2.v !== "c" && (g.includes(w2.id + ":R") || g.includes(w2.id + ":R2") || g.includes(w2.id + ":R3")));
         if (!w) return;
         l.sw = w.id;
-        l.k = w.v === "d" && g.includes(w.id + ":R2") ? 1 : 0;
+        l.k = w.v === "t" && g.includes(w.id + ":R3") ? 2 : (w.v === "d" || w.v === "t") && g.includes(w.id + ":R2") ? 1 : 0;
       });
     });
   }
@@ -2454,7 +2465,8 @@ select.bad{border-color:var(--bad);color:var(--bad)}
           });
           else {
             lk("F", "R", allOn || w.on, "sw");
-            if (w.v === "d") lk("F", "R2", allOn || w.on2, "sw");
+            if (w.v === "d" || w.v === "t") lk("F", "R2", allOn || w.on2, "sw");
+            if (w.v === "t") lk("F", "R3", allOn || w.on3, "sw");
           }
         });
         gs.forEach((g, i) => {
@@ -2510,11 +2522,15 @@ select.bad{border-color:var(--bad);color:var(--bad)}
           if (g.F == null) E(k, "".concat(b.name, ": fase hacia ").concat(k.name, " suelta"), "Empalma el conductor que va al interruptor con la fase que entra a la caja.", "El interruptor debe cortar la fase.", { box: b.id, quiet: 1 });
           else if (g.F === "N") E(k, "".concat(b.name, ": ").concat(k.name, " corta el neutro"), "Al interruptor le llega el neutro en vez de la fase.", "Con el interruptor abierto la luz queda con fase: peligro al cambiar la ampolleta. El interruptor siempre corta la fase.", { box: b.id });
           else if (g.F === "E") E(k, "".concat(b.name, ": a ").concat(k.name, " le llega la tierra"), "El conductor del interruptor est\xE1 unido a la tierra.", "La tierra no se usa como conductor activo.", { box: b.id });
-          if (k.v === "d") {
+          if (k.v === "t") {
+            const iR3 = L.gi.get(k.id + ":R3"), l3 = kids.filter((l) => l.sw === k.id && l.k === 2);
+            if (l3.length && (iR3 == null || !l3.some((l) => L.gi.get(l.id + ":R") === iR3))) E(k, "".concat(b.name, ": retorno 3 de ").concat(k.name, " suelto"), "Une el retorno 3 (tecla 3) con el retorno de ".concat(l3.map((l) => l.name).join(" y "), "."), "Cada tecla del 9/32 tiene su propio retorno hacia su luz.", { box: b.id });
+          }
+          if (k.v === "d" || k.v === "t") {
             const iR2 = L.gi.get(k.id + ":R2"), l2 = kids.filter((l) => l.sw === k.id && l.k === 1);
             if (l2.length && (iR2 == null || !l2.some((l) => L.gi.get(l.id + ":R") === iR2))) E(k, "".concat(b.name, ": retorno 2 de ").concat(k.name, " suelto"), "Une el retorno 2 (tecla 2) con el retorno de ".concat(l2.map((l) => l.name).join(" y "), "."), "Cada tecla del 9/15 lleva su propio retorno.", { box: b.id, quiet: 1 });
           }
-          const iR = L.gi.get(k.id + ":R"), lamps = kids.filter((l) => l.sw === k.id && !(k.v === "d" && l.k === 1));
+          const iR = L.gi.get(k.id + ":R"), lamps = kids.filter((l) => l.sw === k.id && !((k.v === "d" || k.v === "t") && l.k >= 1));
           if (lamps.length && (iR == null || !lamps.some((l) => L.gi.get(l.id + ":R") === iR))) E(k, "".concat(b.name, ": retorno de ").concat(k.name, " suelto"), "Une el retorno del interruptor con el retorno de ".concat(lamps.map((l) => l.name).join(" y "), "."), "El retorno lleva la fase del interruptor a la luz.", { box: b.id, quiet: 1 });
           return;
         }
@@ -3129,8 +3145,8 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         }
         if (it.t === "lamp" && it.sw != null) {
           const w = s.items.find((i) => i.id === it.sw);
-          swPress(w, w.v === "d" ? it.k === 1 ? 1 : 0 : 0);
-          msgs.push(["ok", "Accionaste ".concat(w.name, w.v === "d" ? " (tecla " + (it.k === 1 ? 2 : 1) + ")" : "", ", que controla esta luz.")]);
+          swPress(w, (w.v === "d" || w.v === "t") ? it.k || 0 : 0);
+          msgs.push(["ok", "Accionaste ".concat(w.name, (w.v === "d" || w.v === "t") ? " (tecla " + ((it.k || 0) + 1) + ")" : "", ", que controla esta luz.")]);
         } else if (it.t === "sw") {
           swPress(it, -1);
           msgs.push(["ok", "".concat(it.name, ": ").concat(swState(it))]);
@@ -3318,7 +3334,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     const rowOf = (it) => {
       const i = s.items.indexOf(it), cid = it.c, boxes = s.items.filter((b) => b.t === "box" && b.c === cid && !descend(s, it.id).has(b.id));
       const swO = it.t === "lamp" && it.sw != null ? s.items.find((w) => w.id === it.sw) : null;
-      const pre = (VAR[it.t] ? sSel("items.".concat(i, ".v"), VAR[it.t].map((x) => [x[0], x[1]]), it.v || "s", "Tipo") : "") + sSel("items.".concat(i, ".S"), [[0, "Cable del circuito"], [1.5, "1,5 mm\xB2"], [2.5, "2,5 mm\xB2"], [4, "4 mm\xB2"], [6, "6 mm\xB2"]], +it.S || 0, "Secci\xF3n del tramo") + (swO && swO.v === "d" ? sSel("items.".concat(i, ".k"), [[0, "Tecla 1"], [1, "Tecla 2"]], it.k === 1 ? 1 : 0, "Tecla del 9/15") : "") + (swO && swO.v === "c" ? sSel("items.".concat(i, ".sw2"), [["", "Sin 2.\xBA 9/24"]].concat(s.items.filter((w) => w.t === "sw" && w.v === "c" && w.c === cid && w.id !== swO.id).map((w) => [w.id, "Escalera con " + w.name])), it.sw2 == null ? "" : it.sw2, "Segundo interruptor 9/24") : "");
+      const pre = (VAR[it.t] ? sSel("items.".concat(i, ".v"), VAR[it.t].map((x) => [x[0], x[1]]), it.v || "s", "Tipo") : "") + sSel("items.".concat(i, ".S"), [[0, "Cable del circuito"], [1.5, "1,5 mm\xB2"], [2.5, "2,5 mm\xB2"], [4, "4 mm\xB2"], [6, "6 mm\xB2"]], +it.S || 0, "Secci\xF3n del tramo") + (swO && (swO.v === "d" || swO.v === "t") ? sSel("items.".concat(i, ".k"), [[0, "Tecla 1"], [1, "Tecla 2"]].concat(swO.v === "t" ? [[2, "Tecla 3"]] : []), it.k || 0, swO.v === "t" ? "Tecla del 9/32" : "Tecla del 9/15") : "") + (swO && swO.v === "c" ? sSel("items.".concat(i, ".sw2"), [["", "Sin 2.\xBA 9/24"]].concat(s.items.filter((w) => w.t === "sw" && w.v === "c" && w.c === cid && w.id !== swO.id).map((w) => [w.id, "Escalera con " + w.name])), it.sw2 == null ? "" : it.sw2, "Segundo interruptor 9/24") : "");
       const extra = pre + (it.t === "lamp" ? sSel("items.".concat(i, ".P"), [[10, "10 W"], [60, "60 W"], [100, "100 W"]], it.P, "Potencia") + sSel("items.".concat(i, ".sw"), [["", "Sin interruptor"]].concat(s.items.filter((w) => w.t === "sw" && w.c === cid).map((w) => [w.id, "Con " + w.name + " (" + varOf(w)[1] + ")"])), it.sw == null ? "" : it.sw, "Interruptor") : it.t === "out" ? sSel("items.".concat(i, ".a"), Object.entries(APPL).map(([a, v]) => [a, "".concat(v[0]).concat(v[1] ? " " + n0(v[1]) + " W" : "")]), it.a, "Equipo") : it.t === "horno" ? sSel("items.".concat(i, ".P"), [[1500, "1.500 W"], [2e3, "2.000 W"], [3e3, "3.000 W"]], it.P, "Potencia") : it.t === "sw" ? '<span class="hint">Controla: '.concat(s.items.filter((l) => l.sw === it.id).map((l) => l.name).join(", ") || "nada", "</span>") : '<span class="hint">Salen: '.concat(s.items.filter((z) => z.par === it.id).length, '</span> <button type="button" class="btn ghost small" data-sa="openbox" data-id="').concat(it.id, '">Empalmes</button>'));
       const tog = it.t === "box" ? "" : it.t === "lamp" && it.sw != null ? '<span class="hint">'.concat(ev.act(it) ? "encendida" : "apagada", "</span>") : '<button class="btn small '.concat(it.on ? "" : "ghost", '" type="button" data-sa="tog" data-id="').concat(it.id, '">').concat(it.t === "sw" ? it.on ? "Cerrado" : "Abierto" : it.on ? "Encendido" : "Apagado", "</button>");
       return '<tr class="'.concat(simSel === "i" + it.id ? "selrow" : "", '"><td><b>').concat(esc(it.name), "</b></td><td>").concat(sSel("items.".concat(i, ".c"), s.circuits.map((c, k) => [c.id, "C" + (k + 1)]), it.c, "Circuito"), "</td><td>").concat(sSel("items.".concat(i, ".par"), [["free", "Sin conectar"], ["", "Tablero"]].concat(boxes.map((b) => [b.id, b.name])), it.free ? "free" : it.par == null ? "" : it.par, "Conectado desde"), '</td><td class="ex">').concat(extra, "</td><td>").concat(tog, '</td><td><button class="btn ghost small" type="button" data-sa="deli" data-id="').concat(it.id, '" aria-label="Quitar">\u2715</button></td></tr>');
@@ -3353,8 +3369,8 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     }).join(""), '</div></div>\n  <div id="simpanel">').concat(simPanel(), "</div>\n  ").concat(learn("C\xF3mo se mueve la vista y c\xF3mo se arma", '<ul class="hand"><li><b>Dos modos:</b> <b>\u2725 Libre</b> mueve la c\xE1mara alrededor de la casa. <b>\u{1F6B6} Caminar</b> te pone a la altura de los ojos: el joystick te mueve, arrastrar la vista te hace mirar, y los muros no se atraviesan (se pasa por las puertas). En el plano chico de arriba a la izquierda toca una habitaci\xF3n o el tablero para ir directo. <b>\u26F6 Completa</b> abre el simulador en pantalla completa.</li><li><b>En modo libre \u2014 Girar:</b> arrastra con un dedo o con el mouse. <b>Desplazar:</b> dos dedos, clic derecho o flechas / W A S D. <b>Acercar:</b> pellizco, rueda o los botones + y \u2212. <b>Ir a:</b> elige un recinto o el tablero en la lista. <b>Mirar:</b> toca un punto para centrar la c\xE1mara ah\xED.</li><li><b>Colocar:</b> elige Luz, Interruptor, Enchufe, Caja u Horno y el circuito. Cada punto se conecta solo a la caja m\xE1s cercana de su circuito, o al tablero si no hay cajas. Las luces se asocian al interruptor del mismo recinto.</li><li><b>Empalmes:</b> toca una caja con <b>Mano</b> o <b>Identificar</b> (o el bot\xF3n <b>Empalmes</b> en la lista de puntos) para ver su interior: cada tubo que entra o sale con sus conductores. Elige <b>Los hago yo</b> y une los cables tocando uno y luego otro; toca un empalme para soltarlo. Si unes mal (fase con neutro, fase con tierra, retorno con fase\u2026) la app te lo marca y, con tensi\xF3n, dispara la protecci\xF3n que corresponde. En el panel <b>\u26A1 + Disyuntor / DR</b> conectas en el tablero el neutro y la tierra de cada circuito.</li><li><b>Cables:</b> los ductos van por el entretecho. Con <b>Identificar</b> tocas un ducto y ves sus conductores: a un enchufe llegan fase, neutro y tierra; a un interruptor, fase y retorno; a una luz con interruptor, retorno, neutro y tierra.</li></ul>'.concat(ILL.colores(), '<p class="hint">El retorno es el conductor que vuelve del interruptor a la luz. La norma no le fija color; aqu\xED se muestra en negro.</p>').concat(ILL.instrumentos())));
   }
   const PAN_HOUSE = { n: "Panel de pr\xE1ctica", tx: 0.75, panel: true, we: 0.08, wi: 0.08, rooms: [{ id: "pan", n: "Panel de pr\xE1ctica", t: "otro", x0: 0, x1: 4.8, z0: 0, z1: 1.2 }], doors: [], open: [] };
-  const PAN_EX = [["c912", "Centro con interruptor 9/12", { c912: 1 }], ["enc", "Enchufes", { enc: 2 }], ["c915", "Dos centros con 9/15", { c915: 1 }], ["c924", "Escalera con dos 9/24", { c924: 1 }], ["full", "Pr\xE1ctica completa (como en taller)", { c912: 2, c915: 1, c924: 1, enc: 4 }]];
-  const PAN_REQ = [["c912", "Centro de luz con interruptor 9/12", "\u{1F4A1}"], ["c915", "Dos centros con interruptor 9/15", "\u{1F4A1}\u{1F4A1}"], ["c924", "Centro con dos interruptores 9/24 (escalera)", "⇄"], ["enc", "Enchufe 2P+T 10/16 A", "⏻"]];
+  const PAN_EX = [["c912", "Centro con interruptor 9/12", { c912: 1 }], ["enc", "Enchufes", { enc: 2 }], ["c915", "Dos centros con 9/15", { c915: 1 }], ["c924", "Escalera con dos 9/24", { c924: 1 }], ["c932", "Tres centros con 9/32", { c932: 1 }], ["full", "Pr\xE1ctica completa (como en taller)", { c912: 2, c915: 1, c924: 1, enc: 4 }]];
+  const PAN_REQ = [["c912", "Centro de luz con interruptor 9/12", "\u{1F4A1}"], ["c915", "Dos centros con interruptor 9/15", "\u{1F4A1}\u{1F4A1}"], ["c924", "Centro con dos interruptores 9/24 (escalera)", "⇄"], ["c932", "Tres centros con interruptor 9/32", "\u{1F4A1}\u{1F4A1}\u{1F4A1}"], ["enc", "Enchufe 2P+T 10/16 A", "⏻"]];
   const isPan = (s) => !!(s && s.house && s.house.panel);
   function panBlank() {
     const s = sim2Blank();
@@ -3363,16 +3379,17 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     s.duct = "pvc";
     s.scope = [];
     s.alim = { S: 6, L: 5 };
-    s.pan = { ex: "full", req: Object.assign({}, PAN_EX[4][2]), fix: "ask" };
+    s.pan = { ex: "full", req: Object.assign({}, PAN_EX.find((x) => x[0] === "full")[2]), fix: "ask" };
     return s;
   }
   function panCount(s) {
     const by = new Map(s.items.map((i) => [i.id, i])), L = s.items.filter((i) => i.t === "lamp"), sv = (id) => by.get(id) || {};
     const c924 = L.filter((l) => l.sw != null && l.sw2 != null && sv(l.sw).v === "c" && sv(l.sw2).v === "c").length;
     const c915 = s.items.filter((w) => w.t === "sw" && w.v === "d" && L.some((l) => l.sw === w.id && (l.k || 0) === 0) && L.some((l) => l.sw === w.id && l.k === 1)).length;
-    const c912 = L.filter((l) => l.sw != null && l.sw2 == null && !["c", "d"].includes(sv(l.sw).v)).length;
+    const c912 = L.filter((l) => l.sw != null && l.sw2 == null && !["c", "d", "t"].includes(sv(l.sw).v)).length;
+    const c932 = s.items.filter((w) => w.t === "sw" && w.v === "t" && [0, 1, 2].every((k) => L.some((l) => l.sw === w.id && (l.k || 0) === k))).length;
     const enc = s.items.filter((i) => i.t === "out" && i.v !== "dat").length;
-    return { c912, c915, c924, enc };
+    return { c912, c915, c924, c932, enc };
   }
   function panTest(s0) {
     const s = JSON.parse(JSON.stringify(s0)), R = [];
@@ -3395,15 +3412,16 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         const r2 = on(l);
         ok = r0 !== r1 && r1 !== r2;
         how = "9/24: " + [r0, r1, r2].map((x) => x ? "ON" : "OFF").join(" → ");
-      } else if (a.v === "d") {
-        const key = l.k === 1 ? "on2" : "on";
+      } else if (a.v === "d" || a.v === "t") {
+        const key = ["on", "on2", "on3"][l.k || 0];
         a.on = false;
         a.on2 = false;
+        a.on3 = false;
         const r0 = on(l);
         a[key] = true;
         const r1 = on(l);
         ok = !r0 && r1;
-        how = "9/15 tecla " + ((l.k || 0) + 1) + ": " + (r0 ? "ON" : "OFF") + " → " + (r1 ? "ON" : "OFF");
+        how = (a.v === "t" ? "9/32" : "9/15") + " tecla " + ((l.k || 0) + 1) + ": " + (r0 ? "ON" : "OFF") + " → " + (r1 ? "ON" : "OFF");
       } else {
         a.on = false;
         const r0 = on(l);
@@ -3496,12 +3514,12 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       }
       return c.id;
     };
-    const need = { c912: Math.max(0, (+q.c912 || 0) - have.c912), c915: Math.max(0, (+q.c915 || 0) - have.c915), c924: Math.max(0, (+q.c924 || 0) - have.c924), enc: Math.max(0, (+q.enc || 0) - have.enc) };
-    if (!need.c912 && !need.c915 && !need.c924 && !need.enc) return ["Ya est\xE1 todo lo pedido en el panel."];
+    const need = { c912: Math.max(0, (+q.c912 || 0) - have.c912), c915: Math.max(0, (+q.c915 || 0) - have.c915), c924: Math.max(0, (+q.c924 || 0) - have.c924), c932: Math.max(0, (+q.c932 || 0) - have.c932), enc: Math.max(0, (+q.enc || 0) - have.enc) };
+    if (!need.c912 && !need.c915 && !need.c924 && !need.c932 && !need.enc) return ["Ya est\xE1 todo lo pedido en el panel."];
     const x0 = TX + tabW(s) / 2 + 0.35, xMax = HW - 0.2, occ = (y0, y1) => Math.max(x0, ...s.items.filter((i) => i.p[1] >= y0 && i.p[1] <= y1).map((i) => i.p[0] + 0.3));
     let xL = occ(1, 2.4), xE = occ(0.2, 1.05), lastL = s.items.filter((i) => i.t === "box" && i.p[1] > 1.6).map((b) => b.id).pop(), lastE = s.items.filter((i) => i.t === "box" && i.p[1] <= 1.6).map((b) => b.id).pop();
     const A = (t, cid, x, y, o) => simAddItem(s, t, cid, [Math.round(x * 100) / 100, y, zf], [0, 0, 1], o);
-    const cl = need.c912 + need.c915 + need.c924 ? C("Alumbrado", 10, "B", 1.5) : null, ce = need.enc ? C("Enchufes", 16, "C", 2.5) : null;
+    const cl = need.c912 + need.c915 + need.c924 + need.c932 ? C("Alumbrado", 10, "B", 1.5) : null, ce = need.enc ? C("Enchufes", 16, "C", 2.5) : null;
     const box = (cid, x, y, last) => A("box", cid, x, y, { par: last != null && s.items.some((b) => b.id === last && b.c === cid) ? last : null });
     let placed = 0, full = false;
     const grp = (w, fn) => {
@@ -3523,6 +3541,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       const w = A("sw", cl, cx, 1.15, { par: bx, v: "d" });
       A("lamp", cl, cx - 0.2, 1.65, { par: bx, sw: w, k: 0, v: "pm" });
       A("lamp", cl, cx + 0.2, 1.65, { par: bx, sw: w, k: 1, v: "pm" });
+    });
+    for (let i = 0; i < need.c932; i++) grp(0.95, (bx, cx) => {
+      const w = A("sw", cl, cx, 1.15, { par: bx, v: "t" });
+      [-0.32, 0, 0.32].forEach((o, k) => A("lamp", cl, cx + o, 1.65, { par: bx, sw: w, k, v: "pm" }));
     });
     for (let i = 0; i < need.c924; i++) grp(0.9, (bx, cx) => {
       const a = A("sw", cl, cx - 0.3, 1.15, { par: bx, v: "c" }), b = A("sw", cl, cx + 0.3, 1.15, { par: bx, v: "c" });
@@ -3563,7 +3585,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       its.filter((i) => i.t === "sw" && i.v !== "c").forEach((w) => {
         const ls = its.filter((l) => l.t === "lamp" && l.sw === w.id && !usedL.has(l.id));
         ls.forEach((l) => usedL.add(l.id));
-        if (ls.length) D.push({ k: w.v === "d" ? "915" : "912", a: w, l: ls, w: Math.max(80, ls.length * 46 + 34) });
+        if (ls.length) D.push({ k: w.v === "d" || w.v === "t" ? "915" : "912", a: w, l: ls.sort((p, q) => (p.k || 0) - (q.k || 0)), w: Math.max(80, ls.length * 46 + 34) });
       });
       its.filter((l) => l.t === "lamp" && !usedL.has(l.id)).forEach((l) => D.push({ k: "lamp", l: [l], w: 70 }));
       its.filter((o) => (o.t === "out" && o.v !== "dat") || o.t === "horno").forEach((o) => D.push({ k: "out", o, w: 70 }));
@@ -3584,10 +3606,11 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         const cx = x + d.w / 2;
         if (d.k === "912" || d.k === "915") {
           const sx = x + 14;
-          g += L(sx, yF, sx, yF + 24) + sw(sx, yF + 24) + Tt(sx + 2, yF + 60, d.a.name, 7.5, "start");
+          g += L(sx, yF, sx, yF + 24) + sw(sx, yF + 24) + Tt(sx - 5, yF + 30, d.a.name, 7.5, "end");
           d.l.forEach((l, i) => {
             const lx = x + 44 + i * 46;
-            g += (d.k === "915" && i ? L(sx, yF + 18, sx + 18, yF + 18) + L(sx + 18, yF + 18, sx + 18, yF + 24) + sw(sx + 18, yF + 24) + L(sx + 18, yF + 44, lx, yF + 44) : L(sx, yF + 44, lx, yF + 44)) + L(lx, yF + 44, lx, yF + 80) + lampS(lx, yF + 89) + L(lx, yF + 98, lx, yN) + L(lx + 9, yF + 89, lx + 20, yF + 89, GRN, 1, "3 2") + L(lx + 20, yF + 89, lx + 20, yP, GRN, 1, "3 2") + Tt(lx, yN + 12, l.name, 7.5);
+            const ox = d.k === "915" ? sx + 18 * i : sx, yR = d.k === "915" ? yF + 48 + 8 * i : yF + 44;
+            g += (d.k === "915" && i ? L(sx, yF + 18, ox, yF + 18) + L(ox, yF + 18, ox, yF + 24) + sw(ox, yF + 24) : "") + L(ox, yF + 44, ox, yR) + L(ox, yR, lx, yR) + L(lx, yR, lx, yF + 80) + lampS(lx, yF + 89) + L(lx, yF + 98, lx, yN) + L(lx + 9, yF + 89, lx + 20, yF + 89, GRN, 1, "3 2") + L(lx + 20, yF + 89, lx + 20, yP, GRN, 1, "3 2") + Tt(lx, yN + 12, l.name, 7.5);
           });
         } else if (d.k === "924") {
           const ax = x + 14, bx2 = x + 84, lx = x + 104, ya = yF + 40, t1 = yF + 30, t2 = yF + 50, dot = (cx2, cy2) => '<circle cx="' + cx2 + '" cy="' + cy2 + '" r="2.2" fill="' + ink + '"/>';
@@ -3668,7 +3691,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   }
   function pgPan() {
     const s = panState(), active = isPan(S.sim2);
-    const ex = PAN_EX.map(([k, t, q]) => '<button type="button" class="tpl" data-pn="ex" data-k="' + k + '"' + (s && s.pan.ex === k ? ' style="border-color:var(--accent,#b8621b)"' : "") + '><span class="ti">\u{1FAB5}</span><span class="tt">' + t + '</span><span class="td">' + PAN_REQ.filter(([r]) => q[r]).map(([r]) => q[r] + " \xD7 " + { c912: "luz con 9/12", c915: "9/15 con 2 luces", c924: "escalera 9/24", enc: "enchufe" }[r]).join(" \xB7 ") + "</span></button>").join("");
+    const ex = PAN_EX.map(([k, t, q]) => '<button type="button" class="tpl" data-pn="ex" data-k="' + k + '"' + (s && s.pan.ex === k ? ' style="border-color:var(--accent,#b8621b)"' : "") + '><span class="ti">\u{1FAB5}</span><span class="tt">' + t + '</span><span class="td">' + PAN_REQ.filter(([r]) => q[r]).map(([r]) => q[r] + " \xD7 " + { c912: "luz con 9/12", c915: "9/15 con 2 luces", c924: "escalera 9/24", c932: "9/32 con 3 luces", enc: "enchufe" }[r]).join(" \xB7 ") + "</span></button>").join("");
     let diag = '<p class="hint">Abre el panel para empezar.</p>';
     if (s) diag = withHouse(s.house, () => {
       const B = simBOM(s);
@@ -4246,6 +4269,9 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     const M = (c, o) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.85, metalness: 0 }, o || {}));
     const G = { duct: new THREE.CylinderGeometry(0.03, 0.03, 1, 8), wire: new THREE.CylinderGeometry(68e-4, 68e-4, 1, 6), hit: new THREE.CylinderGeometry(0.065, 0.065, 1, 6), joint: new THREE.SphereGeometry(0.03, 8, 6), cord: new THREE.CylinderGeometry(5e-3, 5e-3, 1, 5) };
     const MAT = { F: M(13840175), N: M(15921906), PE: M(3055172), R: M(9313051), duct: M(11187389, { transparent: true, opacity: 0.3, depthWrite: false }), sel: M(15237690, { transparent: true, opacity: 0.55, depthWrite: false, emissive: 11555370, emissiveIntensity: 0.4 }), hot: M(16757504, { emissive: 16748288, emissiveIntensity: 1 }), hit: new THREE.MeshBasicMaterial({ visible: false }), white: M(16250871), dark: M(2236962), box: M(13686234), cord: M(2236962) };
+    Object.keys(CNAME).forEach((k) => {
+      if (!MAT[k]) MAT[k] = M(CNAME[k][3]);
+    });
     const box = (w, h, d, m) => new THREE.Mesh(geoC("b" + w + "|" + h + "|" + d, () => new THREE.BoxGeometry(w, h, d)), m);
     const stat = [], place = [], ground = new THREE.Mesh(new THREE.PlaneGeometry(HW + 8, HD + 7), M(10465418));
     ground.rotation.x = -Math.PI / 2;
@@ -5392,9 +5418,9 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         const y = it.p[1];
         if (it.t === "sw") {
           const ip = it.v === "ip", t3 = [n[2], 0, -n[0]];
-          wallItem(grp, it, box(it.v === "d" ? 0.1 : 0.08, 0.12, ip ? 0.034 : 0.016, ip ? tm(M(12895428)) : MAT.white), y, ip ? 0.017 : 8e-3);
-          (it.v === "d" ? [[-0.022, it.on], [0.022, it.on2]] : [[0, it.on]]).forEach(([o, on]) => {
-            const rk = box(it.v === "d" ? 0.034 : 0.04, 0.06, 0.012, tm(M(on ? 2783304 : 8028038)));
+          wallItem(grp, it, box(it.v === "t" ? 0.12 : it.v === "d" ? 0.1 : 0.08, 0.12, ip ? 0.034 : 0.016, ip ? tm(M(12895428)) : MAT.white), y, ip ? 0.017 : 8e-3);
+          (it.v === "t" ? [[-0.034, it.on], [0, it.on2], [0.034, it.on3]] : it.v === "d" ? [[-0.022, it.on], [0.022, it.on2]] : [[0, it.on]]).forEach(([o, on]) => {
+            const rk = box(it.v === "t" ? 0.03 : it.v === "d" ? 0.034 : 0.04, 0.06, 0.012, tm(M(on ? 2783304 : 8028038)));
             rk.rotation.x = on ? -0.25 : 0.25;
             wallItem(grp, it, rk, y, ip ? 0.038 : 0.02);
             rk.position.x += t3[0] * o;
@@ -6807,6 +6833,11 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       const s = panBlank();
       panAuto(s);
       const r = panTest(s), h2 = panCount(s);
+      const s3 = panBlank();
+      s3.pan.req = { c932: 1 };
+      panAuto(s3);
+      const r3 = panTest(s3);
+      chk("Interruptor 9/32: cada tecla enciende su luz", r3.ok && panCount(s3).c932 === 1 && r3.R.length === 3, r3.R.map((x) => x.d).join(" \xB7 ") || "\u2014", "3 teclas OK");
       chk("Panel de pr\xE1ctica: lo pedido se arma y funciona", r.ok && h2.c912 === 2 && h2.c915 === 1 && h2.c924 === 1 && h2.enc === 4, r.R.filter((x) => x.ok).length + "/" + r.R.length + " pruebas \xB7 " + r.E.length + " obs.", r.R.length + "/" + r.R.length + " \xB7 0 obs.");
     } catch (e) {
       chk("Panel de pr\xE1ctica", false, String(e), "");
@@ -9338,7 +9369,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     save();
     render(true);
   });
-  const PREC0 = { "cab:1.5": 300, "cab:2.5": 440, "cab:4": 720, "cab:6": 1050, "cab:10": 1800, "cab:16": 2900, "cab:25": 4500, "tub:pvc16": 290, "tub:pvc20": 300, "tub:emt16": 1500, "tub:emt20": 1900, "tub:flex16": 190, "tub:flex20": 230, curva: 250, copla: 190, term: 150, abraz: 120, cdev: 1200, cemb: 890, ccen: 900, sw: 3190, out: 3390, horno: 6490, lamp: 1990, conec: 300, ig2: 12990, ig4: 34990, "dr:AC": 23590, "dr:A": 39990, "dr:F": 69990, "dr:B": 249990, tm: 5990, tab8: 9990, tab12: 13990, tab18: 22990, tab24: 29990, tab36: 49990, tab48: 69990, barra: 4990, peine: 6500, pil: 12990, copper: 16990, tierra: 1800, mo: 18e3, sw15: 4990, sw24: 4590, swip: 6490, dim: 14990, out2: 5190, outip: 6990, outusb: 13990, out16: 4990, outdat: 6990, pm: 1490, pir: 14990, pul: 2990, ext: 19990, tim: 9990, plaf: 9990, foco: 5990, tubo: 14990 };
+  const PREC0 = { "cab:1.5": 300, "cab:2.5": 440, "cab:4": 720, "cab:6": 1050, "cab:10": 1800, "cab:16": 2900, "cab:25": 4500, "tub:pvc16": 290, "tub:pvc20": 300, "tub:emt16": 1500, "tub:emt20": 1900, "tub:flex16": 190, "tub:flex20": 230, curva: 250, copla: 190, term: 150, abraz: 120, cdev: 1200, cemb: 890, ccen: 900, sw: 3190, out: 3390, horno: 6490, lamp: 1990, conec: 300, ig2: 12990, ig4: 34990, "dr:AC": 23590, "dr:A": 39990, "dr:F": 69990, "dr:B": 249990, tm: 5990, tab8: 9990, tab12: 13990, tab18: 22990, tab24: 29990, tab36: 49990, tab48: 69990, barra: 4990, peine: 6500, pil: 12990, copper: 16990, tierra: 1800, mo: 18e3, sw15: 4990, sw32: 6990, sw24: 4590, swip: 6490, dim: 14990, out2: 5190, outip: 6990, outusb: 13990, out16: 4990, outdat: 6990, pm: 1490, pir: 14990, pul: 2990, ext: 19990, tim: 9990, plaf: 9990, foco: 5990, tubo: 14990 };
   const precio = (k) => {
     const v = S.precios && S.precios[k];
     return v != null && v !== "" && isFinite(+v) ? +v : PREC0[k] || 0;
