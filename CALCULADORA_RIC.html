@@ -3413,7 +3413,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     return "".concat(s.circuits.length ? '<select data-sx="pc" aria-label="Circuito">'.concat(s.circuits.map((c, k) => '<option value="'.concat(c.id, '" ').concat(c.id === simPC ? "selected" : "", ">C").concat(k + 1, " ").concat(esc(c.n || ""), "</option>")).join(""), "</select>") : '<span class="pb-w">Primero agrega un disyuntor \u2192</span>', '<button type="button" class="pb-tab" data-sa="tabsheet">\u26A1 + Disyuntor / DR</button><button type="button" class="pb-tab" data-sa="pconn" title="C\xF3mo se conectan los puntos nuevos">').concat(s.mconn === false ? "\u{1F517} Cable: autom\xE1tico" : "\u{1F517} Cable: lo tiro yo", '</button><div class="pb-t">').concat([["lamp", "Luz"], ["sw", "Interruptor"], ["out", "Enchufe"], ["box", "Caja de distribuci\xF3n"], ["horno", "Horno"], ["reg", "Regleta"]].map(([k, l]) => '<button type="button" data-sa="ptype" data-k="'.concat(k, '" aria-pressed="').concat(simPT === k, '">').concat(l, "</button>")).join(""), "</div>").concat(simPT === "reg" ? regBar(S.sim2) : "").concat(VAR[simPT] ? '<div class="pb-t pb-v">' + VAR[simPT].map((x) => '<button type="button" data-sa="pvar" data-k="' + x[0] + '" aria-pressed="' + ((simPV[simPT] || "s") === x[0]) + '" title="' + x[2] + '">' + varIcon(simPT, x[0]) + " " + x[1] + "</button>").join("") + "</div>" : "");
   }
   function pgSim() {
-    return '<p class="eyebrow">Simulador</p><button class="btn calc" type="button" data-go="tg" style="float:right;margin:0 0 8px 8px">⚡ Juego: armar tablero</button><h1>Taller 3D de instalaci\xF3n domiciliaria</h1>\n  <p class="lead">'.concat(HNAME ? esc(HNAME) + ":" : "Una casa de", " ").concat(n0(ROOMS.filter((r) => !(r.f && r.t === "escalera")).reduce((a, r) => a + rArea(r), 0)), " m\xB2 con ").concat(ROOMS.filter((r) => !(r.f && r.t === "escalera")).length) + (NFL > 1 ? " recintos en 2 pisos" : " recintos") + '. Coloca luces, interruptores, enchufes, cajas de derivaci\xF3n y horno donde quieras, con\xE9ctalos, energiza y mide con instrumentos.</p>\n  <div class="simwrap" id="simwrap" tabindex="0" aria-label="Vista 3D. Arrastra para girar, dos dedos o clic derecho para desplazar, rueda o pellizco para acercar. Flechas y W A S D tambi\xE9n mueven la vista."><canvas id="simcv"></canvas>\n   <div class="sim-hud" id="simhud"></div><div class="sim-fade" id="simfade"></div><div class="sim-legend" id="simleg" hidden></div><div class="sim-cut" id="simcut" '.concat(simCut == null ? "hidden" : "", '><span>Corte a</span><input type="range" id="simcutr" min="0.3" max="2.6" step="0.05" value="').concat(simCut == null ? 1.2 : simCut, '" aria-label="Altura de corte de los muros"><b id="simcutv">').concat(nf(simCut == null ? 1.2 : simCut, 2), ' m</b></div>\n   <div class="sim-joy" id="simjoy" ').concat(simMode === "walk" ? "" : "hidden", ' aria-label="Joystick: arrastra para caminar"><div class="jk"></div></div><div class="sim-toast" id="simtoast" aria-live="polite"></div>\n   <div class="sim-nav"><select data-sx="go" aria-label="Ir a"><option value="">Ir a\u2026</option><option value="g">Toda la casa</option><option value="p">Planta</option><option value="t">Tablero</option>').concat(ROOMS.map((r) => '<option value="'.concat(r.id, '">').concat(r.n, NFL > 1 ? " (piso " + ((r.f || 0) + 1) + ")" : "", "</option>")).join(""), "</select>").concat(NFL > 1 ? '<div class="nb nbfl" role="group" aria-label="Piso visible">' + [[0, "Piso 1"], [1, "Piso 2"], [-1, "Todo"]].map(([v, l]) => '<button type="button" data-sa="fl" data-v="' + v + '" aria-pressed="' + (simFl === v) + '">' + l + "</button>").join("") + "</div>" : "", '\n    <div class="nb"><button type="button" data-sa="zin" aria-label="Acercar">+</button><button type="button" data-sa="zout" aria-label="Alejar">\u2212</button><button type="button" data-sa="rl" aria-label="Girar a la izquierda">\u27F2</button><button type="button" data-sa="rr" aria-label="Girar a la derecha">\u27F3</button><button type="button" data-sa="up" aria-label="Ver m\xE1s desde arriba">\u2912</button><button type="button" data-sa="dn" aria-label="Ver m\xE1s de lado">\u2913</button></div>\n    <div class="nb nbq"><button type="button" data-sa="mode" id="simmode" aria-pressed="').concat(simMode === "walk", '" title="Modo libre / caminar">').concat(simMode === "walk" ? '<span class="ic">\u{1F6B6}</span><small>Andar</small>' : '<span class="ic">\u2725</span><small>Libre</small>', '</button><button type="button" data-sa="fs" id="simfs" title="Pantalla completa"><span class="ic">\u26F6</span><small>Grande</small></button><button type="button" data-sa="undo" id="simundo" ').concat(simUndo.length ? "" : "disabled", ' title="Deshacer"><span class="ic">\u21B6</span><small>Atr\xE1s</small></button><button type="button" data-sa="conn" aria-pressed="').concat(simConn, '" title="Ver conexiones del tablero"><span class="ic">\u26A1</span><small>Cables</small></button><button type="button" data-sa="vista" id="simvbtn" title="Opciones de vista"><span class="ic">\u2630</span><small>Vista</small></button><button type="button" data-sa="errs" id="simerr" class="eb" title="Errores">\u26A0</button></div>\n    <div class="sim-vista" id="simvista" hidden><button type="button" data-sa="walls">Muros: ').concat(["tenues", "medios", "s\xF3lidos"][simWall], '</button><button type="button" data-sa="ceil">Techo: ').concat(["oculto", "tenue", "medio", "s\xF3lido"][simCeil], '</button><button type="button" data-sa="dsolid">Tubos: ').concat(simDuctSolid ? "s\xF3lidos" : "transp.", '</button><button type="button" data-sa="heat" id="simheat">\u{1F321} Calor: ').concat(["no", "carga", "ca\xEDda"][simHeat], '</button><button type="button" data-sa="xray" aria-pressed="').concat(simCut != null, '">\u2702 Corte</button><button type="button" data-sa="labels" aria-pressed="false">Nombres</button></div></div>\n   <div class="sim-sheet" id="simsheet" hidden><div class="sh-h"><b id="shtitle"></b><button type="button" data-sa="shx" aria-label="Cerrar">\u2715</button></div><div class="sh-b" id="shbody"></div></div>\n   <div class="sim-place" id="simplace" ').concat(simTool === "place" ? "" : "hidden", ">").concat(placeBar(), '</div>\n   <div class="sim-place sim-meas" id="simmeas" ').concat(INSTR.includes(simTool) ? "" : "hidden", '><div class="pb-t">').concat(INSTR.map((k) => {
+    return '<p class="eyebrow">Simulador</p><button class="btn calc" type="button" data-go="tg" style="float:right;margin:0 0 8px 8px">⚡ Juego: armar tablero</button><h1>Taller 3D de instalaci\xF3n domiciliaria</h1>\n  <p class="lead">'.concat(HNAME ? esc(HNAME) + ":" : "Una casa de", " ").concat(n0(ROOMS.filter((r) => !(r.f && r.t === "escalera")).reduce((a, r) => a + rArea(r), 0)), " m\xB2 con ").concat(ROOMS.filter((r) => !(r.f && r.t === "escalera")).length) + (NFL > 1 ? " recintos en 2 pisos" : " recintos") + '. Coloca luces, interruptores, enchufes, cajas de derivaci\xF3n y horno donde quieras, con\xE9ctalos, energiza y mide con instrumentos.</p>\n  <div class="simwrap" id="simwrap" tabindex="0" aria-label="Vista 3D. Arrastra para girar, dos dedos o clic derecho para desplazar, rueda o pellizco para acercar. Flechas y W A S D tambi\xE9n mueven la vista."><canvas id="simcv"></canvas>\n   <div class="sim-hud" id="simhud"></div><div class="sim-fade" id="simfade"></div><div class="sim-legend" id="simleg" hidden></div><div class="sim-cut" id="simcut" '.concat(simCut == null ? "hidden" : "", '><span>Corte a</span><input type="range" id="simcutr" min="0.3" max="2.6" step="0.05" value="').concat(simCut == null ? 1.2 : simCut, '" aria-label="Altura de corte de los muros"><b id="simcutv">').concat(nf(simCut == null ? 1.2 : simCut, 2), ' m</b></div>\n   <div class="sim-joy" id="simjoy" ').concat(simMode === "walk" ? "" : "hidden", ' aria-label="Joystick: arrastra para caminar"><div class="jk"></div></div><div class="sim-toast" id="simtoast" aria-live="polite"></div>\n   <div class="sim-nav"><select data-sx="go" aria-label="Ir a"><option value="">Ir a\u2026</option><option value="g">Toda la casa</option><option value="p">Planta</option><option value="t">Tablero</option>').concat(ROOMS.map((r) => '<option value="'.concat(r.id, '">').concat(r.n, NFL > 1 ? " (piso " + ((r.f || 0) + 1) + ")" : "", "</option>")).join(""), "</select>").concat(NFL > 1 ? '<div class="nb nbfl" role="group" aria-label="Piso visible">' + [[0, "Piso 1"], [1, "Piso 2"], [-1, "Todo"]].map(([v, l]) => '<button type="button" data-sa="fl" data-v="' + v + '" aria-pressed="' + (simFl === v) + '">' + l + "</button>").join("") + "</div>" : "", '\n    <div class="nb"><button type="button" data-sa="zin" aria-label="Acercar">+</button><button type="button" data-sa="zout" aria-label="Alejar">\u2212</button><button type="button" data-sa="rl" aria-label="Girar a la izquierda">\u27F2</button><button type="button" data-sa="rr" aria-label="Girar a la derecha">\u27F3</button><button type="button" data-sa="up" aria-label="Ver m\xE1s desde arriba">\u2912</button><button type="button" data-sa="dn" aria-label="Ver m\xE1s de lado">\u2913</button></div>\n    <div class="nb nbq"><button type="button" data-sa="mode" id="simmode" aria-pressed="').concat(simMode === "walk", '" title="Modo libre / caminar">').concat(simMode === "walk" ? '<span class="ic">\u{1F6B6}</span><small>Andar</small>' : '<span class="ic">\u2725</span><small>Libre</small>', '</button><button type="button" data-sa="fs" id="simfs" title="Pantalla completa"><span class="ic">\u26F6</span><small>Grande</small></button><button type="button" data-sa="undo" id="simundo" ').concat(simUndo.length ? "" : "disabled", ' title="Deshacer"><span class="ic">\u21B6</span><small>Atr\xE1s</small></button><button type="button" data-sa="conn" aria-pressed="').concat(simConn, '" title="Ver conexiones del tablero"><span class="ic">\u26A1</span><small>Cables</small></button><button type="button" data-sa="vista" id="simvbtn" title="Opciones de vista"><span class="ic">\u2630</span><small>Vista</small></button><button type="button" data-sa="errs" id="simerr" class="eb" title="Errores">\u26A0</button></div>\n    <div class="sim-vista" id="simvista" hidden><button type="button" data-sa="walls">Muros: ').concat(["tenues", "medios", "s\xF3lidos"][simWall], '</button><button type="button" data-sa="ceil">Techo: ').concat(["oculto", "tenue", "medio", "s\xF3lido"][simCeil], '</button><button type="button" data-sa="dsolid">Tubos: ').concat(simDuctSolid ? "s\xF3lidos" : "transp.", '</button><button type="button" data-sa="heat" id="simheat">\u{1F321} Calor: ').concat(["no", "carga", "ca\xEDda"][simHeat], '</button><button type="button" data-sa="xray" aria-pressed="').concat(simCut != null, '">\u2702 Corte</button><button type="button" data-sa="labels" aria-pressed="false">Nombres</button>' + (S.sim2 && S.sim2.tabImg ? '<button type="button" data-sa="tabview">Tablero: ' + (simTabView === "dis" ? "dise\xF1o" : "simple") + "</button>" : "") + '</div></div>\n   <div class="sim-sheet" id="simsheet" hidden><div class="sh-h"><b id="shtitle"></b><button type="button" data-sa="shx" aria-label="Cerrar">\u2715</button></div><div class="sh-b" id="shbody"></div></div>\n   <div class="sim-place" id="simplace" ').concat(simTool === "place" ? "" : "hidden", ">").concat(placeBar(), '</div>\n   <div class="sim-place sim-meas" id="simmeas" ').concat(INSTR.includes(simTool) ? "" : "hidden", '><div class="pb-t">').concat(INSTR.map((k) => {
       const t = TOOLS3D.find((x) => x[0] === k);
       return '<button type="button" data-sa="tool" data-k="'.concat(k, '" aria-pressed="').concat(k === simTool, '"><b>').concat(t[1], "</b> ").concat(t[2], "</button>");
     }).join(""), '</div></div>\n   <div class="sim-tools" id="simtools">').concat(MAINT.map((k) => {
@@ -4076,6 +4076,33 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       c.needsUpdate = true;
     }
     SIMV.dirty = true;
+  }
+  let simTabView = "dis", TABTEX = null;
+  function tabTex(s) {
+    const ti = s.tabImg;
+    if (!ti) return null;
+    if (TABTEX && TABTEX.t === ti.t) return TABTEX.tex;
+    if (TABTEX && TABTEX.loading === ti.t) return null;
+    TABTEX = { loading: ti.t };
+    const img = new Image();
+    img.onload = () => {
+      const cw = 1600, ch = Math.round(cw * ti.h / ti.w), c = document.createElement("canvas");
+      c.width = cw;
+      c.height = ch;
+      const x = c.getContext("2d");
+      x.fillStyle = "#e9edf0";
+      x.fillRect(0, 0, cw, ch);
+      x.drawImage(img, 0, 0, cw, ch);
+      const tex = new THREE.CanvasTexture(c);
+      tex.anisotropy = 4;
+      TABTEX = { t: ti.t, tex };
+      if (SIMV && cur === "sim") simBuild();
+    };
+    img.onerror = () => {
+      TABTEX = { t: ti.t, tex: null };
+    };
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(ti.svg);
+    return null;
   }
   const GEOC = /* @__PURE__ */ new Map();
   function geoC(k, mk) {
@@ -5194,24 +5221,47 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     fr.position.set(TX, cy, cz + 5e-3);
     g.add(fr);
     {
-      const can = box(0.08, 0.9, 0.05, tm(M(10134445, { transparent: true, opacity: 0.45, depthWrite: false })));
-      can.position.set(TX + W / 2 - 0.06, 1.5, cz + 0.06);
-      g.add(can);
-      const cl = spr("canaleta", { h: 0.014, bg: "rgba(90,98,108,.9)" });
-      cl.position.set(TX + W / 2 - 0.06, 1.07, cz + 0.12);
-      g.add(cl);
+      if (!(s.tabImg && simTabView === "dis" && !simConn)) {
+        const can = box(0.08, 0.9, 0.05, tm(M(10134445, { transparent: true, opacity: 0.45, depthWrite: false })));
+        can.position.set(TX + W / 2 - 0.06, 1.5, cz + 0.06);
+        g.add(can);
+        const cl = spr("canaleta", { h: 0.014, bg: "rgba(90,98,108,.9)" });
+        cl.position.set(TX + W / 2 - 0.06, 1.07, cz + 0.12);
+        g.add(cl);
+      }
       s.circuits.forEach((c, k) => {
         const xe = tabExit(k, W)[0], kn = new THREE.Mesh(new THREE.CylinderGeometry(0.034, 0.034, 0.03, 14), tm(M(2830648)));
         kn.position.set(xe, 1.965, 0.13);
         g.add(kn);
       });
     }
-    [1.72, 1.33].forEach((y) => {
+    const tabD = !!(s.tabImg && simTabView === "dis" && !simConn);
+    if (tabD) {
+      const tx3 = tabTex(s), ar = s.tabImg.h / s.tabImg.w, pw = Math.min(W - 0.04, 0.93 / ar), ph = pw * ar;
+      if (tx3) {
+        const mt = new THREE.MeshBasicMaterial({ map: tx3 });
+        V.tmp.push(mt);
+        const pl2 = new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), mt);
+        pl2.position.set(TX, cy, cz + 0.032);
+        pl2.userData = { k: "tab" };
+        g.add(pl2);
+        V.pick.push(pl2);
+      } else {
+        const ld = spr("Cargando el dise\xF1o del tablero\u2026", { h: 0.03 });
+        ld.position.set(TX, cy, cz + 0.08);
+        g.add(ld);
+      }
+      const tg2 = spr("Dise\xF1o: " + s.tabImg.n + " piezas \xB7 " + s.tabImg.c + " cables", { h: 0.024, bg: "rgba(30,78,120,.9)" });
+      tg2.position.set(TX, cy - 0.53, cz + 0.06);
+      g.add(tg2);
+    }
+    if (!tabD) [1.72, 1.33].forEach((y) => {
       const r = box(W - 0.08, 0.03, 0.012, tm(M(11581632, { metalness: 0.6 })));
       r.position.set(TX, y, cz + 0.035);
       g.add(r);
     });
     const dev = (xc, y, mods, on, ud, lines, bg, label) => {
+      if (tabD) return;
       const grp = new THREE.Group();
       grp.userData = ud;
       const w = 0.088 * mods - 6e-3;
@@ -5330,7 +5380,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       fa.position.set(L0 + 0.04, 1.53, cz + 0.15);
       g.add(fa);
     }
-    if (!simConn) {
+    if (!simConn && !tabD) {
       const cnt = { N: 0, PE: 0, F: 0, peine: 0 }, REGM = { N: tm(M(2051496)), PE: tm(M(3055172)), F: tm(M(13840175)), peine: tm(M(13136949, { metalness: 0.6, roughness: 0.35 })) };
       regOf(s).forEach((r, ri) => {
         cnt[r.t]++;
@@ -5750,6 +5800,12 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     }
     if (a === "fl") {
       simSetFl(+b.dataset.v);
+      return;
+    }
+    if (a === "tabview") {
+      simTabView = simTabView === "dis" ? "simple" : "dis";
+      b.textContent = "Tablero: " + (simTabView === "dis" ? "dise\xF1o" : "simple");
+      simBuild();
       return;
     }
     if (a === "ceil") {
@@ -7288,13 +7344,35 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     });
     s.gen.In = +ig.spec.In;
     if (lv.alimS) s.alim.S = lv.alimS;
+    {
+      const nd = regNeed(s), sz = (n) => [4, 7, 12, 15].find((x) => x >= n) || 15, R = [];
+      st.parts.filter((p) => p.k === "bn").forEach((p, i) => R.push({ t: "N", n: i ? 7 : sz(nd.N) }));
+      st.parts.filter((p) => p.k === "pe").forEach((p, i) => R.push({ t: "PE", n: i ? 7 : sz(nd.PE) }));
+      st.parts.filter((p) => p.k === "pn").forEach((p) => R.push({ t: "peine", n: Math.max(12, (+p.spec.n || 2) * 2) }));
+      if (R.length) s.reg = R;
+      const hv = tgHintPn, vb = tgVB, ht = tgHintT, L2 = tgLayout(lv, st);
+      tgHintPn = null;
+      tgVB = null;
+      tgHintT = [];
+      try {
+        const svg = tgSVG(lv, st, A, false).replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" width="' + L2.W + '" height="' + L2.H + '" font-family="Arial,Helvetica,sans-serif" ');
+        s.tabImg = { svg, w: L2.W, h: L2.H, t: Date.now(), n: st.parts.length, c: st.wires.length };
+      } catch (e) {
+        delete s.tabImg;
+      }
+      tgHintPn = hv;
+      tgVB = vb;
+      tgHintT = ht;
+      simTabView = "dis";
+    }
     simSanitize(s);
     simInsp = null;
     simSel = null;
     tgMsg = "";
     save();
     go("sim");
-    simToast([["ok", "Tablero traspasado: general ".concat(s.gen.In, " A, ").concat(s.circuits.length, " circuitos y ").concat(drs.length, " diferencial(es). Ya puedes cablear la casa con estas protecciones.")]]);
+    simToast([["ok", "Tablero traspasado tal como lo armaste: general ".concat(s.gen.In, " A, ").concat(s.circuits.length, " circuitos y ").concat(drs.length, " diferencial(es), con sus barras y cables. En \xABVista\xBB puedes alternar entre el dise\xF1o y la vista simple.")]]);
+    setTimeout(() => SIMV && SIMV.view("t"), 400);
   }
   function tgFreeLv() {
     const f = tgInit().free, circ = f.circ.slice(0, 9).map((c, k) => {
@@ -8324,7 +8402,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       const item = (o) => '<li class="'.concat(o.sev === "bad" ? "badc" : "tgwarn", '"><b>').concat(o.sev === "bad" ? "✗" : "⚠", " ").concat(esc(o.t), "</b><br>").concat(esc(o.d), '<br><span class="fx">C\xF3mo corregir: ').concat(esc(o.fx), '</span><br><span class="hint">Por qu\xE9: ').concat(esc(o.w), "</span></li>");
       h += '<section class="card tgp" id="tgres">'.concat(close, '<div class="sechead"><span class="tag">Resultado</span><span class="tgstar" aria-label="').concat(nb ? 1 : nw ? 2 : 3, ' de 3 estrellas">').concat(star, '</span></div><p class="hint" style="margin:0 0 6px">⏱ ').concat(Math.floor(secs / 60), " min ").concat(secs % 60, " s \xB7 \u{1F4B0} ").concat(tgMoney(A.cost), " de ").concat(tgMoney(A.budget), "</p>").concat(nb ? note("<b>".concat(nb, " error(es)</b>").concat(nw ? " y ".concat(nw, " observaci\xF3n(es)") : "", ". Corr\xEDgelos y vuelve a comprobar."), "bad") : note(nw ? "✓ El tablero funciona y es seguro. Quedan ".concat(nw, " detalle(s) para la tercera estrella.") : "✓ \xA1Tablero perfecto! Bien elegido, bien ubicado, bien conectado y dentro del presupuesto.", "ok"), '<p style="margin:8px 0 4px"><b>⚡ Al energizar</b></p><ul class="tgen">').concat(A.energ.map(([c, t]) => '<li class="'.concat(c, '">').concat(c === "ok" ? "✓" : c === "bad" ? "✗" : "•", " ").concat(esc(t), "</li>")).join(""), "</ul>").concat(nb + nw ? '<ul class="whyl" style="margin-top:10px">'.concat(A.errs.concat(A.warns).map(item).join(""), "</ul>") : "", "</section>");
     } else if (tgChecked && !tgFull) h += note("Cambiaste el tablero despu\xE9s de comprobar. Toca \xABComprobar\xBB otra vez.", "info");
-    h += '<section class="card tgp"><div class="actions" style="margin:0;padding:0;border:0"><button type="button" class="btn small" data-tg="tosim">\u25B6 ' + (tgSimConf ? "\xBFConfirmas? Toca otra vez" : "Usar este tablero en el 3D") + '</button><button type="button" class="btn ghost small" data-tg="sol">Ver soluci\xF3n</button><button type="button" class="btn danger small" data-tg="reset">'.concat(tgConfirm ? "\xBFSeguro? Toca otra vez" : "Vaciar tablero", '</button></div><p class="hint" style="margin:6px 0 0">').concat(st.parts.length, " pieza(s) \xB7 ").concat(st.wires.length, " cable(s)</p></section>");
+    h += '<section class="card tgp"><div class="actions" style="margin:0;padding:0;border:0"><button type="button" class="btn small" data-tg="tosim">\u25B6 ' + (tgSimConf ? "\xBFConfirmas? Toca otra vez" : "\u25C8 Pasar este tablero al Simulador 3D") + '</button><button type="button" class="btn ghost small" data-tg="sol">Ver soluci\xF3n</button><button type="button" class="btn danger small" data-tg="reset">'.concat(tgConfirm ? "\xBFSeguro? Toca otra vez" : "Vaciar tablero", '</button></div><p class="hint" style="margin:6px 0 0">').concat(st.parts.length, " pieza(s) \xB7 ").concat(st.wires.length, " cable(s)</p></section>");
     return h;
   }
   function tgTable(lv, st, A, shown) {
