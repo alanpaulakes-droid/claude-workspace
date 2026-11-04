@@ -4262,6 +4262,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
   }
   function simFSoff() {
     const w = document.getElementById("simwrap");
+    simFSnat = false;
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {
     });
     else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
@@ -4286,24 +4287,31 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       simFSui();
       simRefit();
     };
+    css();
     try {
-      if (w.requestFullscreen) w.requestFullscreen().then(simFSui).catch(css);
-      else if (w.webkitRequestFullscreen) {
-        w.webkitRequestFullscreen();
-        setTimeout(() => {
-          if (!document.webkitFullscreenElement) css();
-        }, 300);
-      } else css();
+      if (w.requestFullscreen) w.requestFullscreen().then(() => { simFSnat = true; simFSui(); simRefit(); }).catch(() => {});
+      else if (w.webkitRequestFullscreen) { w.webkitRequestFullscreen(); simFSnat = true; }
     } catch (e) {
-      css();
     }
+    if (innerHeight > innerWidth * 1.2) simToast([["ok", "Pantalla completa. Para ver la pared m\xE1s grande, gira el tel\xE9fono en horizontal. Toca \u2715 Salir para volver."]]);
     w.focus({ preventScroll: true });
   }
-  document.addEventListener("fullscreenchange", () => {
+  let simFSnat = false;
+  const simFSchg = () => {
+    if (simFSnat && !document.fullscreenElement && !document.webkitFullscreenElement) {
+      simFSnat = false;
+      const w = document.getElementById("simwrap");
+      if (w) w.classList.remove("fs");
+      document.body.classList.remove("simfs");
+    }
     simFSui();
     simRefit();
-  });
-  document.addEventListener("webkitfullscreenchange", simFSui);
+  };
+  document.addEventListener("fullscreenchange", simFSchg);
+  addEventListener("orientationchange", () => simFSon() && simRefit());
+  addEventListener("resize", () => { if (simFSon()) { clearTimeout(simFSrz); simFSrz = setTimeout(simRefit, 150); } });
+  let simFSrz = 0;
+  document.addEventListener("webkitfullscreenchange", simFSchg);
   function simMount() {
     simLast = JSON.stringify(S.sim2);
     simShowHud(null);
