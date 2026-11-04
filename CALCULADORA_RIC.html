@@ -4377,6 +4377,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         leg.position.set(x, WH / 2, -0.08);
         sc.add(leg);
       });
+      const fl2 = new THREE.Mesh(new THREE.PlaneGeometry(HW + 3, 7), M(11908533, { roughness: 0.95 }));
+      fl2.rotation.x = -Math.PI / 2;
+      fl2.position.set(HW / 2, 3e-3, 3.5);
+      sc.add(fl2);
       const tit = txtSprite("Panel de pr\xE1ctica", { fixed: true, h: 0.035 });
       tit.position.set(HW / 2, WH + 0.15, 0.05);
       sc.add(tit);
@@ -4555,8 +4559,9 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       return Math.hypot(x - a[0] - t * dx, z - a[1] - t * dz);
     };
     const okAt = (x, z) => {
+      if (PANEL) return x > -1.2 && x < HW + 1.2 && z > 0.45 && z < 7;
       const wf = simFl > 0 ? 1 : 0;
-      return x > 0.2 && x < HW - 0.2 && z > 0.2 && z < HD - 0.2 && !!roomOf(x, z, wf) && (roomOf(x, z, wf) || {}).t !== "escalera" && WALLS.every((a) => (a.f || 0) !== wf || segD(x, z, a) > 0.22);
+      return x > 0.2 && x < HW - 0.2 && z > 0.2 && z < HD - 0.2 && !!roomOf(x, z, wf) && (roomOf(x, z, wf) || {}).t !== "escalera" && WALLS.every((a) => (a.f || 0) !== wf || segD(x, z, a) > 0.18);
     };
     const wMove = (o, dx, dz) => {
       const n = Math.max(1, Math.ceil(Math.hypot(dx, dz) / 0.05));
@@ -4596,7 +4601,11 @@ select.bad{border-color:var(--bad);color:var(--bad)}
       if (m === "walk") {
         let x = V.c.x, z = V.c.z, yaw = V.c.th + Math.PI;
         const rm = roomOf(x, z);
-        if (V.c.rad > 8 || !rm || !okAt(x, z)) {
+        if (PANEL) {
+          x = Math.max(0.5, Math.min(HW - 0.5, V.c.x));
+          z = 2.6;
+          yaw = Math.PI;
+        } else if (V.c.rad > 8 || !rm || !okAt(x, z)) {
           const r0 = roomOf(TX, 0.5) || ROOMS[0];
           x = (r0.x0 + r0.x1) / 2;
           z = (r0.z0 + r0.z1) / 2;
@@ -4604,7 +4613,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         }
         V.w = { x, z, yaw, pit: -0.1 };
         V.wg = Object.assign({}, V.w);
-        cam.fov = 62;
+        cam.fov = 68;
       } else {
         const y = V.w.yaw;
         cam.fov = 45;
@@ -4642,6 +4651,10 @@ select.bad{border-color:var(--bad);color:var(--bad)}
         return;
       }
       if (V.mode === "walk") {
+        if (PANEL && k !== "t") {
+          V.wTo({ x: HW / 2, z: 2.8, yaw: Math.PI, pit: -0.05 });
+          return;
+        }
         if (k === "t") {
           const hf = Math.tan(cam.fov * Math.PI / 360) * (cam.aspect || 1), d = Math.min(2.6, Math.max(0.9, (tabW(S.sim2) / 2 + 0.12) / hf));
           V.wTo({ x: TX, z: d, yaw: Math.PI, pit: -0.04 });
@@ -5627,7 +5640,7 @@ select.bad{border-color:var(--bad);color:var(--bad)}
     }
     if (a === "mode") {
       simSetMode(simMode === "walk" ? "orbit" : "walk");
-      simToast([["ok", simMode === "walk" ? "Modo caminar: usa el joystick para moverte (los muros no se atraviesan, pasa por las puertas). Arrastra la vista para mirar. Usa \xABIr a\u2026\xBB para saltar a otra habitaci\xF3n." : "Modo libre: arrastra para girar, dos dedos para desplazar, pellizca para acercar."]]);
+      simToast([["ok", simMode === "walk" && PANEL ? "Modo caminar frente al panel: avanza o retrocede con el joystick (o W/S) hasta 7 m para ver el panel completo, y gira arrastrando la vista." : simMode === "walk" ? "Modo caminar: usa el joystick para moverte (los muros no se atraviesan, pasa por las puertas). Arrastra la vista para mirar. Usa \xABIr a\u2026\xBB para saltar a otra habitaci\xF3n." : "Modo libre: arrastra para girar, dos dedos para desplazar, pellizca para acercar."]]);
       return;
     }
     if (a === "tgsim") {
