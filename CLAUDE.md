@@ -4,6 +4,7 @@ Estos criterios aplican a **todo** proyecto de este repositorio, actual o nuevo.
 
 ## Calidad esperada
 - **Profesional**: resultados con criterio de ingeniería eléctrica chilena (SEC, pliegos RIC N°01 a N°19). Citar el pliego cuando una regla venga de la norma; marcar como "recomendación" o "criterio usual" lo que no sea exigencia textual. Verificar datos dudosos antes de afirmarlos (por ejemplo, nomenclatura chilena 9/12, 9/15, 9/24, 9/32).
+- **Multiplataforma**: todo debe funcionar igual en iPhone (Safari y app de Claude) y en Android (Chrome), vertical y horizontal. No depender de APIs que iOS bloquea (pantalla completa nativa, descargas directas): usar siempre un respaldo por CSS/JS y probar con emulación de ambos.
 - **Accesible**: botones con texto o `aria-label`, contraste suficiente en claro y oscuro, navegable con teclado, objetivos táctiles cómodos, funciona a ancho de teléfono (sin scroll horizontal) y en pantalla completa.
 - **Fácil de usar**: cada acción con instrucciones breves en pantalla, ejemplos precargados, deshacer, confirmación antes de borrar, y mensajes de error que digan qué corregir y por qué.
 
