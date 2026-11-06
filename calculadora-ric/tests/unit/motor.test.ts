@@ -212,3 +212,54 @@ describe("Demostraciones", () => {
     expect(sobrecargaSinDisparo(16, 14)).toEqual({ Ilim: 16 * 1.45, excedeCable: true });
   });
 });
+
+import { zonaDisparo, simularFalla } from "../../src/engine";
+describe("Fallas (curvas IEC 60898 y método convencional)", () => {
+  it("zonas de disparo curva C", () => {
+    expect(zonaDisparo(1, "C").zona).toBe("sin");
+    expect(zonaDisparo(1.3, "C").zona).toBe("lenta");
+    expect(zonaDisparo(3, "C").zona).toBe("termica");
+    expect(zonaDisparo(7, "C").zona).toBe("transicion");
+    expect(zonaDisparo(10, "C").zona).toBe("magnetica");
+    expect(zonaDisparo(5, "B").zona).toBe("magnetica");
+  });
+  const base = {
+    In: 16,
+    cv: "C",
+    Iz: 18,
+    Is: 8,
+    Zs: 220 / 3000,
+    Ra: (2 * 0.018 * 12) / 6,
+    Rc: (2 * 0.018 * 20) / 2.5,
+    dr: { tiene: true },
+    pe: true,
+  };
+  it("cortocircuito cercano: actúa el magnético", () => {
+    const r = simularFalla({ ...base, tipo: "cortocircuito" });
+    expect(r.actua).toBe("tm-magnetico");
+    expect(r.I).toBeGreaterThan(160);
+  });
+  it("cortocircuito al final de un circuito muy largo de 1,5 mm²: no llega al magnético", () => {
+    const r = simularFalla({ ...base, tipo: "cortocircuito", Rc: (2 * 0.018 * 300) / 1.5 });
+    expect(r.actua).not.toBe("tm-magnetico");
+    expect(r.nivel).toBe("grave");
+  });
+  it("cable subdimensionado (Iz 14 A con 16 A): grave", () => {
+    expect(simularFalla({ ...base, tipo: "subdimensionado", Iz: 14 }).nivel).toBe("grave");
+    expect(simularFalla({ ...base, tipo: "subdimensionado", Iz: 18 }).nivel).toBe("ok");
+  });
+  it("falla a tierra con diferencial: actúa el diferencial", () => {
+    expect(simularFalla({ ...base, tipo: "tierra" }).actua).toBe("dr");
+  });
+  it("sin tierra y sin diferencial: nada actúa", () => {
+    const r = simularFalla({ ...base, tipo: "tierra", pe: false, dr: { tiene: false } });
+    expect(r.actua).toBe("ninguno");
+    expect(r.Uc).toBe(220);
+    expect(r.nivel).toBe("grave");
+  });
+  it("sobrecarga de 3.000 W sobre 8 A: dispara por térmico", () => {
+    const r = simularFalla({ ...base, tipo: "sobrecarga", Pextra: 3000 });
+    expect(r.I).toBeCloseTo(8 + 3000 / 220, 9);
+    expect(r.actua).toBe("tm-termico");
+  });
+});

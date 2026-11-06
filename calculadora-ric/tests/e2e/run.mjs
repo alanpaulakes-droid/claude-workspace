@@ -219,6 +219,49 @@ try {
     await p.close();
   }
 
+  // 3d. Simulador 3D: simular fallas, calidad gráfica y color de fase
+  {
+    const p = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(URL);
+    await goPage(p, "sim");
+    await p.waitForTimeout(1500);
+    await p.click('.tpl[data-k="casa"]');
+    await p.waitForTimeout(1500);
+    const act = {};
+    for (const t of ["sobrecarga", "cortocircuito", "tierra", "subdimensionado"]) {
+      await p.selectOption("#sf_tipo", t);
+      await p.click('[data-sf="go"]');
+      await p.waitForTimeout(400);
+      act[t] = await p.evaluate(
+        () => (document.getElementById("sfres").innerText.match(/Actúa: ([^·]+)/) || [])[1] || "",
+      );
+    }
+    check(
+      "Simular falla: cortocircuito → magnético, tierra → diferencial",
+      /magnético/.test(act.cortocircuito) && /diferencial/.test(act.tierra) && /térmico/.test(act.sobrecarga),
+      JSON.stringify(act),
+    );
+    await p.click('[data-sf="reset"]');
+    await p.waitForTimeout(300);
+    const on = await p.evaluate(() =>
+      JSON.parse(localStorage.getItem("ric-calc-v3")).sim2.circuits.every((c) => c.on !== false),
+    );
+    check("Restablecer deja todos los circuitos encendidos", on);
+    await p.click('[data-sq="alta"]');
+    await p.waitForTimeout(1500);
+    await p.click('[data-sfase="azul"]');
+    await p.waitForTimeout(1500);
+    const ok3d = await p.evaluate(
+      () => !!document.getElementById("simcv") && !document.querySelector("#simwrap .empty"),
+    );
+    check("3D en calidad alta (sombras) y fase azul sin errores", ok3d && !errs.length, errs.join(" | "));
+    await p.click('[data-sq="auto"]');
+    await p.click('[data-sfase="rojo"]');
+    await p.close();
+  }
+
   // 4. Armar tablero: soluciones de los niveles aprueban
   {
     const p = await browser.newPage({ viewport: { width: 1280, height: 900 } });

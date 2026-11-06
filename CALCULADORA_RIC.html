@@ -663,6 +663,7 @@ var RICEngine = (() => {
     AMP_CFG_DEF: () => AMP_CFG_DEF,
     AMP_NCH: () => AMP_NCH,
     COM: () => COM,
+    CURVAS: () => CURVAS,
     KMAG: () => KMAG,
     RIC: () => RIC,
     SECC: () => SECC,
@@ -689,7 +690,10 @@ var RICEngine = (() => {
     picaVertical: () => picaVertical,
     rProteccionMax: () => rProteccionMax,
     serieCaida: () => serieCaida,
-    sobrecargaSinDisparo: () => sobrecargaSinDisparo
+    simularFalla: () => simularFalla,
+    sobrecargaSinDisparo: () => sobrecargaSinDisparo,
+    tiemposTermicos: () => tiemposTermicos,
+    zonaDisparo: () => zonaDisparo
   });
 
   // src/data/ric.json
@@ -1033,6 +1037,116 @@ var RICEngine = (() => {
   function sobrecargaSinDisparo(In, Iz) {
     const Ilim = 1.45 * In;
     return { Ilim, excedeCable: In > Iz + 1e-9 };
+  }
+
+  // src/engine/fallas.ts
+  var CURVAS = { B: [3, 5], C: [5, 10], D: [10, 20] };
+  function tiemposTermicos(k) {
+    const tUp = k < 1.45 ? 3600 * Math.pow(1.45 / k, 6) : k < 2.55 ? Math.exp(Math.log(3600) + (Math.log(60) - Math.log(3600)) * (Math.log(k / 1.45) / Math.log(2.55 / 1.45))) : 60 * Math.pow(2.55 / k, 2);
+    const tLo = k < 2.55 ? Math.exp(Math.log(3600) + (Math.log(1) - Math.log(3600)) * (Math.log(k / 1.13) / Math.log(2.55 / 1.13))) : Math.pow(2.55 / k, 2);
+    return { tMin: Math.max(0, tLo), tMax: tUp };
+  }
+  function zonaDisparo(k, cv = "C") {
+    var _a;
+    const [m1, m2] = (_a = CURVAS[cv]) != null ? _a : CURVAS.C;
+    if (k < 1.13) return { zona: "sin", tMin: null, tMax: null };
+    if (k < 1.45) return { zona: "lenta", tMin: 3600, tMax: null };
+    const t = tiemposTermicos(k);
+    if (k < m1) return { zona: "termica", tMin: t.tMin, tMax: Math.min(3600, t.tMax) };
+    if (k < m2) return { zona: "transicion", tMin: 0.01, tMax: Math.min(60, t.tMax) };
+    return { zona: "magnetica", tMin: 5e-3, tMax: 0.1 };
+  }
+  function simularFalla(e) {
+    var _a, _b, _c, _d, _e;
+    const U0 = (_a = e.U0) != null ? _a : 220;
+    const idn = (_b = e.dr.idn) != null ? _b : 0.03;
+    const drOk = e.dr.tiene && e.dr.funciona !== false;
+    const UL = 50;
+    if (e.tipo === "sobrecarga" || e.tipo === "subdimensionado") {
+      const I2 = e.tipo === "sobrecarga" ? e.Is + ((_c = e.Pextra) != null ? _c : 0) / U0 : 1.45 * e.In;
+      const k2 = I2 / e.In;
+      const z2 = zonaDisparo(k2, e.cv);
+      const cableSobre = I2 > e.Iz + 1e-9;
+      const tarda = z2.zona === "sin" || z2.zona === "lenta";
+      const grave = cableSobre && (tarda || ((_d = z2.tMax) != null ? _d : 0) > 60) && 1.45 * e.In > 1.45 * e.Iz + 1e-9;
+      return {
+        I: I2,
+        k: k2,
+        actua: z2.zona === "sin" ? "ninguno" : z2.zona === "magnetica" ? "tm-magnetico" : "tm-termico",
+        tMin: z2.tMin,
+        tMax: z2.tMax,
+        zona: z2.zona,
+        nivel: grave ? "grave" : cableSobre && tarda ? "riesgo" : "ok",
+        cableSobre,
+        motivo: grave ? "El cable soporta menos que su protección: la sobrecarga lo calienta sobre su límite antes de que el automático corte." : z2.zona === "sin" ? "La corriente no alcanza a hacer disparar el automático: el circuito sigue funcionando." : z2.zona === "lenta" && !cableSobre ? "Sobrecarga leve: el automático puede tardar más de una hora en cortar, pero el cable la soporta sin dañarse." : "La parte térmica del automático (bimetal) corta la sobrecarga; mientras más corriente, más rápido.",
+        ref: "RIC N°10, 5.1.4.1 y 5.1.5.1 · RIC N°04, Tabla 4.4"
+      };
+    }
+    if (e.tipo === "cortocircuito") {
+      const I2 = 0.95 * U0 / (e.Zs + 1.5 * (e.Ra + e.Rc));
+      const k2 = I2 / e.In;
+      const z2 = zonaDisparo(k2, e.cv);
+      const ok = z2.zona === "magnetica";
+      return {
+        I: I2,
+        k: k2,
+        actua: ok ? "tm-magnetico" : z2.zona === "sin" ? "ninguno" : "tm-termico",
+        tMin: z2.tMin,
+        tMax: z2.tMax,
+        zona: z2.zona,
+        nivel: ok ? "ok" : "grave",
+        cableSobre: true,
+        motivo: ok ? "La corriente de cortocircuito supera el umbral magnético: el automático corta al instante." : "El circuito es tan largo o delgado que la corriente de cortocircuito no alcanza el umbral magnético: el corte se demora y el cable se daña.",
+        ref: "Criterio usual (método convencional) · RIC N°10, 5.1.4.2"
+      };
+    }
+    if (!e.pe) {
+      const Ib = U0 / ((_e = e.Rcuerpo) != null ? _e : 1e3);
+      return {
+        I: Ib,
+        k: Ib / e.In,
+        actua: drOk && Ib >= idn ? "dr" : "ninguno",
+        tMin: drOk ? 0.01 : null,
+        tMax: drOk ? Ib >= 5 * idn ? 0.04 : 0.3 : null,
+        zona: "sin",
+        nivel: drOk ? "riesgo" : "grave",
+        Uc: U0,
+        cableSobre: false,
+        motivo: drOk ? "Sin conductor de tierra la carcasa queda a 220 V. Solo cuando alguien la toca pasa corriente por su cuerpo y el diferencial corta." : "Sin tierra ni diferencial la carcasa queda a 220 V y nada corta: quien la toque recibe la descarga.",
+        ref: "RIC N°05 (contactos indirectos) · RIC N°10, 5.1.3.5 y 5.2 f)"
+      };
+    }
+    const I = 0.95 * U0 / (e.Zs + 1.5 * (e.Ra + e.Rc));
+    const k = I / e.In;
+    const z = zonaDisparo(k, e.cv);
+    const Uc = I * 1.5 * (e.Rc / 2);
+    if (drOk)
+      return {
+        I,
+        k,
+        actua: "dr",
+        tMin: 0.01,
+        tMax: 0.04,
+        zona: z.zona,
+        nivel: "ok",
+        Uc,
+        cableSobre: false,
+        motivo: "La corriente de falla vuelve por el conductor de tierra y no por el neutro: el diferencial detecta la diferencia y corta en milisegundos" + (z.zona === "magnetica" ? " (el magnético del automático también actúa)." : "."),
+        ref: "RIC N°10, 5.1.3.5 · RIC N°05 (RA × Id ≤ UL)"
+      };
+    return {
+      I,
+      k,
+      actua: z.zona === "magnetica" ? "tm-magnetico" : z.zona === "sin" ? "ninguno" : "tm-termico",
+      tMin: z.tMin,
+      tMax: z.tMax,
+      zona: z.zona,
+      nivel: z.zona === "magnetica" && Uc <= U0 ? Uc > UL ? "riesgo" : "ok" : "grave",
+      Uc,
+      cableSobre: true,
+      motivo: z.zona === "magnetica" ? "Sin diferencial solo el magnético protege: corta rápido porque la falla es casi un cortocircuito, pero la carcasa alcanza una tensión peligrosa mientras dura." : "Sin diferencial y con poca corriente de falla el automático tarda: la carcasa queda con tensión peligrosa por mucho tiempo.",
+      ref: "RIC N°10, 5.1.3.5 · RIC N°05 (Zs × Ia ≤ U0)"
+    };
   }
   return __toCommonJS(index_exports);
 })();
@@ -3955,7 +4069,7 @@ var RICEngine = (() => {
     if (!tg.some((o) => o[0] === simRep.t)) simRep.t = tg[0] ? tg[0][0] : "t";
     const chal = s.fault ? '<p style="margin:0 0 8px"><b>Reporte del cliente:</b> '.concat(FHINT[s.fault.type], '</p><div class="grid sg"><div class="field"><label>\xBFD\xF3nde est\xE1 la falla?</label>').concat(sSel("rep.t", tg, simRep.t, "Ubicaci\xF3n"), '</div><div class="field"><label>\xBFQu\xE9 falla es?</label>').concat(sSel("rep.f", Object.entries(FAULTS), simRep.f, "Tipo"), '</div></div><div class="actions" style="border:0;padding-top:0;margin-top:10px"><button class="btn calc" type="button" data-sa="report">Reportar falla</button><button class="btn ghost small" type="button" data-sa="giveup">Ver soluci\xF3n</button></div>') : '<p class="hint" style="margin:0 0 8px">La app esconde una falla en tu instalaci\xF3n. Encu\xE9ntrala con los instrumentos y rep\xF3rtala.</p><button class="btn" type="button" data-sa="chal" '.concat(s.items.some((i) => i.t !== "box") ? "" : "disabled", ">Nuevo desaf\xEDo</button>");
     const insp = simInsp ? simInsp.length ? '<div class="note bad" style="margin-top:10px"><b>'.concat(simInsp.length, " observaci\xF3n(es)</b> \xB7 ").concat(simInsp.length <= 2 ? "\u2605\u2605\u2606" : "\u2605\u2606\u2606", '<ul class="whyl" style="margin-top:8px">').concat(simInsp.map((o) => '<li class="badc"><b>\u2717 '.concat(esc(o.t), "</b><br>").concat(esc(o.d), '<br><span class="hint">Por qu\xE9: ').concat(esc(o.w), "</span></li>")).join(""), "</ul></div>") : note("\u2605\u2605\u2605 Sin observaciones: la instalaci\xF3n cumple todo lo que revisa el inspector.", "ok") : "";
-    return st + '<div class="simcols"><div>' + (isPan(s) ? panSimCard(s) : "") + '\n   <section class="card"><h2>Plantillas</h2>'.concat(tplButtons(), '</section>\n   <section class="card"><h2>Tablero y circuitos</h2>\n    <div class="grid sg"><div class="field"><label>Interruptor general</label>').concat(sSel("gen.In", [[20, "20 A"], [25, "25 A"], [32, "32 A"], [40, "40 A"], [50, "50 A"], [63, "63 A"]], s.gen.In, "General"), '</div><div class="field"><label>Alimentador ').concat(ab("S"), "</label>").concat(sSel("alim.S", [[2.5, "2,5 mm\xB2"], [4, "4 mm\xB2"], [6, "6 mm\xB2"], [10, "10 mm\xB2"], [16, "16 mm\xB2"]], s.alim.S, "Alimentador"), '</div><div class="field"><label>Largo alimentador</label>').concat(sSel("alim.L", [[5, "5 m"], [12, "12 m"], [25, "25 m"], [40, "40 m"]], s.alim.L, "Largo"), '</div><div class="field"><label>Icc en el empalme</label>').concat(sSel("icc0", [[1.5, "1,5 kA"], [3, "3 kA"], [4.5, "4,5 kA"], [6, "6 kA"], [10, "10 kA"]], s.icc0 || 3, "Icc empalme"), '</div><div class="field"><label>Temperatura entretecho</label>').concat(sSel("ta", [[30, "30 \xB0C"], [35, "35 \xB0C"], [40, "40 \xB0C"], [45, "45 \xB0C"], [50, "50 \xB0C"]], s.ta || 30, "Temperatura"), '</div></div>\n    <div style="margin-top:12px">').concat(cards || '<div class="empty">Sin circuitos. Agrega uno para empezar a colocar puntos.</div>', '</div>\n    <div class="actions" style="border:0;padding-top:0"><button class="btn" type="button" data-sa="addc" ').concat(s.circuits.length >= 8 ? "disabled" : "", '>+ Agregar circuito</button><button class="btn ghost" type="button" data-sa="ex">Casa de ejemplo</button><button class="btn ghost" type="button" data-sa="opt" title="Mueve las cajas de derivaci\xF3n del techo al punto que minimiza tubo y cable">\u2699 Optimizar cajas</button><button class="btn ghost" type="button" data-go="rep">\u2399 Reporte y materiales</button><button class="btn danger small" type="button" data-sa="clear">').concat(simConfirm === "clear" ? "\xBFSeguro? Toca otra vez" : "Vaciar casa", '</button></div></section>\n   <section class="card"><h2>Puntos instalados <span class="pill info">').concat(s.items.length, '</span></h2><div class="actions" style="border:0;padding:0;margin:6px 0"><button class="btn ghost small" type="button" data-sa="roall">Abrir todos</button><button class="btn ghost small" type="button" data-sa="ronone">Plegar todos</button></div><p class="hint" style="margin:0">Toca una habitaci\xF3n para ver o plegar sus puntos. Para colocar, elige la herramienta <b>Colocar</b> en la vista 3D, el tipo de punto y el circuito, y toca un muro (o el piso para una luz). Aqu\xED puedes cambiar desde qu\xE9 caja se alimenta cada punto y qu\xE9 interruptor controla cada luz.</p>').concat(pts || '<div class="empty" style="margin-top:10px">A\xFAn no hay puntos.</div>', '</section></div><div>\n   <section class="card"><h2>Errores en vivo <span class="pill ').concat(simErrs(s).length ? "bad" : "ok", '">').concat(simErrs(s).length, '</span></h2><p class="hint" style="margin:0 0 8px">Se revisan solos cada vez que cambias algo. Tambi\xE9n est\xE1n en el bot\xF3n \u26A0 de la vista 3D.</p>').concat(errListHTML(simErrs(s)), '</section>\n   <section class="card"><h2>Misiones <span class="pill ').concat(done === MIS.length ? "ok" : "info", '">').concat(done, "/").concat(MIS.length, '</span></h2><ul class="mis">').concat(MIS.map((m) => '<li class="'.concat(m[2](s) ? "done" : "", '"><span>').concat(m[2](s) ? "\u2713" : "\u25CB", "</span>").concat(m[1], "</li>")).join(""), '</ul></section>\n   <section class="card"><h2>Examen pr\xE1ctico <span class="pill info">fallas ocultas</span></h2>').concat(examHTML(s), '</section>\n   <section class="card"><h2>Desaf\xEDo: encuentra la falla <span class="pill info">').concat(s.score, " resuelto(s)</span></h2>").concat(chal, '</section>\n   <section class="card"><h2>Revisi\xF3n del inspector</h2><p class="hint" style="margin:0 0 8px">Revisa protecciones, cables, ca\xEDdas de tensi\xF3n, cajas, interruptores y los m\xEDnimos de cada recinto.</p><button class="btn" type="button" data-sa="insp">Pedir revisi\xF3n</button>').concat(insp, '</section>\n   <section class="card"><h2>Registro de mediciones</h2>').concat(s.log.length ? '<ol class="hand">'.concat(s.log.map((x) => "<li>".concat(esc(x), "</li>")).join(""), "</ol>") : '<p class="hint" style="margin:0">A\xFAn no mides nada.</p>', "</section></div></div>");
+    return st + '<div class="simcols"><div>' + (isPan(s) ? panSimCard(s) : "") + sfCardHTML() + '<section class="card"><h2>Vista 3D</h2>' + simQualHTML() + "</section>" + '\n   <section class="card"><h2>Plantillas</h2>'.concat(tplButtons(), '</section>\n   <section class="card"><h2>Tablero y circuitos</h2>\n    <div class="grid sg"><div class="field"><label>Interruptor general</label>').concat(sSel("gen.In", [[20, "20 A"], [25, "25 A"], [32, "32 A"], [40, "40 A"], [50, "50 A"], [63, "63 A"]], s.gen.In, "General"), '</div><div class="field"><label>Alimentador ').concat(ab("S"), "</label>").concat(sSel("alim.S", [[2.5, "2,5 mm\xB2"], [4, "4 mm\xB2"], [6, "6 mm\xB2"], [10, "10 mm\xB2"], [16, "16 mm\xB2"]], s.alim.S, "Alimentador"), '</div><div class="field"><label>Largo alimentador</label>').concat(sSel("alim.L", [[5, "5 m"], [12, "12 m"], [25, "25 m"], [40, "40 m"]], s.alim.L, "Largo"), '</div><div class="field"><label>Icc en el empalme</label>').concat(sSel("icc0", [[1.5, "1,5 kA"], [3, "3 kA"], [4.5, "4,5 kA"], [6, "6 kA"], [10, "10 kA"]], s.icc0 || 3, "Icc empalme"), '</div><div class="field"><label>Temperatura entretecho</label>').concat(sSel("ta", [[30, "30 \xB0C"], [35, "35 \xB0C"], [40, "40 \xB0C"], [45, "45 \xB0C"], [50, "50 \xB0C"]], s.ta || 30, "Temperatura"), '</div></div>\n    <div style="margin-top:12px">').concat(cards || '<div class="empty">Sin circuitos. Agrega uno para empezar a colocar puntos.</div>', '</div>\n    <div class="actions" style="border:0;padding-top:0"><button class="btn" type="button" data-sa="addc" ').concat(s.circuits.length >= 8 ? "disabled" : "", '>+ Agregar circuito</button><button class="btn ghost" type="button" data-sa="ex">Casa de ejemplo</button><button class="btn ghost" type="button" data-sa="opt" title="Mueve las cajas de derivaci\xF3n del techo al punto que minimiza tubo y cable">\u2699 Optimizar cajas</button><button class="btn ghost" type="button" data-go="rep">\u2399 Reporte y materiales</button><button class="btn danger small" type="button" data-sa="clear">').concat(simConfirm === "clear" ? "\xBFSeguro? Toca otra vez" : "Vaciar casa", '</button></div></section>\n   <section class="card"><h2>Puntos instalados <span class="pill info">').concat(s.items.length, '</span></h2><div class="actions" style="border:0;padding:0;margin:6px 0"><button class="btn ghost small" type="button" data-sa="roall">Abrir todos</button><button class="btn ghost small" type="button" data-sa="ronone">Plegar todos</button></div><p class="hint" style="margin:0">Toca una habitaci\xF3n para ver o plegar sus puntos. Para colocar, elige la herramienta <b>Colocar</b> en la vista 3D, el tipo de punto y el circuito, y toca un muro (o el piso para una luz). Aqu\xED puedes cambiar desde qu\xE9 caja se alimenta cada punto y qu\xE9 interruptor controla cada luz.</p>').concat(pts || '<div class="empty" style="margin-top:10px">A\xFAn no hay puntos.</div>', '</section></div><div>\n   <section class="card"><h2>Errores en vivo <span class="pill ').concat(simErrs(s).length ? "bad" : "ok", '">').concat(simErrs(s).length, '</span></h2><p class="hint" style="margin:0 0 8px">Se revisan solos cada vez que cambias algo. Tambi\xE9n est\xE1n en el bot\xF3n \u26A0 de la vista 3D.</p>').concat(errListHTML(simErrs(s)), '</section>\n   <section class="card"><h2>Misiones <span class="pill ').concat(done === MIS.length ? "ok" : "info", '">').concat(done, "/").concat(MIS.length, '</span></h2><ul class="mis">').concat(MIS.map((m) => '<li class="'.concat(m[2](s) ? "done" : "", '"><span>').concat(m[2](s) ? "\u2713" : "\u25CB", "</span>").concat(m[1], "</li>")).join(""), '</ul></section>\n   <section class="card"><h2>Examen pr\xE1ctico <span class="pill info">fallas ocultas</span></h2>').concat(examHTML(s), '</section>\n   <section class="card"><h2>Desaf\xEDo: encuentra la falla <span class="pill info">').concat(s.score, " resuelto(s)</span></h2>").concat(chal, '</section>\n   <section class="card"><h2>Revisi\xF3n del inspector</h2><p class="hint" style="margin:0 0 8px">Revisa protecciones, cables, ca\xEDdas de tensi\xF3n, cajas, interruptores y los m\xEDnimos de cada recinto.</p><button class="btn" type="button" data-sa="insp">Pedir revisi\xF3n</button>').concat(insp, '</section>\n   <section class="card"><h2>Registro de mediciones</h2>').concat(s.log.length ? '<ol class="hand">'.concat(s.log.map((x) => "<li>".concat(esc(x), "</li>")).join(""), "</ol>") : '<p class="hint" style="margin:0">A\xFAn no mides nada.</p>', "</section></div></div>");
   }
   function placeBar() {
     const s = S.sim2;
@@ -4946,13 +5060,26 @@ var RICEngine = (() => {
   }
   function simCreate(wrap) {
     const coarse = matchMedia("(pointer:coarse)").matches, cv = wrap.querySelector("canvas"), R = new THREE.WebGLRenderer({ canvas: cv, antialias: !coarse || (window.devicePixelRatio || 1) < 2, powerPreference: "high-performance" });
-    R.setPixelRatio(Math.min(coarse ? 1.5 : 2, window.devicePixelRatio || 1));
+    const Q = simQual(coarse), dpr = window.devicePixelRatio || 1;
+    R.setPixelRatio(Math.min(Q === "baja" ? 1 : Q === "media" ? 1.5 : 2, dpr));
+    if (Q === "alta") {
+      R.shadowMap.enabled = true;
+      R.shadowMap.type = THREE.PCFSoftShadowMap;
+    }
     const sc = new THREE.Scene(), cs = getComputedStyle(document.documentElement);
     sc.background = new THREE.Color((cs.getPropertyValue("--surface2") || "#f5f7f9").trim());
     const cam = new THREE.PerspectiveCamera(45, 1, 0.05, 150);
     sc.add(new THREE.HemisphereLight(16777215, 9082531, 0.72));
     const d1 = new THREE.DirectionalLight(16777215, 0.5);
     d1.position.set(8, 12, 10);
+    if (Q === "alta") {
+      d1.castShadow = true;
+      d1.intensity = 0.62;
+      d1.shadow.mapSize.set(2048, 2048);
+      Object.assign(d1.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 45 });
+      d1.shadow.bias = -6e-4;
+      d1.shadow.normalBias = 0.02;
+    }
     sc.add(d1);
     const d2 = new THREE.DirectionalLight(16777215, 0.22);
     d2.position.set(-6, 7, -4);
@@ -4960,6 +5087,20 @@ var RICEngine = (() => {
     const M = (c, o) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.85, metalness: 0 }, o || {}));
     const G = { duct: new THREE.CylinderGeometry(0.03, 0.03, 1, 8), wire: new THREE.CylinderGeometry(68e-4, 68e-4, 1, 6), hit: new THREE.CylinderGeometry(0.065, 0.065, 1, 6), joint: new THREE.SphereGeometry(0.03, 8, 6), cord: new THREE.CylinderGeometry(5e-3, 5e-3, 1, 5) };
     const MAT = { F: M(13840175), N: M(15921906), PE: M(3055172), R: M(9313051), duct: M(11187389, { transparent: true, opacity: 0.3, depthWrite: false }), sel: M(15237690, { transparent: true, opacity: 0.55, depthWrite: false, emissive: 11555370, emissiveIntensity: 0.4 }), hot: M(16757504, { emissive: 16748288, emissiveIntensity: 1 }), hit: new THREE.MeshBasicMaterial({ visible: false }), white: M(16250871), dark: M(2236962), box: M(13686234), cord: M(2236962) };
+    MAT.F.color.setHex(FASE_COL[simFasePref()] || FASE_COL.rojo);
+    {
+      const c2 = document.createElement("canvas");
+      c2.width = 64;
+      c2.height = 4;
+      const x2 = c2.getContext("2d");
+      x2.fillStyle = "#2E9E44";
+      x2.fillRect(0, 0, 64, 4);
+      x2.fillStyle = "#E8C300";
+      x2.fillRect(40, 0, 16, 4);
+      const tPE = new THREE.CanvasTexture(c2);
+      tPE.wrapS = tPE.wrapT = THREE.RepeatWrapping;
+      MAT.PE = M(16777215, { map: tPE });
+    }
     Object.keys(CNAME).forEach((k) => {
       if (!MAT[k]) MAT[k] = M(CNAME[k][3]);
     });
@@ -5173,6 +5314,7 @@ var RICEngine = (() => {
     const dyn = new THREE.Group();
     sc.add(dyn);
     const V = { R, sc, cam, dyn, stat, place, pick: [], mk, ghost, M, G, MAT, box, wallM, ceilM, labels: false, glow: glowTex(), tmp: [], dirty: true, raf: 0, FLG1 };
+    V.shadows = Q === "alta";
     V.applyFl = () => {
       FLG1.visible = flVis(1);
       const sm = S.sim2, by = new Map(sm.items.map((i) => [i.id, i]));
@@ -5756,7 +5898,15 @@ var RICEngine = (() => {
       if (mv) apply();
       if (V.dirty) {
         V.dirty = false;
+        const t0 = performance.now();
         R.render(sc, cam);
+        const dtR = performance.now() - t0;
+        V.slow = dtR > 28 ? (V.slow || 0) + 1 : Math.max(0, (V.slow || 0) - 1);
+        if (V.slow > 18 && R.getPixelRatio() > 1) {
+          V.slow = 0;
+          R.setPixelRatio(Math.max(1, R.getPixelRatio() - 0.25));
+          size();
+        }
       }
     };
     loop();
@@ -5774,6 +5924,12 @@ var RICEngine = (() => {
       R.dispose();
       if (R.forceContextLoss) R.forceContextLoss();
     };
+    if (V.shadows) sc.traverse((o) => {
+      if (o.isMesh && !(o.material && o.material.transparent)) {
+        o.castShadow = !(o.geometry && /Cylinder|Sphere|Tube/.test(o.geometry.type));
+        o.receiveShadow = true;
+      }
+    });
     return V;
   }
   function simBuild() {
@@ -6069,7 +6225,7 @@ var RICEngine = (() => {
     };
     ev.E.forEach((e) => {
       const it = e.it;
-      run(e.pts, e.cond, { k: "edge", id: e.id }, it.n || [1, 0, 0], simSel === "e" + e.id, ev.cs[e.ci].hot, heatOf(e));
+      run(e.pts, e.cond, { k: "edge", id: e.id }, it.n || [1, 0, 0], simSel === "e" + e.id, ev.cs[e.ci].hot || simFxHot(e.cid), heatOf(e));
     });
     {
       const lg = document.getElementById("simleg");
@@ -6276,6 +6432,12 @@ var RICEngine = (() => {
       V.pick.push(grp);
     });
     V.applyFl();
+    if (V.shadows) V.dyn.traverse((o) => {
+      if (o.isMesh && !(o.material && o.material.transparent)) {
+        o.castShadow = !(o.geometry && /Cylinder|Sphere|Tube/.test(o.geometry.type));
+        o.receiveShadow = true;
+      }
+    });
     V.dirty = true;
   }
   function simShowHud(m) {
@@ -13232,6 +13394,130 @@ var RICEngine = (() => {
       dmRefresh();
     }, 1100);
   }
+  /* ===== Simulador 3D: calidad gráfica y simulación de fallas (sobrecarga, cortocircuito, falla a tierra, cable subdimensionado) ===== */
+  const QUAL_L = { auto: "Autom\xE1tica", baja: "Baja (m\xE1s fluida)", media: "Media", alta: "Alta (sombras)" };
+  function simQualPref() {
+    try {
+      return localStorage.getItem(KEY + "-q") || "auto";
+    } catch (e) {
+      return "auto";
+    }
+  }
+  function simQual(coarse) {
+    const q = simQualPref();
+    if (q !== "auto") return q;
+    return coarse ? (window.devicePixelRatio || 1) > 2 ? "baja" : "media" : "alta";
+  }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest && e.target.closest('[data-sq]');
+    if (!b) return;
+    try {
+      localStorage.setItem(KEY + "-q", b.dataset.sq);
+    } catch (err) {
+    }
+    render(true);
+  });
+  const FASE_COL = { rojo: 13840175, azul: 2056144, negro: 2106408 };
+  function simFasePref() {
+    try {
+      return localStorage.getItem(KEY + "-fase") || "rojo";
+    } catch (e) {
+      return "rojo";
+    }
+  }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest && e.target.closest("[data-sfase]");
+    if (!b) return;
+    try {
+      localStorage.setItem(KEY + "-fase", b.dataset.sfase);
+    } catch (err) {
+    }
+    render(true);
+  });
+  function simQualHTML() {
+    const q = simQualPref();
+    return '<div class="field"><label>Calidad gr\xE1fica del 3D</label><div class="chips" role="group" aria-label="Calidad gr\xE1fica">' + Object.entries(QUAL_L).map(([k, t]) => '<button type="button" class="chip' + (q === k ? " on" : "") + '" data-sq="' + k + '" aria-pressed="' + (q === k) + '">' + t + "</button>").join("") + '</div><small>Autom\xE1tica usa sombras en computador y una versi\xF3n m\xE1s liviana en tel\xE9fonos. Si el 3D se pone lento, la resoluci\xF3n baja sola.</small></div><div class="field" style="margin-top:10px"><label>Color de la fase en el 3D</label><div class="chips" role="group" aria-label="Color de la fase">' + [["azul", "Azul"], ["negro", "Negro"], ["rojo", "Rojo"]].map(([k, t]) => '<button type="button" class="chip' + (simFasePref() === k ? " on" : "") + '" data-sfase="' + k + '" aria-pressed="' + (simFasePref() === k) + '">' + t + "</button>").join("") + '</div><small>RIC N\xB004, 5.32: fases azul, negro o rojo; neutro blanco; tierra verde o verde/amarillo.</small></div>';
+  }
+  /* ---- Fallas ---- */
+  const SF_T = { sobrecarga: "Sobrecarga (enchufar m\xE1s equipos)", cortocircuito: "Cortocircuito al final del circuito", tierra: "Falla a tierra (fase toca una carcasa)", subdimensionado: "Cable subdimensionado (sobrecarga de 1,45 \xD7 In)" };
+  let SF = { cid: null, tipo: "cortocircuito", P: 3000, res: null, bak: null }, simFx = null;
+  function simFxHot(cid) {
+    return !!(simFx && simFx.cid === cid && simFx.hot);
+  }
+  function sfInput(s, c) {
+    const ev = simEval(s), k = cIdx(s, c.id), x = ev.cs[k] || {}, ic = simIcc(s, ev), cc = ic.c[c.id] || { R: 0 };
+    const iz = ampOf(+c.S) * fTemp(s.ta || 30), bad = s.fault && s.fault.type === "drMalo" && s.fault.dr === c.dr;
+    return { In: +c.In, cv: c.cv || "C", Iz: iz, Is: x.I || 0, Pextra: +SF.P, Zs: ic.Zs, Ra: ic.Ra, Rc: cc.R || 2 * 0.018 * 10 / (+c.S || 2.5), dr: { tiene: c.dr !== "none", idn: (+c.ds || 30) / 1e3, funciona: !bad }, pe: c.pe !== false, far: cc.far };
+  }
+  const sfDev = (r, c) => r.actua === "dr" ? "el diferencial " + c.dr + " (" + (c.ds || 30) + " mA)" : r.actua === "tm-magnetico" ? "el magn\xE9tico del autom\xE1tico " + c.In + " A curva " + c.cv : r.actua === "tm-termico" ? "el t\xE9rmico del autom\xE1tico " + c.In + " A curva " + c.cv : "ninguna protecci\xF3n";
+  const sfT = (r) => r.tMin == null ? "no corta" : r.tMax == null ? "m\xE1s de 1 hora" : tfmt(r.tMin) + " a " + tfmt(r.tMax);
+  function sfResHTML() {
+    const s = S.sim2, r = SF.res;
+    if (!r) return '<p class="hint" style="margin:0">Elige un circuito y una falla, y toca Simular.</p>';
+    const c = s.circuits.find((q) => q.id === r.cid) || {}, cls = r.nivel === "ok" ? "ok" : r.nivel === "riesgo" ? "warn" : "bad";
+    return '<ol class="dmtl sfres"><li><b>Falla:</b> ' + SF_T[r.tipo] + " en C" + (cIdx(s, c.id) + 1) + (r.far ? " (punto m\xE1s lejano: " + esc(r.far) + ")" : "") + ". Corriente: <b>" + nf(r.I, r.I < 1 ? 3 : 1) + " A</b>" + (r.tipo !== "tierra" || r.pe ? " = " + nf(r.k, 1) + " \xD7 In" : "") + ".</li><li><b>Act\xFAa:</b> " + sfDev(r, c) + " \xB7 " + sfT(r) + ".</li>" + (r.Uc != null ? "<li><b>Tensi\xF3n en la carcasa:</b> " + n0(r.Uc) + " V (l\xEDmite de seguridad 50 V en lugar seco, RIC N\xB005).</li>" : "") + (r.cableSobre ? "<li><b>Cable:</b> lleva m\xE1s de lo que soporta (Iz " + n0(r.Iz) + " A) mientras dura la falla.</li>" : "") + '<li><b>Resultado:</b> <span class="pill ' + cls + '">' + (r.nivel === "ok" ? "Protegido" : r.nivel === "riesgo" ? "Riesgo" : "Peligro") + "</span> " + r.motivo + '</li></ol><p class="hint" style="margin:6px 0 0">Norma: ' + r.ref + ". Tiempos de disparo seg\xFAn curvas IEC 60898; corriente de cortocircuito por el m\xE9todo convencional (criterio usual).</p>";
+  }
+  function sfCardHTML() {
+    const s = S.sim2;
+    if (!s || !s.circuits.length) return "";
+    if (SF.cid == null || !s.circuits.some((c) => c.id === SF.cid)) SF.cid = s.circuits[0].id;
+    const opt = (k, v, t) => '<option value="' + v + '"' + (String(SF[k]) === String(v) ? " selected" : "") + ">" + t + "</option>";
+    return '<section class="card" id="sfcard"><h2>⚡ Simular una falla</h2><p class="hint" style="margin:0 0 8px">Elige un circuito y una falla. La app calcula la corriente con los largos y secciones reales del modelo, muestra qu\xE9 protecci\xF3n act\xFAa, en cu\xE1nto tiempo y el riesgo, y lo refleja en el 3D.</p><div class="grid sg"><div class="field"><label for="sf_cid">Circuito</label><select id="sf_cid" data-sf="cid">' + s.circuits.map((c, k) => opt("cid", c.id, "C" + (k + 1) + " " + esc(c.n || "") + " \xB7 " + c.In + " A " + c.cv + " \xB7 " + sStr(+c.S) + " mm\xB2")).join("") + '</select></div><div class="field"><label for="sf_tipo">Falla</label><select id="sf_tipo" data-sf="tipo">' + Object.entries(SF_T).map(([k, t]) => opt("tipo", k, t)).join("") + "</select></div>" + (SF.tipo === "sobrecarga" ? '<div class="field"><label for="sf_P">Carga extra enchufada</label><select id="sf_P" data-sf="P">' + [1000, 2000, 3000, 4000, 6000].map((w) => opt("P", w, n0(w) + " W")).join("") + "</select></div>" : "") + '</div><div class="exp" style="margin-top:8px"><button type="button" class="btn calc" data-sf="go">⚡ Simular</button>' + (SF.bak ? '<button type="button" class="btn ghost" data-sf="reset">↺ Restablecer</button>' : "") + '</div><div id="sfres" role="status" aria-live="polite" style="margin-top:8px">' + sfResHTML() + "</div></section>";
+  }
+  function sfRun() {
+    const s = S.sim2, c = s.circuits.find((q) => q.id === +SF.cid);
+    if (!c) return;
+    sfReset(true);
+    const inp = sfInput(s, c), r = RICEngine.simularFalla(Object.assign({ tipo: SF.tipo }, inp));
+    SF.res = Object.assign({ cid: c.id, tipo: SF.tipo, Iz: inp.Iz, far: inp.far, pe: inp.pe }, r);
+    SF.bak = { cid: c.id, on: c.on, dr: c.dr !== "none" ? !!(s.drOff && s.drOff[c.dr]) : null };
+    if (r.actua === "dr" && c.dr !== "none") {
+      s.drOff = s.drOff || {};
+      s.drOff[c.dr] = true;
+    } else if (r.actua === "tm-magnetico" || r.actua === "tm-termico" && r.tMax != null && r.tMax <= 3600) c.on = false;
+    simFx = { cid: c.id, hot: r.cableSobre || r.nivel !== "ok" };
+    simToast([[r.nivel === "ok" ? "ok" : "bad", "C" + (cIdx(s, c.id) + 1) + ": act\xFAa " + sfDev(r, c) + " (" + sfT(r) + ")."]]);
+    save();
+    simRefresh([]);
+    simBuild();
+    sfPaint();
+  }
+  function sfReset(silent) {
+    const s = S.sim2, b = SF.bak;
+    if (b) {
+      const c = s.circuits.find((q) => q.id === b.cid);
+      if (c) {
+        c.on = b.on;
+        if (b.dr != null && s.drOff) s.drOff[c.dr] = b.dr;
+      }
+    }
+    SF.bak = null;
+    simFx = null;
+    if (!silent) {
+      SF.res = null;
+      save();
+      simRefresh([]);
+      simBuild();
+      sfPaint();
+    }
+  }
+  function sfPaint() {
+    const el = document.getElementById("sfcard");
+    if (el) el.outerHTML = sfCardHTML();
+  }
+  document.addEventListener("change", (e) => {
+    const el = e.target;
+    if (!el || !el.dataset || !el.dataset.sf || el.tagName !== "SELECT") return;
+    SF[el.dataset.sf] = isNaN(+el.value) ? el.value : +el.value;
+    SF.res = null;
+    sfPaint();
+  });
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest && e.target.closest("button[data-sf]");
+    if (!b) return;
+    if (b.dataset.sf === "go") sfRun();
+    if (b.dataset.sf === "reset") sfReset(false);
+  });
   /* ===== Arranque ===== */
   document.documentElement.lang = "es";
   {

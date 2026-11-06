@@ -1,12 +1,25 @@
   function simCreate(wrap) {
     const coarse = matchMedia("(pointer:coarse)").matches, cv = wrap.querySelector("canvas"), R = new THREE.WebGLRenderer({ canvas: cv, antialias: !coarse || (window.devicePixelRatio || 1) < 2, powerPreference: "high-performance" });
-    R.setPixelRatio(Math.min(coarse ? 1.5 : 2, window.devicePixelRatio || 1));
+    const Q = simQual(coarse), dpr = window.devicePixelRatio || 1;
+    R.setPixelRatio(Math.min(Q === "baja" ? 1 : Q === "media" ? 1.5 : 2, dpr));
+    if (Q === "alta") {
+      R.shadowMap.enabled = true;
+      R.shadowMap.type = THREE.PCFSoftShadowMap;
+    }
     const sc = new THREE.Scene(), cs = getComputedStyle(document.documentElement);
     sc.background = new THREE.Color((cs.getPropertyValue("--surface2") || "#f5f7f9").trim());
     const cam = new THREE.PerspectiveCamera(45, 1, 0.05, 150);
     sc.add(new THREE.HemisphereLight(16777215, 9082531, 0.72));
     const d1 = new THREE.DirectionalLight(16777215, 0.5);
     d1.position.set(8, 12, 10);
+    if (Q === "alta") {
+      d1.castShadow = true;
+      d1.intensity = 0.62;
+      d1.shadow.mapSize.set(2048, 2048);
+      Object.assign(d1.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 45 });
+      d1.shadow.bias = -6e-4;
+      d1.shadow.normalBias = 0.02;
+    }
     sc.add(d1);
     const d2 = new THREE.DirectionalLight(16777215, 0.22);
     d2.position.set(-6, 7, -4);
@@ -14,6 +27,20 @@
     const M = (c, o) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.85, metalness: 0 }, o || {}));
     const G = { duct: new THREE.CylinderGeometry(0.03, 0.03, 1, 8), wire: new THREE.CylinderGeometry(68e-4, 68e-4, 1, 6), hit: new THREE.CylinderGeometry(0.065, 0.065, 1, 6), joint: new THREE.SphereGeometry(0.03, 8, 6), cord: new THREE.CylinderGeometry(5e-3, 5e-3, 1, 5) };
     const MAT = { F: M(13840175), N: M(15921906), PE: M(3055172), R: M(9313051), duct: M(11187389, { transparent: true, opacity: 0.3, depthWrite: false }), sel: M(15237690, { transparent: true, opacity: 0.55, depthWrite: false, emissive: 11555370, emissiveIntensity: 0.4 }), hot: M(16757504, { emissive: 16748288, emissiveIntensity: 1 }), hit: new THREE.MeshBasicMaterial({ visible: false }), white: M(16250871), dark: M(2236962), box: M(13686234), cord: M(2236962) };
+    MAT.F.color.setHex(FASE_COL[simFasePref()] || FASE_COL.rojo);
+    {
+      const c2 = document.createElement("canvas");
+      c2.width = 64;
+      c2.height = 4;
+      const x2 = c2.getContext("2d");
+      x2.fillStyle = "#2E9E44";
+      x2.fillRect(0, 0, 64, 4);
+      x2.fillStyle = "#E8C300";
+      x2.fillRect(40, 0, 16, 4);
+      const tPE = new THREE.CanvasTexture(c2);
+      tPE.wrapS = tPE.wrapT = THREE.RepeatWrapping;
+      MAT.PE = M(16777215, { map: tPE });
+    }
     Object.keys(CNAME).forEach((k) => {
       if (!MAT[k]) MAT[k] = M(CNAME[k][3]);
     });
@@ -227,6 +254,7 @@
     const dyn = new THREE.Group();
     sc.add(dyn);
     const V = { R, sc, cam, dyn, stat, place, pick: [], mk, ghost, M, G, MAT, box, wallM, ceilM, labels: false, glow: glowTex(), tmp: [], dirty: true, raf: 0, FLG1 };
+    V.shadows = Q === "alta";
     V.applyFl = () => {
       FLG1.visible = flVis(1);
       const sm = S.sim2, by = new Map(sm.items.map((i) => [i.id, i]));
@@ -810,7 +838,15 @@
       if (mv) apply();
       if (V.dirty) {
         V.dirty = false;
+        const t0 = performance.now();
         R.render(sc, cam);
+        const dtR = performance.now() - t0;
+        V.slow = dtR > 28 ? (V.slow || 0) + 1 : Math.max(0, (V.slow || 0) - 1);
+        if (V.slow > 18 && R.getPixelRatio() > 1) {
+          V.slow = 0;
+          R.setPixelRatio(Math.max(1, R.getPixelRatio() - 0.25));
+          size();
+        }
       }
     };
     loop();
@@ -828,6 +864,12 @@
       R.dispose();
       if (R.forceContextLoss) R.forceContextLoss();
     };
+    if (V.shadows) sc.traverse((o) => {
+      if (o.isMesh && !(o.material && o.material.transparent)) {
+        o.castShadow = !(o.geometry && /Cylinder|Sphere|Tube/.test(o.geometry.type));
+        o.receiveShadow = true;
+      }
+    });
     return V;
   }
   function simBuild() {
@@ -1123,7 +1165,7 @@
     };
     ev.E.forEach((e) => {
       const it = e.it;
-      run(e.pts, e.cond, { k: "edge", id: e.id }, it.n || [1, 0, 0], simSel === "e" + e.id, ev.cs[e.ci].hot, heatOf(e));
+      run(e.pts, e.cond, { k: "edge", id: e.id }, it.n || [1, 0, 0], simSel === "e" + e.id, ev.cs[e.ci].hot || simFxHot(e.cid), heatOf(e));
     });
     {
       const lg = document.getElementById("simleg");
@@ -1330,5 +1372,11 @@
       V.pick.push(grp);
     });
     V.applyFl();
+    if (V.shadows) V.dyn.traverse((o) => {
+      if (o.isMesh && !(o.material && o.material.transparent)) {
+        o.castShadow = !(o.geometry && /Cylinder|Sphere|Tube/.test(o.geometry.type));
+        o.receiveShadow = true;
+      }
+    });
     V.dirty = true;
   }

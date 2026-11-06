@@ -37,6 +37,17 @@ es exigencia textual de los pliegos y se puede cambiar.
 
 Los casos «correcto vs incorrecto» que usan fugas de 7 mA o 100 mA lo indican en pantalla como valores ilustrativos.
 
+## Fallas (`src/engine/fallas.ts`)
+
+| Función        | Qué entrega                                                                                          | Referencia                                   |
+| -------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `zonaDisparo`  | Zona de la curva (sin disparo, lenta, térmica, transición, magnética) y tiempos para k = I / In      | IEC 60898 (tiempos térmicos: criterio usual) |
+| `simularFalla` | Corriente, protección que actúa, tiempo, tensión de contacto y nivel de riesgo para 4 tipos de falla | RIC N°10 5.1.3.5, 5.1.4, 5.1.5.1 · RIC N°05  |
+
+Cortocircuito y falla a tierra usan la impedancia real del modelo 3D (red, alimentador y circuito hasta el punto más
+lejano) con el método convencional (criterio usual). Sin conductor de tierra se usa 1.000 Ω para el cuerpo humano
+(criterio usual).
+
 ## Pendiente de confirmar o parametrizado
 
 - Diámetros exteriores de cables y diámetros interiores de tubos: valores de catálogo, no normativos.

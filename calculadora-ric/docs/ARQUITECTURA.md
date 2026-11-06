@@ -52,6 +52,7 @@ const chooseS = (o) => RICEngine.chooseS(Object.assign({ amp: S.amp }, o));
 | `18-navegacion.js`             | Páginas, navegación, render, validación en vivo y eventos globales                                       |
 | `19-asistente.js`              | Asistente guiado (7 pasos), resultados, unilineal del proyecto, materiales y exportación                 |
 | `20-demos.js`                  | Demostraciones: caída vs distancia, corriente vs protección, paso a paso animado, correcto vs incorrecto |
+| `21-sim-fallas.js`             | Calidad gráfica del 3D (auto, baja, media, alta con sombras), color de fase y «Simular una falla»        |
 | `99-inicio.js`                 | Arranque: idioma, enlace «Saltar al contenido», registro de la PWA y primer render                       |
 
 Las secciones comparten una sola clausura (se concatenan en orden numérico), así que el orden importa: una
