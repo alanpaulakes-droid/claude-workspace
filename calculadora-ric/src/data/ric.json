@@ -1,0 +1,85 @@
+{
+  "ver": "2021.1",
+  "fuente": "RIC N°03 V1.1 (2021) · RIC N°04, N°06 y N°10 (2021), SEC",
+  "resolucion": "Res. Ex. N° 33.877/2020, SEC",
+  "secc": [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120],
+  "iz": {
+    "_ref": "RIC N°04, Tabla N°4.4: capacidad de transporte de corriente de conductores de cobre aislados, ambiente 30 °C (D1 y D2: suelo 20 °C), hasta 3 conductores con carga",
+    "70": {
+      "A1": [14, 18, 24, 31, 42, 56, 73, 89, 108, 136, 164, 188],
+      "B1": [16, 21, 28, 36, 50, 68, 89, 110, 134, 171, 207, 239],
+      "E": [19, 24, 31, 43, 60, 80, 101, 126, 153, 196, 238, 276]
+    },
+    "90": {
+      "A1": [17, 23, 31, 40, 54, 73, 95, 117, 141, 179, 216, 249],
+      "A2": [17, 22, 30, 38, 51, 68, 89, 109, 130, 164, 197, 227],
+      "B1": [18, 24, 37, 48, 66, 88, 117, 144, 175, 222, 269, 312],
+      "B2": [19, 24, 35, 44, 60, 80, 105, 128, 154, 194, 233, 268],
+      "D1": [19, 33, 42, 52, 68, 89, 113, 136, 159, 197, 232, 263],
+      "D2": [23, 38, 59, 74, 98, 126, 161, 194, 230, 282, 339, 386],
+      "E": [19, 32, 42, 54, 75, 100, 127, 158, 192, 246, 298, 346]
+    }
+  },
+  "tcab": {
+    "70": "70 °C · H07V, H07Z1, THWN, NYIFY",
+    "90": "90 °C · THHN, RV, RV-K, RZ1, RZ1-K"
+  },
+  "met": {
+    "A1": "A1 · hasta 3 monopolares en ducto embutido en pared",
+    "A2": "A2 · cable multiconductor en ducto embutido",
+    "B1": "B1 · hasta 3 monopolares en ducto o bandeja adosada a pared",
+    "B2": "B2 · multiconductor en ducto o bandeja adosada",
+    "D1": "D1 · en ducto enterrado (suelo 20 °C)",
+    "D2": "D2 · directamente enterrado (suelo 20 °C)",
+    "E": "E · multiconductor al aire, escalerilla o bandeja perforada"
+  },
+  "ft": {
+    "_ref": "RIC N°04, Tabla N°4.7: factor ft por temperatura ambiente (límite superior del rango en °C)",
+    "t": [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60],
+    "70": [1.22, 1.17, 1.12, 1.06, 1.0, 0.94, 0.87, 0.79, 0.71, 0.61, 0.5],
+    "90": [1.15, 1.12, 1.08, 1.04, 1.0, 0.96, 0.91, 0.87, 0.82, 0.76, 0.71]
+  },
+  "fn": {
+    "_ref": "RIC N°04, Tabla N°4.6: factor fn por cantidad de conductores activos en un ducto",
+    "hasta": [3, 6, 24, 42, 1000000000],
+    "f": [1, 0.8, 0.7, 0.6, 0.5]
+  },
+  "llenado": {
+    "_ref": "RIC N°04, Tabla N°4.21: % máximo de la sección del tubo ocupada por conductores",
+    "1": 50,
+    "2": 33,
+    "3": 33,
+    "union": 60
+  },
+  "fd": {
+    "_ref": "RIC N°03, Tabla N°3.1: factor de demanda, casa habitación",
+    "tramos": [
+      [3000, 1],
+      [120000, 0.35],
+      [1e15, 0.25]
+    ]
+  },
+  "fs": {
+    "_ref": "RIC N°03, Tabla N°3.2: factor de simultaneidad de n viviendas (1 a 21); n > 21: (15,3 + (n − 21) × 0,5) / n",
+    "f": [1, 1, 1, 0.95, 0.92, 0.9, 0.89, 0.88, 0.87, 0.85, 0.84, 0.83, 0.82, 0.81, 0.79, 0.78, 0.77, 0.76, 0.75, 0.74, 0.73]
+  },
+  "caida": { "_ref": "RIC N°03, 5.1.3", "tramo": 3, "total": 5 },
+  "seccionMin": {
+    "_ref": "RIC N°04, 5.4 y RIC N°03, 5.1.2",
+    "iluminacion": 1.5,
+    "enchufes": 2.5,
+    "mixtos": 2.5,
+    "subalimentador": 2.5,
+    "alimentador": 4
+  },
+  "circuitos": {
+    "_ref": "RIC N°10, 5.1.4.1 y 5.1.4.4; 5.1.4.5 y 5.1.4.6",
+    "holgura": 1.1,
+    "usoMax": 0.9,
+    "wCentro": 100,
+    "wEnchufe": 250
+  },
+  "tierraServ": { "_ref": "RIC N°06, 6.1 y 6.2", "max": 20, "maxExc": 80 },
+  "UL": { "_ref": "RIC N°05, 5.8", "seco": 50, "humedo": 24 },
+  "colores": { "_ref": "RIC N°04, 5.32", "L1": "azul", "L2": "negro", "L3": "rojo", "N": "blanco", "PE": "verde o verde/amarillo" }
+}

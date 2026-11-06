@@ -19,5 +19,6 @@ Estos criterios aplican a **todo** proyecto de este repositorio, actual o nuevo.
 
 ## Forma de trabajo
 - Responder en español, breve y en listas; sin preámbulos ni resúmenes finales.
+- Calculadora RIC: editar las fuentes en `calculadora-ric/src` (motor en `src/engine`, tablas en `src/data/ric.json` con cita del pliego), nunca el HTML generado. Correr `npm run check` y `npm run test:e2e` en `calculadora-ric/`; `npm run build` regenera `CALCULADORA_RIC.html` y `TABLERO_PRACTICA_RIC.html`.
 - Antes de publicar: revisión de sintaxis, autopruebas de la app en verde, recorrido de todas las páginas sin errores de consola y captura del resultado en 3D cuando aplique.
 - Publicar el artifact en la misma URL, hacer commit y push a la rama de trabajo asignada.
