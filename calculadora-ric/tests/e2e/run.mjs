@@ -262,6 +262,84 @@ try {
     await p.close();
   }
 
+  // 3e. Ruta de aprendizaje: niveles, repaso espaciado, contra reloj, simulacro SEC y logros
+  {
+    const p = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(URL);
+    await goPage(p, "ruta");
+    await p.waitForTimeout(200);
+    check("Ruta: 5 niveles", (await p.$$eval(".nivel", (x) => x.length)) === 5);
+    const correcta = () =>
+      p.evaluate(() => {
+        const q = document.querySelector(".sesq").innerText;
+        const B = RICEngine.BANCO_SEC.q.find((x) => x.q === q);
+        return B ? B.a : 0;
+      });
+    await p.click('[data-aprq="1"]');
+    let n = 0;
+    while ((await p.$("[data-sesa]")) && n < 30) {
+      const a = await correcta();
+      await p.click(`[data-sesa="${(a + 1) % 3}"]`);
+      await p.click('[data-ses="next"]');
+      n++;
+    }
+    const apr = () => p.evaluate(() => JSON.parse(localStorage.getItem("ric-calc-v3-apr") || "{}"));
+    let A = await apr();
+    check(
+      "Errores del nivel entran al repaso",
+      Object.keys(A.rep).length === n && n > 5,
+      `${Object.keys(A.rep).length}/${n}`,
+    );
+    await p.evaluate(() => {
+      const k = "ric-calc-v3-apr",
+        X = JSON.parse(localStorage.getItem(k));
+      Object.values(X.rep).forEach((t) => (t.due = 0));
+      localStorage.setItem(k, JSON.stringify(X));
+    });
+    await p.reload();
+    await goPage(p, "ruta");
+    await p.waitForTimeout(150);
+    await p.click('[data-aprt="rep"]');
+    await p.click('[data-aprg="rep"]');
+    for (let i = 0; i < 20 && (await p.$("[data-sesa]")); i++) {
+      await p.click(`[data-sesa="${await correcta()}"]`);
+      await p.click('[data-ses="next"]');
+    }
+    A = await apr();
+    check(
+      "Repaso: aciertos suben de caja (Leitner)",
+      Object.values(A.rep).every((t) => t.box === 2),
+    );
+    await p.click('[data-ses="exit"]');
+    await p.click('[data-aprt="reloj"]');
+    await p.click('[data-aprg="reloj"]');
+    for (let r = 0; r < 5; r++) {
+      await p.click('[data-rj="pIn"][data-v="16"]');
+      await p.click('[data-rj="pS"][data-v="2.5"]');
+      await p.click('[data-rj="ok"]');
+      await p.click('[data-rj="next"]');
+    }
+    check(
+      "Contra reloj: partida de 5 circuitos con puntaje",
+      /Puntaje/.test(await p.evaluate(() => document.querySelector(".kpis").innerText)),
+    );
+    await p.click('[data-aprt="sec"]');
+    await p.click('[data-aprg="sec"]');
+    for (let i = 0; i < 25; i++) {
+      await p.click(`[data-sesa="${await correcta()}"]`);
+      await p.click('[data-ses="next"]');
+    }
+    A = await apr();
+    check(
+      "Simulacro SEC: 25/25 → nota 7,0 y logros",
+      A.sec.best === 7 && !!A.logros.sec6 && !errs.length,
+      errs.join(" | "),
+    );
+    await p.close();
+  }
+
   // 4. Armar tablero: soluciones de los niveles aprueban
   {
     const p = await browser.newPage({ viewport: { width: 1280, height: 900 } });

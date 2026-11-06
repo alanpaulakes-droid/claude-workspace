@@ -48,6 +48,13 @@ Cortocircuito y falla a tierra usan la impedancia real del modelo 3D (red, alime
 lejano) con el método convencional (criterio usual). Sin conductor de tierra se usa 1.000 Ω para el cuerpo humano
 (criterio usual).
 
+## Aprendizaje (`src/engine/aprendizaje.ts`)
+
+- `BANCO_SEC`: preguntas basadas en el texto de los pliegos RIC N°03, N°04, N°05, N°06 y N°10; cada una con
+  explicación y numeral. Es material de práctica, no el examen oficial de la SEC.
+- `programar` y `pendientes`: repaso espaciado (Leitner, cajas 1 a 5; repasos a 1, 3, 7, 14 y 30 días; criterio usual).
+- `notaChilena`: nota de 1,0 a 7,0 con 60 % de exigencia para el 4,0 (criterio usual en Chile).
+
 ## Pendiente de confirmar o parametrizado
 
 - Diámetros exteriores de cables y diámetros interiores de tubos: valores de catálogo, no normativos.

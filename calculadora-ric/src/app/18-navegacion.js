@@ -47,7 +47,8 @@
     { id: "l_comp", g: "learn", t: "Componentes ilustrados", r: pgComp },
     { id: "l_glosario", g: "learn", t: "Glosario", r: pgGlosario },
     { id: "l_tablas", g: "learn", t: "Tablas", r: pgTablas },
-    { id: "demo", g: "learn", t: "Demostraciones interactivas", r: pgDemo }
+    { id: "demo", g: "learn", t: "Demostraciones interactivas", r: pgDemo },
+    { id: "ruta", g: "learn", t: "Ruta de aprendizaje", r: pgRuta }
   ];
   const GROUPS = { asis: "Asistente", proy: "Proyecto (8 etapas)", calc: "C\xE1lculos", plan: "Tableros y cuadro", taller: "Simulador 3D", rep: "Reportes", learn: "Normativa y aprender" };
   const PARENT = { asis: "hub_proy", proy: "hub_proy", calc: "hub_calc", learn: "hub_learn", plan: "home", taller: "home", hub: "home", rep: "home" };
@@ -235,6 +236,7 @@
     sim: ["Toca \xABColocar\xBB, elige el elemento y toca un muro o el piso; con \xABConectar\xBB unes la caja o el autom\xE1tico con el punto.", "Arrastra para girar, pellizca para acercar y usa \u26F6 Grande para ver en pantalla completa.", "El bot\xF3n rojo \u26A0 lista los errores RIC con su explicaci\xF3n y la correcci\xF3n propuesta.", "Usa \u21B6 Atr\xE1s para deshacer y los instrumentos para medir tensi\xF3n, continuidad y aislamiento."],
     casa: ["Elige una plantilla o dibuja los recintos con medidas exactas (en metros).", "Mueve y ajusta cada recinto tocando o con los campos num\xE9ricos.", "Revisa las alertas de superficie m\xEDnima y accesos.", "Pasa la vivienda al simulador 3D para instalar los puntos."],
     pan: ["Elige un encargo o arma libremente en la pared de pr\xE1ctica.", "\xABAgregar lo pedido\xBB coloca lo necesario; tambi\xE9n puedes colocar a mano en el 3D.", "\xABComprobar\xBB prueba el circuito y ofrece corregir (con tu autorizaci\xF3n, autom\xE1tico o desactivado).", "Abajo tienes el plano de la pared, el unilineal, el multilineal y los materiales."],
+    ruta: ["Sigue los niveles en orden: cada uno combina lecciones, pr\xE1ctica y preguntas tipo SEC.", "Lo que falles entra a \xABRepaso\xBB y vuelve a aparecer en 1, 3, 7, 14 y 30 d\xEDas.", "En \xABContra reloj\xBB dimensiona circuitos en 45 segundos; en \xABSimulacro SEC\xBB rinde 25 preguntas en 40 minutos.", "Cada respuesta explica el porqu\xE9 y cita el pliego RIC."],
     demo: ["Elige una pesta\xF1a: ca\xEDda vs distancia, corriente vs protecci\xF3n, paso a paso o correcto vs incorrecto.", "Mueve los deslizadores: el gr\xE1fico y los valores cambian al instante.", "En \xABPaso a paso\xBB toca Reproducir; en \xABCorrecto vs incorrecto\xBB toca Simular la falla.", "Cada resultado cita el pliego RIC que aplica."],
     rep: ["Revisa que las etapas del proyecto est\xE9n completas.", "Elige el documento: informe t\xE9cnico, memoria, protocolo de ensayos, l\xE1mina o listado de materiales.", "Usa \xABImprimir o guardar PDF\xBB para obtener el archivo."]
   };

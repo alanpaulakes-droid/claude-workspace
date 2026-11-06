@@ -263,3 +263,54 @@ describe("Fallas (curvas IEC 60898 y método convencional)", () => {
     expect(r.actua).toBe("tm-termico");
   });
 });
+
+import { BANCO_SEC, programar, pendientes, notaChilena, mezclar } from "../../src/engine";
+describe("Aprendizaje", () => {
+  it("banco SEC: preguntas válidas y con referencia RIC", () => {
+    expect(BANCO_SEC.q.length).toBeGreaterThanOrEqual(30);
+    const ids = new Set<string>();
+    for (const q of BANCO_SEC.q) {
+      expect(q.o.length).toBeGreaterThanOrEqual(3);
+      expect(q.a).toBeGreaterThanOrEqual(0);
+      expect(q.a).toBeLessThan(q.o.length);
+      expect(q.ref).toMatch(/RIC N°0\d|RIC N°1\d/);
+      expect(q.n).toBeGreaterThanOrEqual(1);
+      expect(q.n).toBeLessThanOrEqual(5);
+      expect(ids.has(q.id)).toBe(false);
+      ids.add(q.id);
+    }
+  });
+  it("respuestas del banco coherentes con el motor", () => {
+    const by = Object.fromEntries(BANCO_SEC.q.map((q) => [q.id, q.o[q.a]]));
+    expect(by.r04i).toBe("18 A");
+    expect(by.r04f).toBe("33 %");
+    expect(by.r03c).toBe("5.450 W");
+    expect(by.r10d).toBe("19");
+  });
+  it("repaso espaciado (Leitner)", () => {
+    const t0 = 1e12;
+    let t = programar(undefined, false, t0);
+    expect(t).toMatchObject({ box: 1, fallos: 1 });
+    expect(t.due).toBe(t0 + 864e5);
+    t = programar(t, true, t0);
+    expect(t.box).toBe(2);
+    expect(t.due).toBe(t0 + 3 * 864e5);
+    t = programar(t, false, t0);
+    expect(t.box).toBe(1);
+    expect(pendientes({ a: t, b: { box: 2, due: t0 - 1, fallos: 1, aciertos: 1 } }, t0 + 2 * 864e5)).toEqual([
+      "b",
+      "a",
+    ]);
+  });
+  it("nota chilena con 60 % de exigencia", () => {
+    expect(notaChilena(0, 10)).toBe(1);
+    expect(notaChilena(6, 10)).toBe(4);
+    expect(notaChilena(10, 10)).toBe(7);
+    expect(notaChilena(8, 10)).toBe(5.5);
+  });
+  it("mezclar es una permutación reproducible", () => {
+    const a = mezclar([1, 2, 3, 4, 5], 42);
+    expect([...a].sort()).toEqual([1, 2, 3, 4, 5]);
+    expect(mezclar([1, 2, 3, 4, 5], 42)).toEqual(a);
+  });
+});

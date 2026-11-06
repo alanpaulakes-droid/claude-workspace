@@ -116,3 +116,25 @@ input,select,textarea{border-radius:var(--r-sm);min-height:var(--tap);font-size:
 @keyframes dmcur{to{stroke-dashoffset:-32}}
 .dmtl{margin:8px 0 0;padding-left:20px}.dmtl li{margin:5px 0}.dmtl li.fx{color:var(--ok)}
 @media (prefers-reduced-motion:reduce){.dmside.fallo *{animation:none!important}}
+/* ==== Ruta de aprendizaje ==== */
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.nivel.rec{border:2px solid var(--blue)}
+.nvh{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.nvn{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;background:var(--blue);color:var(--surface);font:800 var(--fs-lg) var(--f-display)}
+.bar{height:10px;border-radius:var(--r-pill);background:var(--surface2);border:1px solid var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--c2));transition:width .4s var(--ease)}
+.nvls,.nvact{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.ses .sesh{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.sesq{font-size:var(--fs-lg);font-weight:600;margin:14px 0 10px}
+.cuo.sel{border-color:var(--blue);background:var(--blue-soft)}
+.cuo{min-height:var(--tap)}
+.rjt{font:700 var(--fs-md) var(--f-mono);padding:4px 10px;border-radius:var(--r-pill);background:var(--surface2)}
+.rjt.urg{background:var(--bad-soft);color:var(--bad);animation:dmpulse .6s ease-in-out infinite alternate}
+.chip.good{background:var(--ok);border-color:var(--ok);color:var(--on-acc)}
+.chip.badc{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.logros{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:8px}
+.logro{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px dashed var(--line);border-radius:var(--r-md);opacity:.75}
+.logro.on{border-style:solid;border-color:color-mix(in srgb,var(--ok) 50%,var(--line));background:var(--ok-soft);opacity:1}
+.logro .li{font-size:22px;line-height:1}.logro .hint{display:block}
+#aprtoast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:300;background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:var(--r-pill);font-weight:700;box-shadow:var(--sh2);pointer-events:none;transition:opacity .3s,transform .3s;max-width:calc(100% - 32px);text-align:center}
+#aprtoast.show{opacity:1;transform:translate(-50%,0)}

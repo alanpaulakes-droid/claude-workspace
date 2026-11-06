@@ -80,6 +80,7 @@
       s.drOff[c.dr] = true;
     } else if (r.actua === "tm-magnetico" || r.actua === "tm-termico" && r.tMax != null && r.tMax <= 3600) c.on = false;
     simFx = { cid: c.id, hot: r.cableSobre || r.nivel !== "ok" };
+    aprCount("fallas");
     simToast([[r.nivel === "ok" ? "ok" : "bad", "C" + (cIdx(s, c.id) + 1) + ": act\xFAa " + sfDev(r, c) + " (" + sfT(r) + ")."]]);
     save();
     simRefresh([]);

@@ -10,3 +10,4 @@ export * from "./cortocircuito";
 export * from "./materiales";
 export * from "./demos";
 export * from "./fallas";
+export * from "./aprendizaje";

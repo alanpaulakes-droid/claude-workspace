@@ -8,5 +8,5 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   { files: ["scripts/**/*.mjs"], languageOptions: { globals: { ...globals.node } } },
   { files: ["src/pwa/**/*.js"], languageOptions: { globals: { ...globals.serviceworker } } },
-  { files: ["tests/e2e/**/*.mjs"], languageOptions: { globals: { ...globals.node, ...globals.browser } } },
+  { files: ["tests/e2e/**/*.mjs"], languageOptions: { globals: { ...globals.node, ...globals.browser, RICEngine: "readonly" } } },
 );

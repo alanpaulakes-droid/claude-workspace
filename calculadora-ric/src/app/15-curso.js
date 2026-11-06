@@ -518,7 +518,7 @@
         const d = cuDone(l.id);
         return '<button type="button" class="culb" data-cu="'.concat(l.id, '"><span>').concat(l.t, "</span>").concat(d ? '<span class="pill '.concat(d.ok === d.n ? "ok" : "warn", '">✓ ').concat(d.ok, "/").concat(d.n, "</span>") : '<span class="pill info">Empezar</span>', "</button>");
       }).join(""), "</div></section>");
-    }).join(""), '<section class="card"><h2>\u{1F393} Examen final</h2><p>15 preguntas al azar de todas las lecciones. Necesitas 11 o m\xE1s para aprobar.</p><button class="btn calc" type="button" data-cux="exam">Rendir examen</button></section><p class="hint">Tu avance se guarda en este equipo. <button class="linkb" type="button" data-cux="reset">').concat(cuConfirm ? "\xBFSeguro? Toca otra vez para borrar el avance" : "Borrar mi avance", "</button></p>");
+    }).join(""), '<section class="card"><h2>\u{1F3AF} Ruta de aprendizaje</h2><p>Niveles del b\xE1sico al instalador, repaso espaciado de lo que fallas, juego contra reloj y simulacro tipo examen SEC.</p><button class="btn" type="button" data-go="ruta">Abrir la ruta</button></section><section class="card"><h2>\u{1F393} Examen final</h2><p>15 preguntas al azar de todas las lecciones. Necesitas 11 o m\xE1s para aprobar.</p><button class="btn calc" type="button" data-cux="exam">Rendir examen</button></section><p class="hint">Tu avance se guarda en este equipo. <button class="linkb" type="button" data-cux="reset">').concat(cuConfirm ? "\xBFSeguro? Toca otra vez para borrar el avance" : "Borrar mi avance", "</button></p>");
   }
   function cuExam() {
     const c = S.curso, e = c.exam;
@@ -559,6 +559,10 @@
       const [id, qi, oi] = el.dataset.cuq.split("|"), tgt = id === "exam" ? c.exam && c.exam.ans : c.ans[id] || (c.ans[id] = {});
       if (!tgt || tgt[qi] != null) return;
       tgt[qi] = +oi;
+      {
+        const ref = id === "exam" ? c.exam.qs[+qi] : [id, +qi], L0 = ref && CU.find((x) => x.id === ref[0]), q0 = L0 && L0.q[ref[1]];
+        if (q0) aprRegistrar("cu:" + ref[0] + ":" + ref[1], +oi === q0[2]);
+      }
       if (id === "exam") {
         const qs = c.exam.qs.map(([l, i]) => CU.find((x) => x.id === l).q[i]);
         if (qs.every((q, i) => tgt[i] != null)) {
