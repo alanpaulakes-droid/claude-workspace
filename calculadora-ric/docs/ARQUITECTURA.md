@@ -54,6 +54,7 @@ const chooseS = (o) => RICEngine.chooseS(Object.assign({ amp: S.amp }, o));
 | `20-demos.js`                  | Demostraciones: caída vs distancia, corriente vs protección, paso a paso animado, correcto vs incorrecto |
 | `21-sim-fallas.js`             | Calidad gráfica del 3D (auto, baja, media, alta con sombras), color de fase y «Simular una falla»        |
 | `22-aprender.js`               | Ruta de aprendizaje: 5 niveles, repaso espaciado, contra reloj, simulacro tipo SEC y logros              |
+| `23-iconos.js`                 | Íconos SVG propios y reemplazo automático de símbolos antiguos en pestañas, menú, portada y 3D           |
 | `99-inicio.js`                 | Arranque: idioma, enlace «Saltar al contenido», registro de la PWA y primer render                       |
 
 Las secciones comparten una sola clausura (se concatenan en orden numérico), así que el orden importa: una
@@ -62,6 +63,7 @@ sección puede usar lo declarado en otra solo después de que la app terminó de
 ## Diseño
 
 - `src/styles/tokens.css`: colores (claro y oscuro), tipografía, espaciado, radios, sombras y foco.
+- `src/styles/theme.css`: identidad visual v3 «Voltaje» (azul eléctrico y ámbar, encabezado oscuro, barra de pestañas flotante, colores por categoría, portada con héroe). Se aplica al final.
 - `src/styles/components.css`: botones, campos, tarjetas, inicio por modos, asistente y unilineal. Se aplica
   después de `app.css`, así que manda sobre los estilos antiguos.
 - Objetivos táctiles de 44 px como mínimo, campos de 16 px (evita el zoom de iPhone) y contraste AA en ambos temas.

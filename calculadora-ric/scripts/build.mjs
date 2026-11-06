@@ -31,7 +31,7 @@ const app = parts.map((f) => readFileSync(join(appDir, f), "utf8")).join("");
 
 // 3. Plantilla
 const out = rd("src/index.html")
-  .replace("/*@CSS*/", () => ["app.css", "tokens.css", "components.css"].map((f) => rd("src/styles/" + f)).join(""))
+  .replace("/*@CSS*/", () => ["app.css", "tokens.css", "components.css", "theme.css"].map((f) => rd("src/styles/" + f)).join(""))
   .replace("/*@THREE*/", () => rd("src/vendor/three.min.js"))
   .replace("/*@ENGINE*/", () => engine)
   .replace("/*@APP*/", () => app);

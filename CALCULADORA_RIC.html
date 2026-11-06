@@ -2,7 +2,7 @@
 <title>Calculadora RIC Domiciliaria</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 .bxst{display:none;font-weight:700;font-size:13px;border-radius:10px;padding:6px 10px;margin-bottom:6px;line-height:1.25}.bxst.ok{background:#e8f6ec;color:#17643a;border:1px solid #9fd3b1}.bxst.bad{background:#fde8e6;color:#a42a1e;border:1px solid #f0a69c}
 @media (min-width:700px){#shbody.boxmode .bxst{display:block;position:sticky;top:0;z-index:3}}
@@ -637,6 +637,156 @@ input,select,textarea{border-radius:var(--r-sm);min-height:var(--tap);font-size:
 .logro .li{font-size:22px;line-height:1}.logro .hint{display:block}
 #aprtoast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:300;background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:var(--r-pill);font-weight:700;box-shadow:var(--sh2);pointer-events:none;transition:opacity .3s,transform .3s;max-width:calc(100% - 32px);text-align:center}
 #aprtoast.show{opacity:1;transform:translate(-50%,0)}
+/* ===================================================================
+   Tema v3 · identidad visual "Voltaje"
+   Azul eléctrico (acción) + ámbar (energía) sobre neutros fríos.
+   Se aplica al final: manda sobre app.css, tokens.css y components.css.
+   =================================================================== */
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --surface2:#F0F3F9; --ink:#0B1324; --muted:#4A576D; --line:#DCE2EE;
+  --blue:#2347D9; --blue-soft:#E7ECFF; --copper:#C2410C; --copper-soft:#FFEEDD;
+  --ok:#15803D; --ok-soft:#E3F5E9; --warn:#975A06; --warn-soft:#FEF3D7; --bad:#B42318; --bad-soft:#FDE7E5; --on-acc:#fff;
+  --nav1:#0A1430; --nav2:#152B6B; --nav-ink:#F2F5FF; --nav-mut:#AEB9D9;
+  --amber:#F5B300; --grad-pri:linear-gradient(135deg,#2347D9 0%,#4F46E5 100%); --grad-acc:linear-gradient(135deg,#B4380A 0%,#D9480F 100%);
+  --accent-grad:var(--grad-acc);
+  --f-display:"Space Grotesk","Archivo",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-body:"Inter","Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --r-sm:10px; --r-md:14px; --r-lg:20px;
+  --sh1:0 1px 2px rgba(11,19,36,.05),0 2px 6px rgba(11,19,36,.05); --sh2:0 10px 30px rgba(11,19,36,.12);
+  --cat-proy:#2347D9; --cat-calc:#7C3AED; --cat-plan:#D97706; --cat-3d:#0E9384; --cat-rep:#475467; --cat-learn:#15803D; --cat-demo:#DB2777;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#070C18; --surface:#0F1729; --surface2:#151F36; --ink:#E9EEF8; --muted:#A3AFC7; --line:#24304A;
+  --blue:#8EA6FF; --blue-soft:#1A2654; --copper:#FDA060; --copper-soft:#3A2010;
+  --ok:#6EE7A1; --ok-soft:#0F2C1D; --warn:#F7C35C; --warn-soft:#33260C; --bad:#FF9B90; --bad-soft:#3B1513; --on-acc:#0B1020;
+  --nav1:#050A18; --nav2:#0E1D4A; --grad-pri:linear-gradient(135deg,#2347D9 0%,#4338CA 100%);
+  --sh1:0 1px 2px rgba(0,0,0,.45); --sh2:0 12px 32px rgba(0,0,0,.55); color-scheme:dark;
+  --cat-proy:#8EA6FF; --cat-calc:#C4A6FF; --cat-plan:#FBBF24; --cat-3d:#5EEAD4; --cat-rep:#CBD5E1; --cat-learn:#6EE7A1; --cat-demo:#F9A8D4}}
+:root[data-theme="dark"]{
+  --bg:#070C18; --surface:#0F1729; --surface2:#151F36; --ink:#E9EEF8; --muted:#A3AFC7; --line:#24304A;
+  --blue:#8EA6FF; --blue-soft:#1A2654; --copper:#FDA060; --copper-soft:#3A2010;
+  --ok:#6EE7A1; --ok-soft:#0F2C1D; --warn:#F7C35C; --warn-soft:#33260C; --bad:#FF9B90; --bad-soft:#3B1513; --on-acc:#0B1020;
+  --nav1:#050A18; --nav2:#0E1D4A; --grad-pri:linear-gradient(135deg,#2347D9 0%,#4338CA 100%);
+  --sh1:0 1px 2px rgba(0,0,0,.45); --sh2:0 12px 32px rgba(0,0,0,.55); color-scheme:dark;
+  --cat-proy:#8EA6FF; --cat-calc:#C4A6FF; --cat-plan:#FBBF24; --cat-3d:#5EEAD4; --cat-rep:#CBD5E1; --cat-learn:#6EE7A1; --cat-demo:#F9A8D4}
+
+/* ---- Base ---- */
+body{background:radial-gradient(1100px 420px at 0% -8%,color-mix(in srgb,var(--blue) 12%,transparent),transparent 65%),radial-gradient(900px 380px at 100% -10%,color-mix(in srgb,var(--amber) 10%,transparent),transparent 60%),var(--bg);background-attachment:fixed;font-family:var(--f-body);letter-spacing:-.003em}
+h1,h2,h3,.kpi .v,.mod .mt,.tile .tt{font-family:var(--f-display);letter-spacing:-.02em}
+h1{font-weight:700}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;font:600 11.5px var(--f-body);letter-spacing:.08em;color:var(--blue);background:var(--blue-soft);padding:5px 10px;border-radius:999px;margin:0 0 12px}
+.lead{color:var(--muted)}
+.ico{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none;vertical-align:-.25em}
+
+/* ---- Encabezado ---- */
+body::before{background:var(--nav1)}
+.top{background:linear-gradient(100deg,var(--nav1) 0%,var(--nav2) 100%)!important;box-shadow:0 6px 24px rgba(5,10,30,.25)!important;border-bottom:0!important;color:var(--nav-ink)}
+.top-in{padding-block:10px}
+.brand{color:var(--nav-ink)!important;font-family:var(--f-display);font-weight:700;letter-spacing:-.02em}
+.brand b{color:var(--amber)!important}
+.brand::before{background-color:transparent!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23F59E0B'/%3E%3Cstop offset='1' stop-color='%23EA580C'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M17.5 5 9 18h6l-1.5 9L23 14h-6z' fill='%23fff'/%3E%3C/svg%3E")!important;background-size:cover!important;box-shadow:0 4px 14px rgba(245,158,11,.45)!important;width:30px!important;height:30px!important;border-radius:9px!important}
+.crumb{color:var(--nav-mut)!important}
+.top .btn.ghost,.top .backb{background:rgba(255,255,255,.08)!important;color:var(--nav-ink)!important;border-color:rgba(255,255,255,.22)!important}
+.top .backb .ico{width:20px;height:20px}
+
+/* ---- Menú lateral (computador) ---- */
+@media (min-width:901px){
+  .side{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:12px 10px!important;box-shadow:var(--sh1);top:calc(env(safe-area-inset-top,0px) + 76px)!important}
+  .side summary{font:700 11.5px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 10px 6px;cursor:pointer}
+  .side button{align-items:center!important;border-radius:10px!important;padding:8px 10px!important;font-size:14.5px!important;color:var(--ink)}
+  .side button .k{display:inline-grid;place-items:center;min-width:28px!important;height:28px;border-radius:8px;background:var(--surface2);color:var(--muted)!important;font:600 11px var(--f-mono)}
+  .side button .k .ico{width:17px;height:17px}
+  .side button:hover{background:var(--surface2)!important}
+  .side button[aria-current="true"]{background:var(--blue-soft)!important;color:var(--blue)!important;font-weight:700;box-shadow:inset 3px 0 0 var(--blue)}
+  .side button[aria-current="true"] .k{background:var(--blue)!important;color:var(--surface)!important}
+  .gsw input{border-radius:12px;background:var(--surface2)}
+}
+
+/* ---- Barra de pestañas (teléfono): flotante ---- */
+@media (max-width:900px){
+  .tabbar{left:10px!important;right:10px!important;bottom:calc(8px + env(safe-area-inset-bottom,0px))!important;border-radius:22px;border:1px solid var(--line)!important;background:color-mix(in srgb,var(--surface) 94%,transparent)!important;box-shadow:0 10px 30px rgba(11,19,36,.18)!important;padding:6px 4px!important;-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4)}
+  .tabbar button{min-height:54px!important;padding:4px 0!important;font:600 10.5px var(--f-body)!important;gap:3px!important;color:var(--muted)!important;border-radius:16px}
+  .tabbar .ic{display:inline-grid;place-items:center;width:44px;height:28px;border-radius:14px;font-size:16px;transition:background .2s,color .2s}
+  .tabbar .ic .ico{width:21px;height:21px}
+  .tabbar button[aria-current="true"]{color:var(--blue)!important}
+  .tabbar button[aria-current="true"] .ic{background:var(--blue-soft)!important;color:var(--blue);padding:0!important}
+  .layout{padding-bottom:110px!important}
+  .wznav{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+}
+
+/* ---- Tarjetas y componentes ---- */
+.card{border-radius:var(--r-lg);border:1px solid var(--line);box-shadow:var(--sh1);background:var(--surface)}
+.card.form{border-top:0;position:relative;overflow:hidden}
+.card.form::before,.card.result::before{content:"";position:absolute;left:0;top:0;right:0;height:4px;background:var(--grad-pri)}
+.card.result{border-top:0;position:relative;overflow:hidden}
+.card.result::before{background:var(--grad-acc)}
+.tag{background:var(--blue-soft);color:var(--blue);font:700 11.5px var(--f-body);letter-spacing:.04em;padding:5px 10px}
+.btn{border-radius:12px;font-weight:700;letter-spacing:-.005em;border:1px solid transparent}
+.btn:not(.ghost):not(.danger):not(.calc){background:var(--grad-pri);border-color:transparent;color:#fff;box-shadow:0 6px 16px color-mix(in srgb,var(--blue) 30%,transparent)}
+.btn.calc{background:var(--grad-acc)!important;border-color:transparent!important;color:#fff!important;box-shadow:0 6px 18px rgba(234,88,12,.32)}
+.btn.ghost{background:var(--surface);color:var(--blue);border-color:color-mix(in srgb,var(--blue) 35%,var(--line))}
+.btn.ghost:hover{background:var(--blue-soft)}
+.chip{border-radius:999px;background:var(--surface);border-color:var(--line)}
+.chip.on,.chip[aria-pressed="true"]{background:var(--blue)!important;border-color:var(--blue)!important;color:var(--surface)!important}
+.kpis{gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--sh1);position:relative;overflow:hidden}
+.kpi::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--blue);opacity:.85}
+.kpi.ok::after{background:var(--ok)}.kpi.warn::after{background:var(--amber)}.kpi.bad::after{background:var(--bad)}
+.kpi .l{text-transform:none;letter-spacing:0;font-size:12.5px}
+.kpi .v{font-size:28px;font-weight:700}
+.note{border-radius:14px;border:1px solid color-mix(in srgb,currentColor 18%,transparent)}
+input,select,textarea{border-radius:12px;background:var(--surface);border-color:var(--line)}
+.step .sn{background:var(--grad-pri)}
+details.learn{border-radius:var(--r-md)}
+.guia{border-radius:var(--r-md);border-left:0;position:relative;overflow:hidden}
+.guia::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--grad-acc)}
+.dmtabs button[aria-selected="true"],.dmtabs button[aria-pressed="true"]{background:var(--grad-pri)!important;border-color:transparent!important;color:#fff!important}
+
+/* ---- Mosaicos (inicio y portadas) con color por categoría ---- */
+.mod,.tile{border-radius:18px!important;border:1px solid var(--line)!important;box-shadow:var(--sh1);transition:transform .18s var(--ease),box-shadow .18s var(--ease),border-color .18s}
+.mod:hover,.tile:hover{transform:translateY(-3px);box-shadow:var(--sh2);border-color:color-mix(in srgb,var(--cat,var(--blue)) 45%,var(--line))!important}
+.mod .mi,.tile .ti{background:color-mix(in srgb,var(--cat,var(--blue)) 14%,var(--surface))!important;color:var(--cat,var(--blue))!important;box-shadow:none!important;border-radius:14px!important;font-family:var(--f-display)}
+.mod .mi .ico{width:26px;height:26px}.tile .ti .ico{width:24px;height:24px}
+.mod[data-go="hub_proy"],.tile[data-go^="p"],.tile[data-go^="e"]{--cat:var(--cat-proy)}
+.mod[data-go="hub_calc"],.tile[data-go^="t_"]{--cat:var(--cat-calc)}
+.mod[data-go="cuadro"],.mod[data-go="tg"]{--cat:var(--cat-plan)}
+.mod[data-go="sim"],.mod[data-go="casa"],.mod[data-go="pan"]{--cat:var(--cat-3d)}
+.mod[data-go="rep"]{--cat:var(--cat-rep)}
+.mod[data-go="curso"],.mod[data-go="hub_learn"],.mod[data-go="ruta"],.tile[data-go^="l_"],.tile[data-go="curso"],.tile[data-go="ruta"]{--cat:var(--cat-learn)}
+.mod[data-go="demo"],.tile[data-go="demo"]{--cat:var(--cat-demo)}
+
+/* ---- Portada: héroe ---- */
+.hero{position:relative;overflow:hidden;border-radius:26px;padding:clamp(22px,4vw,40px);margin:0 0 22px;color:#fff;background:radial-gradient(600px 300px at 90% 10%,rgba(245,179,0,.35),transparent 60%),linear-gradient(135deg,#0A1430 0%,#1A3A9E 55%,#2347D9 100%);box-shadow:0 18px 40px rgba(20,40,120,.28)}
+.hero svg.hero-bg{position:absolute;right:-30px;bottom:-20px;width:min(520px,80%);height:auto;opacity:.22;pointer-events:none}
+.hero .eyebrow{background:rgba(255,255,255,.14);color:#FFE7A3}
+.hero h1{color:#fff;font-size:clamp(28px,5vw,44px);line-height:1.05;margin:0 0 10px;max-width:16ch}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#FFD166,#FF9F43);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:#D9E2FF;font-size:clamp(15px,2.2vw,18px);max-width:52ch;margin:0 0 18px}
+.hero .hero-act{display:flex;flex-wrap:wrap;gap:10px;position:relative}
+.hero .hb{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:12px 18px;border-radius:14px;font:700 15.5px var(--f-body);cursor:pointer;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.hero .hb.pri{background:linear-gradient(135deg,#F59E0B,#EA580C);border-color:transparent;color:#1A0E00;box-shadow:0 10px 24px rgba(234,88,12,.4)}
+.hero .hb .ico{width:22px;height:22px}
+.hero .hstats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;position:relative}
+.hero .hstats span{font:600 12.5px var(--f-body);padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.12);color:#E8EEFF}
+.modes .modecard{border-radius:20px}
+.modecard .mk{color:var(--blue)}
+.modecard.primary{border-color:var(--blue);background:linear-gradient(180deg,var(--blue-soft),var(--surface) 75%)}
+.sh{font-family:var(--f-display);font-size:22px;display:flex;align-items:center;gap:10px}
+.resume{border-color:var(--blue);color:var(--blue);background:var(--surface);box-shadow:var(--sh1)}
+
+/* ---- Simulador: barras con íconos ---- */
+.sim-tools button .ic .ico,.sim-nav .nbq .ic .ico{width:20px;height:20px}
+.sim-nav .nb button .ico{width:18px;height:18px}
+.sim-tools button[aria-pressed="true"]{background:var(--grad-pri)!important;border-color:transparent!important;color:#fff!important}
+.demo-link span .ico{width:16px;height:16px}
+.cuic .ico{width:22px;height:22px}
+.lic{display:inline-flex;margin-right:6px;vertical-align:-.15em}.lic .ico{width:1.15em;height:1.15em}
+.tpl{border-radius:16px!important}
+.tpl .ti{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--blue-soft);color:var(--blue)}
+.tpl .ti .ico{width:22px;height:22px}
+.sim-nav .nbq button small{font-size:9.5px!important;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:clip;max-width:100%}
+.gsw input{padding-left:36px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A869C' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20.5 20.5 16 16'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:11px 50%;background-size:17px}
+@media (max-width:600px){.hero .hero-act{display:grid;grid-template-columns:1fr 1fr}.hero .hb.pri{grid-column:1/-1;justify-content:center}.hero .hb{justify-content:center;padding:10px 12px;font-size:14.5px}.hero{border-radius:22px}}
 </style>
 
 <header class="top"><div class="top-in">
@@ -1586,7 +1736,9 @@ var RICEngine = (() => {
       }
     })(), lp = last && PAGES.find((p) => p.id === last && p.id !== "home");
     const modes = '<div class="modes"><button class="modecard primary" type="button" data-wz="start"><span class="mk">Modo proyecto \xB7 asistente</span><span class="mtt">Proyecto de vivienda</span><span class="mdd">Paso a paso: proyecto \u2192 recintos y cargas \u2192 circuitos \u2192 alimentador \u2192 protecciones \u2192 tablero \u2192 resultados con unilineal, materiales y PDF.</span><span class="mgo">Empezar el asistente \u2192</span></button><button class="modecard" type="button" data-go="hub_calc"><span class="mk">Modo r\xE1pido</span><span class="mtt">C\xE1lculo puntual</span><span class="mdd">Corriente, ca\xEDda de tensi\xF3n, conductor, protecciones, tierra y cortocircuito, con el desarrollo y el pliego RIC de cada paso.</span><span class="mgo">Ir a las calculadoras \u2192</span></button></div>';
-    return '<p class="eyebrow">Pliegos RIC \xB7 SEC Chile</p><h1>Instalaciones domiciliarias</h1><p class="lead">Calcula, dise\xF1a, simula y aprende instalaciones el\xE9ctricas de vivienda seg\xFAn los pliegos RIC vigentes.</p>\n  ' + modes + '<h2 class="sh">Todas las herramientas</h2>'.concat(lp ? '<button class="resume" type="button" data-go="'.concat(lp.id, '">\u21BB Continuar: <b>').concat(esc(lp.t), "</b></button>") : "", '\n  <div class="mods">').concat(M.map(([id, ic, t, d]) => '<button class="mod" type="button" data-go="'.concat(id, '"><span class="mi">').concat(ic, '</span><span class="mt">').concat(t, '</span><span class="md">').concat(d, "</span></button>")).join(""), '</div>\n  ' + projHTML() + '<h2 class="sh">Empezar desde una plantilla</h2>').concat(tplButtons(), '\n  <h2 class="sh">Flujo de trabajo</h2><ol class="flow">').concat([["e1", "Definici\xF3n"], ["p1", "Levantamiento"], ["p2", "Dise\xF1o"], ["e4", "Presupuesto"], ["e5", "Ejecuci\xF3n"], ["p8", "Ensayos"], ["e7", "TE1"], ["e8", "Entrega"]].map(([id, t], i) => '<li><button type="button" data-go="'.concat(id, '"><span>').concat(i + 1, "</span>").concat(t, "</button></li>")).join(""), '</ol>\n  <p class="hint">Toca cualquier abreviatura subrayada, como ').concat(ab("Iz"), ", para ver qu\xE9 significa. Tus datos se guardan en este equipo.</p>");
+    const heroBg = '<svg class="hero-bg" viewBox="0 0 520 300" aria-hidden="true" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M20 60h120v80h90M230 140h70v-60h120M300 140v90h140M140 140v100h-80M420 80v-40h80M440 230h60"/><circle cx="230" cy="140" r="9"/><circle cx="300" cy="140" r="6" fill="#fff"/><circle cx="420" cy="80" r="6" fill="#fff"/><circle cx="140" cy="60" r="6" fill="#fff"/><rect x="360" y="200" width="40" height="60" rx="6"/><path d="M372 215h16M372 230h16M372 245h16"/><path d="M60 240l12-20 12 20-12 20z"/><path d="M470 40l-10 18h12l-8 16"/></svg>';
+    const hero = '<section class="hero">' + heroBg + '<p class="eyebrow">Pliegos RIC 2021 \xB7 SEC Chile</p><h1>Instalaciones el\xE9ctricas <em>domiciliarias</em></h1><p>Calcula, dise\xF1a, simula en 3D y aprende con el motor normativo de la app: cada resultado muestra la f\xF3rmula, el paso a paso y el pliego que aplica.</p><div class="hero-act"><button class="hb pri" type="button" data-wz="start">' + ico("clipboard") + 'Proyecto de vivienda</button><button class="hb" type="button" data-go="hub_calc">' + ico("calc") + 'C\xE1lculo r\xE1pido</button><button class="hb" type="button" data-go="sim">' + ico("cube") + 'Simulador 3D</button></div><div class="hstats"><span>' + PAGES.length + ' herramientas</span><span>Funciona sin internet</span><span>iPhone y Android</span><span>Tablas RIC versi\xF3n ' + RIC_DATA.ver + "</span></div></section>";
+    return hero + '<h2 class="sh">Todas las herramientas</h2>'.concat(lp ? '<button class="resume" type="button" data-go="'.concat(lp.id, '">\u21BB Continuar: <b>').concat(esc(lp.t), "</b></button>") : "", '\n  <div class="mods">').concat(M.map(([id, ic, t, d]) => '<button class="mod" type="button" data-go="'.concat(id, '"><span class="mi">').concat(ic, '</span><span class="mt">').concat(t, '</span><span class="md">').concat(d, "</span></button>")).join(""), '</div>\n  ' + projHTML() + '<h2 class="sh">Empezar desde una plantilla</h2>').concat(tplButtons(), '\n  <h2 class="sh">Flujo de trabajo</h2><ol class="flow">').concat([["e1", "Definici\xF3n"], ["p1", "Levantamiento"], ["p2", "Dise\xF1o"], ["e4", "Presupuesto"], ["e5", "Ejecuci\xF3n"], ["p8", "Ensayos"], ["e7", "TE1"], ["e8", "Entrega"]].map(([id, t], i) => '<li><button type="button" data-go="'.concat(id, '"><span>').concat(i + 1, "</span>").concat(t, "</button></li>")).join(""), '</ol>\n  <p class="hint">Toca cualquier abreviatura subrayada, como ').concat(ab("Iz"), ", para ver qu\xE9 significa. Tus datos se guardan en este equipo.</p>");
   }
   function pg1() {
     return pg1b().replace("<h1>Datos generales</h1>", "<h1>Levantamiento y factibilidad</h1>").replace('<section class="card form">', levHTML() + '<section class="card form"><div class="sechead"><span class="tag">Sistema</span><h2 style="margin:0">Caracter\xEDsticas del suministro</h2></div>');
@@ -12352,7 +12504,7 @@ var RICEngine = (() => {
   ];
   const GROUPS = { asis: "Asistente", proy: "Proyecto (8 etapas)", calc: "C\xE1lculos", plan: "Tableros y cuadro", taller: "Simulador 3D", rep: "Reportes", learn: "Normativa y aprender" };
   const PARENT = { asis: "hub_proy", proy: "hub_proy", calc: "hub_calc", learn: "hub_learn", plan: "home", taller: "home", hub: "home", rep: "home" };
-  const TABS = [["home", "\u2302", "Inicio"], ["hub_proy", "\u2460", "Proyecto"], ["hub_calc", "\u0192", "C\xE1lculos"], ["cuadro", "\u25A6", "Cuadro"], ["sim", "\u25C8", "3D"], ["rep", "\u2399", "Reportes"], ["hub_learn", "\xA7", "Norma"]];
+  const TABS = [["home", "\u2302", "Inicio"], ["hub_proy", "\u2460", "Proyecto"], ["hub_calc", "\u0192", "C\xE1lculos"], ["cuadro", "\u25A6", "Cuadro"], ["sim", "\u25C8", "3D"], ["rep", "\u2399", "Reportes"], ["hub_learn", "\xA7", "Aprender"]];
   function tabOf(id) {
     const p = pageOf(id);
     if (id === "home") return "home";
@@ -12510,7 +12662,7 @@ var RICEngine = (() => {
     go("curso");
   });
   function renderSide() {
-    let h = '<div class="gsw"><input type="search" id="gsearch" placeholder="\u{1F50D} Buscar c\xE1lculo, lecci\xF3n o t\xE9rmino\u2026" aria-label="Buscar en la app" autocomplete="off"><div id="gsres"></div></div><button type="button" data-go="home" aria-current="'.concat(cur === "home", '"><span class="k">\u2302</span>Inicio</button>');
+    let h = '<div class="gsw"><input type="search" id="gsearch" placeholder="Buscar c\xE1lculo, lecci\xF3n o t\xE9rmino\u2026" aria-label="Buscar en la app" autocomplete="off"><div id="gsres"></div></div><button type="button" data-go="home" aria-current="'.concat(cur === "home", '"><span class="k">\u2302</span>Inicio</button>');
     let closed = [];
     try {
       closed = JSON.parse(localStorage.getItem(KEY + "-side") || "[]");
@@ -13958,6 +14110,108 @@ var RICEngine = (() => {
       render(true);
     } else if (el) el.textContent = sesTime();
   }, 1e3);
+  /* ===== Íconos SVG propios (trazo 1,8, color del tema). Reemplazan los símbolos de texto y emoji en toda la interfaz. ===== */
+  const ICONS = {
+    home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+    clipboard: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9zM9 11h6M9 15h4"/>',
+    calc: '<rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7h7M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5V18M8.5 18h.01M12 18h.01"/>',
+    grid: '<rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M3 9h18M3 15h18M9 3v18"/>',
+    cube: '<path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7z"/><path d="M3.5 7 12 11.5 20.5 7M12 11.5v10"/>',
+    file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+    book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7"/>',
+    bolt: '<path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12z"/>',
+    ruler: '<path d="M3 17.5 17.5 3 21 6.5 6.5 21H3z"/><path d="M13.5 7l3.5 3.5M10.5 10l2 2M7.5 13l3.5 3.5"/>',
+    panel: '<rect x="3" y="3.5" width="18" height="17" rx="2"/><path d="M7 8h4v4H7zM14.5 8.5h3M14.5 11.5h3M7 16h10"/>',
+    grad: '<path d="M2 9.5 12 4.5l10 5-10 5z"/><path d="M6 11.5v5c0 1.4 2.7 2.8 6 2.8s6-1.4 6-2.8v-5M22 9.5v6"/>',
+    target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>',
+    play: '<circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/>',
+    maximize: '<path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/>',
+    x: '<path d="M6 6l12 12M18 6 6 18"/>',
+    move: '<path d="M12 3v18M3 12h18M9.5 5.5 12 3l2.5 2.5M9.5 18.5 12 21l2.5-2.5M5.5 9.5 3 12l2.5 2.5M18.5 9.5 21 12l-2.5 2.5"/>',
+    walk: '<circle cx="13" cy="4" r="2"/><path d="M10 22l2-7 3 3v4M8.5 12.5l2.5-4.5 4 1 2 3M11 8.5 9 13"/>',
+    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+    layers: '<path d="M12 3 2 8l10 5 10-5z"/><path d="M2 13l10 5 10-5"/>',
+    list: '<path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+    plug: '<path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0zM12 17v5"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    ground: '<path d="M12 3v9M5 12h14M8 16h8M10.5 20h3"/>',
+    chart: '<path d="M3 3v18h18"/><path d="M6.5 5c1.5 7 5 11 13.5 12"/>',
+    hand: '<path d="M8 11V5.5a1.5 1.5 0 0 1 3 0V10M11 10V4a1.5 1.5 0 0 1 3 0v6M14 10V5.5a1.5 1.5 0 0 1 3 0V11M17 11V8.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-1a6.5 6.5 0 0 1-5.4-2.9L4 14.5a1.5 1.5 0 0 1 2.4-1.8L8 14.5"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    link: '<path d="M10 13.5a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10.5a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
+    pipe: '<path d="M4 3v9a7 7 0 0 0 7 7h10"/><path d="M8.5 3v9a2.5 2.5 0 0 0 2.5 2.5h10"/>',
+    trash: '<path d="M4 7h16M9.5 7V4h5v3M6 7l1 13.5h10L18 7M10 11v6M14 11v6"/>',
+    info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8h.01"/>',
+    gauge: '<path d="M3.5 18a9 9 0 1 1 17 0"/><path d="M12 15l4.5-5"/><circle cx="12" cy="15.5" r="1.4"/>',
+    zoomin: '<circle cx="11" cy="11" r="7"/><path d="M20.5 20.5 16 16M11 8v6M8 11h6"/>',
+    zoomout: '<circle cx="11" cy="11" r="7"/><path d="M20.5 20.5 16 16M8 11h6"/>',
+    rotl: '<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6l-2.5 2.5"/><path d="M3.5 3.5v5h5"/>',
+    rotr: '<path d="M20.5 12a8.5 8.5 0 1 1-2.5-6l2.5 2.5"/><path d="M20.5 3.5v5h-5"/>',
+    up: '<path d="M5 4h14M12 20V8.5M7.5 13 12 8.5l4.5 4.5"/>',
+    down: '<path d="M5 20h14M12 4v11.5M7.5 11l4.5 4.5 4.5-4.5"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="M20.5 20.5 16 16"/>',
+    back: '<path d="M15 18l-6-6 6-6"/>',
+    alert: '<path d="M12 3.5 2.5 20.5h19z"/><path d="M12 10v4.5M12 17.5h.01"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7"/>',
+    wrench: '<path d="M14.5 6.5a4 4 0 0 0-5.3 5.2L3 18l3 3 6.3-6.2a4 4 0 0 0 5.2-5.3l-2.6 2.6-2.3-.6-.6-2.3z"/>',
+    save: '<path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/>',
+    download: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 20h14"/>',
+    upload: '<path d="M12 20V9M7.5 13.5 12 9l4.5 4.5M5 4h14"/>',
+    print: '<path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M7 14h10v7H7z"/>',
+    snow: '<path d="M12 2v20M4 7l16 10M4 17 20 7M9 4l3 2 3-2M9 20l3-2 3 2"/>',
+    pencil: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+    square: '<rect x="4" y="4" width="16" height="16" rx="2.5" stroke-dasharray="3 3"/>',
+    pot: '<path d="M4 10h16v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM2 10h2M20 10h2M9 6c0-1 1-1 1-2M14 6c0-1 1-1 1-2"/>',
+    spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>'
+  };
+  const ico = (n, cls) => ICONS[n] ? '<svg class="ico' + (cls ? " " + cls : "") + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + ICONS[n] + "</svg>" : n;
+  /* Símbolos antiguos → íconos, por contexto. */
+  const GLY = { "⌂": "home", "①": "clipboard", "ƒ": "calc", "▦": "grid", "◈": "cube", "⎙": "file", "\xA7": "book", "⚡": "bolt", "\u{1F4D0}": "ruler", "\u{1FAB5}": "panel", "\u{1F393}": "grad", "\u{1F3AF}": "target", "▶": "play", "\u{1F50C}": "plug", "☀": "sun", "⏚": "ground", "⌇": "chart", "◧": "layers", "☰": "list" };
+  const GLY_TPL = { "\u{1F4D0}": "ruler", "\u{1F3E0}": "home", "\u{1F373}": "pot", "\u2744": "snow", "\u25A2": "square", "\u270F": "pencil" };
+  const LEAD = { "\u{1F4BE}": "save", "\u2B07": "download", "\u2B06": "upload", "\uFF0B": "plus", "\u2139\uFE0F": "info", "\u2139": "info", "\u26A1": "bolt", "\u{1F5A8}": "print", "\u29C9": "layers", "\u21BA": "undo", "\u25B6": "play", "\u{1F393}": "grad", "\u{1F3AF}": "target", "\u{1F3C5}": "check", "\u{1F9F0}": "wrench" };
+  const GLY_SIM = { "↻": "hand", "+": "plus", "\u{1F517}": "link", "⌐": "pipe", "✕": "trash", i: "info", "⌁": "gauge", "◎": "target" };
+  const GLY_NAV = { "✥": "move", "\u{1F6B6}": "walk", "⛶": "maximize", "✕": "x", "↶": "undo", "⚡": "bolt", "☰": "layers" };
+  const NAV_SA = { zin: "zoomin", zout: "zoomout", rl: "rotl", rr: "rotr", up: "up", dn: "down" };
+  function iconize(root) {
+    const sw = (el, map) => {
+      if (!el || el.firstElementChild) return;
+      const t = el.textContent.trim(), n = map[t];
+      if (n) el.innerHTML = ico(n);
+    };
+    root.querySelectorAll(".sim-tools .ic").forEach((el) => sw(el, GLY_SIM));
+    root.querySelectorAll(".sim-nav .nbq .ic").forEach((el) => sw(el, GLY_NAV));
+    root.querySelectorAll(".sim-nav .nb button[data-sa]").forEach((b) => {
+      const n = NAV_SA[b.dataset.sa];
+      if (n && !b.firstElementChild) b.innerHTML = ico(n);
+    });
+    root.querySelectorAll(".tabbar .ic, .mod .mi, .tile .ti, .side .k, .cuic, .demo-link span").forEach((el) => sw(el, GLY));
+    root.querySelectorAll(".tpl .ti").forEach((el) => sw(el, GLY_TPL));
+    root.querySelectorAll(".btn, .guia > summary, .card h2, .card h3").forEach((el) => {
+      if (el.dataset.ico) return;
+      el.dataset.ico = "1";
+      const tn = [...el.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim());
+      if (!tn || tn !== el.firstChild && el.firstChild.nodeType !== 3) return;
+      const t = tn.textContent.replace(/^\s+/, ""), k = Object.keys(LEAD).find((g) => t.startsWith(g));
+      if (!k) return;
+      tn.textContent = t.slice(k.length).replace(/^\s+/, "");
+      const sp = document.createElement("span");
+      sp.className = "lic";
+      sp.innerHTML = ico(LEAD[k]);
+      el.insertBefore(sp, tn);
+    });
+    const bb = document.getElementById("backBtn");
+    if (bb && !bb.querySelector(".ico")) bb.innerHTML = ico("back") + '<span class="bt"> Volver</span>';
+  }
+  {
+    let q = 0;
+    new MutationObserver(() => {
+      if (q) return;
+      q = requestAnimationFrame(() => {
+        q = 0;
+        iconize(document.body);
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+  }
   /* ===== Arranque ===== */
   document.documentElement.lang = "es";
   {

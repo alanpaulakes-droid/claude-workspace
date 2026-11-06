@@ -52,7 +52,7 @@
   ];
   const GROUPS = { asis: "Asistente", proy: "Proyecto (8 etapas)", calc: "C\xE1lculos", plan: "Tableros y cuadro", taller: "Simulador 3D", rep: "Reportes", learn: "Normativa y aprender" };
   const PARENT = { asis: "hub_proy", proy: "hub_proy", calc: "hub_calc", learn: "hub_learn", plan: "home", taller: "home", hub: "home", rep: "home" };
-  const TABS = [["home", "\u2302", "Inicio"], ["hub_proy", "\u2460", "Proyecto"], ["hub_calc", "\u0192", "C\xE1lculos"], ["cuadro", "\u25A6", "Cuadro"], ["sim", "\u25C8", "3D"], ["rep", "\u2399", "Reportes"], ["hub_learn", "\xA7", "Norma"]];
+  const TABS = [["home", "\u2302", "Inicio"], ["hub_proy", "\u2460", "Proyecto"], ["hub_calc", "\u0192", "C\xE1lculos"], ["cuadro", "\u25A6", "Cuadro"], ["sim", "\u25C8", "3D"], ["rep", "\u2399", "Reportes"], ["hub_learn", "\xA7", "Aprender"]];
   function tabOf(id) {
     const p = pageOf(id);
     if (id === "home") return "home";
@@ -210,7 +210,7 @@
     go("curso");
   });
   function renderSide() {
-    let h = '<div class="gsw"><input type="search" id="gsearch" placeholder="\u{1F50D} Buscar c\xE1lculo, lecci\xF3n o t\xE9rmino\u2026" aria-label="Buscar en la app" autocomplete="off"><div id="gsres"></div></div><button type="button" data-go="home" aria-current="'.concat(cur === "home", '"><span class="k">\u2302</span>Inicio</button>');
+    let h = '<div class="gsw"><input type="search" id="gsearch" placeholder="Buscar c\xE1lculo, lecci\xF3n o t\xE9rmino\u2026" aria-label="Buscar en la app" autocomplete="off"><div id="gsres"></div></div><button type="button" data-go="home" aria-current="'.concat(cur === "home", '"><span class="k">\u2302</span>Inicio</button>');
     let closed = [];
     try {
       closed = JSON.parse(localStorage.getItem(KEY + "-side") || "[]");
