@@ -8,6 +8,7 @@
     { id: "sim", g: "taller", t: "Simulador 3D", r: pgSim },
     { id: "casa", g: "taller", t: "Dise\xF1ar mi vivienda", r: pgCasa },
     { id: "pan", g: "taller", t: "Panel de pr\xE1ctica", r: pgPan },
+    { id: "asis", g: "asis", t: "Resultados del asistente", r: pgAsis },
     { id: "e1", g: "proy", n: "1", t: "Definici\xF3n del proyecto", r: pgE1 },
     { id: "p1", g: "proy", n: "2", t: "Levantamiento y factibilidad", r: pg1 },
     { id: "p2", g: "proy", n: "3.1", t: "Recintos y puntos", r: pg2, c: calc2 },
@@ -47,8 +48,8 @@
     { id: "l_glosario", g: "learn", t: "Glosario", r: pgGlosario },
     { id: "l_tablas", g: "learn", t: "Tablas", r: pgTablas }
   ];
-  const GROUPS = { proy: "Proyecto (8 etapas)", calc: "C\xE1lculos", plan: "Tableros y cuadro", taller: "Simulador 3D", rep: "Reportes", learn: "Normativa y aprender" };
-  const PARENT = { proy: "hub_proy", calc: "hub_calc", learn: "hub_learn", plan: "home", taller: "home", hub: "home", rep: "home" };
+  const GROUPS = { asis: "Asistente", proy: "Proyecto (8 etapas)", calc: "C\xE1lculos", plan: "Tableros y cuadro", taller: "Simulador 3D", rep: "Reportes", learn: "Normativa y aprender" };
+  const PARENT = { asis: "hub_proy", proy: "hub_proy", calc: "hub_calc", learn: "hub_learn", plan: "home", taller: "home", hub: "home", rep: "home" };
   const TABS = [["home", "\u2302", "Inicio"], ["hub_proy", "\u2460", "Proyecto"], ["hub_calc", "\u0192", "C\xE1lculos"], ["cuadro", "\u25A6", "Cuadro"], ["sim", "\u25C8", "3D"], ["rep", "\u2399", "Reportes"], ["hub_learn", "\xA7", "Norma"]];
   function tabOf(id) {
     const p = pageOf(id);
@@ -84,7 +85,7 @@
   let projMsg = "";
   function projHTML() {
     const L = projList(), ks = Object.keys(L).sort((a, b) => (L[b].d || 0) - (L[a].d || 0)), nm = S.proj && S.proj.nombre || S.casa && S.casa.n || "";
-    return '<section class="card"><div class="sechead"><h2 style="margin:0">Mis proyectos</h2><span class="hint">Se guardan en este navegador; exp\xF3rtalos para respaldarlos o abrirlos en otro equipo.</span></div><div class="chips" style="margin:8px 0"><input type="text" id="projname" value="' + esc(nm) + '" placeholder="Nombre del proyecto" aria-label="Nombre del proyecto" style="min-width:200px;flex:1"><button type="button" class="btn small" data-pj="save">\u{1F4BE} Guardar actual</button><button type="button" class="btn ghost small" data-pj="exp">⬇ Exportar archivo</button><label class="btn ghost small" style="cursor:pointer">⬆ Importar archivo<input type="file" accept=".json,application/json" data-pj="imp" hidden></label><button type="button" class="btn ghost small" data-pj="off" title="Archivo HTML que funciona sin internet, incluida la vista 3D">\u2B07 App sin conexi\xF3n</button><button type="button" class="btn ghost small" data-pj="new">' + (projMsg === "conf-new" ? "\xBFSeguro? Toca otra vez" : "＋ Proyecto nuevo") + "</button></div>" + (projMsg && projMsg !== "conf-new" ? note(esc(projMsg), "ok") : "") + (ks.length ? '<div class="tbl-wrap"><table class="pt"><thead><tr><th>Proyecto</th><th>Guardado</th><th></th></tr></thead><tbody>' + ks.map((k) => "<tr><td><b>" + esc(k) + "</b></td><td>" + new Date(L[k].d || 0).toLocaleString("es-CL") + '</td><td style="white-space:nowrap"><button type="button" class="btn small" data-pj="open" data-k="' + esc(k) + '">Abrir</button> <button type="button" class="btn ghost small" data-pj="del" data-k="' + esc(k) + '">' + (projMsg === "conf-del:" + k ? "\xBFBorrar?" : "✕") + "</button></td></tr>").join("") + "</tbody></table></div>" : '<p class="hint" style="margin:0">A\xFAn no guardas proyectos. Al abrir otro, guarda primero el actual.</p>') + "</section>";
+    return '<section class="card"><div class="sechead"><h2 style="margin:0">Mis proyectos</h2><span class="hint">Se guardan en este navegador; exp\xF3rtalos para respaldarlos o abrirlos en otro equipo.</span></div><div class="chips" style="margin:8px 0"><input type="text" id="projname" value="' + esc(nm) + '" placeholder="Nombre del proyecto" aria-label="Nombre del proyecto" style="min-width:200px;flex:1"><button type="button" class="btn small" data-pj="save">\u{1F4BE} Guardar actual</button><button type="button" class="btn ghost small" data-pj="exp">⬇ Exportar archivo</button><label class="btn ghost small" style="cursor:pointer">⬆ Importar archivo<input type="file" accept=".json,application/json" data-pj="imp" hidden></label><button type="button" class="btn ghost small" data-pj="off" title="Archivo HTML que funciona sin internet, incluida la vista 3D">\u2B07 App sin conexi\xF3n</button><button type="button" class="btn ghost small" data-pj="new">' + (projMsg === "conf-new" ? "\xBFSeguro? Toca otra vez" : "＋ Proyecto nuevo") + "</button></div>" + (projMsg && projMsg !== "conf-new" ? note(esc(projMsg), "ok") : "") + (ks.length ? '<div class="tbl-wrap"><table class="pt"><thead><tr><th>Proyecto</th><th>Guardado</th><th></th></tr></thead><tbody>' + ks.map((k) => "<tr><td><b>" + esc(k) + "</b></td><td>" + new Date(L[k].d || 0).toLocaleString("es-CL") + '</td><td style="white-space:nowrap"><button type="button" class="btn small" data-pj="open" data-k="' + esc(k) + '">Abrir</button> <button type="button" class="btn ghost small" data-pj="dup" data-k="' + esc(k) + '" aria-label="Duplicar ' + esc(k) + '">\u29C9 Duplicar</button> <button type="button" class="btn ghost small" data-pj="del" aria-label="Borrar ' + esc(k) + '" data-k="' + esc(k) + '">' + (projMsg === "conf-del:" + k ? "\xBFBorrar?" : "✕") + "</button></td></tr>").join("") + "</tbody></table></div>" : '<p class="hint" style="margin:0">A\xFAn no guardas proyectos. Al abrir otro, guarda primero el actual.</p>') + "</section>";
   }
   function projLoad(o) {
     if (!o || typeof o !== "object" || !o.proj) return false;
@@ -121,6 +122,17 @@
         projMsg = "\xAB" + k + "\xBB abierto.";
       } catch (err) {
         projMsg = "No se pudo abrir el proyecto.";
+      }
+    } else if (a === "dup" && L[k]) {
+      let n = k + " (copia)", i = 2;
+      while (L[n]) n = k + " (copia " + i++ + ")";
+      try {
+        const o = JSON.parse(L[k].s);
+        if (o.proj) o.proj.nombre = n;
+        L[n] = { d: Date.now(), s: JSON.stringify(o) };
+        if (put(L)) projMsg = "\xAB" + k + "\xBB duplicado como \xAB" + n + "\xBB.";
+      } catch (err) {
+        projMsg = "No se pudo duplicar el proyecto.";
       }
     } else if (a === "del") {
       if (projMsg !== "conf-del:" + k) projMsg = "conf-del:" + k;
@@ -252,11 +264,16 @@
     }
     if (cur !== "l_glosario") html += legend(html);
     html = guiaAdd(html);
+    html = wizWrap(html);
     if (S.migr && S.migr.amp && !S.migr.seen) html = '<div class="note warn migr" role="status"><span><b>Tablas actualizadas al RIC vigente.</b> La capacidad de corriente de los cables ahora sale del RIC N\xB004, Tabla 4.4 (m\xE9todo A1, cable de 70 \xB0C), el llenado de ductos de la Tabla 4.21 y el factor de simultaneidad de la Tabla 3.2 del RIC N\xB003. Algunos resultados de tus proyectos pueden cambiar: rev\xEDsalos.</span> <button class="btn small" type="button" data-go="l_tablas">Ver tablas</button> <button class="btn ghost small" type="button" data-act="migrok">Entendido</button></div>' + html;
     html += '<p class="aviso-sec" role="note">\u2696\uFE0F Herramienta de apoyo para aprender y proyectar. No reemplaza el proyecto ni la firma de un instalador el\xE9ctrico autorizado SEC, ni la lectura del texto vigente de los pliegos RIC. Datos normativos: ' + RIC_DATA.fuente + ' (versi\xF3n de datos ' + RIC_DATA.ver + ').</p>';
     document.getElementById("app").innerHTML = html;
     clampLeads();
     renderSide();
+    {
+      const st = document.querySelector('.wz [aria-current="step"]');
+      if (st && st.scrollIntoView) st.scrollIntoView({ block: "nearest", inline: "center" });
+    }
     if (cur === "sim") simMount();
     if (fid) {
       const el = document.getElementById(fid);
@@ -765,4 +782,3 @@
     save();
     render();
   });
-  render();

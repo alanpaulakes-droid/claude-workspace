@@ -164,3 +164,28 @@ describe("Números con formato chileno", () => {
     ["abc", 0],
   ])("%s → %d", (a, b) => expect(parseNum(a)).toBe(b));
 });
+
+import { materialesProyecto, modulosTablero } from "../../src/engine";
+describe("Materiales del proyecto", () => {
+  it("módulos del tablero con 25 % de reserva", () => {
+    expect(modulosTablero(4, false)).toEqual({ usados: 2 + 4 + 4, reserva: 3, tablero: 18 });
+    expect(modulosTablero(2, false).tablero).toBe(8);
+  });
+  it("cable por sección: 3 conductores × (L × 1,1 + 2 m)", () => {
+    const B = materialesProyecto({
+      tri: false,
+      alim: { In: 25, S: 6, L: 12 },
+      circuitos: [
+        { In: 10, S: 1.5, L: 15, curva: "B" },
+        { In: 16, S: 2.5, L: 20, curva: "C" },
+        { In: 16, S: 2.5, L: 10, curva: "C" },
+      ],
+    });
+    const q = (k: string) => B.find((b) => b.k === k)?.q;
+    expect(q("cab:1.5")).toBe(Math.ceil(3 * (15 * 1.1 + 2)));
+    expect(q("cab:2.5")).toBe(Math.ceil(3 * (20 * 1.1 + 2) + 3 * (10 * 1.1 + 2)));
+    expect(q("cab:6")).toBe(Math.ceil(3 * (12 * 1.1 + 2)));
+    expect(q("dr:A")).toBe(1);
+    expect(B.filter((b) => b.k === "tm").reduce((a, b) => a + b.q, 0)).toBe(3);
+  });
+});

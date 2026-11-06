@@ -31,7 +31,7 @@ const app = parts.map((f) => readFileSync(join(appDir, f), "utf8")).join("");
 
 // 3. Plantilla
 const out = rd("src/index.html")
-  .replace("/*@CSS*/", () => rd("src/styles/app.css"))
+  .replace("/*@CSS*/", () => ["app.css", "tokens.css", "components.css"].map((f) => rd("src/styles/" + f)).join(""))
   .replace("/*@THREE*/", () => rd("src/vendor/three.min.js"))
   .replace("/*@ENGINE*/", () => engine)
   .replace("/*@APP*/", () => app);
@@ -45,6 +45,10 @@ execFileSync(process.execPath, ["--check", tmp], { stdio: "inherit" });
 
 const dist = join(ROOT, "dist", "CALCULADORA_RIC.html");
 writeFileSync(dist, out);
+// Sitio publicable (PWA): index.html + manifest + service worker + ícono
+writeFileSync(join(ROOT, "dist", "index.html"), out);
+for (const f of ["manifest.webmanifest", "sw.js", "icon.svg"])
+  copyFileSync(join(ROOT, "src/pwa", f), join(ROOT, "dist", f));
 if (!process.argv.includes("--no-copy")) {
   copyFileSync(dist, join(ROOT, "..", "CALCULADORA_RIC.html"));
   // versión liviana para teléfono (se genera desde el HTML principal)

@@ -472,6 +472,92 @@ input[aria-invalid],select[aria-invalid],textarea[aria-invalid]{border-color:var
 
 .aviso-sec{margin:24px 0 8px;padding:10px 14px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:13.5px;line-height:1.45;background:var(--surface)}
 .note.migr{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+/* ==== Sistema de diseño v2 · tokens ==== */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --surface2:#F2F5F8; --ink:#0F1B2A; --muted:#4D5B6B; --line:#D6DDE5;
+  --blue:#1C5A96; --blue-soft:#E3EDF7; --copper:#AF4F1E; --copper-soft:#FBEBE1;
+  --ok:#23703F; --ok-soft:#E2F2E8; --warn:#8A5A06; --warn-soft:#FBF0D9; --bad:#A8271E; --bad-soft:#FBE5E3; --on-acc:#fff;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-display:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --fs-xs:12.5px; --fs-sm:14px; --fs-md:16px; --fs-lg:18px; --fs-xl:21px; --fs-2xl:clamp(25px,3.6vw,32px);
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:999px;
+  --sh1:0 1px 2px rgba(15,27,42,.06),0 1px 3px rgba(15,27,42,.08); --sh2:0 6px 20px rgba(15,27,42,.10);
+  --focus:0 0 0 3px color-mix(in srgb,var(--blue) 35%,transparent);
+  --tap:44px; --ease:cubic-bezier(.2,.7,.2,1);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0B1118; --surface:#121A24; --surface2:#18222E; --ink:#E8EEF4; --muted:#A0AFBF; --line:#273444;
+  --blue:#8DBFF0; --blue-soft:#18304A; --copper:#F0A271; --copper-soft:#3A2416;
+  --ok:#72CC96; --ok-soft:#14301F; --warn:#E9BA5E; --warn-soft:#352810; --bad:#F39289; --bad-soft:#3B1917; --on-acc:#14100C;
+  --sh1:0 1px 2px rgba(0,0,0,.4); --sh2:0 8px 24px rgba(0,0,0,.5); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B1118; --surface:#121A24; --surface2:#18222E; --ink:#E8EEF4; --muted:#A0AFBF; --line:#273444;
+  --blue:#8DBFF0; --blue-soft:#18304A; --copper:#F0A271; --copper-soft:#3A2416;
+  --ok:#72CC96; --ok-soft:#14301F; --warn:#E9BA5E; --warn-soft:#352810; --bad:#F39289; --bad-soft:#3B1917; --on-acc:#14100C;
+  --sh1:0 1px 2px rgba(0,0,0,.4); --sh2:0 8px 24px rgba(0,0,0,.5); color-scheme:dark}
+/* ==== Sistema de diseño v2 · componentes ==== */
+body{font-size:var(--fs-md);line-height:1.55;-webkit-text-size-adjust:100%;text-rendering:optimizeLegibility}
+h1{font-size:var(--fs-2xl);line-height:1.15;letter-spacing:-.015em}
+h2{font-size:var(--fs-xl);line-height:1.25}
+h3{font-size:var(--fs-lg)}
+.lead{font-size:var(--fs-lg);line-height:1.5}
+.card{border-radius:var(--r-lg);padding:clamp(16px,2.6vw,24px);box-shadow:var(--sh1);border:1px solid var(--line)}
+.card.form{border-top:3px solid var(--blue)}
+.card.result{border-top:3px solid var(--copper)}
+.btn{min-height:var(--tap);border-radius:var(--r-md);padding:10px 18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;line-height:1.2;text-align:center}
+.btn.small{min-height:38px;padding:6px 12px;border-radius:var(--r-sm)}
+.btn.calc{border-radius:var(--r-md);padding:12px 24px}
+.btn.ghost{background:var(--surface)}
+.btn:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px;box-shadow:var(--focus)}
+input,select,textarea{border-radius:var(--r-sm);min-height:var(--tap);font-size:16px}
+.field label{font-size:var(--fs-sm);font-weight:700;letter-spacing:.005em}
+.field small{font-size:var(--fs-xs);color:var(--muted)}
+.grid{gap:var(--sp-4)}
+.kpi{border-radius:var(--r-md)}
+.note{border-radius:var(--r-md)}
+.tag{border-radius:var(--r-pill)}
+.tabbar button{min-height:56px}
+/* Saltar al contenido */
+.skip{position:absolute;left:8px;top:-60px;z-index:100;background:var(--blue);color:var(--surface);padding:10px 14px;border-radius:var(--r-sm);font-weight:700;text-decoration:none}
+.skip:focus{top:8px}
+/* Inicio: modos */
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:var(--sp-4);margin:var(--sp-4) 0 var(--sp-6)}
+.modecard{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r-lg);padding:20px;box-shadow:var(--sh1);cursor:pointer;font:inherit;transition:transform .15s var(--ease),box-shadow .15s var(--ease),border-color .15s var(--ease)}
+.modecard:hover{box-shadow:var(--sh2);border-color:color-mix(in srgb,var(--blue) 40%,var(--line))}
+.modecard:active{transform:translateY(1px)}
+.modecard .mk{font:700 var(--fs-xs) var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--copper)}
+.modecard .mtt{font:800 var(--fs-xl) var(--f-display);line-height:1.2}
+.modecard .mdd{color:var(--muted);font-size:var(--fs-sm)}
+.modecard .mgo{margin-top:6px;font-weight:700;color:var(--blue)}
+.modecard.primary{border:2px solid var(--blue);background:linear-gradient(180deg,var(--blue-soft),var(--surface) 70%)}
+.sh{font-size:var(--fs-lg);margin:var(--sp-6) 0 var(--sp-3)}
+/* Asistente */
+.wz{position:sticky;top:calc(env(safe-area-inset-top,0px) + 58px);z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);margin:0 calc(-1 * var(--sp-2)) var(--sp-4);padding:var(--sp-2)}
+.wz ol{list-style:none;margin:0;padding:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.wz ol::-webkit-scrollbar{display:none}
+.wz li{flex:1 0 auto}
+.wz ol button{display:flex;align-items:center;gap:6px;width:100%;min-height:40px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r-pill);padding:6px 12px 6px 6px;font:600 var(--fs-sm) var(--f-body);cursor:pointer;white-space:nowrap}
+.wz .n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--surface2);border:1px solid var(--line);font:700 12px var(--f-mono)}
+.wz ol button[aria-current="step"]{border-color:var(--blue);background:var(--blue);color:var(--surface)}
+.wz ol button[aria-current="step"] .n{background:var(--surface);color:var(--blue);border-color:var(--surface)}
+.wz ol button.done .n{background:var(--ok);color:var(--on-acc);border-color:var(--ok)}
+.wz .wzt{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:0 0 6px;font-size:var(--fs-xs);color:var(--muted)}.wz .wzt .linkb{white-space:nowrap;font-size:var(--fs-xs);min-height:32px}.wz .wzd{display:none}
+.wz .wzt b{color:var(--ink)}
+.wznav{position:sticky;bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:5;display:flex;gap:var(--sp-2);justify-content:space-between;align-items:center;margin:var(--sp-6) 0 0;padding:var(--sp-3);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh2)}
+.wznav .btn{flex:1}
+.wznav .btn.calc{flex:2}
+@media (min-width:901px){.wznav{bottom:12px}.wz{top:calc(env(safe-area-inset-top,0px) + 66px)}}
+.unisvg{display:block;width:100%;height:auto;background:#fff;border-radius:var(--r-md);border:1px solid var(--line)}
+.chk{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.chk li{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:var(--r-sm);background:var(--warn-soft)}
+.chk li.ok{background:var(--ok-soft)}
+.exp{display:flex;flex-wrap:wrap;gap:var(--sp-2)}
+@media print{.wz,.wznav,.exp,.aviso-sec{display:none!important}}
+@media (max-width:900px){.wz{position:static;margin:0 0 var(--sp-3);padding:0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none}.wz ol button{min-height:38px;font-size:13px}.wznav{padding:var(--sp-2)}.wznav .btn{min-height:46px;font-size:15px;padding:8px 10px}}
+@media (min-width:901px){.wz .wzd{display:inline}}
+.tbl-wrap>.unisvg{min-width:640px}
 body.lite .gsw,body.lite [data-pn="close"]{display:none!important}
 </style>
 
@@ -537,6 +623,8 @@ var RICEngine = (() => {
     fsViv: () => fsViv,
     iccCalc: () => iccCalc,
     llenadoMax: () => llenadoMax,
+    materialesProyecto: () => materialesProyecto,
+    modulosTablero: () => modulosTablero,
     ncAct: () => ncAct,
     nextCom: () => nextCom,
     parseNum: () => parseNum,
@@ -792,6 +880,74 @@ var RICEngine = (() => {
       okTh: S >= Smin,
       ratio: Ig / In
     };
+  }
+
+  // src/engine/materiales.ts
+  var TAB_MOD = [8, 12, 18, 24, 36, 48];
+  function modulosTablero(nCirc, tri) {
+    var _a;
+    const nDR = Math.ceil(nCirc / 3);
+    const usados = (tri ? 4 : 2) + (tri ? 4 : 2) * nDR + nCirc;
+    const reserva = Math.ceil(usados * 0.25);
+    const tablero = (_a = TAB_MOD.find((m) => m >= usados + reserva)) != null ? _a : TAB_MOD[TAB_MOD.length - 1];
+    return { usados, reserva, tablero };
+  }
+  function materialesProyecto(e) {
+    var _a, _b;
+    const merma = (_a = e.merma) != null ? _a : 0.1, extra = (_b = e.extra) != null ? _b : 2;
+    const out = [];
+    const cab = /* @__PURE__ */ new Map();
+    const addCab = (S, L, n) => {
+      var _a2;
+      if (!S || !(L > 0)) return;
+      cab.set(S, ((_a2 = cab.get(S)) != null ? _a2 : 0) + n * (L * (1 + merma) + extra));
+    };
+    e.circuitos.forEach((c) => addCab(c.S, c.L, 3));
+    addCab(e.alim.S, e.alim.L, e.tri ? 5 : 3);
+    [...cab.entries()].sort((a, b) => a[0] - b[0]).forEach(
+      ([S, m]) => out.push({
+        g: "Conductores",
+        d: `Cable de cobre ${String(S).replace(".", ",")} mm²`,
+        q: Math.ceil(m),
+        u: "m",
+        k: `cab:${S}`
+      })
+    );
+    const nC = e.circuitos.length;
+    if (e.alim.In)
+      out.push({
+        g: "Protecciones",
+        d: `Interruptor general ${e.tri ? "4P" : "2P"} ${e.alim.In} A`,
+        q: 1,
+        u: "un",
+        k: e.tri ? "ig4" : "ig2"
+      });
+    const nDR = Math.ceil(nC / 3);
+    if (nDR) out.push({ g: "Protecciones", d: "Diferencial 30 mA clase A", q: nDR, u: "un", k: "dr:A" });
+    const tm = /* @__PURE__ */ new Map();
+    e.circuitos.forEach((c) => {
+      var _a2;
+      if (!c.In) return;
+      const k = `${c.In} A curva ${c.curva}`;
+      tm.set(k, ((_a2 = tm.get(k)) != null ? _a2 : 0) + 1);
+    });
+    [...tm.entries()].forEach(
+      ([d, q]) => out.push({ g: "Protecciones", d: `Termomagnético 1P ${d}`, q, u: "un", k: "tm" })
+    );
+    if (nC) {
+      const m = modulosTablero(nC, e.tri);
+      out.push({
+        g: "Tablero",
+        d: `Tablero ${m.tablero} módulos (usa ${m.usados} + reserva ${m.reserva})`,
+        q: 1,
+        u: "un",
+        k: `tab${m.tablero}`
+      });
+      out.push({ g: "Tablero", d: "Barra de neutro (una por diferencial)", q: nDR, u: "un", k: "regN" });
+      out.push({ g: "Tablero", d: "Barra de tierra", q: 1, u: "un", k: "regPE" });
+      out.push({ g: "Tablero", d: "Terminales para conductores", q: nC * 6 + 6, u: "un", k: "term" });
+    }
+    return out;
   }
   return __toCommonJS(index_exports);
 })();
@@ -1122,7 +1278,8 @@ var RICEngine = (() => {
         return null;
       }
     })(), lp = last && PAGES.find((p) => p.id === last && p.id !== "home");
-    return '<p class="eyebrow">Pliegos RIC \xB7 SEC Chile</p><h1>Instalaciones domiciliarias</h1>\n  '.concat(lp ? '<button class="resume" type="button" data-go="'.concat(lp.id, '">\u21BB Continuar: <b>').concat(esc(lp.t), "</b></button>") : "", '\n  <div class="mods">').concat(M.map(([id, ic, t, d]) => '<button class="mod" type="button" data-go="'.concat(id, '"><span class="mi">').concat(ic, '</span><span class="mt">').concat(t, '</span><span class="md">').concat(d, "</span></button>")).join(""), '</div>\n  ' + projHTML() + '<h2 class="sh">Empezar desde una plantilla</h2>').concat(tplButtons(), '\n  <h2 class="sh">Flujo de trabajo</h2><ol class="flow">').concat([["e1", "Definici\xF3n"], ["p1", "Levantamiento"], ["p2", "Dise\xF1o"], ["e4", "Presupuesto"], ["e5", "Ejecuci\xF3n"], ["p8", "Ensayos"], ["e7", "TE1"], ["e8", "Entrega"]].map(([id, t], i) => '<li><button type="button" data-go="'.concat(id, '"><span>').concat(i + 1, "</span>").concat(t, "</button></li>")).join(""), '</ol>\n  <p class="hint">Toca cualquier abreviatura subrayada, como ').concat(ab("Iz"), ", para ver qu\xE9 significa. Tus datos se guardan en este equipo.</p>");
+    const modes = '<div class="modes"><button class="modecard primary" type="button" data-wz="start"><span class="mk">Modo proyecto \xB7 asistente</span><span class="mtt">Proyecto de vivienda</span><span class="mdd">Paso a paso: proyecto \u2192 recintos y cargas \u2192 circuitos \u2192 alimentador \u2192 protecciones \u2192 tablero \u2192 resultados con unilineal, materiales y PDF.</span><span class="mgo">Empezar el asistente \u2192</span></button><button class="modecard" type="button" data-go="hub_calc"><span class="mk">Modo r\xE1pido</span><span class="mtt">C\xE1lculo puntual</span><span class="mdd">Corriente, ca\xEDda de tensi\xF3n, conductor, protecciones, tierra y cortocircuito, con el desarrollo y el pliego RIC de cada paso.</span><span class="mgo">Ir a las calculadoras \u2192</span></button></div>';
+    return '<p class="eyebrow">Pliegos RIC \xB7 SEC Chile</p><h1>Instalaciones domiciliarias</h1><p class="lead">Calcula, dise\xF1a, simula y aprende instalaciones el\xE9ctricas de vivienda seg\xFAn los pliegos RIC vigentes.</p>\n  ' + modes + '<h2 class="sh">Todas las herramientas</h2>'.concat(lp ? '<button class="resume" type="button" data-go="'.concat(lp.id, '">\u21BB Continuar: <b>').concat(esc(lp.t), "</b></button>") : "", '\n  <div class="mods">').concat(M.map(([id, ic, t, d]) => '<button class="mod" type="button" data-go="'.concat(id, '"><span class="mi">').concat(ic, '</span><span class="mt">').concat(t, '</span><span class="md">').concat(d, "</span></button>")).join(""), '</div>\n  ' + projHTML() + '<h2 class="sh">Empezar desde una plantilla</h2>').concat(tplButtons(), '\n  <h2 class="sh">Flujo de trabajo</h2><ol class="flow">').concat([["e1", "Definici\xF3n"], ["p1", "Levantamiento"], ["p2", "Dise\xF1o"], ["e4", "Presupuesto"], ["e5", "Ejecuci\xF3n"], ["p8", "Ensayos"], ["e7", "TE1"], ["e8", "Entrega"]].map(([id, t], i) => '<li><button type="button" data-go="'.concat(id, '"><span>').concat(i + 1, "</span>").concat(t, "</button></li>")).join(""), '</ol>\n  <p class="hint">Toca cualquier abreviatura subrayada, como ').concat(ab("Iz"), ", para ver qu\xE9 significa. Tus datos se guardan en este equipo.</p>");
   }
   function pg1() {
     return pg1b().replace("<h1>Datos generales</h1>", "<h1>Levantamiento y factibilidad</h1>").replace('<section class="card form">', levHTML() + '<section class="card form"><div class="sechead"><span class="tag">Sistema</span><h2 style="margin:0">Caracter\xEDsticas del suministro</h2></div>');
@@ -11788,6 +11945,7 @@ var RICEngine = (() => {
     { id: "sim", g: "taller", t: "Simulador 3D", r: pgSim },
     { id: "casa", g: "taller", t: "Dise\xF1ar mi vivienda", r: pgCasa },
     { id: "pan", g: "taller", t: "Panel de pr\xE1ctica", r: pgPan },
+    { id: "asis", g: "asis", t: "Resultados del asistente", r: pgAsis },
     { id: "e1", g: "proy", n: "1", t: "Definici\xF3n del proyecto", r: pgE1 },
     { id: "p1", g: "proy", n: "2", t: "Levantamiento y factibilidad", r: pg1 },
     { id: "p2", g: "proy", n: "3.1", t: "Recintos y puntos", r: pg2, c: calc2 },
@@ -11827,8 +11985,8 @@ var RICEngine = (() => {
     { id: "l_glosario", g: "learn", t: "Glosario", r: pgGlosario },
     { id: "l_tablas", g: "learn", t: "Tablas", r: pgTablas }
   ];
-  const GROUPS = { proy: "Proyecto (8 etapas)", calc: "C\xE1lculos", plan: "Tableros y cuadro", taller: "Simulador 3D", rep: "Reportes", learn: "Normativa y aprender" };
-  const PARENT = { proy: "hub_proy", calc: "hub_calc", learn: "hub_learn", plan: "home", taller: "home", hub: "home", rep: "home" };
+  const GROUPS = { asis: "Asistente", proy: "Proyecto (8 etapas)", calc: "C\xE1lculos", plan: "Tableros y cuadro", taller: "Simulador 3D", rep: "Reportes", learn: "Normativa y aprender" };
+  const PARENT = { asis: "hub_proy", proy: "hub_proy", calc: "hub_calc", learn: "hub_learn", plan: "home", taller: "home", hub: "home", rep: "home" };
   const TABS = [["home", "\u2302", "Inicio"], ["hub_proy", "\u2460", "Proyecto"], ["hub_calc", "\u0192", "C\xE1lculos"], ["cuadro", "\u25A6", "Cuadro"], ["sim", "\u25C8", "3D"], ["rep", "\u2399", "Reportes"], ["hub_learn", "\xA7", "Norma"]];
   function tabOf(id) {
     const p = pageOf(id);
@@ -11864,7 +12022,7 @@ var RICEngine = (() => {
   let projMsg = "";
   function projHTML() {
     const L = projList(), ks = Object.keys(L).sort((a, b) => (L[b].d || 0) - (L[a].d || 0)), nm = S.proj && S.proj.nombre || S.casa && S.casa.n || "";
-    return '<section class="card"><div class="sechead"><h2 style="margin:0">Mis proyectos</h2><span class="hint">Se guardan en este navegador; exp\xF3rtalos para respaldarlos o abrirlos en otro equipo.</span></div><div class="chips" style="margin:8px 0"><input type="text" id="projname" value="' + esc(nm) + '" placeholder="Nombre del proyecto" aria-label="Nombre del proyecto" style="min-width:200px;flex:1"><button type="button" class="btn small" data-pj="save">\u{1F4BE} Guardar actual</button><button type="button" class="btn ghost small" data-pj="exp">⬇ Exportar archivo</button><label class="btn ghost small" style="cursor:pointer">⬆ Importar archivo<input type="file" accept=".json,application/json" data-pj="imp" hidden></label><button type="button" class="btn ghost small" data-pj="off" title="Archivo HTML que funciona sin internet, incluida la vista 3D">\u2B07 App sin conexi\xF3n</button><button type="button" class="btn ghost small" data-pj="new">' + (projMsg === "conf-new" ? "\xBFSeguro? Toca otra vez" : "＋ Proyecto nuevo") + "</button></div>" + (projMsg && projMsg !== "conf-new" ? note(esc(projMsg), "ok") : "") + (ks.length ? '<div class="tbl-wrap"><table class="pt"><thead><tr><th>Proyecto</th><th>Guardado</th><th></th></tr></thead><tbody>' + ks.map((k) => "<tr><td><b>" + esc(k) + "</b></td><td>" + new Date(L[k].d || 0).toLocaleString("es-CL") + '</td><td style="white-space:nowrap"><button type="button" class="btn small" data-pj="open" data-k="' + esc(k) + '">Abrir</button> <button type="button" class="btn ghost small" data-pj="del" data-k="' + esc(k) + '">' + (projMsg === "conf-del:" + k ? "\xBFBorrar?" : "✕") + "</button></td></tr>").join("") + "</tbody></table></div>" : '<p class="hint" style="margin:0">A\xFAn no guardas proyectos. Al abrir otro, guarda primero el actual.</p>') + "</section>";
+    return '<section class="card"><div class="sechead"><h2 style="margin:0">Mis proyectos</h2><span class="hint">Se guardan en este navegador; exp\xF3rtalos para respaldarlos o abrirlos en otro equipo.</span></div><div class="chips" style="margin:8px 0"><input type="text" id="projname" value="' + esc(nm) + '" placeholder="Nombre del proyecto" aria-label="Nombre del proyecto" style="min-width:200px;flex:1"><button type="button" class="btn small" data-pj="save">\u{1F4BE} Guardar actual</button><button type="button" class="btn ghost small" data-pj="exp">⬇ Exportar archivo</button><label class="btn ghost small" style="cursor:pointer">⬆ Importar archivo<input type="file" accept=".json,application/json" data-pj="imp" hidden></label><button type="button" class="btn ghost small" data-pj="off" title="Archivo HTML que funciona sin internet, incluida la vista 3D">\u2B07 App sin conexi\xF3n</button><button type="button" class="btn ghost small" data-pj="new">' + (projMsg === "conf-new" ? "\xBFSeguro? Toca otra vez" : "＋ Proyecto nuevo") + "</button></div>" + (projMsg && projMsg !== "conf-new" ? note(esc(projMsg), "ok") : "") + (ks.length ? '<div class="tbl-wrap"><table class="pt"><thead><tr><th>Proyecto</th><th>Guardado</th><th></th></tr></thead><tbody>' + ks.map((k) => "<tr><td><b>" + esc(k) + "</b></td><td>" + new Date(L[k].d || 0).toLocaleString("es-CL") + '</td><td style="white-space:nowrap"><button type="button" class="btn small" data-pj="open" data-k="' + esc(k) + '">Abrir</button> <button type="button" class="btn ghost small" data-pj="dup" data-k="' + esc(k) + '" aria-label="Duplicar ' + esc(k) + '">\u29C9 Duplicar</button> <button type="button" class="btn ghost small" data-pj="del" aria-label="Borrar ' + esc(k) + '" data-k="' + esc(k) + '">' + (projMsg === "conf-del:" + k ? "\xBFBorrar?" : "✕") + "</button></td></tr>").join("") + "</tbody></table></div>" : '<p class="hint" style="margin:0">A\xFAn no guardas proyectos. Al abrir otro, guarda primero el actual.</p>') + "</section>";
   }
   function projLoad(o) {
     if (!o || typeof o !== "object" || !o.proj) return false;
@@ -11901,6 +12059,17 @@ var RICEngine = (() => {
         projMsg = "\xAB" + k + "\xBB abierto.";
       } catch (err) {
         projMsg = "No se pudo abrir el proyecto.";
+      }
+    } else if (a === "dup" && L[k]) {
+      let n = k + " (copia)", i = 2;
+      while (L[n]) n = k + " (copia " + i++ + ")";
+      try {
+        const o = JSON.parse(L[k].s);
+        if (o.proj) o.proj.nombre = n;
+        L[n] = { d: Date.now(), s: JSON.stringify(o) };
+        if (put(L)) projMsg = "\xAB" + k + "\xBB duplicado como \xAB" + n + "\xBB.";
+      } catch (err) {
+        projMsg = "No se pudo duplicar el proyecto.";
       }
     } else if (a === "del") {
       if (projMsg !== "conf-del:" + k) projMsg = "conf-del:" + k;
@@ -12032,11 +12201,16 @@ var RICEngine = (() => {
     }
     if (cur !== "l_glosario") html += legend(html);
     html = guiaAdd(html);
+    html = wizWrap(html);
     if (S.migr && S.migr.amp && !S.migr.seen) html = '<div class="note warn migr" role="status"><span><b>Tablas actualizadas al RIC vigente.</b> La capacidad de corriente de los cables ahora sale del RIC N\xB004, Tabla 4.4 (m\xE9todo A1, cable de 70 \xB0C), el llenado de ductos de la Tabla 4.21 y el factor de simultaneidad de la Tabla 3.2 del RIC N\xB003. Algunos resultados de tus proyectos pueden cambiar: rev\xEDsalos.</span> <button class="btn small" type="button" data-go="l_tablas">Ver tablas</button> <button class="btn ghost small" type="button" data-act="migrok">Entendido</button></div>' + html;
     html += '<p class="aviso-sec" role="note">\u2696\uFE0F Herramienta de apoyo para aprender y proyectar. No reemplaza el proyecto ni la firma de un instalador el\xE9ctrico autorizado SEC, ni la lectura del texto vigente de los pliegos RIC. Datos normativos: ' + RIC_DATA.fuente + ' (versi\xF3n de datos ' + RIC_DATA.ver + ').</p>';
     document.getElementById("app").innerHTML = html;
     clampLeads();
     renderSide();
+    {
+      const st = document.querySelector('.wz [aria-current="step"]');
+      if (st && st.scrollIntoView) st.scrollIntoView({ block: "nearest", inline: "center" });
+    }
     if (cur === "sim") simMount();
     if (fid) {
       const el = document.getElementById(fid);
@@ -12545,6 +12719,176 @@ var RICEngine = (() => {
     save();
     render();
   });
+  /* ===== Asistente guiado de proyecto: proyecto → recintos y cargas → circuitos → alimentador → protecciones → tablero → resultados ===== */
+  const WZ = [
+    ["p1", "Proyecto", "Nombre, sistema y largo del alimentador"],
+    ["p2", "Recintos y cargas", "Superficie, centros, enchufes y horno"],
+    ["p3", "Circuitos", "Agrupa los puntos en circuitos"],
+    ["p4", "Alimentador", "Demanda y conductor del alimentador"],
+    ["p5", "Protecciones", "Termomagnéticos y diferenciales"],
+    ["p6", "Tablero", "Módulos, reserva y grado IP"],
+    ["asis", "Resultados", "Resumen, unilineal, materiales y exportar"]
+  ];
+  let wizOn = (() => {
+    try {
+      return localStorage.getItem(KEY + "-wiz") === "1";
+    } catch (e) {
+      return false;
+    }
+  })();
+  function wizSet(on) {
+    wizOn = on;
+    try {
+      localStorage.setItem(KEY + "-wiz", on ? "1" : "0");
+    } catch (e) {
+    }
+  }
+  const wizIdx = (id) => WZ.findIndex((w) => w[0] === id);
+  function wizDone(id) {
+    if (id === "p1") return !!(S.proj.nombre && +S.proj.Lalim > 0);
+    if (id === "p2") return S.rooms.length > 0;
+    if (id === "p3") return S.circuits.length > 0;
+    if (id === "asis") return false;
+    return !!RES[id];
+  }
+  function wizWrap(html) {
+    const i = wizIdx(cur);
+    if (!wizOn || i < 0) return html;
+    const st = '<nav class="wz" aria-label="Pasos del asistente"><div class="wzt"><span>Asistente \xB7 paso <b>' + (i + 1) + "</b> de " + WZ.length + '<span class="wzd"> \xB7 ' + esc(WZ[i][2]) + '</span></span><button type="button" class="linkb" data-wz="exit">Salir del asistente</button></div><ol>' + WZ.map(([id, t], k) => '<li><button type="button" data-go="' + id + '" class="' + (wizDone(id) && k !== i ? "done" : "") + '"' + (k === i ? ' aria-current="step"' : "") + '><span class="n">' + (wizDone(id) && k !== i ? "✓" : k + 1) + "</span>" + esc(t) + "</button></li>").join("") + "</ol></nav>";
+    const p = pageOf(cur), nx = WZ[i + 1], pv = WZ[i - 1];
+    const nextLbl = nx ? (p.c && !RES[cur] ? "Calcular y seguir: " : "Siguiente: ") + nx[1] + " →" : "Terminar";
+    const nav = '<div class="wznav no-print" role="group" aria-label="Avanzar en el asistente">' + (pv ? '<button type="button" class="btn ghost" data-wz="prev">← ' + esc(pv[1]) + "</button>" : '<button type="button" class="btn ghost" data-wz="exit">Salir</button>') + '<button type="button" class="btn calc" data-wz="next">' + esc(nextLbl) + "</button></div>";
+    html = html.replace(/<div class="pager">[\s\S]*?<\/div>/, "");
+    return st + html + nav;
+  }
+  function wizStart() {
+    wizSet(true);
+    go("p1");
+  }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest && e.target.closest("[data-wz]");
+    if (!b) return;
+    const a = b.dataset.wz, i = wizIdx(cur);
+    if (a === "start") return wizStart();
+    if (a === "exit") {
+      wizSet(false);
+      render();
+      return;
+    }
+    if (a === "prev" && i > 0) return go(WZ[i - 1][0]);
+    if (a === "next") {
+      const p = pageOf(cur);
+      if (p.c && !RES[cur]) {
+        RES[cur] = resultCard(p.c());
+        SNAP[cur] = snapOf(cur);
+      }
+      if (i < WZ.length - 1) go(WZ[i + 1][0]);
+      else {
+        wizSet(false);
+        go("rep");
+      }
+      return;
+    }
+    if (a === "csv") {
+      const B = bomProyecto(), lines = [["Grupo", "Material", "Cantidad", "Unidad", "Precio unitario CLP", "Subtotal CLP"]].concat(B.map((x) => [x.g, x.d, x.q, x.u, precio(x.k), precio(x.k) * x.q]));
+      const csv = "﻿" + lines.map((r) => r.map((v) => '"' + String(v).replace(/"/g, '""') + '"').join(";")).join("\r\n");
+      dlFile(nomArch() + "-materiales.csv", new Blob([csv], { type: "text/csv" })).then((rr) => asisMsg(dlMsg(rr, "Listado de materiales descargado (se abre con Excel).")));
+      return;
+    }
+    if (a === "svg") {
+      dlFile(nomArch() + "-unilineal.svg", new Blob([uniSVG()], { type: "image/svg+xml" })).then((rr) => asisMsg(dlMsg(rr, "Diagrama unilineal descargado.")));
+      return;
+    }
+    if (a === "print") {
+      try {
+        window.print();
+      } catch (err) {
+        asisMsg("Este visor no permite imprimir: descarga el archivo y \xE1brelo en el navegador.");
+      }
+    }
+  });
+  const nomArch = () => (S.proj && S.proj.nombre || "proyecto-ric").replace(/[^\w\-]+/g, "_");
+  function asisMsg(t) {
+    const m = document.getElementById("asismsg");
+    if (m) m.textContent = t;
+  }
+  function asisCalc() {
+    const a = calcAlim(S), rs = S.circuits.map((c) => calcCirc(S, c, a));
+    return { a, rs };
+  }
+  function bomProyecto() {
+    const { a, rs } = asisCalc();
+    return RICEngine.materialesProyecto({ tri: S.proj.sistema === "tri", alim: { In: a.In, S: a.sel ? a.sel.s : null, L: a.L }, circuitos: rs.map((r) => ({ In: r.In, S: r.sel ? r.sel.s : null, L: r.L, curva: r.curva })) });
+  }
+  function uniSVG() {
+    const { a, rs } = asisCalc(), tri = S.proj.sistema === "tri", W = 760, rowH = 34, top = 150;
+    const groups = [];
+    S.circuits.forEach((c, i) => {
+      const g = Math.floor(i / 3);
+      (groups[g] = groups[g] || []).push(i);
+    });
+    const H = top + groups.reduce((h, g) => h + 46 + g.length * rowH, 0) + 30;
+    const t = (x, y, s, o = {}) => '<text x="' + x + '" y="' + y + '" font-size="' + (o.s || 13) + '" font-weight="' + (o.b ? 700 : 400) + '" fill="' + (o.c || "#14202C") + '" font-family="Arial,Helvetica,sans-serif"' + (o.a ? ' text-anchor="' + o.a + '"' : "") + ">" + esc(s) + "</text>";
+    const box = (x, y, w, h, f, st) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="6" fill="' + f + '" stroke="' + (st || "#3b4a5a") + '" stroke-width="1.4"/>';
+    let g = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + " " + H + '" class="unisvg" role="img" aria-label="Diagrama unilineal del proyecto"><rect width="' + W + '" height="' + H + '" fill="#fff"/>';
+    g += t(20, 26, "Diagrama unilineal \xB7 " + (S.proj.nombre || "Proyecto"), { s: 15, b: 1 }) + t(20, 44, (tri ? "Trif\xE1sico 380/220 V" : "Monof\xE1sico 220 V") + " \xB7 esquema TN-S \xB7 RIC N\xB002 y N\xB010", { s: 11.5, c: "#4D5B6B" });
+    g += box(20, 60, 150, 34, "#F2F5F8") + t(95, 82, "Empalme / medidor", { a: "middle", s: 12 });
+    g += '<line x1="170" y1="77" x2="230" y2="77" stroke="#3b4a5a" stroke-width="2"/>' + t(200, 70, "Alim. " + (a.sel ? sStr(a.sel.s) + " mm\xB2" : "—"), { a: "middle", s: 10.5, c: "#4D5B6B" });
+    g += box(230, 60, 190, 34, "#FFF6E8", "#AF4F1E") + t(325, 82, "General " + (tri ? "4P " : "2P ") + (a.In || "—") + " A", { a: "middle", s: 12.5, b: 1 });
+    g += '<line x1="60" y1="94" x2="60" y2="' + (H - 24) + '" stroke="#3b4a5a" stroke-width="3"/><line x1="325" y1="94" x2="325" y2="118" stroke="#3b4a5a" stroke-width="2"/><line x1="60" y1="118" x2="325" y2="118" stroke="#3b4a5a" stroke-width="3"/>' + t(70, 112, "Barra de distribuci\xF3n", { s: 10.5, c: "#4D5B6B" });
+    let y = top;
+    groups.forEach((ix, k) => {
+      g += '<line x1="60" y1="' + (y + 17) + '" x2="90" y2="' + (y + 17) + '" stroke="#3b4a5a" stroke-width="2"/>' + box(90, y, 210, 34, "#EAF1F8", "#1C5A96") + t(195, y + 22, "DR" + (k + 1) + " \xB7 30 mA \xB7 clase A", { a: "middle", s: 12, b: 1 });
+      const yb = y + 34;
+      g += '<line x1="195" y1="' + yb + '" x2="195" y2="' + (yb + 12 + (ix.length - 1) * rowH + 17) + '" stroke="#3b4a5a" stroke-width="2"/>';
+      ix.forEach((i, j) => {
+        const r = rs[i], c = S.circuits[i], yy = yb + 12 + j * rowH;
+        g += '<line x1="195" y1="' + (yy + 13) + '" x2="320" y2="' + (yy + 13) + '" stroke="#3b4a5a" stroke-width="1.6"/>' + box(320, yy, 96, 26, r.okIn ? "#fff" : "#FBE5E3", r.okIn ? "#3b4a5a" : "#A8271E") + t(368, yy + 17, (r.In || "—") + " A " + r.curva, { a: "middle", s: 12, b: 1 });
+        g += t(428, yy + 12, "C" + (i + 1) + " " + (c.nombre || ""), { s: 12, b: 1 }) + t(428, yy + 25, (r.sel ? sStr(r.sel.s) + " mm\xB2" : "sin secci\xF3n") + " \xB7 " + n0(r.P) + " W \xB7 ΔV total " + (isFinite(r.tot) ? nf(r.tot, 1) + " %" : "—"), { s: 11, c: "#4D5B6B" });
+      });
+      y = yb + 12 + ix.length * rowH;
+    });
+    g += t(W - 20, H - 10, "Generado con Calculadora RIC \xB7 apoyo, no reemplaza al instalador autorizado SEC", { a: "end", s: 9.5, c: "#6b7785" });
+    return g + "</svg>";
+  }
+  function pgAsis() {
+    const nm = S.proj.nombre || "Proyecto sin nombre";
+    if (!S.circuits.length) return '<p class="eyebrow">Asistente \xB7 resultados</p><h1>' + esc(nm) + "</h1>" + note("A\xFAn no hay circuitos. Completa los recintos y genera los circuitos para ver los resultados.", "warn") + '<button class="btn" type="button" data-go="p2">Ir a recintos y cargas</button>';
+    const { a, rs } = asisCalc(), I = issues(S), B = bomProyecto(), cost = bomCost(B), nDR = Math.ceil(S.circuits.length / 3), m = RICEngine.modulosTablero(S.circuits.length, S.proj.sistema === "tri");
+    const rows = S.circuits.map((c, i) => {
+      const r = rs[i];
+      return "<tr><td><b>C" + (i + 1) + "</b> " + esc(c.nombre || "") + '</td><td class="num">' + n0(r.P) + '</td><td class="num">' + nf(r.Is) + '</td><td class="num">' + (r.In || "—") + " " + r.curva + '</td><td class="num">' + (r.sel ? sStr(r.sel.s) : "—") + '</td><td class="num">' + (isFinite(r.tot) ? nf(r.tot, 2) + " %" : "—") + "</td><td>DR" + (Math.floor(i / 3) + 1) + "</td><td>" + okp(r.ok) + "</td></tr>";
+    }).join("");
+    return '<p class="eyebrow">Asistente \xB7 resultados \xB7 RIC N\xB003, N\xB004 y N\xB010</p><h1>' + esc(nm) + '</h1><p class="lead">Resumen del dise\xF1o el\xE9ctrico con todo lo calculado en los pasos anteriores. Revisa las observaciones, descarga los entregables y contin\xFAa con planos, presupuesto y ensayos en el proyecto de 8 etapas.</p>' +
+      kpis([kpi("Potencia instalada", n0(a.Pinst), "W"), kpi("Demanda", n0(a.Pd), "W"), kpi("Corriente del alimentador", nf(a.Ia), "A"), kpi("Protecci\xF3n general", a.In || "—", "A"), kpi("Alimentador", a.sel ? sStr(a.sel.s) : "—", "mm\xB2"), kpi("Circuitos", S.circuits.length), kpi("Diferenciales 30 mA", nDR), kpi("Tablero", m.tablero, "m\xF3dulos")]) +
+      '<section class="card"><h2>Cumplimiento</h2>' + (I.length ? '<ul class="chk">' + I.map((x) => "<li>⚠ <span>" + esc(x) + "</span></li>").join("") + "</ul>" : '<ul class="chk"><li class="ok">✓ <span>Sin observaciones: el dise\xF1o cumple las verificaciones de la app. Conf\xEDrmalo con el instalador autorizado.</span></li></ul>') + "</section>" +
+      '<section class="card"><h2>Circuitos</h2><div class="tbl-wrap"><table class="pt"><thead><tr><th>Circuito</th><th class="num">P [W]</th><th class="num">I [A]</th><th class="num">Protecci\xF3n</th><th class="num">S [mm\xB2]</th><th class="num">ΔV total</th><th>Diferencial</th><th>Estado</th></tr></thead><tbody>' + rows + '</tbody></table></div><p class="hint">Conductor elegido con la tabla ' + esc(S.ampCfg.met) + " \xB7 cable " + esc(RIC_DATA.tcab[S.ampCfg.tc] || "") + " (RIC N\xB004, Tabla 4.4). ΔV total incluye el alimentador (l\xEDmite 5 %, RIC N\xB003, 5.1.3).</p></section>" +
+      '<section class="card"><h2>Diagrama unilineal</h2><div class="tbl-wrap">' + uniSVG() + "</div></section>" +
+      '<section class="card"><h2>Materiales el\xE9ctricos estimados</h2>' + bomTable(B, false) + '<p class="hint">Estimaci\xF3n de conductores (fase, neutro y tierra; 10 % de merma y 2 m de chicotes por conductor, criterio usual), protecciones y tablero. No incluye cajas, ductos ni aparatos: se agregan al dibujar la vivienda. Total con IVA: <b>' + clp(cost.tot) + "</b>.</p></section>" +
+      '<section class="card no-print"><h2>Exportar</h2><div class="exp"><button class="btn" type="button" data-wz="print">\u{1F5A8} Imprimir o guardar PDF</button><button class="btn ghost" type="button" data-wz="csv">⬇ Materiales (CSV para Excel)</button><button class="btn ghost" type="button" data-wz="svg">⬇ Unilineal (SVG)</button><button class="btn ghost" type="button" data-go="rep">Reportes completos</button></div><p class="hint" id="asismsg" role="status" aria-live="polite"></p></section>' + projHTML();
+  }
+  /* ===== Arranque ===== */
+  document.documentElement.lang = "es";
+  {
+    const m = document.getElementById("app");
+    if (m && !document.querySelector(".skip")) {
+      m.tabIndex = -1;
+      document.body.insertAdjacentHTML("afterbegin", '<a class="skip" href="#app">Saltar al contenido</a>');
+    }
+  }
+  /* App instalable y sin conexión (PWA): solo cuando se publica en un sitio propio (https o localhost), fuera de visores embebidos. */
+  try {
+    const own = (location.protocol === "https:" || location.hostname === "localhost") && window.top === window && !/claude\.ai|claudeusercontent/.test(location.hostname);
+    if (own && "serviceWorker" in navigator) {
+      const l = document.createElement("link");
+      l.rel = "manifest";
+      l.href = "manifest.webmanifest";
+      document.head.appendChild(l);
+      navigator.serviceWorker.register("sw.js").catch(() => {
+      });
+    }
+  } catch (e) {
+  }
   {
     document.body.classList.add("lite");
     const keep = new Set(["home", "tg", "sim", "pan", "hub_calc", "t_corriente", "t_ohm", "t_potencias", "t_caida", "t_mom", "t_conductor", "t_proteccion", "t_curvas"]);

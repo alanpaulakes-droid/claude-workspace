@@ -29,30 +29,45 @@ const chooseS = (o) => RICEngine.chooseS(Object.assign({ amp: S.amp }, o));
 
 ## Secciones de la interfaz (`src/app`)
 
-| Archivo                        | Contenido                                                                   |
-| ------------------------------ | --------------------------------------------------------------------------- |
-| `00-nucleo.js`                 | Estado, guardado, migración, utilidades de formato y formularios, circuitos |
-| `01-proyecto.js`               | Páginas del proyecto en 8 etapas                                            |
-| `02-calculadoras.js`           | Calculadoras básicas, glosario y tablas                                     |
-| `03-cuadro.js`                 | Cuadro de carga                                                             |
-| `04-portadas-ilustraciones.js` | Portadas y figuras explicativas                                             |
-| `05-modelo-vivienda.js`        | Modelo de la vivienda y del simulador, evaluación eléctrica                 |
-| `06-sim-cableado.js`           | Cableado, cajas, ductos, mediciones y colocación                            |
-| `07-sim-inspector.js`          | Inspector RIC, desafíos y barra de colocación                               |
-| `08-panel-practica.js`         | Pared de práctica y examen práctico                                         |
-| `09-sim-interfaz.js`           | Hojas, errores, pantalla completa, carga diferida de three.js               |
-| `10-sim-3d.js`                 | Escena 3D (cámara, materiales, construcción de la escena)                   |
-| `11-sim-eventos.js`            | Eventos táctiles y de teclado del 3D                                        |
-| `12-calculadoras-avanzadas.js` | Curvas, factores, cortocircuito, EV, FV, energía, subtablero, momentos      |
-| `13-reportes.js`               | Plantillas, informes, materiales, plano, memoria, autopruebas               |
-| `14-juego-tablero.js`          | Juego «Armar tablero»                                                       |
-| `15-curso.js`                  | Curso, quiz y ejercicios                                                    |
-| `16-precios-vivienda.js`       | Precios en CLP y diseñador de vivienda                                      |
-| `17-informe-etapas.js`         | Informe técnico, lámina SEC y etapas                                        |
-| `18-navegacion.js`             | Páginas, navegación, render, validación en vivo y eventos globales          |
+| Archivo                        | Contenido                                                                                |
+| ------------------------------ | ---------------------------------------------------------------------------------------- |
+| `00-nucleo.js`                 | Estado, guardado, migración, utilidades de formato y formularios, circuitos              |
+| `01-proyecto.js`               | Páginas del proyecto en 8 etapas                                                         |
+| `02-calculadoras.js`           | Calculadoras básicas, glosario y tablas                                                  |
+| `03-cuadro.js`                 | Cuadro de carga                                                                          |
+| `04-portadas-ilustraciones.js` | Portadas y figuras explicativas                                                          |
+| `05-modelo-vivienda.js`        | Modelo de la vivienda y del simulador, evaluación eléctrica                              |
+| `06-sim-cableado.js`           | Cableado, cajas, ductos, mediciones y colocación                                         |
+| `07-sim-inspector.js`          | Inspector RIC, desafíos y barra de colocación                                            |
+| `08-panel-practica.js`         | Pared de práctica y examen práctico                                                      |
+| `09-sim-interfaz.js`           | Hojas, errores, pantalla completa, carga diferida de three.js                            |
+| `10-sim-3d.js`                 | Escena 3D (cámara, materiales, construcción de la escena)                                |
+| `11-sim-eventos.js`            | Eventos táctiles y de teclado del 3D                                                     |
+| `12-calculadoras-avanzadas.js` | Curvas, factores, cortocircuito, EV, FV, energía, subtablero, momentos                   |
+| `13-reportes.js`               | Plantillas, informes, materiales, plano, memoria, autopruebas                            |
+| `14-juego-tablero.js`          | Juego «Armar tablero»                                                                    |
+| `15-curso.js`                  | Curso, quiz y ejercicios                                                                 |
+| `16-precios-vivienda.js`       | Precios en CLP y diseñador de vivienda                                                   |
+| `17-informe-etapas.js`         | Informe técnico, lámina SEC y etapas                                                     |
+| `18-navegacion.js`             | Páginas, navegación, render, validación en vivo y eventos globales                       |
+| `19-asistente.js`              | Asistente guiado (7 pasos), resultados, unilineal del proyecto, materiales y exportación |
+| `99-inicio.js`                 | Arranque: idioma, enlace «Saltar al contenido», registro de la PWA y primer render       |
 
 Las secciones comparten una sola clausura (se concatenan en orden numérico), así que el orden importa: una
 sección puede usar lo declarado en otra solo después de que la app terminó de cargar.
+
+## Diseño
+
+- `src/styles/tokens.css`: colores (claro y oscuro), tipografía, espaciado, radios, sombras y foco.
+- `src/styles/components.css`: botones, campos, tarjetas, inicio por modos, asistente y unilineal. Se aplica
+  después de `app.css`, así que manda sobre los estilos antiguos.
+- Objetivos táctiles de 44 px como mínimo, campos de 16 px (evita el zoom de iPhone) y contraste AA en ambos temas.
+
+## App instalable (PWA)
+
+`npm run build` deja en `dist/` un sitio publicable: `index.html`, `manifest.webmanifest`, `sw.js` e `icon.svg`.
+Al publicarlo en un sitio propio con https (por ejemplo GitHub Pages), la app se puede instalar y funciona sin
+conexión. Dentro del visor de claude.ai o abierto como archivo, el registro se omite y todo sigue funcionando.
 
 ## Calidad
 

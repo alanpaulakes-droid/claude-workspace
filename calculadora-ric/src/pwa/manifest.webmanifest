@@ -1,0 +1,13 @@
+{
+  "name": "Calculadora RIC Domiciliaria",
+  "short_name": "Calculadora RIC",
+  "description": "Cálculo, simulador 3D y enseñanza de instalaciones domiciliarias según los pliegos RIC (SEC, Chile).",
+  "lang": "es-CL",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F3F5F8",
+  "theme_color": "#1C5A96",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

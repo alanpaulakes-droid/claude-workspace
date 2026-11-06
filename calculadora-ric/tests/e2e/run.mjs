@@ -121,6 +121,57 @@ try {
     await p.close();
   }
 
+  // 3b. Asistente de proyecto completo con el ejemplo, resultados y duplicar
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    const p = await ctx.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(URL);
+    await p.click('[data-wz="start"]');
+    await p.waitForTimeout(300);
+    await p.evaluate(() => document.querySelector('[data-act="askproj"][data-k="ex"]').click());
+    await p.evaluate(() => document.querySelector('[data-act="doproj"]').click());
+    await p.waitForTimeout(300);
+    for (let i = 0; i < 6; i++) {
+      await p.evaluate(() => document.querySelector('[data-wz="next"]').click());
+      await p.waitForTimeout(300);
+    }
+    const r = await p.evaluate(() => ({
+      h1: document.querySelector("h1").innerText,
+      kpis: document.querySelectorAll(".kpi").length,
+      svg: !!document.querySelector(".unisvg"),
+      bom: document.querySelectorAll("table.bom tbody tr").length,
+      ok: !!document.querySelector(".chk li.ok"),
+      sw: document.documentElement.scrollWidth <= innerWidth + 1,
+    }));
+    check(
+      "Asistente: 7 pasos hasta Resultados",
+      r.h1 === "Casa ejemplo 60 m²" && r.kpis >= 8 && r.svg && r.bom > 8 && r.ok && r.sw && !errs.length,
+      JSON.stringify(r),
+    );
+    await p.fill("#projname", "Casa ejemplo 60 m²");
+    await p.evaluate(() => document.querySelector('[data-pj="save"]').click());
+    await p.waitForTimeout(200);
+    await p.evaluate(() => document.querySelector('[data-pj="dup"]').click());
+    await p.waitForTimeout(200);
+    const L = await p.evaluate(() =>
+      Object.keys(
+        JSON.parse(
+          localStorage.getItem("ric-calc-v3-projs") ||
+            localStorage.getItem(Object.keys(localStorage).find((k) => /proj/.test(k))) ||
+            "{}",
+        ),
+      ),
+    );
+    check(
+      "Guardar y duplicar proyecto",
+      L.some((k) => /copia/.test(k)),
+      L.join(" · "),
+    );
+    await ctx.close();
+  }
+
   // 4. Armar tablero: soluciones de los niveles aprueban
   {
     const p = await browser.newPage({ viewport: { width: 1280, height: 900 } });
