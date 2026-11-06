@@ -1253,14 +1253,7 @@ def("van-tir", "eco", {
   c(v){
     const r = need(v, "tasa", "Tasa de descuento") / 100, Fl = list(v.flujos, "los flujos");
     if (Fl.length < 2) fail("Ingresa al menos dos flujos (F0 y F1).");
-    const fac = Fl.map((f, t) => 1 / Math.pow(1 + r, t)), vp = Fl.map((f, t) => f * fac[t]);
-    const VAN = sum(vp); let ac = 0, acd = 0; const acA = [], acdA = [];
-    Fl.forEach((f, t) => { ac += f; acd += vp[t]; acA.push(ac); acdA.push(acd); });
-    const pri = a => { if (a[0] >= 0) return 0; for (let t = 1; t < a.length; t++) if (a[t] >= 0) return t - 1 + (-a[t - 1]) / (a[t] - a[t - 1]); return NaN; };
-    const PRI = pri(acA), PRId = pri(acdA), roots = irr(Fl), TIR = roots.length ? roots[0] : NaN;
-    const I0 = Fl[0] < 0 ? -Fl[0] : NaN, IVAN = VAN / I0;
-    const VPpos = sum(vp.slice(1).filter(x => x > 0)), VPneg = -sum(vp.slice(1).filter(x => x < 0));
-    const BC = VPpos / ((fin(I0) ? I0 : 0) + VPneg);
+    const V = NUC.van(r, Fl), fac = V.fac, vp = V.vp, VAN = V.VAN, acA = V.acA, acdA = V.acdA, PRI = V.PRI, PRId = V.PRId, roots = V.roots, TIR = V.TIR, I0 = V.I0, IVAN = V.IVAN, VPpos = V.VPpos, VPneg = V.VPneg, BC = V.BC;
     let h = kpis([kpi("VAN", money(VAN), "", VAN >= 0 ? "ok" : "bad"), kpi("TIR", fin(TIR) ? pc(TIR, 2) : "—", "", fin(TIR) ? (TIR >= r ? "ok" : "bad") : ""), kpi("PRI simple", fin(PRI) ? n1(PRI) : "No recupera", fin(PRI) ? "períodos" : ""), kpi("PRI descontado", fin(PRId) ? n1(PRId) : "No recupera", fin(PRId) ? "períodos" : ""), kpi("IVAN", fin(IVAN) ? nf(IVAN, 3) : "—", "VAN / I₀"), kpi("Beneficio / Costo", nf(BC, 3))]);
     h += VAN >= 0 ? note("<b>Se acepta:</b> el proyecto rinde más que el " + pc(r) + " exigido y deja " + money(VAN) + " de riqueza adicional, medida en dinero de hoy.", "ok") : note("<b>Se rechaza:</b> con un " + pc(r) + " de exigencia el proyecto destruye " + money(-VAN) + " de valor.", "bad");
     if (roots.length > 1) h += note("El flujo cambia de signo más de una vez y tiene " + roots.length + " TIR (" + roots.map(x => pc(x, 2)).join(", ") + "). En ese caso decide solo con el VAN.");
@@ -1274,6 +1267,8 @@ def("van-tir", "eco", {
       Fl.map((f, t) => rowc([t, money(f), n4(fac[t]), money(vp[t]), money(acA[t]), money(acdA[t])], acdA[t] >= 0 && (t === 0 || acdA[t - 1] < 0) ? "sel" : "")), { num:[0, 1, 2, 3, 4, 5], foot:["Σ", money(sum(Fl)), "", money(VAN), "", ""] });
     const rmax = Math.max(0.3, fin(TIR) ? TIR * 2 : 0.3), pts = []; for (let k = 0; k <= 40; k++) { const rr = rmax * k / 40; pts.push([rr * 100, npv(rr, Fl)]); }
     h += chart({ title:"Perfil del VAN", series:[{ pts, cls:"s1" }], h:[{ y:0, cls:"sm" }], v:[{ x:r * 100, cls:"sb", lbl:"r = " + pc(r) }].concat(fin(TIR) ? [{ x:TIR * 100, cls:"sm", lbl:"TIR" }] : []), xlab:"Tasa de descuento (%)", ylab:"VAN ($)", cap:"Perfil del VAN: el punto donde la curva corta el eje horizontal es la TIR." });
+    if (Fl[0] >= 0) h += note("<b>Revisa los signos:</b> el primer flujo (año 0) es positivo, es decir, no hay inversión inicial. La inversión se ingresa con signo negativo.", "bad");
+    h += lectura(VAN >= 0 ? "invertir en este proyecto deja " + money(VAN) + " más que dejar el dinero en una alternativa que rinde " + pc(r) + "." + (fin(PRId) ? " La inversión se recupera, en dinero de hoy, en unos " + n1(PRId) + " períodos." : "") : "con una exigencia de " + pc(r) + " el proyecto no alcanza a pagar lo que el dinero rendiría en otra alternativa: pierde " + money(-VAN) + " en dinero de hoy.");
     return h;
   },
   learn:"<p><b>VAN</b> responde «¿cuánto más rico quedo hoy?». <b>TIR</b> responde «¿qué rentabilidad tiene el proyecto?». Si comparas proyectos excluyentes, elige por VAN: la TIR puede inducir a error cuando los montos o las vidas útiles son distintos.</p><ul><li>Usa flujos <b>incrementales</b> (con proyecto − sin proyecto).</li><li>No incluyas costos hundidos (lo ya gastado no cambia con la decisión).</li><li>La depreciación no es un flujo de caja; solo importa porque reduce impuestos (ver «Flujo de caja de un proyecto»).</li><li>Tasa nominal con flujos nominales; tasa real con flujos reales.</li></ul>",
@@ -1396,9 +1391,7 @@ def("equilibrio", "eco", {
   f:[F("CF", "Costos fijos del período", 18000000, { u:"$" }), F("p", "Precio de venta unitario", 12500, { u:"$" }), F("cv", "Costo variable unitario", 7400, { u:"$" }), F("U", "Utilidad objetivo (después de impuesto)", 4000000, { u:"$" }), F("t", "Tasa de impuesto", 27, { u:"%" }), F("Qp", "Ventas proyectadas", 5200, { u:"unidades" })],
   c(v){
     const CF = need(v, "CF", "Costos fijos", { nn:true }), p = need(v, "p", "Precio", { pos:true }), cv = need(v, "cv", "Costo variable", { nn:true }), U = opt(v, "U") || 0, t = (opt(v, "t") || 0) / 100, Qp = opt(v, "Qp");
-    const mc = p - cv; if (mc <= 0) fail("El precio debe ser mayor que el costo variable: con margen negativo nunca hay equilibrio.");
-    const Q = CF / mc, V = Q * p, rmc = mc / p, Qo = (CF + U / (1 - t)) / mc;
-    const ms = Qp ? (Qp - Q) / Qp : NaN, UAI = Qp ? Qp * mc - CF : NaN, GAO = Qp ? Qp * mc / UAI : NaN;
+    const EQ = NUC.equilibrio(CF, p, cv, U, t, Qp), mc = EQ.mc, Q = EQ.Q, V = EQ.V, rmc = EQ.rmc, Qo = EQ.Qo, ms = EQ.ms, UAI = EQ.UAI, GAO = EQ.GAO;
     let h = kpis([kpi("Equilibrio", n0(Math.ceil(Q)), "unidades", "hi"), kpi("Ventas de equilibrio", money(V)), kpi("Margen de contribución", money(mc), pc(rmc) + " del precio"), kpi("Para la utilidad objetivo", n0(Math.ceil(Qo)), "unidades"), kpi("Margen de seguridad", fin(ms) ? pc(ms) : "—", "", fin(ms) ? (ms > 0 ? "ok" : "bad") : ""), kpi("Apalancamiento operativo", fin(GAO) && UAI > 0 ? nf(GAO, 2) + "×" : "—")]);
     h += steps([
       { t:"Margen de contribución unitario", f:"MC = p − cv", s:"MC = " + money(p) + " − " + money(cv) + " = " + money(mc), r:money(mc), why:"es lo que cada unidad aporta para pagar costos fijos y, después, generar utilidad." },
@@ -1409,6 +1402,7 @@ def("equilibrio", "eco", {
     const qmax = Math.max(Q * 2, Qp || 0, Qo) * 1.1, pI = [], pC = [];
     for (let k = 0; k <= 20; k++) { const q = qmax * k / 20; pI.push([q, q * p]); pC.push([q, CF + q * cv]); }
     h += chart({ title:"Gráfico de equilibrio", series:[{ pts:pI, cls:"s1" }, { pts:pC, cls:"s2" }], h:[{ y:CF, cls:"sm", lbl:"Costos fijos" }], v:[{ x:Q, cls:"sb", lbl:"Q equilibrio" }], xlab:"Unidades", ylab:"$", legend:[["--blue", "Ingresos"], ["--copper", "Costo total"]] });
+    h += lectura("cada unidad deja " + money(mc) + " para pagar los costos fijos; con " + n0(Math.ceil(Q)) + " unidades se cubren todos los costos y desde ahí cada unidad adicional es ganancia." + (fin(ms) ? (ms > 0 ? " Con las ventas proyectadas, estas pueden caer " + pc(ms) + " antes de perder." : " Con las ventas proyectadas, la empresa pierde dinero.") : ""));
     return h;
   },
   learn:"<p>Con varios productos usa el <b>margen de contribución ponderado</b> por la mezcla de ventas: MC̄ = Σ (MC_i × participación_i). El equilibrio se calcula con MC̄ y luego se reparte según la mezcla.</p>",
@@ -1582,11 +1576,11 @@ def("pronosticos", "ops", {
     const D = list(v.D, "la demanda"), N = D.length, n = need(v, "n", "Períodos móviles", { pos:true, int:true }), a = need(v, "a", "α"), H = Math.min(12, need(v, "h", "Períodos a proyectar", { pos:true, int:true }));
     if (N < Math.max(4, n + 2)) fail("Necesitas al menos " + Math.max(4, n + 2) + " datos.");
     if (!(a > 0 && a < 1)) fail("α debe estar entre 0 y 1.");
-    const ma = D.map((_, t) => t >= n ? mean(D.slice(t - n, t)) : NaN);
-    const es = [D[0]]; for (let t = 1; t <= N; t++) es[t] = a * D[t - 1] + (1 - a) * es[t - 1]; es[0] = NaN;
-    const X = D.map((_, t) => t + 1), mx = mean(X), my = mean(D), b = sum(X.map((x, i) => (x - mx) * (D[i] - my))) / sum(X.map(x => (x - mx) * (x - mx))), a0 = my - b * mx;
-    const lr = X.map(x => a0 + b * x);
-    const err = f => { const e = []; D.forEach((d, t) => { if (fin(f[t])) e.push({ d, f:f[t], e:d - f[t] }); }); const MAD = mean(e.map(x => Math.abs(x.e))), MSE = mean(e.map(x => x.e * x.e)), MAPE = mean(e.map(x => Math.abs(x.e) / x.d)), TS = sum(e.map(x => x.e)) / MAD; return { MAD, MSE, MAPE, TS, n:e.length }; };
+    const ma = NUC.mediaMovil(D, n);
+    const es = NUC.suavizamiento(D, a);
+    const TL = NUC.tendencia(D), a0 = TL.a0, b = TL.b;
+    const lr = TL.lr;
+    const err = f => NUC.errores(D, f);
     const M = [{ nm:"Promedio móvil (" + n + ")", f:ma, nx:mean(D.slice(N - n)), E:err(ma), proj:() => mean(D.slice(N - n)) }, { nm:"Suavizamiento exponencial (α = " + nf(a, 2) + ")", f:es.slice(0, N), nx:es[N], E:err(es.slice(0, N)), proj:() => es[N] }, { nm:"Tendencia lineal", f:lr, nx:a0 + b * (N + 1), E:err(lr), proj:k => a0 + b * (N + k) }];
     const best = M.reduce((p, q) => q.E.MAD < p.E.MAD ? q : p);
     let h = kpis([kpi("Método recomendado", best.nm.split(" (")[0], "", "hi"), kpi("Pronóstico próximo período", n0(best.nx), "unidades"), kpi("MAD", nf(best.E.MAD, 1)), kpi("MAPE", pc(best.E.MAPE))]);
@@ -1600,6 +1594,7 @@ def("pronosticos", "ops", {
     const proj = []; for (let k = 1; k <= H; k++) proj.push([N + k, best.proj(k)]);
     h += h3("Proyección con " + best.nm) + table(["Período", "Pronóstico"], proj.map(p => [p[0], n0(p[1])]), { num:[0, 1] });
     h += chart({ title:"Demanda y pronósticos", series:[{ pts:D.map((d, i) => [i + 1, d]), cls:"s1", dot:"d1" }, { pts:ma.map((f, i) => [i + 1, f]), cls:"s2", dash:true }, { pts:es.slice(0, N).map((f, i) => [i + 1, f]), cls:"s3", dash:true }, { pts:lr.map((f, i) => [i + 1, f]).concat(proj.filter(() => best === M[2])), cls:"s4", dash:true }, { pts:[[N, D[N - 1]]].concat(proj), cls:"s5", dot:"d5" }], xlab:"Período", ylab:"Unidades", legend:[["--blue", "Demanda real"], ["--copper", "Prom. móvil"], ["--ok", "Exponencial"], ["--c3", "Tendencia"], ["--c4", "Proyección"]] });
+    h += lectura("el método con menor error para estos datos es «" + best.nm + "»: pronostica " + n0(best.nx) + " unidades para el próximo período y se equivoca en promedio " + nf(best.E.MAD, 1) + " unidades." + (Math.abs(best.E.TS) > 4 ? " Su señal de rastreo indica sesgo: revisa si hay tendencia o estacionalidad." : ""));
     return h;
   },
   learn:"<p>Elige el método por su <b>error fuera de muestra</b>, no solo por cómo se ve. Con estacionalidad (ventas de invierno, fin de mes) usa índices estacionales o Holt-Winters. Pronostica a nivel agregado (familia de productos) cuando puedas: el error relativo es menor.</p>",
@@ -1613,9 +1608,8 @@ def("eoq", "ops", {
   f:[F("D", "Demanda anual", 12000, { u:"unidades" }), F("S", "Costo por pedido o setup", 85000, { u:"$" }), F("Cu", "Costo unitario", 4200, { u:"$" }), F("i", "Costo anual de mantener", 22, { u:"% del costo unitario" }), F("dias", "Días hábiles al año", 300), F("L", "Lead time", 6, { u:"días" }), F("p", "Tasa de producción (0 si se compra)", 0, { u:"unid/día", h:"Si fabricas el lote internamente, ingresa cuánto produces por día (modelo EPQ)." }),
      MAT("desc", "Descuentos por cantidad (opcional): desde · precio", "0 4200\n1500 4050\n4000 3900", { h:"Una fila por tramo. Deja vacío si no hay descuentos." })],
   c(v){
-    const D = need(v, "D", "Demanda", { pos:true }), S0 = need(v, "S", "Costo por pedido", { nn:true }), Cu = need(v, "Cu", "Costo unitario", { pos:true }), i = need(v, "i", "Costo de mantener") / 100, dias = need(v, "dias", "Días hábiles", { pos:true }), L = opt(v, "L") || 0, p = opt(v, "p") || 0;
-    const d = D / dias; if (p > 0 && p <= d) fail("La tasa de producción (" + nf(p, 1) + "/día) debe superar a la demanda diaria (" + nf(d, 1) + "/día).");
-    const fac = p > 0 ? 1 - d / p : 1, H = i * Cu, Q = Math.sqrt(2 * D * S0 / (H * fac)), Imax = Q * fac, N = D / Q, T = dias / N, CTp = D / Q * S0, CTm = H * Imax / 2, CT = CTp + CTm + D * Cu, ROP = d * L;
+    const D = need(v, "D", "Demanda", { pos:true }), S0 = need(v, "S", "Costo por pedido", { pos:true }), Cu = need(v, "Cu", "Costo unitario", { pos:true }), i = need(v, "i", "Costo de mantener") / 100, dias = need(v, "dias", "Días hábiles", { pos:true }), L = opt(v, "L") || 0, p = opt(v, "p") || 0;
+    const E = NUC.eoq(D, S0, Cu, i, dias, L, p), d = E.d, fac = E.fac, H = E.H, Q = E.Q, Imax = E.Imax, N = E.N, T = E.T, CTp = E.CTp, CTm = E.CTm, CT = E.CT, ROP = E.ROP;
     let h = kpis([kpi("Lote óptimo Q*", n0(Q), "unidades", "hi"), kpi("Pedidos al año", nf(N, 1)), kpi("Tiempo entre pedidos", nf(T, 1), "días"), kpi("Punto de reorden", n0(Math.ceil(ROP)), "unidades"), kpi("Costo anual de inventario", money(CTp + CTm)), kpi("Costo total con compra", money(CT))]);
     h += steps([
       { t:"Costo de mantener por unidad y año", f:"H = i × C", s:"H = " + nf(i, 2) + " × " + money(Cu) + " = " + money(H, 1), r:money(H, 1) },
@@ -1629,6 +1623,7 @@ def("eoq", "ops", {
       h += h3("Descuentos por cantidad") + table(["Desde", "Precio", "Q* del tramo", "Q ajustado", "Costo total"], ev.map(e => rowc([n0(e.r[0]), money(e.r[1]), n0(e.q0), n0(e.q), money(e.ct)], e === bb ? "sel" : "")), { num:[0, 1, 2, 3, 4] }) + note("Con descuentos conviene pedir <b>" + n0(bb.q) + " unidades</b> a " + money(bb.r[1]) + " (costo total " + money(bb.ct) + ").", "ok"); }
     const pts1 = [], pts2 = [], pts3 = []; for (let k = 1; k <= 40; k++) { const q = Q * 3 * k / 40; pts1.push([q, D / q * S0]); pts2.push([q, H * q * fac / 2]); pts3.push([q, D / q * S0 + H * q * fac / 2]); }
     h += chart({ title:"Curva de costos", series:[{ pts:pts1, cls:"s1" }, { pts:pts2, cls:"s2" }, { pts:pts3, cls:"s3" }], v:[{ x:Q, cls:"sb", lbl:"Q*" }], ymax:pts3[3][1], xlab:"Tamaño de lote Q", ylab:"$/año", legend:[["--blue", "Costo de pedir"], ["--copper", "Costo de mantener"], ["--ok", "Total"]] });
+    h += lectura("conviene pedir <b>" + n0(Q) + " unidades</b> cada vez, unas " + nf(N, 1) + " veces al año (cada " + nf(T, 0) + " días), y emitir el pedido cuando queden " + n0(Math.ceil(ROP)) + " unidades. Pedir un poco más o un poco menos casi no cambia el costo.");
     return h;
   },
   learn:"<p>Supuestos del EOQ: demanda constante y conocida, lead time fijo, sin faltantes, costo unitario constante. Es robusto: pedir un 20 % más o menos que Q* encarece el costo de inventario solo alrededor de 2 %.</p>",
@@ -1693,15 +1688,7 @@ def("balanceo", "ops", {
     const succ = id => { const out = new Set(), st = [id]; while (st.length) { const x = st.pop(); ids.forEach(j => { if (T[j].p.includes(x) && !out.has(j)) { out.add(j); st.push(j); } }); } return out; };
     ids.forEach(id => { const s = succ(id); if (s.has(id)) fail("Hay un ciclo de precedencias en la tarea " + id + "."); T[id].nsuc = s.size; T[id].rpw = T[id].t + sum([...s].map(j => T[j].t)); });
     const over = ids.filter(id => T[id].t > takt); if (over.length) fail("Las tareas " + over.join(", ") + " duran más que el takt (" + nf(takt, 1) + " s). Divide esas tareas, duplica la estación o aumenta el tiempo disponible.");
-    const key = { rpw:x => x.rpw, lt:x => x.t, ns:x => x.nsuc }[v.regla];
-    const done = new Set(), St = []; let cur = null;
-    while (done.size < ids.length) {
-      if (!cur) { cur = { tasks:[], t:0 }; St.push(cur); }
-      const cand = ids.filter(id => !done.has(id) && T[id].p.every(p => done.has(p)) && T[id].t <= takt - cur.t + 1e-9).sort((a, b) => key(T[b]) - key(T[a]) || a.localeCompare(b));
-      if (!cand.length) { cur = null; continue; }
-      const x = cand[0]; cur.tasks.push(x); cur.t += T[x].t; done.add(x);
-    }
-    const tot = sum(ids.map(id => T[id].t)), Nmin = Math.ceil(tot / takt - 1e-9), N = St.length, ef = tot / (N * takt);
+    const B = NUC.balanceo(T, ids, takt, v.regla), St = B.St, tot = B.tot, Nmin = B.Nmin, N = B.N, ef = B.ef;
     let h = kpis([kpi("Takt", nf(takt, 1), "s/unidad", "hi"), kpi("Estaciones mínimas teóricas", Nmin), kpi("Estaciones asignadas", N, "", N === Nmin ? "ok" : ""), kpi("Eficiencia", pc(ef), "", ef >= 0.85 ? "ok" : ""), kpi("Retraso del balance", pc(1 - ef)), kpi("Tiempo ocioso por ciclo", nf(N * takt - tot, 1), "s")]);
     h += steps([
       { t:"Tiempo takt", f:"Takt = Tiempo disponible ÷ Demanda", s:"Takt = " + n0(disp) + " min × 60 ÷ " + n0(dem) + " = " + nf(takt, 2) + " s", r:nf(takt, 2) + " s por unidad", why:"es el ritmo al que debe salir una unidad para cumplir la demanda. Ninguna estación puede demorar más." },
@@ -1712,6 +1699,7 @@ def("balanceo", "ops", {
     h += h3("Estaciones") + table(["Estación", "Tareas", "Tiempo (s)", "Ocioso (s)", "Utilización"], St.map((s, k) => [k + 1, s.tasks.join(" → "), nf(s.t, 1), nf(takt - s.t, 1), pc(s.t / takt)]), { num:[0, 2, 3, 4] });
     h += chart({ title:"Carga por estación", bars:St.map((s, k) => ({ x:k + 1, y:s.t, cls:s.t / takt > 0.95 ? "bar2" : "bar1", lbl:nf(s.t, 0) })), h:[{ y:takt, cls:"sb", lbl:"Takt " + nf(takt, 1) + " s" }], xcat:St.map((s, k) => "E" + (k + 1)), ymin:0, ylab:"Segundos" });
     h += h3("Prioridades calculadas") + table(["Tarea", "Tiempo", "Precedentes", "Sucesores", "Peso posicional"], ids.map(id => [id, nf(T[id].t, 1), T[id].p.join(", ") || "—", T[id].nsuc, nf(T[id].rpw, 1)]), { num:[1, 3, 4] });
+    h += lectura("para producir al ritmo de la demanda debe salir una unidad cada " + nf(takt, 1) + " s. Con " + N + " estaciones la línea queda ocupada el " + pc(ef) + " del tiempo" + (N > Nmin ? "; el mínimo teórico era " + Nmin + ", así que conviene probar otra regla o dividir tareas." : ", que es el mínimo posible de estaciones."));
     return h;
   },
   rel:["tiempo-estandar", "oee", "vsm"]
@@ -1824,7 +1812,7 @@ def("colas", "ops", {
   f:[F("lam", "Tasa de llegada λ", 22, { u:"clientes/hora" }), F("mu", "Tasa de servicio por servidor μ", 8, { u:"clientes/hora" }), F("s", "Número de servidores s", 3), F("cw", "Costo de espera", 7000, { u:"$/cliente-hora" }), F("cs", "Costo de un servidor", 9500, { u:"$/hora" })],
   c(v){
     const lam = need(v, "lam", "λ", { pos:true }), mu = need(v, "mu", "μ", { pos:true }), s = need(v, "s", "Servidores", { pos:true, int:true, max:200 }), cw = opt(v, "cw") || 0, cs = opt(v, "cs") || 0;
-    const mm = k => { const r = lam / mu, rho = r / k; if (rho >= 1) return null; let s0 = 0, f = 1; for (let n = 0; n < k; n++) { if (n > 0) f *= n; s0 += Math.pow(r, n) / f; } const fk = f * (k > 0 ? k : 1); const tail = Math.pow(r, k) / (fk * (1 - rho)); const P0 = 1 / (s0 + tail); const Lq = P0 * Math.pow(r, k) * rho / (fk * Math.pow(1 - rho, 2)); const Wq = Lq / lam, W = Wq + 1 / mu, L = lam * W, Pw = tail * P0; return { k, rho, P0, Lq, Wq, W, L, Pw, CT:k * cs + L * cw }; };
+    const mm = k => NUC.mmc(lam, mu, k, cw, cs);
     const R = mm(s); if (!R) fail("Con " + s + " servidor(es) el sistema es inestable: ρ = λ/(sμ) = " + nf(lam / (s * mu), 3) + " ≥ 1 y la cola crece sin límite. Necesitas al menos " + Math.floor(lam / mu + 1) + " servidores.");
     let h = kpis([kpi("Utilización ρ", pc(R.rho)), kpi("Clientes en cola Lq", nf(R.Lq, 2)), kpi("Espera en cola Wq", nf(R.Wq * 60, 1), "min", "hi"), kpi("Tiempo en el sistema W", nf(R.W * 60, 1), "min"), kpi("Clientes en el sistema L", nf(R.L, 2)), kpi("Probabilidad de esperar", pc(R.Pw))]);
     h += steps([
@@ -1837,6 +1825,7 @@ def("colas", "ops", {
     const best = rng.reduce((a, b) => b.CT < a.CT ? b : a);
     h += h3("Costo total según número de servidores") + table(["Servidores", "ρ", "Lq", "Wq (min)", "L", "Costo servidores", "Costo de espera", "Costo total/hora"], rng.map(x => rowc([x.k, pc(x.rho), nf(x.Lq, 2), nf(x.Wq * 60, 1), nf(x.L, 2), money(x.k * cs), money(x.L * cw), money(x.CT)], x === best ? "sel" : "")), { num:[0, 1, 2, 3, 4, 5, 6, 7] });
     if (cw || cs) h += note("El costo total mínimo se logra con <b>" + best.k + " servidores</b> (" + money(best.CT) + " por hora).", "ok");
+    h += lectura("los servidores están ocupados el " + pc(R.rho) + " del tiempo; un cliente espera en promedio " + nf(R.Wq * 60, 1) + " minutos antes de ser atendido y " + pc(R.Pw) + " de los clientes tiene que esperar." + (R.rho > 0.85 ? " Con una utilización tan alta, cualquier aumento de llegadas dispara la espera." : ""));
     return h;
   },
   learn:"<p>Notación de Kendall A/B/s: llegadas Poisson (M), servicio exponencial (M) y s servidores en paralelo con una sola fila. Una fila única que alimenta a varios servidores siempre es mejor que filas separadas por servidor. La <b>ley de Little</b> (L = λW) vale para cualquier sistema estable, también en inventarios y procesos.</p>",
@@ -1992,11 +1981,7 @@ def("control-xr", "cal", {
   c(v){
     const G = rows(v.sg).map(r => r.map(num)); if (G.length < 5) fail("Ingresa al menos 5 subgrupos (lo recomendable es 20 a 25).");
     const n = G[0].length; if (!CC[n]) fail("El tamaño de subgrupo debe estar entre 2 y 10."); if (G.some(r => r.length !== n || r.some(x => !fin(x)))) fail("Todas las filas deben tener " + n + " números.");
-    const [A2, D3, D4, d2] = CC[n], xb = G.map(mean), R = G.map(r => Math.max.apply(null, r) - Math.min.apply(null, r)), X2 = mean(xb), Rb = mean(R);
-    const LSCx = X2 + A2 * Rb, LICx = X2 - A2 * Rb, LSCr = D4 * Rb, LICr = D3 * Rb, sig = Rb / d2;
-    const outX = xb.map((x, i) => x > LSCx || x < LICx ? i : -1).filter(i => i >= 0), outR = R.map((x, i) => x > LSCr || x < LICr ? i : -1).filter(i => i >= 0);
-    let run = 0, runMax = 0, side = 0; xb.forEach(x => { const sd0 = x > X2 ? 1 : x < X2 ? -1 : 0; if (sd0 && sd0 === side) run++; else { run = 1; side = sd0; } runMax = Math.max(runMax, run); });
-    const ok = !outX.length && !outR.length && runMax < 8;
+    const XR = NUC.xr(G), A2 = XR.A2, D3 = XR.D3, D4 = XR.D4, d2 = XR.d2, xb = XR.xb, R = XR.R, X2 = XR.X2, Rb = XR.Rb, LSCx = XR.LSCx, LICx = XR.LICx, LSCr = XR.LSCr, LICr = XR.LICr, sig = XR.sig, outX = XR.outX, outR = XR.outR, runMax = XR.runMax, ok = XR.ok;
     let h = kpis([kpi("X̿ (línea central)", nf(X2, 4)), kpi("R̄", nf(Rb, 4)), kpi("LSC / LIC de X̄", nf(LSCx, 4) + " / " + nf(LICx, 4)), kpi("LSC / LIC de R", nf(LSCr, 4) + " / " + nf(LICr, 4)), kpi("σ estimada (R̄/d₂)", nf(sig, 4)), kpi("Estado", ok ? "Bajo control" : "Fuera de control", "", ok ? "ok" : "bad")]);
     if (!ok) h += note("Puntos fuera de control: " + (outX.length ? "X̄ en subgrupo(s) " + outX.map(i => i + 1).join(", ") + ". " : "") + (outR.length ? "R en subgrupo(s) " + outR.map(i => i + 1).join(", ") + ". " : "") + (runMax >= 8 ? "Racha de " + runMax + " puntos al mismo lado de la línea central. " : "") + "Investiga la causa asignable, elimínala, descarta esos subgrupos y recalcula los límites.", "bad");
     h += steps([
@@ -2009,6 +1994,8 @@ def("control-xr", "cal", {
     h += chart({ title:"Gráfico X̄", series:[{ pts:xs, cls:"s1", dot:"d1", badIdx:outX }], h:[{ y:LSCx, cls:"sb", lbl:"LSC" }, { y:X2, cls:"sm", lbl:"X̿" }, { y:LICx, cls:"sb", lbl:"LIC" }], xlab:"Subgrupo", ylab:"X̄", h0:250 });
     h += chart({ title:"Gráfico R", series:[{ pts:rs, cls:"s2", dot:"d2", badIdx:outR }], h:[{ y:LSCr, cls:"sb", lbl:"LSC" }, { y:Rb, cls:"sm", lbl:"R̄" }].concat(LICr > 0 ? [{ y:LICr, cls:"sb", lbl:"LIC" }] : []), xlab:"Subgrupo", ylab:"R", ymin:0, h0:220 });
     h += table(["Subgrupo", "X̄", "R", ""], xb.map((x, i) => rowc([i + 1, nf(x, 4), nf(R[i], 4), outX.includes(i) || outR.includes(i) ? pill("bad", "Fuera") : ""], outX.includes(i) || outR.includes(i) ? "badr" : "")), { num:[0, 1, 2], tall:true });
+    if (Rb === 0) h += note("<b>Todos los rangos son cero:</b> las mediciones dentro de cada subgrupo son idénticas. Probablemente el instrumento no tiene resolución suficiente; los límites calculados no sirven.", "bad");
+    if (Rb > 0) h += lectura(ok ? "el proceso es estable: su variación se explica por causas comunes. No hay que ajustar la máquina por cada punto que se mueve dentro de los límites." : "el proceso muestra señales de una causa especial (algo cambió). Hay que buscarla en los subgrupos marcados, eliminarla y recalcular los límites sin esos datos.");
     return h;
   },
   learn:"<p>Primero se analiza el gráfico R (variabilidad): si R no está bajo control, los límites de X̄ no son confiables. Los límites de control describen lo que el proceso <b>hace</b>; los límites de especificación, lo que el cliente <b>pide</b>. No los confundas ni los dibujes juntos en el gráfico X̄.</p>",
@@ -2046,7 +2033,7 @@ def("capacidad", "cal", {
   c(v){
     const L = need(v, "LEI", "LEI"), U = need(v, "LES", "LES"), m = need(v, "mu", "Media"), s = need(v, "s", "Desviación", { pos:true });
     if (U <= L) fail("El LES debe ser mayor que el LEI.");
-    const Cp = (U - L) / (6 * s), Cpu = (U - m) / (3 * s), Cpl = (m - L) / (3 * s), Cpk = Math.min(Cpu, Cpl), pL = Phi((L - m) / s), pU = 1 - Phi((U - m) / s), ppm = (pL + pU) * 1e6, zb = 3 * Cpk;
+    const K = NUC.capacidad(L, U, m, s), Cp = K.Cp, Cpu = K.Cpu, Cpl = K.Cpl, Cpk = K.Cpk, pL = K.pL, pU = K.pU, ppm = K.ppm, zb = K.zb;
     const cls = Cpk >= 1.33 ? ["ok", "Capaz"] : Cpk >= 1 ? ["warn", "Apenas capaz"] : ["bad", "No capaz"];
     let h = kpis([kpi("Cp", nf(Cp, 3)), kpi("Cpk", nf(Cpk, 3), "", "hi"), kpi("Cpu / Cpl", nf(Cpu, 3) + " / " + nf(Cpl, 3)), kpi("PPM fuera", n0(ppm)), kpi("Nivel sigma (corto plazo)", nf(zb, 2) + "σ"), kpi("Dictamen", cls[1], "", cls[0] === "ok" ? "ok" : "bad")]);
     h += steps([
@@ -2057,6 +2044,8 @@ def("capacidad", "cal", {
     h += table(["Cpk", "Interpretación habitual"], [["< 1,00", "No capaz: produce fuera de especificación"], ["1,00 – 1,33", "Capaz con control estricto"], ["≥ 1,33", "Capaz (exigencia común en manufactura)"], ["≥ 1,67", "Exigencia típica automotriz (PPAP) para características críticas"], ["≥ 2,00", "Seis Sigma (con desplazamiento de 1,5σ ≈ 3,4 PPM)"]]);
     const pts = []; for (let k = 0; k <= 120; k++) { const x = m - 4.5 * s + 9 * s * k / 120; pts.push([x, Math.exp(-0.5 * Math.pow((x - m) / s, 2)) / (s * Math.sqrt(2 * Math.PI))]); }
     h += chart({ title:"Distribución vs especificación", series:[{ pts, cls:"s1" }], v:[{ x:L, cls:"sb", lbl:"LEI" }, { x:U, cls:"sb", lbl:"LES" }, { x:m, cls:"sm", lbl:"μ" }], ymin:0, xlab:"Característica medida", ylab:"Densidad" });
+    if (m < L || m > U) h += note("<b>La media está fuera de la especificación:</b> más de la mitad de las piezas no cumple. Primero hay que centrar el proceso.", "bad");
+    h += lectura("el proceso produce unas " + n0(ppm) + " piezas fuera de especificación por cada millón." + (Cp >= 1.33 && Cpk < 1.33 ? " La variación es aceptable, pero la media está corrida: centrar el proceso lo haría capaz." : Cpk < 1.33 ? " Hay que reducir la variación" + (Math.abs(Cpu - Cpl) > 0.1 ? " y centrar la media" : "") + " para llegar a Cpk ≥ 1,33." : " Es capaz: cumple con holgura la tolerancia del cliente."));
     return h;
   },
   rel:["control-xr", "sigma", "descriptiva"]
@@ -2143,9 +2132,8 @@ def("regresion", "cal", {
   f:[MAT("d", "Pares x ; y", "10;1250\n15;1610\n20;1980\n25;2210\n30;2690\n35;2950\n40;3420\n45;3590\n50;4100"), TXT("xl", "Nombre de x", "Unidades producidas (miles)"), TXT("yl", "Nombre de y", "Costo total (miles $)"), F("x0", "Valor de x a predecir", 60)],
   c(v){
     const P = rows(v.d).map(r => [num(r[0]), num(r[1])]); if (P.length < 3 || P.some(p => !fin(p[0]) || !fin(p[1]))) fail("Ingresa al menos 3 pares numéricos.");
-    const n = P.length, X = P.map(p => p[0]), Y = P.map(p => p[1]), mx = mean(X), my = mean(Y), Sxx = sum(X.map(x => (x - mx) * (x - mx))), Sxy = sum(P.map(p => (p[0] - mx) * (p[1] - my))), Syy = sum(Y.map(y => (y - my) * (y - my)));
-    if (Sxx === 0) fail("Todos los x son iguales: no se puede ajustar una recta.");
-    const b = Sxy / Sxx, a = my - b * mx, r = Sxy / Math.sqrt(Sxx * Syy), SSE = sum(P.map(p => Math.pow(p[1] - (a + b * p[0]), 2))), se = Math.sqrt(SSE / (n - 2)), x0 = opt(v, "x0"), t = tInv(0.975, n - 2);
+    const RG = NUC.regresion(P), n = RG.n, X = RG.X, Y = RG.Y, mx = RG.mx, my = RG.my, Sxx = RG.Sxx, Sxy = RG.Sxy, Syy = RG.Syy;
+    const b = RG.b, a = RG.a, r = RG.r, SSE = RG.SSE, se = RG.se, x0 = opt(v, "x0"), t = tInv(0.975, n - 2);
     const sb = se / Math.sqrt(Sxx), tb = b / sb, pv = 2 * (1 - tCDF(Math.abs(tb), n - 2));
     let h = kpis([kpi("Ecuación", "y = " + nf(a, 3) + (b >= 0 ? " + " : " − ") + nf(Math.abs(b), 4) + "·x", "", "hi"), kpi("r", nf(r, 4)), kpi("R²", pc(r * r, 2)), kpi("Error estándar", nf(se, 3)), kpi("p-valor de la pendiente", pv < 0.0001 ? "< 0,0001" : nf(pv, 4))]);
     if (x0 != null) { const y0 = a + b * x0, ip = t * se * Math.sqrt(1 + 1 / n + Math.pow(x0 - mx, 2) / Sxx); h += note("Para x = " + nf(x0, 2) + " se predice y = <b>" + nf(y0, 2) + "</b> (intervalo de predicción 95 %: " + nf(y0 - ip, 2) + " a " + nf(y0 + ip, 2) + ")." + (x0 < Math.min.apply(null, X) || x0 > Math.max.apply(null, X) ? " Ojo: es una extrapolación fuera del rango observado." : ""), "info"); }
@@ -2155,6 +2143,8 @@ def("regresion", "cal", {
       { t:"Correlación y determinación", f:"r = Sxy ÷ √(Sxx·Syy)   ·   R² = r²", s:"r = " + nf(r, 4) + " → R² = " + pc(r * r, 2), r:pc(r * r, 1) + " de la variación de y se explica por x", why:"correlación no implica causalidad." }
     ]);
     h += chart({ title:"Dispersión y recta", series:[{ pts:P, cls:"s1", dot:"d1", only:true }, { pts:[[Math.min.apply(null, X), a + b * Math.min.apply(null, X)], [Math.max.apply(null, X.concat(x0 != null ? [x0] : [])), a + b * Math.max.apply(null, X.concat(x0 != null ? [x0] : []))]], cls:"s2" }], xlab:esc(v.xl || "x"), ylab:esc(v.yl || "y") });
+    if (Syy === 0) h += note("<b>Todos los valores de y son iguales:</b> la recta es horizontal y la correlación no está definida (no hay variación que explicar).", "bad");
+    h += lectura(fin(r) ? "cada vez que x aumenta en 1, y cambia en promedio " + nf(b, 3) + ". La recta explica el " + pc(r * r) + " de la variación de y" + (r * r < 0.5 ? ", así que hay otros factores importantes que no están en el modelo." : ".") + " Una relación fuerte no prueba que x cause y." : "no hay variación en y que relacionar con x.");
     return h;
   },
   rel:["pronosticos", "descriptiva"]
@@ -2179,7 +2169,7 @@ def("programacion-lineal", "io", {
      MAT("res", "Restricciones: coeficientes  operador  lado derecho", "1 0 <= 4\n0 2 <= 12\n3 2 <= 18", { h:"Una por línea, ej.: 3 2 <= 18. Se asume que todas las variables son ≥ 0." }),
      SEL("ent", "Tipo de variables", "cont", [["cont", "Continuas (aceptan decimales: litros, horas, toneladas)"], ["int", "Enteras (unidades completas: muebles, personas, camiones)"]], { h:"Elige «Enteras» si no se pueden fabricar fracciones. Se resuelve con ramificación y acotamiento (Branch and Bound)." })],
   c(v){
-    const P = parseLP(v), ENT = v.ent === "int", R = ENT ? ilpSolve(P.c, P.A, P.ops, P.b, v.tipo === "max") : lpSolve(P.c, P.A, P.ops, P.b, v.tipo === "max");
+    const P = parseLP(v), ENT = v.ent === "int", R = NUC.pl(P.c, P.A, P.ops, P.b, v.tipo === "max", ENT);
     if (R.status === "inf") return note("<b>Problema infactible:</b> no existe ningún punto que cumpla todas las restricciones a la vez. Revisa signos y lados derechos.", "bad");
     if (R.status === "unb") return note("<b>Solución no acotada:</b> la función objetivo puede crecer sin límite. Probablemente falta una restricción de capacidad o demanda.", "bad");
     if (R.status !== "opt") return note("No se alcanzó convergencia. Revisa el modelo.", "bad");
@@ -2194,6 +2184,7 @@ def("programacion-lineal", "io", {
     ].concat(ENT ? [{ t:"Variables enteras: ramificación y acotamiento", q:"Primero se resuelve sin exigir enteros (relajación lineal). Si una variable sale con decimales (por ejemplo 211,49), el problema se divide en dos ramas: una con esa variable ≤ 211 y otra con ≥ 212. Cada rama se resuelve otra vez; se descartan las infactibles y las que no pueden superar a la mejor solución entera ya encontrada.", r:"Z entero = " + nf(R.z, 2) + " (relajación: " + nf(R.relax.z, 2) + ")", c:"ok", why:"redondear la solución con decimales puede violar una restricción o no ser la mejor combinación entera." }] : []));
     if (ENT) h += h3("Primeros nodos del árbol de búsqueda") + table(["Nivel", "Rama", "Z", "Solución", "Decisión"], R.tree.map(t => [t.d, t.cut ? esc(P.nm[t.cut[0]]) + " " + t.cut[1] + " " + t.cut[2] : "Raíz (sin exigir enteros)", t.z != null ? nf(t.z, 2) : "—", t.x ? P.nm.map((nm, j) => esc(nm) + " = " + nf(t.x[j], 2)).join("; ") : "—", t.st]), { num:[0, 2] });
     if (P.n === 2) h += lpGraph(P, R);
+    h += lectura("la mejor decisión es " + P.nm.map((nm, j) => esc(nm) + " = " + nf(R.x[j], 2)).join(", ") + ", con un valor de " + nf(R.z, 2) + ". Las restricciones marcadas como «Activa» son los cuellos de botella: si se quiere mejorar el resultado, hay que conseguir más de esos recursos.");
     return h;
   },
   learn:"<h3>La idea en una frase</h3><p>Tú escribes el modelo (cuánto gana cada producto y qué lo limita); la calculadora encuentra <b>cuántos</b> hacer de cada uno. Los coeficientes salen de los datos; las cantidades (x) son la incógnita.</p>" +
@@ -10589,7 +10580,7 @@ function vCheck(f, raw){
 function vPaint(el){
   const id = el.dataset.c, k = el.dataset.k; if (!C[id]) return null; const f = C[id].f.find(x => x.k === k); if (!f || !/^(num|list|mat)$/.test(f.t)) return null;
   const box = el.closest(".field"); if (!box) return null;
-  const r = vCheck(f, el.value); let m = box.querySelector(".vmsg");
+  let r = vCheck(f, el.value); if (r.c !== "bad" && f.t === "num" && typeof RULES !== "undefined" && RULES[id] && RULES[id][f.k]) { const x = num(el.value); if (fin(x)) { const mm = ruleMsg(f, x, RULES[id][f.k]); if (mm) r = { c:"bad", m:mm }; } } let m = box.querySelector(".vmsg");
   if (!m) { m = document.createElement("span"); m.className = "vmsg"; m.setAttribute("aria-live", "polite"); m.id = el.id + "-v"; const sm = box.querySelector(":scope > small"); box.insertBefore(m, sm || null); el.setAttribute("aria-describedby", m.id); }
   box.classList.toggle("v-bad", r.c === "bad"); box.classList.toggle("v-warn", r.c === "warn" && box.dataset.touched === "1"); box.classList.toggle("v-ok", r.c === "ok" && !!r.m);
   el.setAttribute("aria-invalid", r.c === "bad" ? "true" : "false");
@@ -10663,7 +10654,7 @@ const CAREAS = [
   ["car", "Carrera y habilidades", "Industrias, práctica y título, empleabilidad, informes, inglés técnico y desarrollo personal y profesional.",
     ["areas", "competencias", "practica-titulo", "empleabilidad", "ruta-pro", "ramo-ingles", "generador-informe", "citas-apa", "estructura-informe", "redaccion", "plantillas", "reportes", "industrias", "vida-cotidiana", "bienestar", "relaciones", "aprender-a-aprender", "habilidades-blandas", "psicologia", "influencia", "oratoria", "libros", "experiencias", "marca-personal"]],
   ["ref", "Referencia y consulta", "Para empezar y para consultar rápido: formulario, glosario, siglas, tablas, normativa, bibliografía, historia y autoevaluación.",
-    ["empieza-aqui", "fundamentos", "formulario", "glosario", "siglas", "tablas", "normativa", "bibliografia", "historia", "pensadores", "quiz", "componentes"]]
+    ["empieza-aqui", "fundamentos", "formulario", "glosario", "siglas", "tablas", "normativa", "bibliografia", "historia", "pensadores", "quiz", "componentes", "pruebas-calculadoras"]]
 ];
 const AREA_ID = a => "area-" + a[0];
 /* Agrega las industrias al área de carrera y crea las páginas de área, trimestre y componentes */
@@ -10673,6 +10664,7 @@ function areaPages(P){
   P.push({ id:"por-trimestre", g:"hub", t:"Estudiar por trimestre", r:pgPorTrimestre });
   P.push({ id:"favoritos", g:"hub", t:"Mis favoritos", r:pgFavoritos });
   CAREAS.forEach(a => P.push({ id:AREA_ID(a), g:"area", t:a[1], d:a[2], r:() => pgArea(a[0]) }));
+  P.push({ id:"pruebas-calculadoras", g:"learn", t:"Pruebas de las calculadoras", d:"Verificación automática contra resultados conocidos", ico:"✓", r:() => pgPruebas() });
   P.push({ id:"componentes", g:"learn", t:"Guía de componentes", d:"Cómo se ven fórmulas, ejemplos, errores comunes y pistas", ico:"UI", r:pgComponentes });
 }
 const areaOf = id => CAREAS.find(a => a[3].includes(id)) || null;
@@ -12128,6 +12120,165 @@ T2["datos-ia"] = { tema:"Python para datos",
   ejer:["<p>Dada la lista paradas = [10, 0, 3, 7] (minutos por turno), escribe código que calcule el total de minutos y cuántos turnos tuvieron alguna parada.</p>", "sum(paradas) da el total.", "Para contar: un ciclo con un contador, o len([p for p in paradas if p &gt; 0]).", "<p>Total = <b>20 minutos</b>; turnos con parada = <b>3</b>. Código: total = sum(paradas); con_parada = len([p for p in paradas if p &gt; 0]).</p>"],
   fic:["pandas = tablas; groupby = tabla dinámica.", "Columnas calculadas sin ciclos.", "La indentación es parte de la sintaxis.", "Revisa faltantes y verifica un caso a mano.", "Guarda el script para repetir el análisis."]
 };
+/* ============ FASE 3: NÚCLEO DE CÁLCULO (funciones puras, sin interfaz) ============
+   Cada función recibe números y devuelve un objeto con resultados. No lee ni escribe HTML ni el DOM.
+   Las calculadoras de la interfaz solo leen los campos, llaman a estas funciones y dibujan el resultado.
+   Las pruebas (TEST3) comparan cada función con resultados conocidos. */
+const NUC = {
+  /* Lote económico de pedido / de producción */
+  eoq(D, S, Cu, i, dias, L, p){
+    const d = D / dias; if (p > 0 && p <= d) fail("La tasa de producción (" + nf(p, 1) + "/día) debe superar a la demanda diaria (" + nf(d, 1) + "/día).");
+    const fac = p > 0 ? 1 - d / p : 1, H = i * Cu, Q = Math.sqrt(2 * D * S / (H * fac)), Imax = Q * fac, N = D / Q, T = dias / N, CTp = D / Q * S, CTm = H * Imax / 2, CT = CTp + CTm + D * Cu, ROP = d * L;
+    return { d, fac, H, Q, Imax, N, T, CTp, CTm, CT, ROP };
+  },
+  /* Cola M/M/c (M/M/1 con c = 1) */
+  mmc(lam, mu, k, cw, cs){
+    const r = lam / mu, rho = r / k; if (rho >= 1) return null;
+    let s0 = 0, f = 1; for (let n = 0; n < k; n++) { if (n > 0) f *= n; s0 += Math.pow(r, n) / f; }
+    const fk = f * (k > 0 ? k : 1), tail = Math.pow(r, k) / (fk * (1 - rho)), P0 = 1 / (s0 + tail);
+    const Lq = P0 * Math.pow(r, k) * rho / (fk * Math.pow(1 - rho, 2)), Wq = Lq / lam, W = Wq + 1 / mu, L = lam * W, Pw = tail * P0;
+    return { k, rho, P0, Lq, Wq, W, L, Pw, CT:k * (cs || 0) + L * (cw || 0) };
+  },
+  /* VAN, TIR, PRI, IVAN y beneficio/costo */
+  van(r, Fl){
+    const fac = Fl.map((f, t) => 1 / Math.pow(1 + r, t)), vp = Fl.map((f, t) => f * fac[t]), VAN = sum(vp);
+    let ac = 0, acd = 0; const acA = [], acdA = []; Fl.forEach((f, t) => { ac += f; acd += vp[t]; acA.push(ac); acdA.push(acd); });
+    const pri = a => { if (a[0] >= 0) return 0; for (let t = 1; t < a.length; t++) if (a[t] >= 0) return t - 1 + (-a[t - 1]) / (a[t] - a[t - 1]); return NaN; };
+    const PRI = pri(acA), PRId = pri(acdA), roots = irr(Fl), TIR = roots.length ? roots[0] : NaN;
+    const I0 = Fl[0] < 0 ? -Fl[0] : NaN, IVAN = VAN / I0, VPpos = sum(vp.slice(1).filter(x => x > 0)), VPneg = -sum(vp.slice(1).filter(x => x < 0)), BC = VPpos / ((fin(I0) ? I0 : 0) + VPneg);
+    return { fac, vp, VAN, acA, acdA, PRI, PRId, roots, TIR, I0, IVAN, VPpos, VPneg, BC };
+  },
+  /* Punto de equilibrio */
+  equilibrio(CF, p, cv, U, t, Qp){
+    const mc = p - cv; if (mc <= 0) fail("El precio debe ser mayor que el costo variable: con margen negativo nunca hay equilibrio.");
+    if (t >= 1) fail("La tasa de impuesto debe ser menor que 100 %.");
+    const Q = CF / mc, V = Q * p, rmc = mc / p, Qo = (CF + U / (1 - t)) / mc, ms = Qp ? (Qp - Q) / Qp : NaN, UAI = Qp ? Qp * mc - CF : NaN, GAO = Qp ? Qp * mc / UAI : NaN;
+    return { mc, Q, V, rmc, Qo, ms, UAI, GAO };
+  },
+  /* Capacidad de proceso */
+  capacidad(L, U, m, s){
+    const Cp = (U - L) / (6 * s), Cpu = (U - m) / (3 * s), Cpl = (m - L) / (3 * s), Cpk = Math.min(Cpu, Cpl), pL = Phi((L - m) / s), pU = 1 - Phi((U - m) / s);
+    return { Cp, Cpu, Cpl, Cpk, pL, pU, ppm:(pL + pU) * 1e6, zb:3 * Cpk };
+  },
+  /* Gráfico X̄-R */
+  xr(G){
+    const n = G[0].length, [A2, D3, D4, d2] = CC[n], xb = G.map(mean), R = G.map(r => Math.max.apply(null, r) - Math.min.apply(null, r)), X2 = mean(xb), Rb = mean(R);
+    const LSCx = X2 + A2 * Rb, LICx = X2 - A2 * Rb, LSCr = D4 * Rb, LICr = D3 * Rb, sig = Rb / d2;
+    const outX = xb.map((x, i) => x > LSCx || x < LICx ? i : -1).filter(i => i >= 0), outR = R.map((x, i) => x > LSCr || x < LICr ? i : -1).filter(i => i >= 0);
+    let run = 0, runMax = 0, side = 0; xb.forEach(x => { const sd0 = x > X2 ? 1 : x < X2 ? -1 : 0; if (sd0 && sd0 === side) run++; else { run = 1; side = sd0; } runMax = Math.max(runMax, run); });
+    return { n, A2, D3, D4, d2, xb, R, X2, Rb, LSCx, LICx, LSCr, LICr, sig, outX, outR, runMax, ok:!outX.length && !outR.length && runMax < 8 };
+  },
+  /* Balance de línea (heurística por prioridad) */
+  balanceo(T, ids, takt, regla){
+    const key = { rpw:x => x.rpw, lt:x => x.t, ns:x => x.nsuc }[regla] || (x => x.rpw);
+    const done = new Set(), St = []; let cur = null;
+    while (done.size < ids.length) {
+      if (!cur) { cur = { tasks:[], t:0 }; St.push(cur); }
+      const cand = ids.filter(id => !done.has(id) && T[id].p.every(p => done.has(p)) && T[id].t <= takt - cur.t + 1e-9).sort((a, b) => key(T[b]) - key(T[a]) || a.localeCompare(b));
+      if (!cand.length) { cur = null; continue; }
+      const x = cand[0]; cur.tasks.push(x); cur.t += T[x].t; done.add(x);
+    }
+    const tot = sum(ids.map(id => T[id].t)), Nmin = Math.ceil(tot / takt - 1e-9), N = St.length;
+    return { St, tot, Nmin, N, ef:tot / (N * takt) };
+  },
+  /* Pronósticos */
+  mediaMovil:(D, n) => D.map((_, t) => t >= n ? mean(D.slice(t - n, t)) : NaN),
+  suavizamiento(D, a){ const N = D.length, es = [D[0]]; for (let t = 1; t <= N; t++) es[t] = a * D[t - 1] + (1 - a) * es[t - 1]; es[0] = NaN; return es; },
+  tendencia(D){ const X = D.map((_, t) => t + 1), mx = mean(X), my = mean(D), b = sum(X.map((x, i) => (x - mx) * (D[i] - my))) / sum(X.map(x => (x - mx) * (x - mx))), a0 = my - b * mx; return { a0, b, lr:X.map(x => a0 + b * x) }; },
+  errores(D, f){ const e = []; D.forEach((d, t) => { if (fin(f[t])) e.push({ d, f:f[t], e:d - f[t] }); }); const MAD = mean(e.map(x => Math.abs(x.e))), MSE = mean(e.map(x => x.e * x.e)), MAPE = mean(e.map(x => Math.abs(x.e) / x.d)), TS = sum(e.map(x => x.e)) / MAD; return { MAD, MSE, MAPE, TS, n:e.length }; },
+  /* Regresión lineal simple */
+  regresion(P){
+    const n = P.length, X = P.map(p => p[0]), Y = P.map(p => p[1]), mx = mean(X), my = mean(Y), Sxx = sum(X.map(x => (x - mx) * (x - mx))), Sxy = sum(P.map(p => (p[0] - mx) * (p[1] - my))), Syy = sum(Y.map(y => (y - my) * (y - my)));
+    if (Sxx === 0) fail("Todos los x son iguales: no se puede ajustar una recta.");
+    const b = Sxy / Sxx, a = my - b * mx, r = Sxy / Math.sqrt(Sxx * Syy), SSE = sum(P.map(p => Math.pow(p[1] - (a + b * p[0]), 2))), se = Math.sqrt(SSE / (n - 2));
+    return { n, X, Y, mx, my, Sxx, Sxy, Syy, b, a, r, SSE, se };
+  },
+  /* Programación lineal (método Simplex de dos fases y ramificación y acotamiento) */
+  pl:(c, A, ops, b, maxim, entero) => entero ? ilpSolve(c, A, ops, b, maxim) : lpSolve(c, A, ops, b, maxim)
+};
+
+/* ---------- Lectura en lenguaje simple (se agrega al final del resultado) ---------- */
+const lectura = h => note("<b>En palabras simples:</b> " + h, "info");
+
+/* ---------- Validación central de rangos (se aplica antes de calcular) ---------- */
+const RULES = {
+  "van-tir":{ tasa:{ gt:-100 } }, equivalencias:{ i:{ gt:-100 }, val:{ min:0 } }, tasas:{ tasa:{ gt:-100 }, inf:{ gt:-100 } }, amortizacion:{ tasa:{ min:0 } },
+  equilibrio:{ U:{ min:0 }, t:{ min:0, lt:100 }, Qp:{ min:0 } }, costeo:{ gav:{ min:0 }, m:{ min:0 }, iva:{ min:0, max:100 } },
+  caue:{ i:{ gt:-100 } }, "vida-economica":{ i:{ gt:-100 } }, wacc:{ beta:{ min:0 }, prm:{ min:0 }, rp:{ min:0 }, kd:{ min:0 }, tc:{ min:0, lt:100 } },
+  "flujo-caja":{ V1:{ min:0 }, cvp:{ min:0, max:100 }, t:{ min:0, lt:100 }, r:{ gt:-100 } },
+  ratios:{ AC:{ min:0 }, INV:{ min:0 }, PC:{ min:0 }, AT:{ min:0 }, PT:{ min:0 }, VTA:{ min:0 }, CV:{ min:0 }, GF:{ min:0 }, CxC:{ min:0 } },
+  eoq:{ S:{ gt:0 }, i:{ gt:0 }, L:{ min:0 }, p:{ min:0 } }, "stock-seguridad":{ sL:{ min:0 }, T:{ min:0 }, Cu:{ min:0 }, i:{ min:0 } },
+  abc:{ A:{ gt:0, max:100 }, B:{ gt:0, max:100 } }, oee:{ cd:{ min:0 }, ce:{ min:0 } }, mrp:{ SS:{ min:0 }, Q:{ min:0 }, P:{ min:0 } },
+  colas:{ cw:{ min:0 }, cs:{ min:0 } }, muestreo:{ p0:{ gt:0, lt:100 }, T:{ gt:0 }, U:{ min:0 }, V:{ gt:0 }, S:{ min:0 } }, productividad:{ p:{ min:0 } },
+  pareto:{ cut:{ gt:0, max:100 } }, amef:{ lim:{ min:0 } }, muestra:{ p:{ gt:0, lt:100 }, s:{ gt:0 }, N:{ min:0 } }, cpm:{ T:{ min:0 } },
+  localizacion:{ ct:{ min:0 } }, "simulacion-mc":{ r:{ gt:-100 }, t:{ min:0, lt:100 } }, accidentabilidad:{ inv:{ min:0 } }, huella:{ prod:{ min:0 } }, smed:{ vh:{ min:0 } }
+};
+function ruleMsg(f, x, R){
+  const lab = "«" + String(f.l).replace(/<[^>]+>/g, "") + "»";
+  if (R.gt != null && !(x > R.gt)) return R.gt === 0 ? lab + " debe ser mayor que cero." : lab + " debe ser mayor que " + R.gt + ".";
+  if (R.min != null && x < R.min) return R.min === 0 ? lab + " no puede ser negativo." : lab + " debe ser al menos " + R.min + ".";
+  if (R.lt != null && !(x < R.lt)) return lab + " debe ser menor que " + R.lt + ".";
+  if (R.max != null && x > R.max) return lab + " no puede ser mayor que " + R.max + ".";
+  return null; }
+function checkRules(id, v){ const RR = RULES[id]; if (!RR) return; C[id].f.forEach(f => { const R = RR[f.k]; if (!R) return; const x = num(v[f.k]); if (!fin(x)) return; const m = ruleMsg(f, x, R); if (m) fail(m); }); }
+/* Las calculadoras se envuelven: primero la validación central, luego el cálculo original */
+Object.keys(C).forEach(id => { const c0 = C[id].c; C[id].c = function(v){ checkRules(id, v); return c0.call(this, v); }; });
+
+/* ---------- Botón «Copiar resultado» ---------- */
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest('[data-act="copyres"]'); if (!b) return;
+  const r = document.getElementById("res"); if (!r) return; const cl = r.cloneNode(true); cl.querySelectorAll(".no-print,.actions,button,details.usados,figure,svg,.sechead").forEach(x => x.remove());
+  cl.querySelectorAll(".mblk").forEach(m => { const d = document.createElement("div"); d.textContent = String(m.dataset.lin || m.textContent).replace(/ {3,}·? */g, "  ·  "); m.replaceWith(d); });
+  cl.querySelectorAll(".mx").forEach(m => m.replaceWith(document.createTextNode(m.dataset.lin || m.textContent)));
+  cl.querySelectorAll(".kpi").forEach(k => { const l = k.querySelector(".l"), v = k.querySelector(".v"); const d = document.createElement("div"); d.textContent = (l ? l.textContent : "") + ": " + (v ? v.textContent.replace(/\s+/g, " ") : ""); k.replaceWith(d); });
+  cl.querySelectorAll(".step .sn").forEach(n => { n.textContent = n.textContent + ". "; });
+  cl.style.cssText = "position:absolute;left:-10000px;top:0;width:800px;white-space:normal"; document.body.appendChild(cl);
+  const id = b.dataset.c, txt = (C[id] ? C[id].t + "\n\n" : "") + cl.innerText.replace(/\n{3,}/g, "\n\n").trim(); cl.remove();
+  const ok = () => toast("Resultado copiado"), fb = () => { const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); ok(); } catch (er) { toast("No se pudo copiar"); } ta.remove(); };
+  try { navigator.clipboard.writeText(txt).then(ok, fb); } catch (er) { fb(); } });
+/* ============ FASE 3: PRUEBAS DEL NÚCLEO DE CÁLCULO ============
+   Resultados esperados calculados de forma independiente (Python) o tomados de casos de libro. */
+const TEST3 = [
+  ["Lote económico (EOQ)", "D = 1.000; S = 10; C = 5; i = 10 %", () => NUC.eoq(1000, 10, 5, 0.10, 300, 0, 0).Q, 200, 0.01, "unidades"],
+  ["Lote económico (EOQ)", "D = 4.800; S = 25.000; C = 2.000; i = 25 %; L = 5 días", () => NUC.eoq(4800, 25000, 2000, 0.25, 300, 5, 0).Q, 692.820, 0.01, "unidades"],
+  ["Lote económico (EOQ)", "Punto de reorden del caso anterior", () => NUC.eoq(4800, 25000, 2000, 0.25, 300, 5, 0).ROP, 80, 0.001, "unidades"],
+  ["Lote de producción (EPQ)", "D = 60.000; S = 400.000; H = 120; p = 1.200/día; 250 días", () => NUC.eoq(60000, 400000, 480, 0.25, 250, 0, 1200).Q, 22360.680, 0.01, "unidades"],
+  ["Cola M/M/1", "λ = 2; μ = 3", () => NUC.mmc(2, 3, 1).Lq, 1.33333, 0.0001, "clientes en cola"],
+  ["Cola M/M/1", "λ = 2; μ = 3 (espera en cola)", () => NUC.mmc(2, 3, 1).Wq * 60, 40, 0.001, "min"],
+  ["Cola M/M/c", "λ = 2; μ = 3; c = 2", () => NUC.mmc(2, 3, 2).P0, 0.5, 0.0001, "P₀"],
+  ["Cola M/M/c", "λ = 2; μ = 3; c = 2", () => NUC.mmc(2, 3, 2).Lq, 0.083333, 0.0001, "clientes en cola"],
+  ["Cola M/M/c", "λ = 6; μ = 2,5; c = 4; espera $30.000; servidor $18.000", () => NUC.mmc(6, 2.5, 4, 30000, 18000).CT, 156917, 1, "$/hora"],
+  ["VAN", "r = 10 %; flujos −1.000; 500; 500; 500", () => NUC.van(0.10, [-1000, 500, 500, 500]).VAN, 243.426, 0.01, "$"],
+  ["TIR", "flujos −1.000; 500; 500; 500", () => NUC.van(0.10, [-1000, 500, 500, 500]).TIR * 100, 23.375, 0.01, "%"],
+  ["VAN", "r = 10 %; −50 y 15 durante 5 años", () => NUC.van(0.10, [-50, 15, 15, 15, 15, 15]).VAN, 6.8618, 0.001, "millones $"],
+  ["PRI descontado", "mismo caso", () => NUC.van(0.10, [-50, 15, 15, 15, 15, 15]).PRId, 4.2632, 0.001, "períodos"],
+  ["Punto de equilibrio", "CF = 10.000; p = 50; cv = 30", () => NUC.equilibrio(10000, 50, 30, 0, 0, 0).Q, 500, 0.001, "unidades"],
+  ["Punto de equilibrio", "CF = 12 MM; p = 8.000; cv = 5.000; U = 2,19 MM después de 27 %", () => NUC.equilibrio(12e6, 8000, 5000, 2190000, 0.27, 4600).Qo, 5000, 0.01, "unidades"],
+  ["Apalancamiento operativo", "mismo caso, ventas 4.600", () => NUC.equilibrio(12e6, 8000, 5000, 2190000, 0.27, 4600).GAO, 7.6667, 0.001, "veces"],
+  ["Cp", "LEI 9,4; LES 10,6; μ 10,08; σ 0,15", () => NUC.capacidad(9.4, 10.6, 10.08, 0.15).Cp, 1.3333, 0.0001, ""],
+  ["Cpk", "mismo caso", () => NUC.capacidad(9.4, 10.6, 10.08, 0.15).Cpk, 1.15556, 0.0001, ""],
+  ["Fracción fuera", "mismo caso", () => NUC.capacidad(9.4, 10.6, 10.08, 0.15).ppm, 266.38, 0.5, "ppm"],
+  ["Cpk", "LEI 990; LES 1.010; μ 1.002; σ 4", () => NUC.capacidad(990, 1010, 1002, 4).Cpk, 0.66667, 0.0001, ""],
+  ["Límites de control X̄", "8 subgrupos de 4 ejes (LSC)", () => NUC.xr([[25.02,24.98,25.01,24.99],[25.00,25.03,24.97,25.00],[24.98,25.01,25.02,24.99],[25.01,25.00,24.98,25.03],[24.99,25.02,25.00,24.97],[25.03,24.99,25.01,25.01],[24.97,25.00,25.02,25.01],[25.00,24.98,25.01,25.01]]).LSCx, 25.034055, 0.00001, "mm"],
+  ["Límites de control R", "mismo caso (LSC de R)", () => NUC.xr([[25.02,24.98,25.01,24.99],[25.00,25.03,24.97,25.00],[24.98,25.01,25.02,24.99],[25.01,25.00,24.98,25.03],[24.99,25.02,25.00,24.97],[25.03,24.99,25.01,25.01],[24.97,25.00,25.02,25.01],[25.00,24.98,25.01,25.01]]).LSCr, 0.10269, 0.00001, "mm"],
+  ["Balance de línea", "6 tareas; takt 30 s (eficiencia)", () => { const T = { A:{t:12,p:[]}, B:{t:15,p:["A"]}, C:{t:10,p:["A"]}, D:{t:18,p:["B"]}, E:{t:8,p:["C"]}, F:{t:14,p:["D","E"]} }; T.A.rpw = 77; T.B.rpw = 47; T.C.rpw = 32; T.D.rpw = 32; T.E.rpw = 22; T.F.rpw = 14; return NUC.balanceo(T, ["A","B","C","D","E","F"], 30, "rpw").ef; }, 0.85556, 0.0001, ""],
+  ["Promedio móvil", "120, 132, 125, 140, 138, 150, 147, 158; n = 3 (próximo)", () => mean([150, 147, 158]), 151.667, 0.001, "unidades"],
+  ["Suavizamiento exponencial", "misma serie; α = 0,3; F₁ = D₁", () => NUC.suavizamiento([120,132,125,140,138,150,147,158], 0.3)[8], 145.4484, 0.001, "unidades"],
+  ["Tendencia lineal", "misma serie (pendiente)", () => NUC.tendencia([120,132,125,140,138,150,147,158]).b, 4.92857, 0.0001, "unidades/período"],
+  ["Error MAD (tendencia)", "misma serie", () => NUC.errores([120,132,125,140,138,150,147,158], NUC.tendencia([120,132,125,140,138,150,147,158]).lr).MAD, 3.78571, 0.0001, "unidades"],
+  ["Regresión lineal", "8 pares edad–horas (pendiente)", () => NUC.regresion([[1,22],[2,25],[3,31],[4,33],[5,38],[6,41],[7,47],[8,49]]).b, 3.97619, 0.0001, "h/año"],
+  ["Regresión lineal", "mismo caso (intercepto)", () => NUC.regresion([[1,22],[2,25],[3,31],[4,33],[5,38],[6,41],[7,47],[8,49]]).a, 17.85714, 0.0001, "h"],
+  ["Regresión lineal", "mismo caso (r)", () => NUC.regresion([[1,22],[2,25],[3,31],[4,33],[5,38],[6,41],[7,47],[8,49]]).r, 0.995902, 0.00001, ""],
+  ["PL 2 variables", "máx 8x₁ + 5x₂; 2x₁ + x₂ ≤ 100; x₁ + x₂ ≤ 80; x₁ ≤ 40", () => NUC.pl([8, 5], [[2, 1], [1, 1], [1, 0]], ["<=", "<=", "<="], [100, 80, 40], true).z, 460, 0.0001, ""],
+  ["PL 2 variables (Wyndor)", "máx 3x₁ + 5x₂; x₁ ≤ 4; 2x₂ ≤ 12; 3x₁ + 2x₂ ≤ 18", () => NUC.pl([3, 5], [[1, 0], [0, 2], [3, 2]], ["<=", "<=", "<="], [4, 12, 18], true).z, 36, 0.0001, ""],
+  ["PL 3 variables", "mezcla de mineral (mín costo)", () => NUC.pl([9, 5, 7], [[1, 1, 1], [1.2, 0.6, 0.9], [14, 10, 12], [1, 0, 0], [0, 1, 0], [0, 0, 1]], ["=", ">=", "<=", "<=", "<=", "<="], [10000, 8700, 125000, 4000, 6000, 5000], false).z, 68000, 0.01, "USD/día"]
+];
+function runTest3(){ return TEST3.map(t => { let got = NaN, err = ""; try { got = t[2](); } catch (e) { err = e.message; } const ok = fin(got) && Math.abs(got - t[3]) <= t[4]; return { calc:t[0], inp:t[1], exp:t[3], got, ok, tol:t[4], u:t[5], err }; }); }
+function pgPruebas(){
+  const R = runTest3(), okN = R.filter(r => r.ok).length, dec = r => Math.max(0, Math.min(6, -Math.floor(Math.log10(r.tol))));
+  return '<p class="eyebrow">Referencia · Calidad de las calculadoras</p><h1>Pruebas de las calculadoras</h1><p class="lead">Cada vez que abres esta página, el núcleo de cálculo se prueba contra resultados conocidos, calculados de forma independiente o tomados de casos de libro. Si alguna prueba falla, se marca en rojo.</p>' +
+    kpis([kpi("Pruebas", R.length), kpi("Correctas", okN, "", okN === R.length ? "ok" : "bad"), kpi("Con error", R.length - okN, "", R.length - okN ? "bad" : "ok")]) +
+    table(["Calculadora", "Entrada de prueba", "Resultado esperado", "Resultado obtenido", "Estado"], R.map(r => rowc([r.calc, r.inp, nf(r.exp, dec(r)) + (r.u ? " " + r.u : ""), r.err ? "Error: " + esc(r.err) : nf(r.got, dec(r)) + (r.u ? " " + r.u : ""), r.ok ? pill("ok", "✓ Correcto") : pill("bad", "✗ Revisar")], r.ok ? "" : "badr")), { num:[2, 3] }) +
+    note("Tolerancia: diferencias de redondeo menores que la última cifra mostrada. Las mismas funciones son las que usan las calculadoras, así que si estas pruebas pasan, los cálculos de la interfaz también.", "info"); }
 /* ============ PÁGINAS Y NAVEGACIÓN ============ */
 const GROUPS = { malla:"Mi malla (UNAB)", carrera:"Carrera y trabajo", eco:"Economía y finanzas", ops:"Producción y logística", trab:"Estudio del trabajo", cal:"Calidad y estadística", io:"Investigación de operaciones", seg:"Seguridad y ambiente", ges:"Gestión y mejora", inf:"Informes", rep:"Reportes", ind:"Industrias", sab:"Saberes de otras disciplinas", des:"Desarrollo personal y profesional", ofi:"Excel y Word", learn:"Aprender", sim:"Simuladores de software" };
 const indId = x => "ind-" + x[0].normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -12224,7 +12375,7 @@ function calcPage(id){
     '<div class="actions"><button class="btn calc" type="button" data-act="calc" data-c="' + id + '">' + (c.btn || "Calcular") + '</button><button class="btn ghost" type="button" data-act="ex" data-c="' + id + '">Cargar ejemplo</button><button class="btn ghost" type="button" data-act="clr" data-c="' + id + '">Limpiar</button>' + (done && !["generador-informe", "citas-apa", "conversor"].includes(id) ? '<span class="hint">✓ Incluido en la memoria de cálculo</span>' : "") + "</div></section>";
   if (isEx || done) {
     const stale = done && S.snap[id] && S.snap[id] !== JSON.stringify(S.v[id] || {});
-    const exp = ["generador-informe", "citas-apa", "conversor"].includes(id) ? "" : '<div class="actions no-print" style="border:0;margin-top:0;padding-top:0">' + expBtns("calc", ' data-c="' + id + '"') + "</div>";
+    const exp = ["generador-informe", "citas-apa", "conversor"].includes(id) ? "" : '<div class="actions no-print" style="border:0;margin-top:0;padding-top:0">' + expBtns("calc", ' data-c="' + id + '"') + '<button class="btn ghost small" type="button" data-act="copyres" data-c="' + id + '">Copiar resultado</button></div>';
     h += '<section class="card result" id="res"><div class="sechead"><span class="tag">Resultado</span><h2>' + (isEx ? "Resultado del ejemplo" : "Resultado") + "</h2></div>" + exp +
       (isEx ? note("Resultado calculado con los datos de ejemplo. Reemplázalos por los tuyos y presiona <b>" + (c.btn || "Calcular") + "</b>.", "info exnote") : "") + '<details class="item usados"><summary>Datos usados en este cálculo (revísalos antes de interpretar)</summary><div class="body">' + inputSummary(id) + "</div></details>" +
       (stale ? '<div class="note stale"><span>Cambiaste datos después de calcular: este resultado ya no corresponde.</span><button class="btn small" type="button" data-act="calc" data-c="' + id + '">Recalcular</button></div>' : "") + safeCalc(id) + "</section>";
