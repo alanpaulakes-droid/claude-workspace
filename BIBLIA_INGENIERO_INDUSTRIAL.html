@@ -9,7 +9,7 @@
 <title>Biblia del Ingeniero Industrial</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=Noto+Sans+Math&display=swap">
 <style>
 /* Layout: herramienta técnica de consulta — barra superior y menú lateral sobrios, contenido en una columna de lectura; secciones como listas desplegables con divisores, sin cajas de colores. Un solo acento azul; los colores de estado solo comunican estado. */
 :root{
@@ -511,17 +511,91 @@ figure.dg{background:var(--surface)}
 .pidx li button{all:unset;cursor:pointer;color:var(--ink);line-height:1.4}
 .pidx li button:hover,.pidx li button:focus-visible{color:var(--blue);text-decoration:underline}
 @media (max-width:640px){.pidx ol{columns:1}.pidx-a{margin-left:0}}
+
+/* ===== F1a: navegación, favoritos, tema, componentes ===== */
+.iconb{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 17px/1 var(--f-body);cursor:pointer}
+.iconb:hover{background:var(--surface2)}
+.iconb svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round}
+.menub{display:none}
+.crumb{display:flex;align-items:center;gap:2px;overflow:hidden}
+.crumb button,.bcrumb button{border:0;background:none;color:var(--muted);font:inherit;padding:2px 4px;border-radius:5px;cursor:pointer;white-space:nowrap;max-width:22ch;overflow:hidden;text-overflow:ellipsis}
+.crumb button:hover,.bcrumb button:hover{color:var(--blue);background:var(--surface2)}
+.crumb [aria-current],.bcrumb [aria-current]{color:var(--ink);font-weight:500;padding:2px 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.crumb .sep,.bcrumb .sep{color:var(--line2);padding:0 1px}
+.bcrumb{display:none;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted);margin:0 0 10px}
+.favb{border:0;background:none;color:var(--muted);font-size:22px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:6px;vertical-align:3px}
+.favb[aria-pressed="true"]{color:#C58A06}
+.favb:hover{background:var(--surface2)}
+.resume .rs{color:var(--muted);font-weight:500}
+.resume{max-width:100%;text-align:left}
+.sh .cnt{font:500 12px var(--f-mono);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px;vertical-align:2px;margin-left:4px}
+.areas{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.area-c{display:grid;grid-template-columns:34px minmax(0,1fr);gap:2px 12px;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:14px;cursor:pointer;font:inherit;box-shadow:var(--shadow)}
+.area-c:hover{border-color:var(--blue)}
+.area-n{grid-row:1/4;width:34px;height:34px;border-radius:8px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;font:600 15px var(--f-mono)}
+.area-t{font-weight:600;font-size:15.5px}.area-d{font-size:13px;color:var(--muted);line-height:1.4}.area-m{font-size:12px;color:var(--muted);font-family:var(--f-mono);margin-top:4px}
+.tri-c{padding:16px 18px}.tri-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.tri-t{font-weight:600;font-size:16px;text-decoration:none;color:var(--ink)}.tri-t:hover{color:var(--blue);text-decoration:underline}
+.qlab{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);align-self:center;margin-right:2px}
+.chip .kd{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:500}
+.xlinks{margin-top:26px;padding-top:16px;border-top:1px solid var(--line)}
+.xlinks h3{font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+.tri-row{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:2px 6px}
+.side .tri-row button{justify-content:center;padding:6px 0;font-family:var(--f-mono);font-size:13px}
+/* componentes */
+.c-h{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.c-fx,.c-ex,.c-err,.c-ej,.c-card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;background:var(--surface);min-width:0}
+.c-fx{background:var(--surface2)}
+.c-fx .c-h{color:var(--blue)}
+.c-vars{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 12px;margin:10px 0 0;font-size:14px}.c-vars dt{font-family:var(--f-mono);font-weight:600}.c-vars dd{margin:0}
+.c-ex{border-style:dashed}
+.c-err{border-color:color-mix(in srgb,var(--bad) 40%,var(--line));background:color-mix(in srgb,var(--bad-soft) 55%,var(--surface))}.c-err .c-h{color:var(--bad)}
+.c-ej .c-h{color:var(--ok)}
+.c-card{background:var(--surface2)}.c-card ul{margin:0;padding-left:20px}
+details.c-hint,details.c-why{border:1px solid var(--line);border-radius:8px;margin:8px 0;background:var(--surface)}
+details.c-hint>summary,details.c-why>summary{cursor:pointer;padding:8px 12px;font-weight:600;font-size:14px;list-style:none}
+details.c-hint>summary::-webkit-details-marker,details.c-why>summary::-webkit-details-marker{display:none}
+details.c-hint>summary::before,details.c-why>summary::before{content:"+";display:inline-block;width:1em;color:var(--muted);font-family:var(--f-mono)}
+details[open].c-hint>summary::before,details[open].c-why>summary::before{content:"−"}
+details.c-hint>div,details.c-why>div{padding:0 12px 10px}
+details.c-sol>summary{color:var(--ok)}
+ol.tpl8{columns:2;column-gap:28px;padding-left:1.4em}ol.tpl8 li{break-inside:avoid}
+.tx-b{display:block;overflow-x:auto;padding:8px 2px;margin:4px 0;font-size:1.12em}
+.tx math{font-family:"Noto Sans Math","STIX Two Math","Cambria Math",math,serif;font-size:1.08em}
+.tx-b math{display:block;math-style:normal}
+.tx-fb code{font-family:var(--f-mono);font-size:.9em}
+/* desbordes en móvil */
+#app .mono,#app code{overflow-wrap:anywhere}
+#app .mx{white-space:normal}
+#app p,#app li,#app td{overflow-wrap:break-word}
+#app .doc p,#app .doc li{overflow-wrap:anywhere}
+#app .mblk,#app .f{max-width:100%}
+#app img,#app svg{max-width:100%}
+#navScrim{display:none}
+@media (max-width:900px){
+  .menub{display:grid}
+  .bcrumb{display:flex}
+  body.nav-open .side{display:block!important;position:fixed;top:0;bottom:0;left:0;width:min(330px,88vw);max-height:none;z-index:41;background:var(--surface);padding:14px 12px calc(20px + env(safe-area-inset-bottom,0px));padding-top:calc(14px + env(safe-area-inset-top,0px));overflow:auto;box-shadow:0 0 40px rgba(0,0,0,.25);border-right:1px solid var(--line)}
+  body.nav-open #navScrim{display:block;position:fixed;inset:0;z-index:40;background:rgba(10,14,20,.45)}
+  body.nav-open{overflow:hidden}
+  ol.tpl8{columns:1}
+}
+@media (max-width:900px){.crumb{display:none!important}.brand{min-width:0;flex:1 1 auto}.brand>span{overflow:hidden;text-overflow:ellipsis;min-width:0}#themeBtn{margin-left:auto}}
+@media (max-width:420px){.brand>span{font-size:14px}.top-in{gap:8px}}
+@media print{.favb,.bcrumb,.xlinks,#themeBtn,#menuBtn{display:none!important}}
 </style>
 
 <header class="top"><div class="top-in">
+  <button class="iconb menub" type="button" id="menuBtn" aria-label="Abrir menú de secciones" aria-expanded="false" aria-controls="side"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
   <button class="btn ghost small backb" type="button" id="backBtn" aria-label="Volver" hidden>←<span class="bt"> Volver</span></button>
   <button class="brand" type="button" data-go="inicio"><span>Biblia del <b>Ingeniero Industrial</b></span></button>
-  <span class="crumb" id="crumb"></span>
+  <nav class="crumb" id="crumb" aria-label="Ruta"></nav>
+  <button class="iconb" type="button" id="themeBtn" aria-label="Cambiar tema">◐</button>
 </div></header>
 <div class="layout">
   <nav class="side" id="side" aria-label="Secciones"></nav>
   <main id="app"></main>
 </div>
+<div id="navScrim" aria-hidden="true"></div>
 <nav class="tabbar" id="tabbar" aria-label="Navegación principal"></nav>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <div id="tip" role="dialog" aria-live="polite" hidden><div class="tip-in"><div><b id="tipk"></b><p id="tipd"></p></div><button class="btn ghost small" type="button" data-act="tipclose" aria-label="Cerrar">✕</button></div></div>
@@ -7966,7 +8040,7 @@ function eqInit(el){
       else msg.innerHTML = note("La expresión no es equivalente. Revisa paréntesis: en formato lineal, todo el numerador o el denominador con más de un término debe ir entre paréntesis.", "bad"); }
     catch (x) { msg.innerHTML = note("No se pudo interpretar: " + esc(x.message) + ".", "bad"); } });
 }
-function afterRender(root){ try { if (typeof w6Init === "function") setTimeout(() => w6Init(root), 0); } catch (e) {} root.querySelectorAll("textarea[data-c][data-k]").forEach(t => { try { gridInit(t); } catch (e) { console.error(e); } }); root.querySelectorAll("[data-xls]").forEach(xlsInit); root.querySelectorAll("[data-wdx]").forEach(wdInit); root.querySelectorAll("[data-eqx]").forEach(eqInit); if (typeof simInit === "function") root.querySelectorAll("[data-sim]").forEach(simInit); if (typeof ishiUI === "function") ishiUI(root); }
+function afterRender(root){ try { if (typeof w6Init === "function") setTimeout(() => w6Init(root), 0); } catch (e) {} root.querySelectorAll("textarea[data-c][data-k]").forEach(t => { try { gridInit(t); } catch (e) { console.error(e); } }); root.querySelectorAll("[data-xls]").forEach(xlsInit); root.querySelectorAll("[data-wdx]").forEach(wdInit); root.querySelectorAll("[data-eqx]").forEach(eqInit); if (typeof simInit === "function") root.querySelectorAll("[data-sim]").forEach(simInit); if (typeof ishiUI === "function") ishiUI(root); if (typeof w7Init === "function") try { w7Init(root); } catch (e) { console.error(e); } }
 
 /* ---------- Ilustraciones de las ventanas ---------- */
 Object.assign(D, {
@@ -10420,6 +10494,8 @@ const SVGP = {
   saberes:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>'
 };
 const svgIco = id => SVGP[id] ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + SVGP[id] + "</svg>" : null;
+SVGP["por-area"] = '<path d="M12 3 3 7.5l9 4.5 9-4.5z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/>';
+SVGP["por-trimestre"] = '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4M8 13h2M12 13h2M16 13h1M8 16.5h2M12 16.5h2"/>'; SVGP["favoritos"] = '<path d="M12 3.8l2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8z"/>';
 /* ============ ENTRADA DE DATOS: UNIDADES, VALIDACIÓN EN VIVO Y AYUDAS ============ */
 S.unit = S.unit || {};
 /* Cada grupo: unidad base (la que usa el cálculo) y factor para pasar de esa unidad a la base */
@@ -10536,6 +10612,179 @@ function w6Init(root){
   root.querySelectorAll("[data-c][data-k]").forEach(el => { if (el.id && el.id.startsWith("f-") && String(el.value).trim()) vPaint(el); });
   try { pageIndex(root); } catch (e) { console.error(e); }
 }
+/* ============ FASE 1A: NAVEGACIÓN POR ÁREA Y TRIMESTRE, FAVORITOS, TEMA, KATEX Y COMPONENTES ============ */
+S.fav = Array.isArray(S.fav) ? S.fav : []; S.lastSec = S.lastSec || null;
+
+/* ---------- Áreas de la carrera: cada página queda en al menos un área (la primera es su área principal) ---------- */
+const CAREAS = [
+  ["mat", "Matemáticas y ciencias básicas", "Álgebra, funciones, matrices, cálculo, física, mecánica y química: la base de todos los modelos de la carrera.",
+    ["ramo-nivelacion-matematica", "ramo-fundamentos-matematicas", "ramo-calculo", "ramo-fisica-medicion", "ramo-mecanica", "ramo-quimica-ambiente", "conversor"]],
+  ["est", "Probabilidad y estadística", "Describir datos, estimar con muestras, relacionar variables y extraer conocimiento de los datos.",
+    ["fund-estadistica", "descriptiva", "muestra", "regresion", "ramo-metodos-cuantitativos", "ramo-mineria-datos", "sim-estadistica", "simulacion-mc"]],
+  ["io", "Investigación de operaciones", "Modelos para decidir lo mejor: programación lineal, transporte, asignación, redes, proyectos, colas, simulación e inventarios.",
+    ["fund-io", "programacion-lineal", "transporte", "asignacion", "ruta-corta", "cpm", "decisiones", "colas", "simulacion-mc", "eoq", "stock-seguridad", "ramo-intro-optimizacion", "ramo-investigacion-operativa", "sim-optimizacion"]],
+  ["prod", "Producción y procesos", "Cómo se diseña, mide y mejora un proceso: métodos y tiempos, balance de líneas, capacidad, MRP, Lean y mantenimiento.",
+    ["fund-operaciones", "fund-trabajo", "ramo-analisis-procesos", "ramo-procesos-industriales", "ramo-sistemas-productivos", "ramo-modelamiento-procesos", "ramo-planificacion-mejora", "sipoc", "vsm", "tiempo-estandar", "muestreo", "aprendizaje", "productividad", "balanceo", "oee", "smed", "mrp", "secuenciacion", "johnson", "lean", "mejora-continua", "sim-procesos", "sim-layout", "mantenimiento", "mecatronica", "mecanica", "electricidad", "hidraulica"]],
+  ["cal", "Calidad", "Herramientas básicas, control estadístico de procesos, capacidad, Six Sigma, AMEF y sistemas de gestión de la calidad.",
+    ["fund-calidad", "calidad-7", "pareto", "ishikawa", "porques", "control-xr", "control-p", "capacidad", "sigma", "amef", "mejora-continua"]],
+  ["log", "Logística y cadena de suministro", "Pronósticos, clasificación ABC, inventarios, localización, distribución y comercio exterior.",
+    ["fund-logistica", "ramo-logistica", "pronosticos", "abc", "eoq", "stock-seguridad", "localizacion", "factores", "ruta-corta", "transporte", "comercio-exterior", "agro", "sim-erp"]],
+  ["eco", "Economía y finanzas", "Valor del dinero en el tiempo, costos, presupuestos y evaluación de proyectos.",
+    ["fund-economia", "fund-costos", "ramo-costos-presupuestos", "ramo-ingenieria-economica", "ramo-evaluacion-proyectos", "van-tir", "flujo-caja", "equivalencias", "tasas", "amortizacion", "depreciacion", "equilibrio", "costeo", "caue", "vida-economica", "wacc", "ratios", "finanzas-personales", "cultura"]],
+  ["ges", "Gestión, estrategia e innovación", "Estrategia, modelos de negocio, proyectos, indicadores, innovación, personas y transformación digital.",
+    ["fund-estrategia", "fund-proyectos", "foda", "canvas", "raci", "gestion-proyectos", "kpis", "ramo-innovacion-1", "ramo-innovacion-2", "ramo-portafolio-proyectos", "ramo-transformacion-digital", "ramo-topicos-ingenieria", "ramo-topicos-especialidad", "ramo-integrador-1", "ramo-integrador-2", "sim-proyectos", "sim-bi", "comercial", "negociacion", "mentalidad", "casos-integrados"]],
+  ["prog", "Programación, datos y ofimática", "Algoritmos, Python, bases de datos y SQL, análisis de datos, Excel y Word.",
+    ["ramo-intro-programacion", "ramo-base-datos", "datos-ia", "sim-sql", "excel-pro", "excel-basico", "excel-avanzado", "excel-profesional", "excel-ejercicios", "excel-lab", "word-basico", "word-avanzado", "word-pro", "word-ejercicios", "software"]],
+  ["seg", "Seguridad, ergonomía y sostenibilidad", "Prevención de riesgos, ergonomía, higiene industrial, ambiente y responsabilidad social.",
+    ["fund-seguridad", "iper", "accidentabilidad", "niosh", "ruido", "huella", "ramo-quimica-ambiente", "ramo-responsabilidad-social"]],
+  ["car", "Carrera y habilidades", "Industrias, práctica y título, empleabilidad, informes, inglés técnico y desarrollo personal y profesional.",
+    ["areas", "competencias", "practica-titulo", "empleabilidad", "ruta-pro", "ramo-ingles", "generador-informe", "citas-apa", "estructura-informe", "redaccion", "plantillas", "reportes", "industrias", "vida-cotidiana", "bienestar", "relaciones", "aprender-a-aprender", "habilidades-blandas", "psicologia", "influencia", "oratoria", "libros", "experiencias", "marca-personal"]],
+  ["ref", "Referencia y consulta", "Para empezar y para consultar rápido: formulario, glosario, siglas, tablas, normativa, bibliografía, historia y autoevaluación.",
+    ["empieza-aqui", "fundamentos", "formulario", "glosario", "siglas", "tablas", "normativa", "bibliografia", "historia", "pensadores", "quiz", "componentes"]]
+];
+const AREA_ID = a => "area-" + a[0];
+/* Agrega las industrias al área de carrera y crea las páginas de área, trimestre y componentes */
+function areaPages(P){
+  const car = CAREAS.find(a => a[0] === "car"); P.filter(p => p.g === "ind" && p.id !== "industrias").forEach(p => { if (!car[3].includes(p.id)) car[3].push(p.id); });
+  P.push({ id:"por-area", g:"hub", t:"Estudiar por área", r:pgPorArea });
+  P.push({ id:"por-trimestre", g:"hub", t:"Estudiar por trimestre", r:pgPorTrimestre });
+  P.push({ id:"favoritos", g:"hub", t:"Mis favoritos", r:pgFavoritos });
+  CAREAS.forEach(a => P.push({ id:AREA_ID(a), g:"area", t:a[1], d:a[2], r:() => pgArea(a[0]) }));
+  P.push({ id:"componentes", g:"learn", t:"Guía de componentes", d:"Cómo se ven fórmulas, ejemplos, errores comunes y pistas", ico:"UI", r:pgComponentes });
+}
+const areaOf = id => CAREAS.find(a => a[3].includes(id)) || null;
+const areasOf = id => CAREAS.filter(a => a[3].includes(id));
+function kindOf(p){ if (!p) return "otro"; if (p.g === "malla" && p.id !== "mi-malla") return "ramo"; if (p.calc) return "calc"; if (p.g === "sim") return "sim"; if (p.g === "ind") return "ind"; return "teo"; }
+const KINDS = [["ramo", "Ramos de tu malla"], ["teo", "Teoría, lecciones y métodos"], ["calc", "Calculadoras"], ["sim", "Simuladores"], ["ind", "Industrias"]];
+
+function areaTiles(ids){ const ps = ids.map(id => PAGES.find(p => p.id === id)).filter(Boolean);
+  return KINDS.map(k => { const g = ps.filter(p => kindOf(p) === k[0]); return g.length ? '<h2 class="sh">' + k[1] + ' <span class="cnt">' + g.length + "</span></h2>" + '<div class="tiles">' + g.map(tile).join("") + "</div>" : ""; }).join(""); }
+function pgArea(k){ const a = CAREAS.find(x => x[0] === k), i = CAREAS.indexOf(a), pr = CAREAS[i - 1], nx = CAREAS[i + 1];
+  return '<p class="eyebrow">Estudiar por área · ' + (i + 1) + " de " + CAREAS.length + "</p><h1>" + a[1] + '</h1><p class="lead">' + a[2] + "</p>" + areaTiles(a[3]) +
+    '<div class="pager">' + (pr ? '<button class="btn ghost" type="button" data-go="' + AREA_ID(pr) + '">← ' + pr[1] + "</button>" : "<span></span>") + (nx ? '<button class="btn ghost" type="button" data-go="' + AREA_ID(nx) + '">' + nx[1] + " →</button>" : "") + "</div>"; }
+function pgPorArea(){
+  return '<p class="eyebrow">Navegación</p><h1>Estudiar por área</h1><p class="lead">Cada área reúne los ramos de tu malla, la teoría, las calculadoras y los simuladores del mismo tema. Un tema puede aparecer en más de un área cuando se usa en ambas.</p>' +
+    '<div class="areas">' + CAREAS.map((a, i) => { const ps = a[3].map(id => PAGES.find(p => p.id === id)).filter(Boolean), c = k => ps.filter(p => kindOf(p) === k).length;
+      return '<button class="area-c" type="button" data-go="' + AREA_ID(a) + '"><span class="area-n">' + String.fromCharCode(97 + i) + '</span><span class="area-t">' + a[1] + '</span><span class="area-d">' + a[2] + '</span><span class="area-m">' + [[c("ramo"), "ramos"], [c("teo"), "temas"], [c("calc"), "calculadoras"], [c("sim"), "simuladores"]].filter(x => x[0]).map(x => x[0] + " " + x[1]).join(" · ") + "</span></button>"; }).join("") + "</div>"; }
+function pgPorTrimestre(){
+  S.malla = S.malla || {}; let t = +(S.triSel || 1); if (!(t >= 1 && t <= 8)) t = 1;
+  const cs = COURSES.filter(c => c.tri === t);
+  return '<p class="eyebrow">Navegación</p><h1>Estudiar por trimestre</h1><p class="lead">Elige el trimestre que estás cursando: verás sus ramos y, para cada uno, las calculadoras y las áreas donde se profundiza.</p>' +
+    '<div class="quick" role="tablist" aria-label="Trimestre">' + [1, 2, 3, 4, 5, 6, 7, 8].map(n => '<button class="chip" type="button" role="tab" data-tri="' + n + '" aria-pressed="' + (n === t) + '" aria-selected="' + (n === t) + '">' + n + "° <span>" + COURSES.filter(c => c.tri === n).length + "</span></button>").join("") + "</div>" +
+    cs.map(c => { const ar = areasOf(c.id); return '<section class="card tri-c"><div class="tri-h"><button class="linkb tri-t" type="button" data-go="' + c.id + '">' + c.t + "</button>" + (S.malla[c.id] ? '<span class="pill ok">Aprobado</span>' : "") + '</div><p class="hint" style="margin:2px 0 10px">' + c.d + "</p>" +
+      ((c.tools || []).length ? '<div class="quick"><span class="qlab">Practica con</span>' + c.tools.filter(x => PAGES.find(p => p.id === x)).map(x => '<button class="chip" type="button" data-go="' + x + '">' + pageOf(x).t + "</button>").join("") + "</div>" : "") +
+      (ar.length ? '<div class="quick"><span class="qlab">Área</span>' + ar.map(a => '<button class="chip" type="button" data-go="' + AREA_ID(a) + '">' + a[1] + "</button>").join("") + "</div>" : "") + "</section>"; }).join("") +
+    '<p class="hint">Para marcar ramos aprobados usa ' + '<button class="linkb" type="button" data-go="mi-malla">Mi malla</button>.</p>'; }
+function pgFavoritos(){
+  const ps = S.fav.map(id => PAGES.find(p => p.id === id)).filter(Boolean);
+  return '<p class="eyebrow">Mis cosas</p><h1>Mis favoritos</h1><p class="lead">Marca cualquier página con la estrella ☆ junto a su título para tenerla aquí y en el menú.</p>' +
+    (ps.length ? '<div class="tiles">' + ps.map(tile).join("") + "</div>" : '<div class="empty">Aún no tienes favoritos. Abre una página y toca ☆ junto al título.</div>'); }
+
+/* ---------- Migas de pan ---------- */
+function crumbs(id){
+  const p = pageOf(id), L = [["inicio", "Inicio"]];
+  if (id === "inicio") return L;
+  if (p.g === "area") L.push(["por-area", "Por área"]);
+  else if (p.g === "malla" && id !== "mi-malla") { L.push(["por-trimestre", "Trimestre " + (p.tri || "")]); }
+  else if (p.g !== "hub") { const a = areaOf(id); if (a) { L.push(["por-area", "Por área"]); L.push([AREA_ID(a), a[1]]); } }
+  L.push([id, p.t]); return L;
+}
+const crumbHTML = id => crumbs(id).map((c, i, A) => i === A.length - 1 ? '<span aria-current="page">' + esc(c[1]) + "</span>" : '<button type="button" data-go="' + c[0] + '">' + esc(c[1]) + "</button>").join('<span class="sep" aria-hidden="true">›</span>');
+
+/* ---------- Enlaces cruzados al pie de cada página ---------- */
+function crossHTML(id){
+  const p = pageOf(id); if (!p || ["hub", "area"].includes(p.g) || id === "inicio") return "";
+  const ar = areasOf(id); if (!ar.length) return "";
+  const main = ar[0], others = main[3].filter(x => x !== id && PAGES.find(q => q.id === x)), own = kindOf(p);
+  const pick = others.filter(x => kindOf(pageOf(x)) !== own).slice(0, 6).concat(others.filter(x => kindOf(pageOf(x)) === own).slice(0, 4));
+  return '<section class="xlinks no-print" aria-label="Enlaces relacionados"><h3>Más sobre ' + esc(main[1]) + '</h3><div class="quick">' + pick.map(x => '<button class="chip" type="button" data-go="' + x + '"><span class="kd">' + { ramo:"Ramo", teo:"Tema", calc:"Calculadora", sim:"Simulador", ind:"Industria" }[kindOf(pageOf(x))] + "</span> " + pageOf(x).t + "</button>").join("") + "</div>" +
+    '<p class="hint" style="margin:6px 0 0">' + ar.map((a, i) => (i ? " · " : "Áreas: ") + '<button class="linkb" type="button" data-go="' + AREA_ID(a) + '">' + a[1] + "</button>").join("") + "</p></section>"; }
+
+/* ---------- Favoritos y «seguir donde quedé» ---------- */
+function favBtn(id){ const on = S.fav.includes(id); return '<button class="favb no-print" type="button" data-fav="' + id + '" aria-pressed="' + on + '" title="' + (on ? "Quitar de favoritos" : "Agregar a favoritos") + '" aria-label="' + (on ? "Quitar de favoritos" : "Agregar a favoritos") + '">' + (on ? "★" : "☆") + "</button>"; }
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-fav]"); if (!b) return; const id = b.dataset.fav, i = S.fav.indexOf(id);
+  if (i >= 0) S.fav.splice(i, 1); else S.fav.unshift(id); save(); const on = i < 0; b.setAttribute("aria-pressed", on); b.textContent = on ? "★" : "☆"; b.title = on ? "Quitar de favoritos" : "Agregar a favoritos"; b.setAttribute("aria-label", b.title); toast(on ? "Agregado a favoritos" : "Quitado de favoritos"); try { renderSide(); } catch (er) {} });
+document.addEventListener("toggle", e => { const d = e.target; if (!d.matches || !d.matches("#app details.item, #app details.learn") || !d.open) return; const s = d.querySelector(":scope > summary"); if (!s) return;
+  S.lastSec = { id:cur, s:s.textContent.trim().slice(0, 160) }; save(); }, true);
+function resumeHTML(){
+  const ls = S.lastSec && PAGES.find(p => p.id === S.lastSec.id), lp = S.last && PAGES.find(p => p.id === S.last && !["hub", "area"].includes(p.g) && p.id !== "inicio");
+  if (ls && (!lp || lp.id === ls.id)) return '<button class="resume" type="button" data-resume="1"><span aria-hidden="true">↻</span> Seguir donde quedé: <b>' + esc(ls.t) + '</b><span class="rs"> › ' + esc(S.lastSec.s.replace(/^\d+\.\s*/, "")) + "</span></button>";
+  return lp ? '<button class="resume" type="button" data-go="' + lp.id + '"><span aria-hidden="true">↻</span> Seguir donde quedé: <b>' + esc(lp.t) + "</b></button>" : ""; }
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-resume]"); if (!b || !S.lastSec) return; const sec = S.lastSec.s; go(S.lastSec.id, true);
+  setTimeout(() => { const d = [...document.querySelectorAll("#app details")].find(x => { const s = x.querySelector(":scope > summary"); return s && s.textContent.trim().slice(0, 160) === sec; }); if (d) { let p = d; while (p) { if (p.tagName === "DETAILS") p.open = true; p = p.parentElement; } d.scrollIntoView({ block:"start" }); } }, 60); });
+
+/* ---------- Trimestre: selector ---------- */
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-tri]"); if (!b) return; S.triSel = +b.dataset.tri; save(); render(true); });
+
+/* ---------- Tema claro / oscuro / automático ---------- */
+const THEMES = [["auto", "Tema automático (según el sistema)", '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>'], ["light", "Tema claro", '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>'], ["dark", "Tema oscuro", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>']];
+function themeGet(){ try { return localStorage.getItem(KEY + "-theme") || "auto"; } catch (e) { return "auto"; } }
+function themeApply(t){ const r = document.documentElement; if (t === "light" || t === "dark") r.setAttribute("data-theme", t); else r.removeAttribute("data-theme");
+  const b = document.getElementById("themeBtn"), m = THEMES.find(x => x[0] === t) || THEMES[0]; if (b) { b.innerHTML = m[2]; b.title = m[1] + " · tocar para cambiar"; b.setAttribute("aria-label", m[1] + ". Tocar para cambiar"); } }
+document.addEventListener("click", e => { if (!e.target.closest || !e.target.closest("#themeBtn")) return; const i = THEMES.findIndex(x => x[0] === themeGet()), n = THEMES[(i + 1) % THEMES.length][0];
+  try { localStorage.setItem(KEY + "-theme", n); } catch (er) {} themeApply(n); toast(THEMES.find(x => x[0] === n)[1]); });
+
+/* ---------- Menú lateral colapsable en móvil ---------- */
+function navOpen(on){ document.body.classList.toggle("nav-open", on); const b = document.getElementById("menuBtn"); if (b) b.setAttribute("aria-expanded", on); if (on) { const s = document.querySelector("#side input, #side button"); if (s) try { s.focus({ preventScroll:true }); } catch (e) {} } }
+document.addEventListener("click", e => { if (!e.target.closest) return;
+  if (e.target.closest("#menuBtn")) { navOpen(!document.body.classList.contains("nav-open")); return; }
+  if (e.target.closest("#navScrim")) { navOpen(false); return; }
+  if (document.body.classList.contains("nav-open") && e.target.closest("#side [data-go]")) navOpen(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) { navOpen(false); const b = document.getElementById("menuBtn"); if (b) b.focus(); } });
+
+/* ---------- Bloque superior del menú lateral: favoritos, áreas y trimestres ---------- */
+function sideTopHTML(){
+  const fav = S.fav.map(id => PAGES.find(p => p.id === id)).filter(Boolean), ca = areaOf(cur), cp = pageOf(cur);
+  let h = "";
+  if (fav.length) h += '<details class="sgp" data-sgp="_fav" open><summary>Favoritos</summary>' + fav.map(p => '<button type="button" data-go="' + p.id + '" aria-current="' + (p.id === cur) + '"><span class="k">★</span>' + p.t + "</button>").join("") + "</details>";
+  h += '<details class="sgp" data-sgp="_area"' + (sideOpen("_area") ? " open" : "") + '><summary>Por área</summary>' + CAREAS.map((a, i) => '<button type="button" data-go="' + AREA_ID(a) + '" aria-current="' + (cur === AREA_ID(a) || (ca === a && cp.g !== "area")) + '"><span class="k">' + String.fromCharCode(97 + i) + "</span>" + a[1] + "</button>").join("") + "</details>";
+  h += '<details class="sgp" data-sgp="_tri"' + (sideOpen("_tri") ? " open" : "") + '><summary>Por trimestre</summary><div class="tri-row">' + [1, 2, 3, 4, 5, 6, 7, 8].map(n => '<button type="button" data-go="por-trimestre" data-tri="' + n + '" aria-current="' + (cur === "por-trimestre" && +(S.triSel || 1) === n || (cp.g === "malla" && cp.tri === n)) + '">' + n + "°</button>").join("") + "</div></details>";
+  return h; }
+function sideOpen(k){ try { const c = JSON.parse(localStorage.getItem(KEY + "-side2") || "null"); return !c || !c.includes(k); } catch (e) { return true; } }
+
+/* ---------- KaTeX (cdnjs) con respaldo: si no carga, se muestra la fórmula con el motor propio ---------- */
+let KX = null;
+function katexLoad(){ if (window.katex) return Promise.resolve(window.katex); if (KX) return KX;
+  KX = new Promise((ok, ko) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"; s.async = true; s.onload = () => window.katex ? ok(window.katex) : ko(); s.onerror = () => ko(); document.head.appendChild(s); setTimeout(() => ko(), 9000); }).catch(() => null);
+  return KX; }
+/* TX(tex, alt, bloque): tex en LaTeX; alt en la notación del motor propio (M) para el respaldo */
+function TX(tex, alt, blk){ return (blk ? '<div class="tx tx-b"' : '<span class="tx"') + ' data-tex="' + esc(tex) + '">' + (alt ? (blk ? M(alt) : '<span class="mx">' + esc(alt) + "</span>") : '<code>' + esc(tex) + "</code>") + (blk ? "</div>" : "</span>"); }
+function katexRender(root){ const els = root.querySelectorAll(".tx[data-tex]:not([data-ok])"); if (!els.length) return;
+  katexLoad().then(k => { if (!k) { els.forEach(e => e.classList.add("tx-fb")); return; }
+    els.forEach(e => { try { e.innerHTML = k.renderToString(e.dataset.tex, { displayMode:e.classList.contains("tx-b"), output:"mathml", throwOnError:true, strict:false }); e.dataset.ok = "1"; } catch (er) { e.classList.add("tx-fb"); } }); }); }
+
+/* ---------- Componentes reutilizables (los usa la plantilla de 8 bloques en la F1b) ---------- */
+const UI = {
+  formula:(t, tex, alt, vars, why) => '<div class="c-fx"><div class="c-h">' + t + "</div>" + TX(tex, alt, true) + (vars && vars.length ? '<dl class="c-vars">' + vars.map(v => "<dt>" + v[0] + "</dt><dd>" + v[1] + "</dd>").join("") + "</dl>" : "") + (why ? '<details class="c-why"><summary>¿Por qué funciona?</summary><div>' + why + "</div></details>" : "") + "</div>",
+  ejemplo:(t, html) => '<div class="c-ex"><div class="c-h">Ejemplo resuelto' + (t ? " · " + t : "") + "</div>" + html + "</div>",
+  error:(t, html) => '<div class="c-err" role="note"><div class="c-h">Error común' + (t ? ": " + t : "") + "</div>" + html + "</div>",
+  ejercicio:(enun, pistas, sol) => '<div class="c-ej"><div class="c-h">Ejercicio</div>' + enun + pistas.map((p, i) => '<details class="c-hint"><summary>Pista ' + (i + 1) + "</summary><div>" + p + "</div></details>").join("") + '<details class="c-hint c-sol"><summary>Ver solución</summary><div>' + sol + "</div></details></div>",
+  ficha:items => '<div class="c-card"><div class="c-h">Ficha resumen</div><ul>' + items.map(x => "<li>" + x + "</li>").join("") + "</ul></div>"
+};
+const TPL8 = ["Definición", "Conceptos clave", "Fórmulas", "Método paso a paso", "Ejemplo resuelto", "Errores comunes", "Ejercicio con pistas", "Ficha resumen"];
+function pgComponentes(){
+  return '<p class="eyebrow">Referencia · Sistema de diseño</p><h1>Guía de componentes</h1><p class="lead">Así se presentará cada tema con la plantilla fija. Esta página muestra los componentes con un ejemplo real (lote económico de pedido) para que revises cómo se ven en tu equipo.</p>' +
+    '<h2 class="sh">Orden de la plantilla</h2><ol class="tpl8">' + TPL8.map(x => "<li>" + x + "</li>").join("") + "</ol>" +
+    '<h2 class="sh">Tarjeta de fórmula</h2>' + UI.formula("Lote económico de pedido (EOQ)", "Q^{*}=\\sqrt{\\dfrac{2\\,D\\,S}{H}}", "Q* = √(2·D·S ÷ H)", [["Q*", "cantidad óptima por pedido (unidades)"], ["D", "demanda anual (unidades/año)"], ["S", "costo de emitir un pedido ($/pedido)"], ["H", "costo de mantener una unidad un año ($/unidad·año)"]],
+      "<p>El costo anual de pedir, D·S/Q, baja cuando Q sube; el de mantener, H·Q/2, sube con Q. El total es mínimo donde ambos son iguales: D·S/Q = H·Q/2. Despejando Q se obtiene la fórmula.</p>") +
+    '<h2 class="sh">Caja de ejemplo</h2>' + UI.ejemplo("caso de libro", "<p>D = 1.000 unidades/año, S = $10 por pedido y H = $0,50 por unidad al año.</p>" + TX("Q^{*}=\\sqrt{\\dfrac{2\\cdot 1000\\cdot 10}{0{,}5}}=\\sqrt{40000}=200", "Q* = √(2·1000·10 ÷ 0,5) = √40000 = 200", true) + "<p><b>Resultado:</b> pedir 200 unidades cada vez, 5 pedidos al año. Comprobado con la calculadora EOQ.</p>") +
+    '<h2 class="sh">Alerta de error común</h2>' + UI.error("unidades distintas", "<p>Usar la demanda mensual con un costo de mantener anual. D y H deben estar en el mismo período: si D es anual, H también.</p>") +
+    '<h2 class="sh">Ejercicio con pistas</h2>' + UI.ejercicio("<p>Una ferretería vende 2.400 sacos de cemento al año. Pedir cuesta $12.000 y mantener un saco un año cuesta $1.600. ¿Cuántos sacos debe pedir cada vez?</p>", ["Identifica D, S y H con sus unidades.", "Reemplaza en Q* = √(2·D·S ÷ H): 2·2.400·12.000 = 57.600.000."], "<p>Q* = √(57.600.000 ÷ 1.600) = √36.000 ≈ 189,7 → <b>190 sacos</b> por pedido (unos 12,6 pedidos al año).</p>") +
+    '<h2 class="sh">Ficha resumen</h2>' + UI.ficha(["EOQ equilibra el costo de pedir con el de mantener.", "Supone demanda constante y reposición instantánea.", "Pequeños errores en S o H cambian poco el costo total (curva plana cerca del óptimo)."]) +
+    '<h2 class="sh">Fórmula en línea</h2><p>La utilización de una cola M/M/1 es ' + TX("\\rho=\\lambda/\\mu", "ρ = λ/μ") + " y debe ser menor que 1.</p>" +
+    note("Las fórmulas se dibujan con KaTeX (cargado desde cdnjs). Si no hay conexión, se muestran con el motor propio de la app, igual de legibles.", "info"); }
+
+/* ---------- Tablas anchas: siempre dentro de un contenedor con desplazamiento propio ---------- */
+function wrapWide(root){ root.querySelectorAll("table").forEach(t => { if (t.closest(".tbl-wrap,.gd-wrap,.xl-wrap,.sw-tbl,.sw-scroll,.wd-page,.malla")) return; const w = document.createElement("div"); w.className = "tbl-wrap"; t.parentNode.insertBefore(w, t); w.appendChild(t); }); }
+
+/* ---------- Se ejecuta después de cada render ---------- */
+function w7Init(root){
+  try { wrapWide(root); } catch (e) {}
+  try { const h1 = root.querySelector("h1"); if (h1 && !["inicio"].includes(cur) && !["hub", "area"].includes(pageOf(cur).g) && !h1.querySelector(".favb")) h1.insertAdjacentHTML("beforeend", " " + favBtn(cur)); } catch (e) {}
+  try { if (cur !== "inicio") { root.insertAdjacentHTML("afterbegin", '<nav class="bcrumb no-print" aria-label="Ruta">' + crumbHTML(cur) + "</nav>"); root.insertAdjacentHTML("beforeend", crossHTML(cur)); } } catch (e) {}
+  try { katexRender(root); } catch (e) {}
+}
+themeApply(themeGet());
 /* ============ PÁGINAS Y NAVEGACIÓN ============ */
 const GROUPS = { malla:"Mi malla (UNAB)", carrera:"Carrera y trabajo", eco:"Economía y finanzas", ops:"Producción y logística", trab:"Estudio del trabajo", cal:"Calidad y estadística", io:"Investigación de operaciones", seg:"Seguridad y ambiente", ges:"Gestión y mejora", inf:"Informes", rep:"Reportes", ind:"Industrias", sab:"Saberes de otras disciplinas", des:"Desarrollo personal y profesional", ofi:"Excel y Word", learn:"Aprender", sim:"Simuladores de software" };
 const indId = x => "ind-" + x[0].normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -10562,10 +10811,11 @@ Object.keys(GROUPS).forEach(g => {
 });
 PAGES.push({ id:"reportes", g:"rep", t:"Memoria de cálculo", d:"Todos tus resultados en un documento descargable", ico:"⎙", r:pgReportes });
 Object.keys(C).forEach(id => { if (!PAGES.find(p => p.id === id)) PAGES.push({ id, g:C[id].g, t:C[id].t, d:C[id].d, ico:C[id].ico, r:() => calcPage(id), calc:true }); });
+if (typeof areaPages === "function") areaPages(PAGES);
 const pageOf = id => PAGES.find(p => p.id === id) || PAGES[0];
-const PARENT = { malla:"mi-malla", carrera:"carrera", ind:"industrias", eco:"herramientas", ops:"herramientas", trab:"herramientas", cal:"herramientas", io:"herramientas", seg:"herramientas", ges:"gestion", inf:"informes", learn:"aprender", sab:"saberes", des:"desarrollo", ofi:"ofimatica", rep:"informes", hub:"inicio", sim:"simuladores" };
-const TABS = [["inicio", "⌂", "Inicio"], ["mi-malla", "★", "Malla"], ["herramientas", "ƒ", "Cálculos"], ["gestion", "◫", "Gestión"], ["informes", "✎", "Informes"], ["aprender", "§", "Aprender"], ["carrera", "▣", "Carrera"]];
-const tabOf = id => { const p = pageOf(id); if (id === "inicio") return "inicio"; if (p.g === "hub") return id; if (p.g === "malla") return "mi-malla"; if (p.g === "ind" || p.g === "sim" || id === "simuladores") return "carrera"; if (p.g === "sab" || id === "saberes" || p.g === "des" || id === "desarrollo" || p.g === "ofi" || id === "ofimatica") return "aprender"; return PARENT[p.g] || "inicio"; };
+const PARENT = { malla:"mi-malla", carrera:"carrera", ind:"industrias", eco:"herramientas", ops:"herramientas", trab:"herramientas", cal:"herramientas", io:"herramientas", seg:"herramientas", ges:"gestion", inf:"informes", learn:"aprender", sab:"saberes", des:"desarrollo", ofi:"ofimatica", rep:"informes", hub:"inicio", sim:"simuladores", area:"por-area" };
+const TABS = [["inicio", "⌂", "Inicio"], ["mi-malla", "★", "Malla"], ["herramientas", "ƒ", "Cálculos"], ["por-area", "◫", "Áreas"], ["informes", "✎", "Informes"], ["aprender", "§", "Aprender"], ["carrera", "▣", "Carrera"]];
+const tabOf = id => { const p = pageOf(id); if (id === "inicio") return "inicio"; if (p.g === "area" || ["por-area", "gestion", "por-trimestre", "favoritos"].includes(id) || p.g === "ges") return id === "por-trimestre" ? "mi-malla" : "por-area"; if (p.g === "hub") return id; if (p.g === "malla") return "mi-malla"; if (p.g === "ind" || p.g === "sim" || id === "simuladores") return "carrera"; if (p.g === "sab" || id === "saberes" || p.g === "des" || id === "desarrollo" || p.g === "ofi" || id === "ofimatica") return "aprender"; return PARENT[p.g] || "inicio"; };
 
 function tile(p){ return '<button class="tile' + (S.done[p.id] ? " done" : "") + '" type="button" data-go="' + p.id + '"><span class="ti">' + esc(p.ico || "·") + '</span><span class="tt">' + p.t + (S.done[p.id] ? " ✓" : "") + '</span><span class="td">' + (p.d || "") + "</span></button>"; }
 function pgHub(h){
@@ -10575,12 +10825,12 @@ function pgHub(h){
 function pgHome(){
   const lp = S.last && PAGES.find(p => p.id === S.last && p.g !== "hub" && p.id !== "inicio");
   const nCalc = Object.keys(C).length, nDone = Object.keys(S.done).filter(k => C[k]).length, nOk = COURSES.filter(c => S.malla && S.malla[c.id]).length;
-  const M = [["mi-malla", "★", "Mi malla UNAB", COURSES.length + " ramos con apuntes por unidad · " + nOk + " aprobados"], ["herramientas", "ƒ", "Herramientas de cálculo", nCalc + " calculadoras con guía de estudio completa"], ["gestion", "◫", "Gestión y mejora", "FODA, Ishikawa, SIPOC, RACI, Lean, DMAIC, KPI"], ["informes", "✎", "Informes en Word y PDF", "Generador, plantillas, APA y memoria de cálculo" + (nDone ? " (" + nDone + " resultados)" : "")], ["industrias", "▣", "Industrias", "Minería, banca, retail, manufactura, alimentos, energía y más"], ["ofimatica", "▦", "Excel y Word profesional", "Cursos básico, avanzado y profesional con ejercicios interactivos"], ["simuladores", "▶", "Simuladores de software", "Proyectos, estadística, procesos, ERP, optimización, BI, SQL y layout, con instructivo"], ["desarrollo", "◎", "Desarrollo personal y profesional", "Vida cotidiana, hábitos, relaciones, bienestar, habilidades blandas, oratoria, libros y experiencias"], ["saberes", "⚙", "Saberes de otras áreas", "Electricidad, mecánica, mantenimiento, comercio exterior, datos e IA, casos integrados, ruta pro"], ["aprender", "§", "Aprender desde cero", "11 lecciones desde cero, historia, pensadores, formulario, glosario, tablas, normas, quiz"]];
+  const M = [["por-area", "◫", "Estudiar por área", "10 áreas de la carrera + carrera y habilidades + referencia"], ["por-trimestre", "★", "Estudiar por trimestre", "Ramos de cada trimestre con sus calculadoras y áreas"]].concat(S.fav && S.fav.length ? [["favoritos", "★", "Mis favoritos", S.fav.length + " página" + (S.fav.length === 1 ? "" : "s") + " guardada" + (S.fav.length === 1 ? "" : "s")]] : []).concat([["mi-malla", "★", "Mi malla UNAB", COURSES.length + " ramos con apuntes por unidad · " + nOk + " aprobados"], ["herramientas", "ƒ", "Herramientas de cálculo", nCalc + " calculadoras con guía de estudio completa"], ["gestion", "◫", "Gestión y mejora", "FODA, Ishikawa, SIPOC, RACI, Lean, DMAIC, KPI"], ["informes", "✎", "Informes en Word y PDF", "Generador, plantillas, APA y memoria de cálculo" + (nDone ? " (" + nDone + " resultados)" : "")], ["industrias", "▣", "Industrias", "Minería, banca, retail, manufactura, alimentos, energía y más"], ["ofimatica", "▦", "Excel y Word profesional", "Cursos básico, avanzado y profesional con ejercicios interactivos"], ["simuladores", "▶", "Simuladores de software", "Proyectos, estadística, procesos, ERP, optimización, BI, SQL y layout, con instructivo"], ["desarrollo", "◎", "Desarrollo personal y profesional", "Vida cotidiana, hábitos, relaciones, bienestar, habilidades blandas, oratoria, libros y experiencias"], ["saberes", "⚙", "Saberes de otras áreas", "Electricidad, mecánica, mantenimiento, comercio exterior, datos e IA, casos integrados, ruta pro"], ["aprender", "§", "Aprender desde cero", "11 lecciones desde cero, historia, pensadores, formulario, glosario, tablas, normas, quiz"]]);
   const top = ["van-tir", "flujo-caja", "eoq", "pronosticos", "control-xr", "capacidad", "programacion-lineal", "cpm", "balanceo", "smed", "iper", "pareto"];
   const flow = [["sipoc", "Definir"], ["descriptiva", "Medir"], ["pareto", "Priorizar"], ["ishikawa", "Analizar causas"], ["smed", "Mejorar"], ["flujo-caja", "Evaluar"], ["generador-informe", "Informar"]];
   return '<p class="eyebrow">Ingeniería Industrial · Chile</p><h1>Biblia del Ingeniero Industrial</h1><p class="lead">Estudiar, calcular, decidir y documentar en un solo lugar: tu malla con apuntes por ramo, herramientas con desarrollo paso a paso y guías de estudio, métodos de gestión, informes descargables en Word y PDF, y el conocimiento de cada industria.</p>' +
     '<div class="mob-search gsw"><input type="search" id="gsearch2" placeholder="Buscar ramo, herramienta, tema o término…" aria-label="Buscar en la app" autocomplete="off"><div id="gsres2"></div></div>' +
-    (lp ? '<button class="resume" type="button" data-go="' + lp.id + '">↻ Continuar: <b>' + esc(lp.t) + "</b></button>" : "") +
+    (typeof resumeHTML === "function" ? resumeHTML() : lp ? '<button class="resume" type="button" data-go="' + lp.id + '">↻ Continuar: <b>' + esc(lp.t) + "</b></button>" : "") +
     '<div class="mods">' + M.map(m => '<button class="mod" type="button" data-go="' + m[0] + '"><span class="mi">' + (typeof svgIco === "function" && svgIco(m[0]) || m[1]) + '</span><span class="mt">' + m[2] + '</span><span class="md">' + m[3] + "</span></button>").join("") + "</div>" +
     '<h2 class="sh">Flujo de un proyecto de mejora</h2><ol class="flow">' + flow.map((f, i) => '<li><button type="button" data-go="' + f[0] + '"><span>' + (i + 1) + "</span>" + f[1] + "</button></li>").join("") + "</ol>" +
     '<h2 class="sh">Más usadas</h2><div class="tiles">' + top.map(id => tile(pageOf(id))).join("") + "</div>" +
@@ -10695,12 +10945,12 @@ function renderSide(){
   let closed = null; try { closed = JSON.parse(localStorage.getItem(KEY + "-side2") || "null"); } catch (e) {}
   if (!closed) closed = Object.keys(GROUPS).filter(g => g !== "malla");
   const cg = pageOf(cur).g;
-  let h = '<div class="gsw"><input type="search" id="gsearch" placeholder="Buscar ramo, herramienta o término…" aria-label="Buscar en la app" autocomplete="off"><div id="gsres"></div></div><button type="button" data-go="inicio" aria-current="' + (cur === "inicio") + '"><span class="k">⌂</span>Inicio</button>';
+  let h = '<div class="gsw"><input type="search" id="gsearch" placeholder="Buscar ramo, herramienta o término…" aria-label="Buscar en la app" autocomplete="off"><div id="gsres"></div></div><button type="button" data-go="inicio" aria-current="' + (cur === "inicio") + '"><span class="k">⌂</span>Inicio</button>' + (typeof sideTopHTML === "function" ? sideTopHTML() : "");
   Object.keys(GROUPS).forEach(g => { const ps = PAGES.filter(p => p.g === g); const op = g === cg || !closed.includes(g);
     h += '<details class="sgp" data-sgp="' + g + '"' + (op ? " open" : "") + "><summary>" + GROUPS[g] + "</summary>" + ps.map(p => '<button type="button" data-go="' + p.id + '" aria-current="' + (p.id === cur) + '"><span class="k">' + (p.calc ? "ƒ" : p.tri ? "T" + p.tri : "·") + "</span>" + p.t + (S.done[p.id] || (S.malla && S.malla[p.id]) ? '<span class="done">✓</span>' : "") + "</button>").join("") + "</details>"; });
   document.getElementById("side").innerHTML = h;
   const p = pageOf(cur);
-  document.getElementById("crumb").textContent = cur === "inicio" ? "" : (GROUPS[p.g] ? GROUPS[p.g] + " › " : "") + p.t;
+  document.getElementById("crumb").innerHTML = cur === "inicio" ? "" : typeof crumbHTML === "function" ? crumbHTML(cur) : esc((GROUPS[p.g] ? GROUPS[p.g] + " › " : "") + p.t);
   document.getElementById("backBtn").hidden = cur === "inicio" && !NAV.length;
   const tb = tabOf(cur);
   document.getElementById("tabbar").innerHTML = TABS.map(t => '<button type="button" data-go="' + t[0] + '" aria-current="' + (t[0] === tb) + '"><span class="ic">' + (typeof svgIco === "function" && svgIco(t[0]) || t[1]) + "</span><span>" + t[2] + "</span></button>").join("");
