@@ -27,6 +27,7 @@
     t_corriente: "P \u2194 I, mono y trif\xE1sico",
     t_potencias: "Suma los W de un circuito",
     t_caida: "Volts perdidos en el cable",
+    demo: "Gr\xE1ficos y animaciones: ca\xEDda, protecci\xF3n, paso a paso y correcto vs incorrecto",
     t_conductor: "Secci\xF3n y tipo de cable",
     t_proteccion: "Autom\xE1tico y coordinaci\xF3n",
     t_cargas: "Varios circuitos a la vez",
@@ -42,7 +43,7 @@
     casa: "Plano, medidas y costos",
     l_comp: "Una imagen por componente"
   };
-  const ICON = { t_icc: "Icc", t_ev: "\u{1F50C}", t_fv: "\u2600", t_energia: "kWh", t_td: "TD", pan: "\u{1FAB5}", t_mom: "\u03A3IL", casa: "\u{1F4D0}", t_curvas: "\u2307", t_corriente: "A", t_potencias: "\u03A3", t_caida: "\u0394V", t_conductor: "mm\xB2", t_proteccion: "In", t_cargas: "\u2630", t_demanda: "Pd", t_puntos: "N", t_tierra: "\u23DA", t_ohm: "\u03A9", l_conceptos: "?", l_comp: "\u25E7", l_glosario: "Aa", l_tablas: "\u25A6", curso: "\u{1F393}" };
+  const ICON = { demo: "\u25B6", t_icc: "Icc", t_ev: "\u{1F50C}", t_fv: "\u2600", t_energia: "kWh", t_td: "TD", pan: "\u{1FAB5}", t_mom: "\u03A3IL", casa: "\u{1F4D0}", t_curvas: "\u2307", t_corriente: "A", t_potencias: "\u03A3", t_caida: "\u0394V", t_conductor: "mm\xB2", t_proteccion: "In", t_cargas: "\u2630", t_demanda: "Pd", t_puntos: "N", t_tierra: "\u23DA", t_ohm: "\u03A9", l_conceptos: "?", l_comp: "\u25E7", l_glosario: "Aa", l_tablas: "\u25A6", curso: "\u{1F393}" };
   function pgHubProy() {
     return hub("Instalaci\xF3n paso a paso", "Sigue los 9 pasos en orden. Cada paso usa los datos de los anteriores.", PAGES.filter((p) => p.g === "proy").map((p) => Object.assign({ d: DESC[p.id] }, p)));
   }

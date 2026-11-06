@@ -18,7 +18,7 @@ rep("</style>\n", "body.lite .gsw,body.lite [data-pn=\"close\"]{display:none!imp
 LITE = r'''
   {
     document.body.classList.add("lite");
-    const keep = new Set(["home", "tg", "sim", "pan", "hub_calc", "t_corriente", "t_ohm", "t_potencias", "t_caida", "t_mom", "t_conductor", "t_proteccion", "t_curvas"]);
+    const keep = new Set(["home", "tg", "sim", "pan", "hub_calc", "t_corriente", "t_ohm", "t_potencias", "t_caida", "t_mom", "t_conductor", "t_proteccion", "t_curvas", "demo"]);
     for (let i = PAGES.length - 1; i >= 0; i--) if (!keep.has(PAGES[i].id)) PAGES.splice(i, 1);
     Object.keys(GROUPS).forEach((k) => {
       if (!PAGES.some((p) => p.g === k)) delete GROUPS[k];

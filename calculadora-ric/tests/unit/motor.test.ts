@@ -189,3 +189,26 @@ describe("Materiales del proyecto", () => {
     expect(B.filter((b) => b.k === "tm").reduce((a, b) => a + b.q, 0)).toBe(3);
   });
 });
+
+import { serieCaida, largoMaxCaida, coordinacion, sobrecargaSinDisparo } from "../../src/engine";
+describe("Demostraciones", () => {
+  const p = { k: 2, rho: 0.018, I: 10, Vref: 220 };
+  it("la caída crece en línea recta con el largo", () => {
+    const s = serieCaida(p, 2.5, 50, 5);
+    expect(s[0].pct).toBe(0);
+    expect(s[5].pct).toBeCloseTo((2 * 0.018 * 50 * 10) / 2.5 / 2.2, 9);
+    expect(s[4].pct / s[2].pct).toBeCloseTo(2, 9);
+  });
+  it("largo máximo al 3 % con 2,5 mm² y 10 A ≈ 45,8 m", () => {
+    expect(largoMaxCaida(p, 2.5, 3)).toBeCloseTo((0.03 * 220 * 2.5) / (2 * 0.018 * 10), 9);
+    expect(largoMaxCaida(p, 5, 3)).toBeCloseTo(2 * largoMaxCaida(p, 2.5, 3), 9);
+  });
+  it("coordinación Is ≤ In ≤ Iz", () => {
+    expect(coordinacion(9.09, 16, 18)).toMatchObject({ okCarga: true, okCable: true });
+    expect(coordinacion(9.09, 16, 14).okCable).toBe(false);
+    expect(coordinacion(15, 16, 18).okCarga).toBe(false);
+  });
+  it("cable de 14 A con automático de 16 A queda desprotegido", () => {
+    expect(sobrecargaSinDisparo(16, 14)).toEqual({ Ilim: 16 * 1.45, excedeCable: true });
+  });
+});

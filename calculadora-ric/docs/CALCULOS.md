@@ -26,6 +26,17 @@ es exigencia textual de los pliegos y se puede cambiar.
 | Colores de conductores        | `RIC.colores`            | Fase 1 azul, fase 2 negro, fase 3 rojo, neutro blanco, PE verde o verde/amarillo    | RIC N°04, 5.32                              |
 | Resistividad del cobre        | parámetro `rho`          | 0,018 Ω·mm²/m (criterio usual); 100 % IACS = 0,01724 a 20 °C                        | RIC N°04, Tabla 4.1                         |
 
+## Demostraciones (`src/engine/demos.ts`)
+
+| Función                | Qué entrega                                                              | Referencia                  |
+| ---------------------- | ------------------------------------------------------------------------ | --------------------------- |
+| `serieCaida`           | Puntos (L, ΔV %) para graficar la caída a lo largo del tramo             | RIC N°03, 5.1.3             |
+| `largoMaxCaida`        | L máx = lím/100 · V · S / (k · ρ · I)                                    | RIC N°03, 5.1.3             |
+| `coordinacion`         | Is ≤ In ≤ Iz con In ≥ 1,1 · Is                                           | RIC N°10, 5.1.4.1 y 5.1.5.1 |
+| `sobrecargaSinDisparo` | 1,45 · In (corriente convencional de disparo, IEC 60898) frente al cable | Criterio usual (IEC)        |
+
+Los casos «correcto vs incorrecto» que usan fugas de 7 mA o 100 mA lo indican en pantalla como valores ilustrativos.
+
 ## Pendiente de confirmar o parametrizado
 
 - Diámetros exteriores de cables y diámetros interiores de tubos: valores de catálogo, no normativos.

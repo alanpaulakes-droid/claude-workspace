@@ -172,6 +172,53 @@ try {
     await ctx.close();
   }
 
+  // 3c. Demostraciones interactivas
+  {
+    const p = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(URL);
+    await goPage(p, "t_caida");
+    await p.waitForTimeout(200);
+    await p.click(".demo-link");
+    await p.waitForTimeout(300);
+    const before = await p.evaluate(() => document.querySelector('[data-k="mk"]').getAttribute("cy"));
+    await p.evaluate(() => {
+      const r = document.getElementById("dm_L");
+      r.value = 80;
+      r.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await p.waitForTimeout(200);
+    const after = await p.evaluate(() => document.querySelector('[data-k="mk"]').getAttribute("cy"));
+    check("Demo caída: el gráfico responde al largo", +after < +before, `${before} → ${after}`);
+    await p.click('[data-dmt="proteccion"]');
+    await p.selectOption("#dm_Sp", "1.5");
+    await p.waitForTimeout(200);
+    const warn = await p.evaluate(
+      () =>
+        /Iz ≥ In/.test(document.getElementById("dminfo").innerText) &&
+        !!document.querySelector("#dminfo .chk li:not(.ok)"),
+    );
+    check("Demo protección: detecta cable menor que la protección", warn);
+    await p.click('[data-dmt="pasos"]');
+    await p.click('[data-dmp="all"]');
+    await p.waitForTimeout(200);
+    check("Demo paso a paso: 6 pasos visibles", (await p.$$eval(".dmstep.show", (x) => x.length)) === 6);
+    await p.click('[data-dmt="comparar"]');
+    let n = 0;
+    for (const k of ["cable", "dr", "pe", "caida", "ducto", "drn"]) {
+      await p.click(`[data-dmesc="${k}"]`);
+      n += await p.$$eval(".dmside", (x) => x.length);
+    }
+    await p.click('[data-dmp="fallo"]');
+    check(
+      "Demo correcto vs incorrecto: 6 casos y simulación",
+      n === 12 && !!(await p.$(".dmside.fallo")) && !errs.length,
+      errs.join(" | "),
+    );
+    await p.close();
+  }
+
   // 4. Armar tablero: soluciones de los niveles aprueban
   {
     const p = await browser.newPage({ viewport: { width: 1280, height: 900 } });

@@ -8,3 +8,4 @@ export * from "./caida";
 export * from "./tierra";
 export * from "./cortocircuito";
 export * from "./materiales";
+export * from "./demos";

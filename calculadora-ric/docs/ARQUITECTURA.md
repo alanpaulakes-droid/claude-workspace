@@ -29,29 +29,30 @@ const chooseS = (o) => RICEngine.chooseS(Object.assign({ amp: S.amp }, o));
 
 ## Secciones de la interfaz (`src/app`)
 
-| Archivo                        | Contenido                                                                                |
-| ------------------------------ | ---------------------------------------------------------------------------------------- |
-| `00-nucleo.js`                 | Estado, guardado, migración, utilidades de formato y formularios, circuitos              |
-| `01-proyecto.js`               | Páginas del proyecto en 8 etapas                                                         |
-| `02-calculadoras.js`           | Calculadoras básicas, glosario y tablas                                                  |
-| `03-cuadro.js`                 | Cuadro de carga                                                                          |
-| `04-portadas-ilustraciones.js` | Portadas y figuras explicativas                                                          |
-| `05-modelo-vivienda.js`        | Modelo de la vivienda y del simulador, evaluación eléctrica                              |
-| `06-sim-cableado.js`           | Cableado, cajas, ductos, mediciones y colocación                                         |
-| `07-sim-inspector.js`          | Inspector RIC, desafíos y barra de colocación                                            |
-| `08-panel-practica.js`         | Pared de práctica y examen práctico                                                      |
-| `09-sim-interfaz.js`           | Hojas, errores, pantalla completa, carga diferida de three.js                            |
-| `10-sim-3d.js`                 | Escena 3D (cámara, materiales, construcción de la escena)                                |
-| `11-sim-eventos.js`            | Eventos táctiles y de teclado del 3D                                                     |
-| `12-calculadoras-avanzadas.js` | Curvas, factores, cortocircuito, EV, FV, energía, subtablero, momentos                   |
-| `13-reportes.js`               | Plantillas, informes, materiales, plano, memoria, autopruebas                            |
-| `14-juego-tablero.js`          | Juego «Armar tablero»                                                                    |
-| `15-curso.js`                  | Curso, quiz y ejercicios                                                                 |
-| `16-precios-vivienda.js`       | Precios en CLP y diseñador de vivienda                                                   |
-| `17-informe-etapas.js`         | Informe técnico, lámina SEC y etapas                                                     |
-| `18-navegacion.js`             | Páginas, navegación, render, validación en vivo y eventos globales                       |
-| `19-asistente.js`              | Asistente guiado (7 pasos), resultados, unilineal del proyecto, materiales y exportación |
-| `99-inicio.js`                 | Arranque: idioma, enlace «Saltar al contenido», registro de la PWA y primer render       |
+| Archivo                        | Contenido                                                                                                |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `00-nucleo.js`                 | Estado, guardado, migración, utilidades de formato y formularios, circuitos                              |
+| `01-proyecto.js`               | Páginas del proyecto en 8 etapas                                                                         |
+| `02-calculadoras.js`           | Calculadoras básicas, glosario y tablas                                                                  |
+| `03-cuadro.js`                 | Cuadro de carga                                                                                          |
+| `04-portadas-ilustraciones.js` | Portadas y figuras explicativas                                                                          |
+| `05-modelo-vivienda.js`        | Modelo de la vivienda y del simulador, evaluación eléctrica                                              |
+| `06-sim-cableado.js`           | Cableado, cajas, ductos, mediciones y colocación                                                         |
+| `07-sim-inspector.js`          | Inspector RIC, desafíos y barra de colocación                                                            |
+| `08-panel-practica.js`         | Pared de práctica y examen práctico                                                                      |
+| `09-sim-interfaz.js`           | Hojas, errores, pantalla completa, carga diferida de three.js                                            |
+| `10-sim-3d.js`                 | Escena 3D (cámara, materiales, construcción de la escena)                                                |
+| `11-sim-eventos.js`            | Eventos táctiles y de teclado del 3D                                                                     |
+| `12-calculadoras-avanzadas.js` | Curvas, factores, cortocircuito, EV, FV, energía, subtablero, momentos                                   |
+| `13-reportes.js`               | Plantillas, informes, materiales, plano, memoria, autopruebas                                            |
+| `14-juego-tablero.js`          | Juego «Armar tablero»                                                                                    |
+| `15-curso.js`                  | Curso, quiz y ejercicios                                                                                 |
+| `16-precios-vivienda.js`       | Precios en CLP y diseñador de vivienda                                                                   |
+| `17-informe-etapas.js`         | Informe técnico, lámina SEC y etapas                                                                     |
+| `18-navegacion.js`             | Páginas, navegación, render, validación en vivo y eventos globales                                       |
+| `19-asistente.js`              | Asistente guiado (7 pasos), resultados, unilineal del proyecto, materiales y exportación                 |
+| `20-demos.js`                  | Demostraciones: caída vs distancia, corriente vs protección, paso a paso animado, correcto vs incorrecto |
+| `99-inicio.js`                 | Arranque: idioma, enlace «Saltar al contenido», registro de la PWA y primer render                       |
 
 Las secciones comparten una sola clausura (se concatenan en orden numérico), así que el orden importa: una
 sección puede usar lo declarado en otra solo después de que la app terminó de cargar.
