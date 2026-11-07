@@ -56,3 +56,9 @@ Requieren Node y Playwright con Chromium, más `npm install` dentro de `tests/` 
 | `pend.js` | bloques pendientes por tema | `con pendientes 0` |
 | `kx5.js ruta/katex.min.js ids` | fórmulas TeX de los temas indicados | `bad 0` |
 | `txt5.js`, `sp5.py` | extracción de texto y revisión ortográfica | lista de candidatos |
+
+## App instalable (PWA)
+
+`build.sh` también genera `biblia/` en la raíz del repositorio: `index.html` (la misma app, con manifiesto e íconos), `manifest.webmanifest`, `sw.js` (funcionamiento sin conexión) e íconos (`icon-180/192/512.png`, fuente en `pwa/icon.svg`).
+Para instalarla, la carpeta `biblia/` debe publicarse por HTTPS (por ejemplo, GitHub Pages) y abrirse en el celular: Chrome muestra «Instalar app»; en iPhone, Safari → Compartir → «Agregar a pantalla de inicio».
+Al publicar una versión nueva, sube el número de `CACHE` en `pwa/sw.js` si cambian los íconos o el manifiesto (el HTML se actualiza solo).
