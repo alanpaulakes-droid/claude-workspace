@@ -38,7 +38,7 @@
     regs.forEach(function(r){
       var url=(r.active&&r.active.scriptURL)||(r.installing&&r.installing.scriptURL)||(r.waiting&&r.waiting.scriptURL)||'';
       // sólo SW de la raíz (no los que ya viven en /orbita/ o /estudio/)
-      if(/\/sw\.js$/.test(url) && url.indexOf('/orbita/')===-1 && url.indexOf('/estudio/')===-1){
+      if(/\/sw\.js$/.test(url) && r.scope===new URL('./',location.href).href){
         jobs.push(r.unregister());
       }
     });
