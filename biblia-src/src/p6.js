@@ -97,14 +97,14 @@ def("huella", "seg", {
   t:"Huella de carbono (alcances 1 y 2)", ico:"CO₂", d:"Emisiones de GEI por combustibles y electricidad, intensidad por unidad producida",
   ey:"Gestión ambiental · GHG Protocol / HuellaChile",
   lead:"Estima las emisiones directas (alcance 1) e indirectas por electricidad (alcance 2) de una planta.",
-  f:[MAT("m", "Fuente ; cantidad ; unidad ; factor (kg CO₂e por unidad) ; alcance", "Electricidad SEN;420000;kWh;0.30;2\nPetróleo diésel (grupos y grúas);18000;L;2.68;1\nGas licuado (GLP);6500;kg;2.94;1\nGas natural (calderas);22000;m3;1.96;1\nGasolina (vehículos);3500;L;2.31;1"), F("prod", "Producción del período", 150000, { u:"unidades" })],
+  f:[MAT("m", "Fuente ; cantidad ; unidad ; factor (kg CO₂e por unidad) ; alcance", "Electricidad SEN;420000;kWh;0.2421;2\nPetróleo diésel (grupos y grúas);18000;L;2.68;1\nGas licuado (GLP);6500;kg;2.94;1\nGas natural (calderas);22000;m3;1.96;1\nGasolina (vehículos);3500;L;2.31;1"), F("prod", "Producción del período", 150000, { u:"unidades" })],
   c(v){
     const R = rows(v.m).map(r => ({ nm:r[0], q:num(r[1]), u:r[2] || "", f:num(r[3]), a:num(r[4]) || 1 })); if (!R.length || R.some(r => !fin(r.q) || !fin(r.f))) fail("Cada fuente necesita cantidad y factor numéricos.");
     R.forEach(r => r.e = r.q * r.f / 1000); const T = sum(R.map(r => r.e)), A1 = sum(R.filter(r => r.a === 1).map(r => r.e)), A2 = sum(R.filter(r => r.a === 2).map(r => r.e)), pr = opt(v, "prod");
     let h = kpis([kpi("Emisiones totales", nf(T, 1), "t CO₂e", "hi"), kpi("Alcance 1", nf(A1, 1), "t CO₂e"), kpi("Alcance 2", nf(A2, 1), "t CO₂e"), kpi("Intensidad", pr ? nf(T * 1e6 / pr, 1) : "—", "g CO₂e por unidad")]);
     h += table(["Fuente", "Cantidad", "Factor", "Alcance", "t CO₂e", "%"], R.sort((a, b) => b.e - a.e).map(r => [esc(r.nm), n0(r.q) + " " + esc(r.u), nf(r.f, 3), r.a, nf(r.e, 2), pc(r.e / T)]), { num:[2, 3, 4, 5] });
     h += steps([{ t:"Emisiones por fuente", f:"Emisiones (t CO₂e) = Dato de actividad × Factor de emisión ÷ 1.000", why:"el alcance 3 (cadena de suministro, transporte de terceros, viajes) suele ser el mayor, pero requiere datos de proveedores." }]);
-    h += note("Los factores precargados son referenciales. Usa el factor del Sistema Eléctrico Nacional publicado para el año evaluado (Coordinador Eléctrico / HuellaChile) y los factores nacionales de combustibles vigentes.", "info");
+    h += note("El factor eléctrico precargado (0,2421 kg CO₂e/kWh) es el promedio del Sistema Eléctrico Nacional 2023 publicado por HuellaChile; para 2024 Cochilco informa 0,2017. Usa el del año evaluado. Los factores de combustibles son referenciales: reemplázalos por los de la tabla vigente de HuellaChile.", "info");
     return h;
   },
   rel:["accidentabilidad"]
