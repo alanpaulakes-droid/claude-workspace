@@ -198,13 +198,13 @@ T2["stock-seguridad"] = {
 function t2Blocks(id){
   const x = T2[id]; if (!x) return null; const B = {}, pre = x.tema ? x.tema + " · " : "";
   const mk = (t, h, open) => { const d = document.createElement("details"); d.className = "item t2"; if (open) d.open = true; d.innerHTML = "<summary>" + pre + t + '</summary><div class="body prose">' + h + "</div>"; return d; };
-  B.def = [mk("Definición", x.def)];
-  B.con = [mk("Conceptos clave", x.con)];
+  if (x.def) B.def = [mk("Definición", x.def)];
+  if (x.con) B.con = [mk("Conceptos clave", x.con)];
   const fv = n => esc(n).replace(/_\(?([A-Za-z0-9áéíóú,−\-]+)\)?/g, "<sub>$1</sub>").replace(/\^([0-9*]+)/g, "<sup>$1</sup>");
-  B.fx = [mk("Fórmulas clave y por qué funcionan", x.fx.map(f => UI.formula(f[0], f[1], f[2], (f[3] || []).map(v => [fv(v[0]), v[1]]), f[4])).join(""))];
-  B.met = [mk("Método paso a paso", x.met)];
-  B.ej = [mk("Ejemplo básico: " + x.ejB[0], x.ejB[1])].concat((Array.isArray(x.ejA[0]) ? x.ejA : [x.ejA]).map(e => mk("Ejemplo avanzado: " + e[0], e[1])));
-  B.err = [mk("Errores comunes", x.err)];
-  B.ejer = [mk("Ejercicio con pistas", UI.ejercicio(x.ejer[0], [x.ejer[1], x.ejer[2]], x.ejer[3]))];
-  B.fic = [mk("Ficha resumen", UI.ficha(x.fic))];
+  if (x.fx && x.fx.length) B.fx = [mk("Fórmulas clave y por qué funcionan", x.fx.map(f => UI.formula(f[0], f[1], f[2], (f[3] || []).map(v => [fv(v[0]), v[1]]), f[4])).join(""))];
+  if (x.met) B.met = [mk("Método paso a paso", x.met)];
+  if (x.ejB) B.ej = [mk("Ejemplo básico: " + x.ejB[0], x.ejB[1])].concat((!x.ejA ? [] : Array.isArray(x.ejA[0]) ? x.ejA : [x.ejA]).map(e => mk("Ejemplo avanzado: " + e[0], e[1])));
+  if (x.err) B.err = [mk("Errores comunes", x.err)];
+  if (x.ejer) B.ejer = [mk("Ejercicio con pistas", UI.ejercicio(x.ejer[0], [x.ejer[1], x.ejer[2]], x.ejer[3]))];
+  if (x.fic) B.fic = [mk("Ficha resumen", UI.ficha(x.fic))];
   return B; }
