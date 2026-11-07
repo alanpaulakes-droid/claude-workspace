@@ -1,5 +1,6 @@
 /* ---------------- SEGURIDAD, SALUD Y MEDIO AMBIENTE ---------------- */
-const DS67 = [[32, 0], [50, 0.34], [70, 0.68], [90, 1.02], [110, 1.36], [130, 1.70], [150, 2.04], [170, 2.38], [190, 2.72], [210, 3.06], [230, 3.40], [255, 3.74], [280, 4.08], [305, 4.42], [330, 4.76], [355, 5.10], [380, 5.44], [405, 5.78], [430, 6.12], [455, 6.46], [Infinity, 6.80]];
+/* Tabla del art. 5.° del DS 67 de 1999 (MINTRAB), verificada en el Compendio de Normas de SUSESO: tasa de siniestralidad total → cotización adicional (%) */
+const DS67 = [[32, 0], [64, 0.34], [96, 0.68], [128, 1.02], [160, 1.36], [192, 1.70], [224, 2.04], [272, 2.38], [320, 2.72], [368, 3.06], [416, 3.40], [464, 3.74], [512, 4.08], [560, 4.42], [630, 4.76], [700, 5.10], [770, 5.44], [840, 5.78], [910, 6.12], [980, 6.46], [Infinity, 6.80]];
 def("accidentabilidad", "seg", {
   t:"Indicadores de accidentabilidad", ico:"TA", d:"Tasa de accidentabilidad, siniestralidad, índices de frecuencia y gravedad (Ley 16.744)",
   ey:"Prevención de riesgos · Ley 16.744 y DS 67",

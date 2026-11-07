@@ -33,6 +33,7 @@ Todo el código corre dentro de una sola función `(() => { … })();`: los nomb
 | `wb2.js` | F3: 33 pruebas con resultado conocido (`TEST3`) |
 | `wc1.js` | F4: Ishikawa, red CPM, controles deslizantes, recálculo en vivo |
 | `wc2.js` | F5: exportar fichas, formulario y glosario; impresión; accesibilidad |
+| `wd5.js` | Ramos dictados en varios trimestres (Inglés I a IV en 3.° a 6.°), según la malla oficial 2026 |
 | `wd1.js` – `wd4.js` | Bloques que faltaban en los temas (Fundamentos, ramos, saberes, desarrollo personal, gestión, informes, ofimática). Registros `T2` parciales: solo agregan bloques |
 | `p8.js` | Páginas, navegación, eventos y `render()` (va al final) |
 

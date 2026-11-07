@@ -2457,7 +2457,8 @@ def("simulacion-mc", "io", {
   rel:["van-tir", "flujo-caja", "decisiones"]
 });
 /* ---------------- SEGURIDAD, SALUD Y MEDIO AMBIENTE ---------------- */
-const DS67 = [[32, 0], [50, 0.34], [70, 0.68], [90, 1.02], [110, 1.36], [130, 1.70], [150, 2.04], [170, 2.38], [190, 2.72], [210, 3.06], [230, 3.40], [255, 3.74], [280, 4.08], [305, 4.42], [330, 4.76], [355, 5.10], [380, 5.44], [405, 5.78], [430, 6.12], [455, 6.46], [Infinity, 6.80]];
+/* Tabla del art. 5.° del DS 67 de 1999 (MINTRAB), verificada en el Compendio de Normas de SUSESO: tasa de siniestralidad total → cotización adicional (%) */
+const DS67 = [[32, 0], [64, 0.34], [96, 0.68], [128, 1.02], [160, 1.36], [192, 1.70], [224, 2.04], [272, 2.38], [320, 2.72], [368, 3.06], [416, 3.40], [464, 3.74], [512, 4.08], [560, 4.42], [630, 4.76], [700, 5.10], [770, 5.44], [840, 5.78], [910, 6.12], [980, 6.46], [Infinity, 6.80]];
 def("accidentabilidad", "seg", {
   t:"Indicadores de accidentabilidad", ico:"TA", d:"Tasa de accidentabilidad, siniestralidad, índices de frecuencia y gravedad (Ley 16.744)",
   ey:"Prevención de riesgos · Ley 16.744 y DS 67",
@@ -5178,7 +5179,7 @@ function pgMalla(){
   const ok = COURSES.filter(c => S.malla[c.id]).length;
   let h = pg("Mi carrera · Ingeniería Industrial Advance (UNAB)", "Mi malla curricular", "Los ramos de tu programa ordenados por trimestre. Cada ramo abre apuntes por unidad, herramientas para practicar y bibliografía. Marca los aprobados para seguir tu avance.",
     kpis([kpi("Ramos en la malla", COURSES.length), kpi("Aprobados", ok, "", "ok"), kpi("Avance", pc(ok / COURSES.length, 0), "", "hi")]));
-  h += '<div class="malla">' + [1, 2, 3, 4, 5, 6, 7, 8].map(t => '<div class="mcol"><div class="mhead">' + t + "° trimestre</div>" + COURSES.filter(c => c.tri === t).map(c => '<div class="mcell' + (S.malla[c.id] ? " ok" : "") + '"><button type="button" class="linkb" data-go="' + c.id + '">' + c.t + '</button><label class="mchk"><input type="checkbox" data-malla="' + c.id + '"' + (S.malla[c.id] ? " checked" : "") + "> Aprobado</label></div>").join("") + "</div>").join("") + "</div>";
+  h += '<div class="malla">' + [1, 2, 3, 4, 5, 6, 7, 8].map(t => '<div class="mcol"><div class="mhead">' + t + "° trimestre</div>" + COURSES.filter(c => inTri(c, t)).map(c => c.tri !== t ? '<div class="mcell' + (S.malla[c.id] ? " ok" : "") + '"><button type="button" class="linkb" data-go="' + c.id + '">' + triName(c, t) + '</button><span class="hint">Se marca en el ' + c.tri + "° trimestre</span></div>" : '<div class="mcell' + (S.malla[c.id] ? " ok" : "") + '"><button type="button" class="linkb" data-go="' + c.id + '">' + triName(c, t) + '</button><label class="mchk"><input type="checkbox" data-malla="' + c.id + '"' + (S.malla[c.id] ? " checked" : "") + "> Aprobado</label></div>").join("") + "</div>").join("") + "</div>";
   h += note("Malla basada en la publicada por UNAB Online para Ingeniería Industrial Advance (sujeta a cambios por la universidad). Inglés I a IV se agrupan en una sola página de inglés técnico.", "info");
   return h;
 }
@@ -10696,10 +10697,10 @@ function pgPorArea(){
       return '<button class="area-c" type="button" data-go="' + AREA_ID(a) + '"><span class="area-n">' + String.fromCharCode(97 + i) + '</span><span class="area-t">' + a[1] + '</span><span class="area-d">' + a[2] + '</span><span class="area-m">' + [[c("ramo"), "ramos"], [c("teo"), "temas"], [c("calc"), "calculadoras"], [c("sim"), "simuladores"]].filter(x => x[0]).map(x => x[0] + " " + x[1]).join(" · ") + "</span></button>"; }).join("") + "</div>"; }
 function pgPorTrimestre(){
   S.malla = S.malla || {}; let t = +(S.triSel || 1); if (!(t >= 1 && t <= 8)) t = 1;
-  const cs = COURSES.filter(c => c.tri === t);
+  const cs = COURSES.filter(c => inTri(c, t));
   return '<p class="eyebrow">Navegación</p><h1>Estudiar por trimestre</h1><p class="lead">Elige el trimestre que estás cursando: verás sus ramos y, para cada uno, las calculadoras y las áreas donde se profundiza.</p>' +
-    '<div class="quick" role="tablist" aria-label="Trimestre">' + [1, 2, 3, 4, 5, 6, 7, 8].map(n => '<button class="chip" type="button" role="tab" data-tri="' + n + '" aria-selected="' + (n === t) + '">' + n + "° <span>" + COURSES.filter(c => c.tri === n).length + "</span></button>").join("") + "</div>" +
-    cs.map(c => { const ar = areasOf(c.id); return '<section class="card tri-c"><div class="tri-h"><button class="linkb tri-t" type="button" data-go="' + c.id + '">' + c.t + "</button>" + (S.malla[c.id] ? '<span class="pill ok">Aprobado</span>' : "") + '</div><p class="hint" style="margin:2px 0 10px">' + c.d + "</p>" +
+    '<div class="quick" role="tablist" aria-label="Trimestre">' + [1, 2, 3, 4, 5, 6, 7, 8].map(n => '<button class="chip" type="button" role="tab" data-tri="' + n + '" aria-selected="' + (n === t) + '">' + n + "° <span>" + COURSES.filter(c => inTri(c, n)).length + "</span></button>").join("") + "</div>" +
+    cs.map(c => { const ar = areasOf(c.id); return '<section class="card tri-c"><div class="tri-h"><button class="linkb tri-t" type="button" data-go="' + c.id + '">' + triName(c, t) + "</button>" + (S.malla[c.id] ? '<span class="pill ok">Aprobado</span>' : "") + '</div><p class="hint" style="margin:2px 0 10px">' + c.d + "</p>" +
       ((c.tools || []).length ? '<div class="quick"><span class="qlab">Practica con</span>' + c.tools.filter(x => PAGES.find(p => p.id === x)).map(x => '<button class="chip" type="button" data-go="' + x + '">' + pageOf(x).t + "</button>").join("") + "</div>" : "") +
       (ar.length ? '<div class="quick"><span class="qlab">Área</span>' + ar.map(a => '<button class="chip" type="button" data-go="' + AREA_ID(a) + '">' + a[1] + "</button>").join("") + "</div>" : "") + "</section>"; }).join("") +
     '<p class="hint">Para marcar ramos aprobados usa ' + '<button class="linkb" type="button" data-go="mi-malla">Mi malla</button>.</p>'; }
@@ -11907,7 +11908,7 @@ T2["iper"] = {
 
 /* ---------------- INDICADORES DE ACCIDENTABILIDAD ---------------- */
 T2["accidentabilidad"] = {
-  def:"<p>Los <b>indicadores de accidentabilidad</b> miden cuántos accidentes ocurren y qué tan graves son, para comparar en el tiempo, entre áreas y con el sector. En Chile, bajo la Ley 16.744, las mutualidades y el ISL usan la tasa de siniestralidad para fijar la <b>cotización adicional diferenciada</b> de cada empresa (DS 67; verificar el procedimiento vigente con la mutualidad).</p>",
+  def:"<p>Los <b>indicadores de accidentabilidad</b> miden cuántos accidentes ocurren y qué tan graves son, para comparar en el tiempo, entre áreas y con el sector. En Chile, bajo la Ley 16.744, las mutualidades y el ISL usan la tasa de siniestralidad para fijar la <b>cotización adicional diferenciada</b> de cada empresa (DS 67 de 1999: la tasa de siniestralidad total se ubica en una tabla de tramos que va de 0 % a 6,8 % de cotización adicional).</p>",
   con:q9dl([["Accidente con tiempo perdido", "Genera al menos un día de reposo (incapacidad temporal)."], ["Tasa de accidentabilidad", "Accidentes por cada 100 trabajadores en el período."], ["Tasa de siniestralidad temporal", "Días perdidos por cada 100 trabajadores."], ["Índice de frecuencia (IF)", "Accidentes por millón de horas trabajadas: compara empresas con distintas jornadas."], ["Índice de gravedad (IG)", "Días perdidos por millón de horas trabajadas."], ["Indicadores reactivos y proactivos", "Los reactivos cuentan daños ya ocurridos; los proactivos miden acciones preventivas (inspecciones, observaciones, capacitación)."]]),
   fx:[["Tasas por 100 trabajadores", "TA=\\frac{\\text{accidentes}}{\\text{trabajadores}}\\times 100,\\qquad TS=\\frac{\\text{días perdidos}}{\\text{trabajadores}}\\times 100", "TA = accidentes ÷ trabajadores × 100 ;  TS = días perdidos ÷ trabajadores × 100", [], "<p>Dividir por el número de trabajadores permite comparar empresas de distinto tamaño: 5 accidentes no son lo mismo en 50 que en 500 personas.</p>"],
       ["Índices por millón de horas", "IF=\\frac{\\text{accidentes}\\times 10^6}{HH},\\qquad IG=\\frac{\\text{días perdidos}\\times 10^6}{HH}", "IF = accidentes × 10⁶ ÷ HH ;  IG = días × 10⁶ ÷ HH", [["HH", "horas-hombre trabajadas = trabajadores × horas por trabajador"]], "<p>Las horas trabajadas reflejan mejor la exposición que el número de personas (turnos largos, horas extra). Un millón de horas equivale aproximadamente a 500 personas trabajando un año.</p>"]],
@@ -13255,6 +13256,12 @@ T2["word-pro"] = {
   met:"<p><b>Cómo automatizar un documento repetitivo.</b></p>" + q9ol(["Identifica qué partes cambian y cuáles se mantienen.", "Crea una plantilla (.dotx) con estilos, logo y textos fijos.", "Define el origen de los datos (lista de Excel con encabezados claros).", "Inserta campos de combinación o controles de contenido en las partes variables.", "Prueba con pocos registros y revisa los resultados.", "Genera todos los documentos y guarda la plantilla para la próxima vez."]),
   err:q9ul(["<b>Partir de un documento antiguo</b> en vez de una plantilla limpia.", "<b>Usar una lista de Excel con celdas combinadas</b> o encabezados repetidos.", "<b>No revisar el formato de números y fechas</b> en la combinación.", "<b>Pegar tablas de Excel como imagen</b> cuando deben actualizarse.", "<b>Ejecutar macros de origen desconocido.</b>"])
 };
+/* ============ MALLA: RAMOS QUE SE DICTAN EN VARIOS TRIMESTRES ============
+   Verificado con la malla oficial UNAB Advance de Ingeniería Industrial (PDF publicado en 2026, «malla sujeta a modificaciones»):
+   Inglés I, II, III y IV se dictan en los trimestres 3, 4, 5 y 6. En la app es un solo ramo que aparece en esos cuatro trimestres. */
+function inTri(c, t){ return c.tri === t || (!!c.tris && c.tris.indexOf(t) >= 0); }
+function triName(c, t){ return c.lv && c.lv[t] ? c.lv[t] : c.t; }
+(() => { const ci = COURSES.find(c => c.id === "ramo-ingles"); if (ci) { ci.tris = [3, 4, 5, 6]; ci.lv = { 3:"Inglés I (inglés técnico)", 4:"Inglés II (inglés técnico)", 5:"Inglés III (inglés técnico)", 6:"Inglés IV (inglés técnico)" }; } })();
 /* ============ PÁGINAS Y NAVEGACIÓN ============ */
 const GROUPS = { malla:"Mi malla (UNAB)", carrera:"Carrera y trabajo", eco:"Economía y finanzas", ops:"Producción y logística", trab:"Estudio del trabajo", cal:"Calidad y estadística", io:"Investigación de operaciones", seg:"Seguridad y ambiente", ges:"Gestión y mejora", inf:"Informes", rep:"Reportes", ind:"Industrias", sab:"Saberes de otras disciplinas", des:"Desarrollo personal y profesional", ofi:"Excel y Word", learn:"Aprender", sim:"Simuladores de software" };
 const indId = x => "ind-" + x[0].normalize("NFD").replace(/[̀-ͯ]/g, "");
