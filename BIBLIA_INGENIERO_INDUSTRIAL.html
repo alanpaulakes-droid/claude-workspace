@@ -605,6 +605,16 @@ ol.tpl8{columns:2;column-gap:28px;padding-left:1.4em}ol.tpl8 li{break-inside:avo
 [id^="t8r-"]{scroll-margin-top:80px}
 @media (max-width:640px){.t8-nav{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media print{.t8-nav,.t8-pend{display:none!important}}
+
+/* ===== F4: diagramas e interactividad ===== */
+svg .zn{stroke:var(--line2);stroke-width:1;stroke-dasharray:2 4}
+svg .dlab{fill:var(--muted)}
+.isl,.qsl{border:1px solid var(--line);border-radius:10px;background:var(--surface2);padding:10px 14px;margin:-6px 0 16px}
+.isl label,.qsl label{font-size:14px;display:block;margin-bottom:4px}
+.isl input[type=range],.qsl input[type=range]{width:100%;accent-color:var(--blue);padding:0;background:none;border:0}
+.isl .hint,.qsl .hint{margin:4px 0 0}
+.livechk{font-weight:500;font-size:13.5px;color:var(--muted);margin-left:auto}
+@media (max-width:640px){.livechk{margin-left:0}}
 </style>
 
 <header class="top"><div class="top-in">
@@ -1623,6 +1633,7 @@ def("eoq", "ops", {
       h += h3("Descuentos por cantidad") + table(["Desde", "Precio", "Q* del tramo", "Q ajustado", "Costo total"], ev.map(e => rowc([n0(e.r[0]), money(e.r[1]), n0(e.q0), n0(e.q), money(e.ct)], e === bb ? "sel" : "")), { num:[0, 1, 2, 3, 4] }) + note("Con descuentos conviene pedir <b>" + n0(bb.q) + " unidades</b> a " + money(bb.r[1]) + " (costo total " + money(bb.ct) + ").", "ok"); }
     const pts1 = [], pts2 = [], pts3 = []; for (let k = 1; k <= 40; k++) { const q = Q * 3 * k / 40; pts1.push([q, D / q * S0]); pts2.push([q, H * q * fac / 2]); pts3.push([q, D / q * S0 + H * q * fac / 2]); }
     h += chart({ title:"Curva de costos", series:[{ pts:pts1, cls:"s1" }, { pts:pts2, cls:"s2" }, { pts:pts3, cls:"s3" }], v:[{ x:Q, cls:"sb", lbl:"Q*" }], ymax:pts3[3][1], xlab:"Tamaño de lote Q", ylab:"$/año", legend:[["--blue", "Costo de pedir"], ["--copper", "Costo de mantener"], ["--ok", "Total"]] });
+    h += eoqSlider(D, S0, H, fac, Q);
     h += lectura("conviene pedir <b>" + n0(Q) + " unidades</b> cada vez, unas " + nf(N, 1) + " veces al año (cada " + nf(T, 0) + " días), y emitir el pedido cuando queden " + n0(Math.ceil(ROP)) + " unidades. Pedir un poco más o un poco menos casi no cambia el costo.");
     return h;
   },
@@ -1991,7 +2002,7 @@ def("control-xr", "cal", {
       { t:"Reglas de Western Electric", q:"Fuera de control si: 1 punto fuera de ±3σ; 2 de 3 más allá de 2σ; 4 de 5 más allá de 1σ; 8 seguidos a un mismo lado.", r:ok ? "Proceso estable" : "Revisar", c:ok ? "ok" : "bad" }
     ]);
     const xs = xb.map((x, i) => [i + 1, x]), rs = R.map((x, i) => [i + 1, x]);
-    h += chart({ title:"Gráfico X̄", series:[{ pts:xs, cls:"s1", dot:"d1", badIdx:outX }], h:[{ y:LSCx, cls:"sb", lbl:"LSC" }, { y:X2, cls:"sm", lbl:"X̿" }, { y:LICx, cls:"sb", lbl:"LIC" }], xlab:"Subgrupo", ylab:"X̄", h0:250 });
+    h += chart({ title:"Gráfico X̄", series:[{ pts:xs, cls:"s1", dot:"d1", badIdx:outX }], h:[{ y:LSCx, cls:"sb", lbl:"LSC" }, { y:X2 + 2 * A2 * Rb / 3, cls:"zn", lbl:"+2σ" }, { y:X2 + A2 * Rb / 3, cls:"zn", lbl:"+1σ" }, { y:X2, cls:"sm", lbl:"X̿" }, { y:X2 - A2 * Rb / 3, cls:"zn", lbl:"−1σ" }, { y:X2 - 2 * A2 * Rb / 3, cls:"zn", lbl:"−2σ" }, { y:LICx, cls:"sb", lbl:"LIC" }], xlab:"Subgrupo", ylab:"X̄", h0:250, cap:"Las líneas tenues marcan ±1σ y ±2σ del promedio: sirven para aplicar las reglas de 2 de 3 y 4 de 5 puntos." });
     h += chart({ title:"Gráfico R", series:[{ pts:rs, cls:"s2", dot:"d2", badIdx:outR }], h:[{ y:LSCr, cls:"sb", lbl:"LSC" }, { y:Rb, cls:"sm", lbl:"R̄" }].concat(LICr > 0 ? [{ y:LICr, cls:"sb", lbl:"LIC" }] : []), xlab:"Subgrupo", ylab:"R", ymin:0, h0:220 });
     h += table(["Subgrupo", "X̄", "R", ""], xb.map((x, i) => rowc([i + 1, nf(x, 4), nf(R[i], 4), outX.includes(i) || outR.includes(i) ? pill("bad", "Fuera") : ""], outX.includes(i) || outR.includes(i) ? "badr" : "")), { num:[0, 1, 2], tall:true });
     if (Rb === 0) h += note("<b>Todos los rangos son cero:</b> las mediciones dentro de cada subgrupo son idénticas. Probablemente el instrumento no tiene resolución suficiente; los límites calculados no sirven.", "bad");
@@ -2183,7 +2194,7 @@ def("programacion-lineal", "io", {
       { t:"Precio sombra", f:"y_i = ΔZ por cada unidad adicional del lado derecho b_i", why:"indica cuánto pagarías como máximo por una unidad extra de ese recurso. Las restricciones con holgura tienen precio sombra 0: sobra recurso." }
     ].concat(ENT ? [{ t:"Variables enteras: ramificación y acotamiento", q:"Primero se resuelve sin exigir enteros (relajación lineal). Si una variable sale con decimales (por ejemplo 211,49), el problema se divide en dos ramas: una con esa variable ≤ 211 y otra con ≥ 212. Cada rama se resuelve otra vez; se descartan las infactibles y las que no pueden superar a la mejor solución entera ya encontrada.", r:"Z entero = " + nf(R.z, 2) + " (relajación: " + nf(R.relax.z, 2) + ")", c:"ok", why:"redondear la solución con decimales puede violar una restricción o no ser la mejor combinación entera." }] : []));
     if (ENT) h += h3("Primeros nodos del árbol de búsqueda") + table(["Nivel", "Rama", "Z", "Solución", "Decisión"], R.tree.map(t => [t.d, t.cut ? esc(P.nm[t.cut[0]]) + " " + t.cut[1] + " " + t.cut[2] : "Raíz (sin exigir enteros)", t.z != null ? nf(t.z, 2) : "—", t.x ? P.nm.map((nm, j) => esc(nm) + " = " + nf(t.x[j], 2)).join("; ") : "—", t.st]), { num:[0, 2] });
-    if (P.n === 2) h += lpGraph(P, R);
+    if (P.n === 2) h += lpGraph(P, R) + lpSlider(P, R, v.tipo === "max");
     h += lectura("la mejor decisión es " + P.nm.map((nm, j) => esc(nm) + " = " + nf(R.x[j], 2)).join(", ") + ", con un valor de " + nf(R.z, 2) + ". Las restricciones marcadas como «Activa» son los cuellos de botella: si se quiere mejorar el resultado, hay que conseguir más de esos recursos.");
     return h;
   },
@@ -2217,7 +2228,7 @@ def("programacion-lineal", "io", {
    "<p>En Excel se resuelve con <b>Solver</b> (método Simplex LP, agregando la restricción «entero»); en Python con PuLP u OR-Tools.</p>",
   rel:["transporte", "asignacion"]
 });
-function lpGraph(P, R){
+function lpGraph(P, R, zo){
   const pts = [], cand = [];
   const lines = P.A.map((a, i) => [a[0], a[1], P.b[i]]).concat([[1, 0, 0], [0, 1, 0]]);
   for (let i = 0; i < lines.length; i++) for (let j = i + 1; j < lines.length; j++) { const [a1, b1, c1] = lines[i], [a2, b2, c2] = lines[j], d = a1 * b2 - a2 * b1; if (Math.abs(d) < 1e-12) continue; cand.push([(c1 * b2 - c2 * b1) / d, (a1 * c2 - a2 * c1) / d]); }
@@ -2227,8 +2238,9 @@ function lpGraph(P, R){
   const cx = mean(pts.map(p => p[0])), cy = mean(pts.map(p => p[1])); pts.sort((p, q) => Math.atan2(p[1] - cy, p[0] - cx) - Math.atan2(q[1] - cy, q[0] - cx));
   const xm = Math.max(1, ...pts.map(p => p[0])) * 1.3, ym = Math.max(1, ...pts.map(p => p[1])) * 1.3;
   const ser = P.A.map((a, i) => { const s = []; if (Math.abs(a[1]) > 1e-12) { s.push([0, P.b[i] / a[1]]); s.push([xm, (P.b[i] - a[0] * xm) / a[1]]); } else { s.push([P.b[i] / a[0], 0]); s.push([P.b[i] / a[0], ym]); } return { pts:s, cls:"sm" }; });
-  const z = R.z, iso = Math.abs(P.c[1]) > 1e-12 ? [[0, z / P.c[1]], [xm, (z - P.c[0] * xm) / P.c[1]]] : [[z / P.c[0], 0], [z / P.c[0], ym]];
-  return chart({ title:"Método gráfico", poly:[{ pts, cls:"reg" }], series:ser.concat([{ pts:iso, cls:"s2", dash:true }, { pts:pts, cls:"s1", dot:"d1", only:true, tags:pts.map(p => "(" + nf(p[0], 1) + "; " + nf(p[1], 1) + ")") }, { pts:[[R.x[0], R.x[1]]], cls:"s2", dot:"d2", only:true, r:7 }]), xmin:0, ymin:0, xmax:xm, ymax:ym, xlab:esc(P.nm[0]), ylab:esc(P.nm[1]), h0:360, legend:[["--ok", "Región factible"], ["--muted", "Restricciones"], ["--copper", "Recta de Z óptimo"]], cap:"El óptimo de un problema lineal siempre está en un vértice de la región factible." });
+  const lab = P.A.map((a, i) => { const ok = q => q[0] >= 0 && q[1] >= 0 && q[0] <= xm && q[1] <= ym; const c = []; if (Math.abs(a[1]) > 1e-12) { c.push([xm * 0.82, (P.b[i] - a[0] * xm * 0.82) / a[1]]); c.push([xm * 0.15, (P.b[i] - a[0] * xm * 0.15) / a[1]]); } if (Math.abs(a[0]) > 1e-12) { c.push([(P.b[i] - a[1] * ym * 0.9) / a[0], ym * 0.9]); c.push([(P.b[i] - a[1] * ym * 0.5) / a[0], ym * 0.5]); } const q = c.find(ok); return q ? { pts:[q], cls:"sm", dot:"dlab", only:true, tags:["R" + (i + 1)], r:2 } : null; }).filter(Boolean);
+  const z = zo != null ? zo : R.z, iso = Math.abs(P.c[1]) > 1e-12 ? [[0, z / P.c[1]], [xm, (z - P.c[0] * xm) / P.c[1]]] : [[z / P.c[0], 0], [z / P.c[0], ym]];
+  return chart({ title:"Método gráfico", poly:[{ pts, cls:"reg" }], series:ser.concat(lab).concat([{ pts:iso, cls:"s2", dash:true }, { pts:pts, cls:"s1", dot:"d1", only:true, tags:pts.map(p => "(" + nf(p[0], 1) + "; " + nf(p[1], 1) + ")") }, { pts:[[R.x[0], R.x[1]]], cls:"s2", dot:"d2", only:true, r:7 }]), xmin:0, ymin:0, xmax:xm, ymax:ym, xlab:esc(P.nm[0]), ylab:esc(P.nm[1]), h0:360, legend:[["--ok", "Región factible"], ["--muted", "Restricciones"], ["--copper", "Recta de Z óptimo"]], cap:"El óptimo de un problema lineal siempre está en un vértice de la región factible. R1, R2… indican cada restricción en el orden en que se escribió." });
 }
 
 def("transporte", "io", {
@@ -2319,6 +2331,7 @@ def("cpm", "io", {
     const crit = order.filter(id => A[id].crit), pert = ids.some(id => A[id].est.length >= 3), varT = sum(crit.map(id => A[id].va)), sT = Math.sqrt(varT), T = opt(v, "T");
     let h = kpis([kpi("Duración del proyecto", nf(Tp, 2), "u. de tiempo", "hi"), kpi("Ruta crítica", crit.join(" → ")), kpi("Actividades críticas", crit.length + " de " + ids.length)].concat(pert ? [kpi("σ del proyecto", nf(sT, 3))] : []).concat(pert && T != null && sT > 0 ? [kpi("P(terminar ≤ " + nf(T, 1) + ")", pc(Phi((T - Tp) / sT)), "", Phi((T - Tp) / sT) >= 0.9 ? "ok" : "bad")] : []));
     h += table(["Actividad", "Precedentes", "Duración" + (pert ? " (te)" : ""), pert ? "Varianza" : "", "IC", "TC", "IL", "TL", "Holgura total", "Holgura libre", ""], order.map(id => { const a = A[id]; return rowc([a.id, a.p.join(", ") || "—", nf(a.te, 2), pert ? nf(a.va, 3) : "", nf(a.ES, 2), nf(a.EF, 2), nf(a.LS, 2), nf(a.LF, 2), nf(a.HT, 2), nf(a.HL, 2), a.crit ? pill("bad", "Crítica") : ""], a.crit ? "badr" : ""); }), { num:[2, 3, 4, 5, 6, 7, 8, 9] });
+    h += cpmNet(A, order);
     h += gantt(order.map(id => ({ id, s:A[id].ES, d:A[id].te, crit:A[id].crit, slack:A[id].HT })));
     h += steps([
       pert ? { t:"Duración esperada PERT", f:"te = (a + 4m + b) ÷ 6   ·   σ² = [(b − a) ÷ 6]²", why:"supone una distribución beta para cada actividad." } : { t:"Duraciones", q:"Se usaron duraciones determinísticas (CPM)." },
@@ -2585,15 +2598,7 @@ def("ishikawa", "ges", {
     const cats = [1, 2, 3, 4, 5, 6, 7, 8].map(k => [String(v["n" + k] || "").trim(), lines(v["m" + k] || "")]).filter(c => c[0] || c[1].length).map((c, i) => [c[0] || "Categoría " + (i + 1), c[1]]);
     if (!cats.length) fail("Escribe al menos una categoría con sus causas.");
     if (!String(v.p || "").trim()) fail("Escribe el problema (efecto) que quieres analizar.");
-    const W = 980, Hh = 470, y0 = 235, x0 = 30, xh = 800; let g = '<line class="s1" x1="' + x0 + '" y1="' + y0 + '" x2="' + xh + '" y2="' + y0 + '" style="stroke-width:3"/><polygon class="d1" points="' + xh + "," + (y0 - 10) + " " + (xh + 16) + "," + y0 + " " + xh + "," + (y0 + 10) + '"/>';
-    g += '<rect class="boxc" x="' + (xh + 20) + '" y="' + (y0 - 42) + '" width="150" height="84" rx="8"/>';
-    const wrap = (s, n) => { const w = String(s).split(" "), out = []; let l = ""; w.forEach(x => { if ((l + " " + x).trim().length > n) { out.push(l); l = x; } else l = (l + " " + x).trim(); }); if (l) out.push(l); return out; };
-    wrap(v.p || "Problema", 20).slice(0, 4).forEach((l, i, a) => { g += '<text x="' + (xh + 95) + '" y="' + (y0 - (a.length - 1) * 8 + i * 16 + 4) + '" text-anchor="middle" style="font-weight:700">' + esc(l) + "</text>"; });
-    const nT = Math.ceil(cats.length / 2), sp = (nT >= 4 ? 640 : 720) / Math.max(nT, 1), mx = nT >= 4 ? 19 : 30, fs = nT >= 4 ? 10.5 : 11.5;
-    cats.forEach((c, k) => { const top = k < nT, col = top ? k : k - nT, bx = (nT >= 4 ? 150 : 90) + col * sp + (top ? 0 : (nT - (cats.length - nT)) * sp / 2), ey = top ? 40 : Hh - 40, sx = bx + Math.min(120, sp / 2);
-      g += '<line class="s2" x1="' + bx + '" y1="' + ey + '" x2="' + sx + '" y2="' + y0 + '"/><text x="' + bx + '" y="' + (top ? ey - 12 : ey + 22) + '" text-anchor="middle" style="font-weight:700;font-family:var(--f-display)">' + esc(c[0].length > 26 ? c[0].slice(0, 25) + "…" : c[0]) + "</text>";
-      c[1].slice(0, 5).forEach((t, i) => { const f = (i + 1) / 6.2, px = bx + (sx - bx) * f, py = ey + (y0 - ey) * f; g += '<line class="sm" x1="' + (px - Math.min(120, sp * 0.62)) + '" y1="' + py + '" x2="' + px + '" y2="' + py + '"/><text x="' + (px - Math.min(122, sp * 0.62 + 2)) + '" y="' + (py - 3) + '" text-anchor="start" style="font-size:' + fs + 'px">' + esc(t.length > mx ? t.slice(0, mx - 1) + "…" : t) + "</text>"; }); });
-    let h = '<figure class="ch"><div class="sv"><svg viewBox="0 0 ' + W + " " + Hh + '" role="img" aria-label="Diagrama de Ishikawa" style="min-width:820px">' + g + "</svg></div><figcaption>Las causas más probables se verifican con datos (Pareto, gráficos de control, pruebas) antes de actuar.</figcaption></figure>";
+    let h = ishiSVG(v.p, cats);
     h += table(["Categoría", "Causas", "N.º"], cats.map(c => [esc(c[0]), c[1].map(esc).join(" · ") || "—", c[1].length]), { num:[2] });
     h += note("Siguiente paso: vota las causas más probables y valida cada una con los 5 porqués o con datos.", "info");
     return h;
@@ -8054,7 +8059,7 @@ function eqInit(el){
       else msg.innerHTML = note("La expresión no es equivalente. Revisa paréntesis: en formato lineal, todo el numerador o el denominador con más de un término debe ir entre paréntesis.", "bad"); }
     catch (x) { msg.innerHTML = note("No se pudo interpretar: " + esc(x.message) + ".", "bad"); } });
 }
-function afterRender(root){ try { if (typeof w6Init === "function") setTimeout(() => w6Init(root), 0); } catch (e) {} root.querySelectorAll("textarea[data-c][data-k]").forEach(t => { try { gridInit(t); } catch (e) { console.error(e); } }); root.querySelectorAll("[data-xls]").forEach(xlsInit); root.querySelectorAll("[data-wdx]").forEach(wdInit); root.querySelectorAll("[data-eqx]").forEach(eqInit); if (typeof simInit === "function") root.querySelectorAll("[data-sim]").forEach(simInit); if (typeof ishiUI === "function") ishiUI(root); if (typeof w7Init === "function") try { w7Init(root); } catch (e) { console.error(e); } }
+function afterRender(root){ try { if (typeof w6Init === "function") setTimeout(() => w6Init(root), 0); } catch (e) {} root.querySelectorAll("textarea[data-c][data-k]").forEach(t => { try { gridInit(t); } catch (e) { console.error(e); } }); root.querySelectorAll("[data-xls]").forEach(xlsInit); root.querySelectorAll("[data-wdx]").forEach(wdInit); root.querySelectorAll("[data-eqx]").forEach(eqInit); if (typeof simInit === "function") root.querySelectorAll("[data-sim]").forEach(simInit); if (typeof ishiUI === "function") ishiUI(root); if (typeof w7Init === "function") try { w7Init(root); } catch (e) { console.error(e); } if (typeof wc1Init === "function") try { wc1Init(root); } catch (e) { console.error(e); } }
 
 /* ---------- Ilustraciones de las ventanas ---------- */
 Object.assign(D, {
@@ -11141,6 +11146,45 @@ function t2Blocks(id){
   B.ejer = [mk("Ejercicio con pistas", UI.ejercicio(x.ejer[0], [x.ejer[1], x.ejer[2]], x.ejer[3]))];
   B.fic = [mk("Ficha resumen", UI.ficha(x.fic))];
   return B; }
+/* ============ FASE 4: DIAGRAMAS SVG REUTILIZABLES (flujo y layout) ============
+   Estilo uniforme con las clases de color del tema (se adaptan a modo claro y oscuro). */
+let DGN = 0;
+const dgWrap = (s, n) => { const w = String(s).split(/\s+/), out = []; let l = ""; w.forEach(x => { if ((l + " " + x).trim().length > n && l) { out.push(l); l = x; } else l = (l + " " + x).trim(); }); if (l) out.push(l); return out; };
+const dgText = (x, y, lines, o) => { o = o || {}; const lh = o.lh || 15, y0 = y - (lines.length - 1) * lh / 2; return lines.map((l, i) => '<text x="' + x + '" y="' + (y0 + i * lh + 4) + '" text-anchor="' + (o.a || "middle") + '"' + (o.cls ? ' class="' + o.cls + '"' : "") + (o.st ? ' style="' + o.st + '"' : "") + ">" + esc(l) + "</text>").join(""); };
+const dgDefs = id => '<defs><marker id="' + id + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="dgah"/></marker></defs>';
+
+/* Diagrama de flujo. nodos: [{t:'ini'|'fin'|'pro'|'io'|'dec', x:'texto', si:'texto rama', side:{t, x, to:índice}, lbl:['No','Sí']}] */
+function FC(nodes, cap){
+  const mk = "fa" + (++DGN), CX = 190, SX = 470, W = 640, gap = 34, out = []; let y = 24, g = "";
+  const dims = n => { const L = dgWrap(n.x, n.t === "dec" ? 22 : 32).slice(0, 3); const h = n.t === "dec" ? Math.max(78, L.length * 15 + 42) : n.t === "ini" || n.t === "fin" ? 38 : L.length * 15 + 22; const w = n.t === "dec" ? 250 : n.t === "ini" || n.t === "fin" ? 170 : 240; return { L, h, w }; };
+  const shape = (n, cx, cy, d) => { const { w, h } = d;
+    if (n.t === "ini" || n.t === "fin") return '<rect class="dgbl" x="' + (cx - w / 2) + '" y="' + (cy - h / 2) + '" width="' + w + '" height="' + h + '" rx="' + h / 2 + '"/>';
+    if (n.t === "io") return '<polygon class="dgb3" points="' + (cx - w / 2 + 14) + "," + (cy - h / 2) + " " + (cx + w / 2) + "," + (cy - h / 2) + " " + (cx + w / 2 - 14) + "," + (cy + h / 2) + " " + (cx - w / 2) + "," + (cy + h / 2) + '"/>';
+    if (n.t === "dec") return '<polygon class="dgb2" points="' + cx + "," + (cy - h / 2) + " " + (cx + w / 2) + "," + cy + " " + cx + "," + (cy + h / 2) + " " + (cx - w / 2) + "," + cy + '"/>';
+    return '<rect class="dgb1" x="' + (cx - w / 2) + '" y="' + (cy - h / 2) + '" width="' + w + '" height="' + h + '" rx="6"/>'; };
+  nodes.forEach(n => { const d = dims(n); out.push({ n, d, cy:y + d.h / 2 }); y += d.h + gap; });
+  const H = y - gap + 24;
+  out.forEach((o, i) => { const { n, d, cy } = o; g += shape(n, CX, cy, d) + dgText(CX, cy, d.L, { st:n.t === "ini" || n.t === "fin" ? "font-weight:600" : "" });
+    if (i < out.length - 1) { const nx = out[i + 1]; g += '<line class="dga" x1="' + CX + '" y1="' + (cy + d.h / 2) + '" x2="' + CX + '" y2="' + (nx.cy - nx.d.h / 2 - 2) + '" marker-end="url(#' + mk + ')"/>';
+      if (n.t === "dec") g += '<text x="' + (CX + 8) + '" y="' + (cy + d.h / 2 + 16) + '" class="mu">' + esc((n.lbl || ["No", "Sí"])[0]) + "</text>"; }
+    if (n.side) { const s = n.side, sd = dims(s); g += '<line class="dga" x1="' + (CX + d.w / 2) + '" y1="' + cy + '" x2="' + (SX - sd.w / 2 - 2) + '" y2="' + cy + '" marker-end="url(#' + mk + ')"/><text x="' + (CX + d.w / 2 + 8) + '" y="' + (cy - 7) + '" class="mu">' + esc((n.lbl || ["No", "Sí"])[1]) + "</text>" + shape(s, SX, cy, sd) + dgText(SX, cy, sd.L);
+      if (s.to != null && out[s.to]) { const tg = out[s.to], tx = CX + tg.d.w / 2 + 2, up = tg.cy < cy, sy = up ? cy - sd.h / 2 : cy + sd.h / 2;
+        g += '<polyline class="dga" points="' + SX + "," + sy + " " + SX + "," + tg.cy + " " + tx + "," + tg.cy + '" marker-end="url(#' + mk + ')"/>'; } } });
+  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagrama de flujo" style="min-width:440px">' + dgDefs(mk) + g + '</svg></div><figcaption>' + (cap || "") + ' Símbolos: óvalo = inicio/fin; rectángulo = proceso; paralelogramo = entrada/salida; rombo = decisión.</figcaption></figure>'; }
+
+/* Layout de 2 × 2 áreas: compara dos disposiciones con líneas de flujo de grosor proporcional a los viajes */
+function LAYD(names, flows, a, b, cap){
+  const pos = [[0, 0], [1, 0], [0, 1], [1, 1]], cell = 90, pad = 30, PW = 2 * cell + 2 * pad + 20;
+  const mx = Math.max.apply(null, flows.map(f => f[2]));
+  const panel = (ord, ox, title, total) => { let g = '<text x="' + (ox + PW / 2) + '" y="18" text-anchor="middle" style="font-weight:600">' + esc(title) + "</text>";
+    const P = {}; ord.forEach((d, i) => { P[d] = [ox + pad + 10 + pos[i][0] * cell + cell / 2, 34 + pos[i][1] * cell + cell / 2]; });
+    let nd = 0, labs = ""; flows.forEach(([u, v, f]) => { const [x1, y1] = P[u], [x2, y2] = P[v], w = 1 + 7 * f / mx, diag = x1 !== x2 && y1 !== y2, t = diag ? (nd++ % 2 ? 0.72 : 0.28) : 0.5, lx = x1 + (x2 - x1) * t + (x1 === x2 ? 8 : 0), ly = y1 + (y2 - y1) * t + (y1 === y2 ? -7 : 4);
+      g += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" class="ly-fl" stroke-width="' + w + '"/>'; labs += '<text x="' + lx + '" y="' + ly + '" class="ly-ft" text-anchor="' + (x1 === x2 ? "start" : "middle") + '" style="paint-order:stroke;stroke:var(--surface);stroke-width:4px">' + f + "</text>"; });
+    ord.forEach(d => { const [x, y] = P[d]; g += '<rect class="dgb1" x="' + (x - 26) + '" y="' + (y - 18) + '" width="52" height="36" rx="6"/>' + dgText(x, y, [names[d] || d], { st:"font-weight:600" }); });
+    g += labs;
+    g += '<text x="' + (ox + PW / 2) + '" y="' + (34 + 2 * cell + 22) + '" text-anchor="middle" class="mu">Viajes × m = ' + total + "</text>"; return g; };
+  const W = 2 * PW + 20, H = 34 + 2 * cell + 34;
+  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Comparación de layouts" style="min-width:420px">' + panel(a[0], 0, a[1], a[2]) + panel(b[0], PW + 20, b[1], b[2]) + "</svg></div><figcaption>" + (cap || "") + "</figcaption></figure>"; }
 /* ============ FASE 2 · ÁREA D: PRODUCCIÓN Y PROCESOS ============
    Números verificados con cálculo independiente y con las calculadoras de la app. Empresas y cifras ilustrativas. */
 
@@ -11154,7 +11198,7 @@ T2["ramo-analisis-procesos"] = { tema:"Análisis de procesos y cursograma",
   met:q9ol(["Define el alcance: dónde empieza y termina el proceso, y qué unidad se sigue (una orden, una pieza).", "Recorre el proceso en terreno siguiendo esa unidad; no lo describas de memoria.", "Anota cada paso con verbo + objeto, clasifícalo con su símbolo y mide distancia y tiempo.", "Resume: número de pasos, tiempo y distancia por tipo de actividad, y %VA.", "Pregunta para cada paso que no agrega valor: ¿se puede eliminar, combinar, reordenar o simplificar? (técnica del interrogatorio)", "Dibuja el cursograma propuesto y compara los totales.", "Mide el WIP y el throughput para obtener el lead time con la ley de Little."]),
   ejB:["Preparación de pedidos en una bodega de repuestos", ilus + table(["#", "Actividad", "Símbolo", "Distancia (m)", "Tiempo (min)"], [["1", "Imprimir la orden", "Operación", "", "1"], ["2", "Esperar que se libere un carro", "Demora", "", "4"], ["3", "Llevar el carro al pasillo", "Transporte", "35", "1"], ["4", "Buscar y retirar los repuestos", "Operación", "", "6"], ["5", "Verificar códigos contra la orden", "Inspección", "", "2"], ["6", "Llevar a la mesa de embalaje", "Transporte", "50", "2"], ["7", "Esperar al embalador", "Demora", "", "8"], ["8", "Embalar y etiquetar", "Operación", "", "5"], ["9", "Dejar en zona de despacho", "Transporte", "20", "1"], ["10", "Almacenar hasta el retiro", "Almacenamiento", "", "30"]], { num:[0, 3, 4] }) +
     table(["Tipo", "N.° de pasos", "Tiempo (min)", "Distancia (m)"], [["Operación", "3", "12", ""], ["Transporte", "3", "4", "105"], ["Inspección", "1", "2", ""], ["Demora", "2", "12", ""], ["Almacenamiento", "1", "30", ""], ["Total", "10", "60", "105"]], { num:[1, 2, 3] }) +
-    "<p>Si se consideran operaciones las que agregan valor: %VA = 12 ÷ 60 = <b>20 %</b>. Sin contar el almacenamiento final (que depende del transportista), 12 ÷ 30 = 40 %. Las esperas (12 min) pesan igual que todo el trabajo útil.</p>"],
+    FC([{ t:"ini", x:"Llega la orden" }, { t:"pro", x:"Imprimir la orden" }, { t:"dec", x:"¿Hay un carro libre?", lbl:["Sí", "No"], side:{ t:"pro", x:"Esperar que se libere un carro (demora)", to:3 } }, { t:"pro", x:"Llevar el carro y retirar los repuestos" }, { t:"dec", x:"¿Los códigos coinciden con la orden?", lbl:["Sí", "No"], side:{ t:"pro", x:"Buscar el repuesto correcto", to:3 } }, { t:"pro", x:"Llevar a embalaje, embalar y etiquetar" }, { t:"fin", x:"Pedido en zona de despacho" }], "Diagrama de flujo del proceso actual: las ramas laterales muestran esperas y reprocesos que el cursograma cuantifica.") + "<p>Si se consideran operaciones las que agregan valor: %VA = 12 ÷ 60 = <b>20 %</b>. Sin contar el almacenamiento final (que depende del transportista), 12 ÷ 30 = 40 %. Las esperas (12 min) pesan igual que todo el trabajo útil.</p>"],
   ejA:["Propuesta de mejora y ley de Little", ilus + "<p>Cambios: un carro asignado a cada preparador (elimina la espera de 4 min); mesa de embalaje junto al pasillo (el traslado baja de 50 m y 2 min a 15 m y 0,5 min); el mismo preparador embala (elimina la espera de 8 min); verificación con lector de código de barras (de 2 a 0,5 min).</p>" +
     table(["Indicador", "Actual", "Propuesto"], [["Pasos", "10", "8"], ["Tiempo sin almacenamiento", "30 min", "15 min"], ["Distancia", "105 m", "70 m"], ["%VA (sin almacenamiento)", "40 %", "80 %"]]) +
     "<p><b>Ley de Little en la bodega:</b> en promedio hay 120 órdenes en proceso y se despachan 40 por día. Lead time = 120 ÷ 40 = <b>3 días</b>. Cada orden recibe solo 12 minutos de trabajo que agrega valor; en una jornada de 8 h, PCE = 12 ÷ (3 × 480) = <b>0,83 %</b>. La lección: el plazo que ve el cliente depende de las órdenes acumuladas, no de lo rápido que se trabaja. Para bajar a 1 día con el mismo ritmo de despacho hay que reducir las órdenes en espera a 40.</p>"],
@@ -11494,7 +11538,7 @@ T2["fund-logistica"] = { tema:"Layout",
   met:q9ol(["Levanta las áreas, sus tamaños y restricciones (muros, andenes, instalaciones).", "Construye la matriz de flujos (viajes por día entre áreas).", "Ubica juntas las áreas con más flujo; prueba alternativas.", "Calcula carga × distancia de cada alternativa y elige la menor.", "En bodegas: calcula el COI de cada producto y asigna las ubicaciones más cercanas a los de menor COI.", "Revisa seguridad, pasillos y flexibilidad antes de decidir."]),
   ejB:["Cuatro áreas de un taller de mantención", ilus + "<p>Cuatro áreas en una grilla de 2 × 2 con celdas de 10 m (distancia rectilínea: 10 m entre vecinas, 20 m en diagonal). Viajes por día: A–B 30; A–C 10; A–D 5; B–C 40; B–D 15; C–D 25.</p>" +
     table(["Par", "Viajes", "Layout actual (m)", "Viajes × m", "Layout propuesto (m)", "Viajes × m"], [["A–B", "30", "10", "300", "10", "300"], ["A–C", "10", "10", "100", "20", "200"], ["A–D", "5", "20", "100", "10", "50"], ["B–C", "40", "20", "<b>800</b>", "10", "400"], ["B–D", "15", "10", "150", "20", "300"], ["C–D", "25", "10", "250", "10", "250"], ["Total", "", "", "<b>1.700</b>", "", "<b>1.500</b>"]], { num:[1, 2, 3, 4, 5] }) +
-    "<p>En el layout actual, B y C (el par con más viajes) están en diagonal. Intercambiando C y D quedan vecinos y el esfuerzo baja 11,8 %. Revisando las 24 disposiciones posibles, 1.500 es el mínimo.</p>"],
+    LAYD({ A:"A", B:"B", C:"C", D:"D" }, [["A", "B", 30], ["A", "C", 10], ["A", "D", 5], ["B", "C", 40], ["B", "D", 15], ["C", "D", 25]], [["A", "B", "C", "D"], "Layout actual", "1.700"], [["A", "B", "D", "C"], "Layout propuesto", "1.500"], "El grosor de cada línea es proporcional a los viajes diarios. En el actual, la línea más gruesa (B–C, 40 viajes) cruza en diagonal; en el propuesto, B y C quedan vecinos.") + "<p>En el layout actual, B y C (el par con más viajes) están en diagonal. Intercambiando C y D quedan vecinos y el esfuerzo baja 11,8 %. Revisando las 24 disposiciones posibles, 1.500 es el mínimo.</p>"],
   ejA:["Ubicación de productos en una bodega (slotting por COI)", ilus + "<p>Seis productos; ubicaciones a 10, 12, 14, 16, 18, 20, 22 y 24 m del andén (ida). P2 y P6 ocupan 2 ubicaciones cada uno. Cada pedido implica ir y volver.</p>" +
     table(["Producto", "Pedidos/día", "Ubicaciones", "COI"], [["P1", "40", "1", "0,025"], ["P2", "200", "2", "0,010"], ["P3", "90", "1", "0,011"], ["P4", "25", "1", "0,040"], ["P5", "150", "1", "<b>0,007</b>"], ["P6", "60", "2", "0,033"]], { num:[1, 2, 3] }) +
     table(["Criterio de ubicación", "Orden", "Recorrido diario"], [["Alfabético (actual)", "P1, P2, P3, P4, P5, P6", "18.540 m"], ["Por número de pedidos", "P2, P5, P3, P6, P1, P4", "16.720 m"], ["Por COI", "P5, P2, P3, P1, P6, P4", "<b>16.240 m</b>"]], { num:[2] }) +
@@ -12075,7 +12119,7 @@ T2["ramo-intro-programacion"] = { tema:"Algoritmos, diagramas de flujo y PSeInt"
   met:q9ol(["Entiende el problema: ¿qué datos entran, qué resultado se espera?", "Escribe los pasos en lenguaje natural.", "Identifica decisiones (Si) y repeticiones (Para / Mientras).", "Escribe el pseudocódigo en PSeInt y declara las variables.", "Haz una prueba de escritorio con datos simples cuyo resultado conoces.", "Ejecuta en PSeInt paso a paso y revisa el diagrama de flujo generado.", "Valida entradas (por ejemplo, que no sean cero o negativas) y prueba casos límite."]),
   ejB:["Lote económico con validación de datos", "<p>El algoritmo pide demanda, costo por pedido y costo de mantener, valida que sean positivos y calcula el lote económico:</p>" +
     code("pseint", "Algoritmo LoteEconomico\n\tDefinir D, S, H, Q, N Como Real\n\tEscribir \"Demanda anual (unidades):\"\n\tLeer D\n\tEscribir \"Costo por pedido ($):\"\n\tLeer S\n\tEscribir \"Costo de mantener una unidad un año ($):\"\n\tLeer H\n\tSi D <= 0 O S <= 0 O H <= 0 Entonces\n\t\tEscribir \"Error: todos los datos deben ser mayores que cero\"\n\tSiNo\n\t\tQ <- RC(2 * D * S / H)\n\t\tN <- D / Q\n\t\tEscribir \"Lote económico: \", redon(Q), \" unidades\"\n\t\tEscribir \"Pedidos al año: \", redon(N * 10) / 10\n\tFinSi\nFinAlgoritmo") +
-    "<p><b>Prueba de escritorio</b> con D = 4.800, S = 25.000 y H = 500: Q = RC(480.000) = 692,8 → muestra <b>693 unidades</b>; N = 6,93 → muestra <b>6,9 pedidos</b> (coincide con la calculadora EOQ). Con H = 0 muestra el mensaje de error en vez de dividir por cero.</p><p><b>Diagrama de flujo equivalente:</b> inicio → leer D, S, H → rombo «¿algún dato ≤ 0?» → (sí) mostrar error / (no) calcular Q y N → mostrar resultados → fin. PSeInt lo dibuja con el botón de diagrama de flujo.</p>"],
+    "<p><b>Prueba de escritorio</b> con D = 4.800, S = 25.000 y H = 500: Q = RC(480.000) = 692,8 → muestra <b>693 unidades</b>; N = 6,93 → muestra <b>6,9 pedidos</b> (coincide con la calculadora EOQ). Con H = 0 muestra el mensaje de error en vez de dividir por cero.</p><p><b>Diagrama de flujo equivalente</b> (PSeInt lo dibuja con el botón de diagrama de flujo):</p>" + FC([{ t:"ini", x:"Inicio" }, { t:"io", x:"Leer D, S, H" }, { t:"dec", x:"¿D ≤ 0 o S ≤ 0 o H ≤ 0?", side:{ t:"io", x:"Escribir «Error: datos deben ser mayores que cero»", to:5 } }, { t:"pro", x:"Q ← RC(2·D·S ÷ H) ; N ← D ÷ Q" }, { t:"io", x:"Escribir Q y N" }, { t:"fin", x:"Fin" }], "Algoritmo del lote económico con validación de datos.")],
   ejA:["Simulación de inventario con arreglo y ciclo", "<p>Se simulan 10 días: stock inicial 40, punto de reorden 20, lote 40; el pedido llega al inicio del día siguiente.</p>" +
     code("pseint", "Algoritmo SimulaInventario\n\tDefinir i, stock, rop, q, pedidos, faltante Como Entero\n\tDefinir pendiente Como Logico\n\tDefinir dem Como Entero\n\tDimension dem[10]\n\tdem[1] <- 8\n\tdem[2] <- 12\n\tdem[3] <- 10\n\tdem[4] <- 15\n\tdem[5] <- 9\n\tdem[6] <- 11\n\tdem[7] <- 14\n\tdem[8] <- 7\n\tdem[9] <- 13\n\tdem[10] <- 10\n\tstock <- 40\n\trop <- 20\n\tq <- 40\n\tpedidos <- 0\n\tfaltante <- 0\n\tpendiente <- Falso\n\tPara i <- 1 Hasta 10 Con Paso 1 Hacer\n\t\tSi pendiente Entonces\n\t\t\tstock <- stock + q\n\t\t\tpendiente <- Falso\n\t\tFinSi\n\t\tSi dem[i] > stock Entonces\n\t\t\tfaltante <- faltante + (dem[i] - stock)\n\t\t\tstock <- 0\n\t\tSiNo\n\t\t\tstock <- stock - dem[i]\n\t\tFinSi\n\t\tSi stock <= rop Y NO pendiente Entonces\n\t\t\tpendiente <- Verdadero\n\t\t\tpedidos <- pedidos + 1\n\t\tFinSi\n\t\tEscribir \"Día \", i, \": stock final \", stock\n\tFinPara\n\tEscribir \"Pedidos: \", pedidos, \"  Unidades faltantes: \", faltante\nFinAlgoritmo") +
     table(["Día", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"], [["Demanda", "8", "12", "10", "15", "9", "11", "14", "7", "13", "10"], ["Stock final", "32", "20*", "50", "35", "26", "15*", "41", "34", "21", "11*"]], { num:[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }) +
@@ -12279,6 +12323,82 @@ function pgPruebas(){
     kpis([kpi("Pruebas", R.length), kpi("Correctas", okN, "", okN === R.length ? "ok" : "bad"), kpi("Con error", R.length - okN, "", R.length - okN ? "bad" : "ok")]) +
     table(["Calculadora", "Entrada de prueba", "Resultado esperado", "Resultado obtenido", "Estado"], R.map(r => rowc([r.calc, r.inp, nf(r.exp, dec(r)) + (r.u ? " " + r.u : ""), r.err ? "Error: " + esc(r.err) : nf(r.got, dec(r)) + (r.u ? " " + r.u : ""), r.ok ? pill("ok", "✓ Correcto") : pill("bad", "✗ Revisar")], r.ok ? "" : "badr")), { num:[2, 3] }) +
     note("Tolerancia: diferencias de redondeo menores que la última cifra mostrada. Las mismas funciones son las que usan las calculadoras, así que si estas pruebas pasan, los cálculos de la interfaz también.", "info"); }
+/* ============ FASE 4: DIAGRAMAS DE LAS CALCULADORAS E INTERACTIVIDAD ============ */
+
+/* ---------- Ishikawa: textos completos (ajuste de línea), cabeza siempre visible y alto según el número de causas ---------- */
+function ishiSVG(problem, cats){
+  const nT = Math.ceil(cats.length / 2), top = cats.slice(0, nT), bot = cats.slice(nT), nC = Math.max(top.length, bot.length, 1);
+  const W = 1040, xh = 790, colW = (xh - 40) / nC, chars = Math.max(14, Math.floor((colW - 46) / 6.4));
+  const prep = c => ({ name:dgWrap(c[0], Math.max(14, Math.floor(colW / 7.5))).slice(0, 2), causes:c[1].slice(0, 6).map(t => dgWrap(t, chars).slice(0, 3)) });
+  const T = top.map(prep), B = bot.map(prep);
+  const need = arr => Math.max(3, ...arr.map(c => c.causes.reduce((s, x) => s + x.length * 13 + 12, 0)));
+  const hTop = need(T) + 50, hBot = need(B) + 50, y0 = hTop + 20, H = y0 + hBot + 20;
+  let g = '<line class="s1" x1="30" y1="' + y0 + '" x2="' + xh + '" y2="' + y0 + '" style="stroke-width:3"/><polygon class="d1" points="' + xh + "," + (y0 - 10) + " " + (xh + 16) + "," + y0 + " " + xh + "," + (y0 + 10) + '"/>';
+  const pl = dgWrap(problem || "Problema", 24).slice(0, 6), bh = Math.max(70, pl.length * 16 + 26);
+  g += '<rect class="boxc" x="' + (xh + 22) + '" y="' + (y0 - bh / 2) + '" width="' + (W - xh - 30) + '" height="' + bh + '" rx="8"/>' + dgText(xh + 22 + (W - xh - 30) / 2, y0, pl, { lh:16, st:"font-weight:700" });
+  const branch = (c, j, up) => { const xa = 40 + colW * (j + 1) - 14, ey = up ? 34 : H - 34, dx = Math.min(90, colW * 0.4), xb = xa - dx; let s = '<line class="s2" x1="' + xb + '" y1="' + ey + '" x2="' + xa + '" y2="' + y0 + '" style="stroke-width:2"/>';
+    s += dgText(xb, up ? ey - 14 - (c.name.length - 1) * 7 : ey + 14 + (c.name.length - 1) * 7, c.name, { lh:14, st:"font-weight:700" });
+    let acc = 22; const span = Math.abs(y0 - ey);
+    c.causes.forEach(L => { const hh = L.length * 13 + 12, f = (acc + hh / 2) / (span + 10); acc += hh; const yy = up ? ey + f * span : ey - f * span, xx = xb + (xa - xb) * f;
+      s += '<line class="sm" x1="' + (xx - 14) + '" y1="' + yy + '" x2="' + xx + '" y2="' + yy + '"/>' + dgText(xx - 18, yy, L, { a:"end", lh:13, st:"font-size:11px" }); });
+    return s; };
+  T.forEach((c, j) => g += branch(c, j, true)); B.forEach((c, j) => g += branch(c, j + (nC - B.length) / 2, false));
+  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagrama de Ishikawa" style="min-width:640px">' + g + '</svg></div><figcaption>Las causas más probables se verifican con datos (Pareto, gráficos de control, pruebas) antes de actuar. En el celular desliza el diagrama hacia el lado.</figcaption></figure>';
+}
+
+/* ---------- Red de actividades (actividad en el nodo) con la ruta crítica destacada ---------- */
+function cpmNet(A, order){
+  const lev = {}; order.forEach(id => { lev[id] = A[id].p.length ? 1 + Math.max.apply(null, A[id].p.map(p => lev[p])) : 0; });
+  const cols = {}; order.forEach(id => (cols[lev[id]] = cols[lev[id]] || []).push(id));
+  const nL = Object.keys(cols).length, maxR = Math.max.apply(null, Object.values(cols).map(c => c.length));
+  const bw = 132, bh = 72, gx = 54, gy = 26, W = 30 + nL * (bw + gx), H = 30 + maxR * (bh + gy), P = {}, mk = "na" + (++DGN);
+  Object.keys(cols).forEach(l => { const c = cols[l], off = (maxR - c.length) * (bh + gy) / 2; c.forEach((id, r) => { P[id] = [20 + l * (bw + gx), 20 + off + r * (bh + gy)]; }); });
+  const f = x => nf(x, Math.abs(x - Math.round(x)) < 1e-9 ? 0 : 1);
+  let g = dgDefs(mk);
+  order.forEach(id => A[id].p.forEach(p => { const crit = A[id].crit && A[p].crit && Math.abs(A[p].EF - A[id].ES) < 1e-9, [x1, y1] = P[p], [x2, y2] = P[id];
+    g += '<path d="M' + (x1 + bw) + "," + (y1 + bh / 2) + " C" + (x1 + bw + gx / 2) + "," + (y1 + bh / 2) + " " + (x2 - gx / 2) + "," + (y2 + bh / 2) + " " + (x2 - 2) + "," + (y2 + bh / 2) + '" class="' + (crit ? "dgcrit" : "dga") + '" marker-end="url(#' + mk + ')"/>'; }));
+  order.forEach(id => { const a = A[id], [x, y] = P[id];
+    g += '<rect x="' + x + '" y="' + y + '" width="' + bw + '" height="' + bh + '" rx="6" class="' + (a.crit ? "boxc" : "box") + '"/><line class="gr" x1="' + x + '" y1="' + (y + 22) + '" x2="' + (x + bw) + '" y2="' + (y + 22) + '"/><line class="gr" x1="' + x + '" y1="' + (y + bh - 22) + '" x2="' + (x + bw) + '" y2="' + (y + bh - 22) + '"/>' +
+      '<text x="' + (x + 8) + '" y="' + (y + 15) + '" class="mu">' + f(a.ES) + '</text><text x="' + (x + bw / 2) + '" y="' + (y + 15) + '" text-anchor="middle" class="mu">' + f(a.te) + '</text><text x="' + (x + bw - 8) + '" y="' + (y + 15) + '" text-anchor="end" class="mu">' + f(a.EF) + "</text>" +
+      '<text x="' + (x + bw / 2) + '" y="' + (y + bh / 2 + 5) + '" text-anchor="middle" style="font-weight:700;font-size:14px">' + esc(id) + "</text>" +
+      '<text x="' + (x + 8) + '" y="' + (y + bh - 7) + '" class="mu">' + f(a.LS) + '</text><text x="' + (x + bw / 2) + '" y="' + (y + bh - 7) + '" text-anchor="middle" class="mu">H ' + f(a.HT) + '</text><text x="' + (x + bw - 8) + '" y="' + (y + bh - 7) + '" text-anchor="end" class="mu">' + f(a.LF) + "</text>"; });
+  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Red del proyecto" style="min-width:' + Math.min(W, 640) + 'px">' + g + '</svg></div><figcaption>Red del proyecto (actividad en el nodo). Arriba: inicio temprano · duración · término temprano. Abajo: inicio tardío · holgura · término tardío. En cobre, la ruta crítica.</figcaption></figure>';
+}
+
+/* ---------- Región factible: deslizador de la recta del objetivo ---------- */
+const LPG = {}; let LPGN = 0;
+function lpSlider(P, R, mx){ const k = ++LPGN; LPG[k] = { P, R, mx }; const zmax = Math.abs(R.z) * 1.4 || 1;
+  return '<div class="isl no-print" data-lpg="' + k + '"><label>Mueve la recta del objetivo: Z = <b class="isl-v">' + nf(R.z, 2) + '</b></label><input type="range" min="0" max="' + zmax + '" step="' + (zmax / 200) + '" value="' + Math.abs(R.z) + '" aria-label="Valor de Z"><p class="hint isl-m">La recta pasa por el vértice óptimo: es el último punto de la región que toca.</p></div>'; }
+document.addEventListener("input", e => { const s = e.target.closest && e.target.closest(".isl[data-lpg] input"); if (!s) return; const box = s.closest(".isl"), L = LPG[box.dataset.lpg]; if (!L) return;
+  const z = +s.value * (L.R.z < 0 ? -1 : 1), fig = box.previousElementSibling; box.querySelector(".isl-v").textContent = nf(z, 2);
+  const nh = lpGraph(L.P, L.R, z); if (nh && fig && fig.tagName === "FIGURE") { const t = document.createElement("template"); t.innerHTML = nh; fig.replaceWith(t.content.firstElementChild); }
+  const max = L.mx, d = Math.abs(z - L.R.z) / (Math.abs(L.R.z) || 1);
+  box.querySelector(".isl-m").textContent = d < 0.01 ? "La recta pasa por el vértice óptimo: es el último punto de la región que toca." : (max ? z <= L.R.z : z >= L.R.z) ? "La recta corta la región: hay soluciones factibles con este valor de Z, pero se puede mejorar desplazándola." : "La recta ya no toca la región: ninguna solución factible alcanza este valor de Z."; });
+
+/* ---------- Curva de costos de inventario: deslizador del tamaño de lote ---------- */
+function eoqSlider(D, S, H, fac, Q){ return '<div class="qsl no-print" data-d="' + D + '" data-s="' + S + '" data-h="' + H + '" data-f="' + fac + '" data-q="' + Q + '"><label>Prueba otro tamaño de lote: Q = <b class="qsl-v">' + n0(Q) + '</b></label><input type="range" min="' + Math.max(1, Q * 0.2) + '" max="' + Q * 3 + '" step="' + Math.max(1, Q / 200) + '" value="' + Q + '" aria-label="Tamaño de lote"><p class="hint qsl-m"></p></div>'; }
+function eoqSlUpd(box){ const D = +box.dataset.d, S = +box.dataset.s, H = +box.dataset.h, fac = +box.dataset.f, Q0 = +box.dataset.q, q = +box.querySelector("input").value;
+  const cp = D / q * S, cm = H * q * fac / 2, ct = cp + cm, c0 = D / Q0 * S + H * Q0 * fac / 2;
+  box.querySelector(".qsl-v").textContent = n0(q); box.querySelector(".qsl-m").innerHTML = "Pedir: " + money(cp) + " · mantener: " + money(cm) + " · total: <b>" + money(ct) + "</b> (" + (ct - c0 < 0.5 ? "es el mínimo" : "+" + pc((ct - c0) / c0, 1) + " sobre el mínimo") + ")."; }
+document.addEventListener("input", e => { const s = e.target.closest && e.target.closest(".qsl input"); if (s) eoqSlUpd(s.closest(".qsl")); });
+
+/* ---------- Resultado actualizado en vivo mientras se escriben los datos ---------- */
+const LIVE_SKIP = new Set(["generador-informe", "citas-apa", "conversor", "simulacion-mc"]);
+const liveOn = () => { try { return localStorage.getItem(KEY + "-live") !== "0"; } catch (e) { return true; } };
+let liveT = null;
+function liveRes(id){
+  if (cur !== id || !C[id] || document.querySelector(".card.form .field.v-bad")) return;
+  S.v[id] = collect(id); S.done[id] = Date.now(); S.snap[id] = JSON.stringify(S.v[id]); save();
+  const t = document.createElement("template"); t.innerHTML = mFill(calcPage(id)); const nr = t.content.querySelector("#res"), or = document.getElementById("res"); if (!nr || !or) return;
+  const det = or.querySelector("details.usados"); if (det && det.open) { const d2 = nr.querySelector("details.usados"); if (d2) d2.open = true; }
+  or.replaceWith(nr); try { abbrify(nr); } catch (e) {} try { wrapWide(nr); katexMotor(nr); } catch (e) {} try { nr.querySelectorAll(".qsl").forEach(eoqSlUpd); } catch (e) {}
+}
+document.addEventListener("input", e => { const el = e.target; if (!el.dataset || !el.dataset.c || !el.dataset.k || LIVE_SKIP.has(el.dataset.c) || !liveOn()) return; clearTimeout(liveT); const id = el.dataset.c; liveT = setTimeout(() => liveRes(id), 650); });
+document.addEventListener("change", e => { const el = e.target; if (el.matches && el.matches("[data-live-toggle]")) { try { localStorage.setItem(KEY + "-live", el.checked ? "1" : "0"); } catch (er) {} toast(el.checked ? "El resultado se actualizará mientras escribes" : "El resultado se actualizará al presionar Calcular"); return; }
+  if (el.dataset && el.dataset.c && el.dataset.k && el.tagName === "SELECT" && !el.dataset.re && !LIVE_SKIP.has(el.dataset.c) && liveOn()) { clearTimeout(liveT); const id = el.dataset.c; liveT = setTimeout(() => liveRes(id), 200); } });
+function wc1Init(root){
+  const a = root.querySelector(".card.form .actions"); if (a && C[cur] && !LIVE_SKIP.has(cur) && !a.querySelector("[data-live-toggle]")) a.insertAdjacentHTML("beforeend", '<label class="chk livechk no-print"><input type="checkbox" data-live-toggle' + (liveOn() ? " checked" : "") + "> Actualizar el resultado mientras escribo</label>");
+  root.querySelectorAll(".qsl").forEach(eoqSlUpd); }
 /* ============ PÁGINAS Y NAVEGACIÓN ============ */
 const GROUPS = { malla:"Mi malla (UNAB)", carrera:"Carrera y trabajo", eco:"Economía y finanzas", ops:"Producción y logística", trab:"Estudio del trabajo", cal:"Calidad y estadística", io:"Investigación de operaciones", seg:"Seguridad y ambiente", ges:"Gestión y mejora", inf:"Informes", rep:"Reportes", ind:"Industrias", sab:"Saberes de otras disciplinas", des:"Desarrollo personal y profesional", ofi:"Excel y Word", learn:"Aprender", sim:"Simuladores de software" };
 const indId = x => "ind-" + x[0].normalize("NFD").replace(/[̀-ͯ]/g, "");
