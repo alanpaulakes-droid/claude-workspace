@@ -23,7 +23,7 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys()
-      .then(ks => Promise.all(ks.map(k => k !== CACHE ? caches.delete(k) : null)))
+      .then(ks => Promise.all(ks.map(k => (k.startsWith('portal-estudio-') && k !== CACHE) ? caches.delete(k) : null)))
       .then(() => self.clients.claim())
   );
 });

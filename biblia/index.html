@@ -13529,7 +13529,7 @@ document.getElementById("backBtn").addEventListener("click", goBack);
 <button id="pwaInstall" type="button" hidden style="position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:60;padding:10px 16px;border-radius:999px;border:0;background:#123A63;color:#fff;font:600 14px system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.25)">Instalar app</button>
 <script>
 (function(){
-  if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
+  if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ navigator.serviceWorker.register('biblia-sw.js').catch(function(){}); }); }
   var ev = null, b = document.getElementById('pwaInstall');
   window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); ev = e; b.hidden = false; });
   b.addEventListener('click', function(){ if (!ev) return; ev.prompt(); ev.userChoice.finally(function(){ ev = null; b.hidden = true; }); });

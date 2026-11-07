@@ -1,5 +1,6 @@
 /* Biblia del Ingeniero Industrial — Service Worker (funciona sin conexión)
    Ubicado en /biblia/ → su alcance es solo /biblia/, aislado de las otras apps del repositorio.
+   Todas las apps comparten el mismo dominio y su almacenamiento de caché: este SW solo crea y borra cachés que empiezan con «biblia-».
    - La app (HTML): red primero, para recibir actualizaciones; sin conexión usa la copia guardada.
    - Librerías y fuentes externas (KaTeX, Google Fonts, pdfmake): se guardan la primera vez que se usan. */
 const CACHE = 'biblia-v1';
@@ -17,7 +18,7 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys()
-    .then(ks => Promise.all(ks.map(k => (k !== CACHE && k !== CDN) ? caches.delete(k) : null)))
+    .then(ks => Promise.all(ks.map(k => (k.startsWith('biblia-') && k !== CACHE && k !== CDN) ? caches.delete(k) : null)))
     .then(() => self.clients.claim()));
 });
 

@@ -59,6 +59,6 @@ Requieren Node y Playwright con Chromium, más `npm install` dentro de `tests/` 
 
 ## App instalable (PWA)
 
-`build.sh` también genera `biblia/` en la raíz del repositorio: `index.html` (la misma app, con manifiesto e íconos), `manifest.webmanifest`, `sw.js` (funcionamiento sin conexión) e íconos (`icon-180/192/512.png`, fuente en `pwa/icon.svg`).
+`build.sh` también genera `biblia/` en la raíz del repositorio: `index.html` (la misma app, con manifiesto e íconos), `manifest.webmanifest`, `biblia-sw.js` (funcionamiento sin conexión; solo crea y borra cachés `biblia-*`) e íconos (`icon-180/192/512.png`, fuente en `pwa/icon.svg`).
 Para instalarla, la carpeta `biblia/` debe publicarse por HTTPS (por ejemplo, GitHub Pages) y abrirse en el celular: Chrome muestra «Instalar app»; en iPhone, Safari → Compartir → «Agregar a pantalla de inicio».
 Al publicar una versión nueva, sube el número de `CACHE` en `pwa/sw.js` si cambian los íconos o el manifiesto (el HTML se actualiza solo).

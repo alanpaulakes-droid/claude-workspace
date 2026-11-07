@@ -12,7 +12,7 @@ node --check "$D/build/check.js"
 # Versión instalable (PWA) en /biblia/: cabecera con manifiesto e íconos, y registro del service worker
 mkdir -p "$D/../biblia"
 { awk -v f="$D/pwa/head-pwa.html" '/<\/head>/{while((getline l < f)>0) print l} {print}' "$D/head.html"; cat "$D/build/biblia.html"; cat "$D/pwa/foot-pwa.html"; printf '\n</body>\n</html>\n'; } > "$D/../biblia/index.html"
-cp "$D/pwa/manifest.webmanifest" "$D/pwa/sw.js" "$D/../biblia/"
+cp "$D/pwa/manifest.webmanifest" "$D/../biblia/"; cp "$D/pwa/sw.js" "$D/../biblia/biblia-sw.js"
 echo "OK: BIBLIA_INGENIERO_INDUSTRIAL.html ($(wc -c < "$D/../BIBLIA_INGENIERO_INDUSTRIAL.html") bytes)"
 if [ "$1" = "--test" ]; then
   (echo '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>'; cat "$D/build/biblia.html"; echo '</body></html>') > "$D/tests/test.html"
