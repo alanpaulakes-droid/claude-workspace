@@ -33,11 +33,12 @@ Todo el código corre dentro de una sola función `(() => { … })();`: los nomb
 | `wb2.js` | F3: 33 pruebas con resultado conocido (`TEST3`) |
 | `wc1.js` | F4: Ishikawa, red CPM, controles deslizantes, recálculo en vivo |
 | `wc2.js` | F5: exportar fichas, formulario y glosario; impresión; accesibilidad |
+| `wd1.js` – `wd4.js` | Bloques que faltaban en los temas (Fundamentos, ramos, saberes, desarrollo personal, gestión, informes, ofimática). Registros `T2` parciales: solo agregan bloques |
 | `p8.js` | Páginas, navegación, eventos y `render()` (va al final) |
 
 ## Pruebas (`tests/`)
 
-Requieren Node y Playwright con Chromium. Se ejecutan desde `tests/` después de `build.sh --test`.
+Requieren Node y Playwright con Chromium, más `npm install` dentro de `tests/` (axe-core y pdfmake). Se ejecutan desde `tests/` después de `build.sh --test`.
 
 | Script | Qué verifica | Resultado esperado |
 |---|---|---|
@@ -51,4 +52,6 @@ Requieren Node y Playwright con Chromium. Se ejecutan desde `tests/` después de
 | `ax5.js` | accesibilidad WCAG AA (necesita `axe-core`) | sin violaciones |
 | `perf5.js` | carga, render por página y errores de consola | `ERR [] 0` |
 | `ex6.js` | exportación de fichas, formulario y glosario (necesita `pdfmake@0.2.7`) | sin errores |
+| `pend.js` | bloques pendientes por tema | `con pendientes 0` |
+| `kx5.js ruta/katex.min.js ids` | fórmulas TeX de los temas indicados | `bad 0` |
 | `txt5.js`, `sp5.py` | extracción de texto y revisión ortográfica | lista de candidatos |

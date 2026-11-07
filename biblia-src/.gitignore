@@ -6,3 +6,4 @@ tests/exp5/
 tests/node_modules/
 tests/*.out
 alltext.json
+tests/package-lock.json

@@ -202,6 +202,7 @@ function t2Blocks(id){
   if (x.con) B.con = [mk("Conceptos clave", x.con)];
   const fv = n => esc(n).replace(/_\(?([A-Za-z0-9áéíóú,−\-]+)\)?/g, "<sub>$1</sub>").replace(/\^([0-9*]+)/g, "<sup>$1</sup>");
   if (x.fx && x.fx.length) B.fx = [mk("Fórmulas clave y por qué funcionan", x.fx.map(f => UI.formula(f[0], f[1], f[2], (f[3] || []).map(v => [fv(v[0]), v[1]]), f[4])).join(""))];
+  if (x.fxH) B.fx = (B.fx || []).concat([mk(x.fxT || "Estructuras clave (este ramo no se apoya en fórmulas)", x.fxH)]);
   if (x.met) B.met = [mk("Método paso a paso", x.met)];
   if (x.ejB) B.ej = [mk("Ejemplo básico: " + x.ejB[0], x.ejB[1])].concat((!x.ejA ? [] : Array.isArray(x.ejA[0]) ? x.ejA : [x.ejA]).map(e => mk("Ejemplo avanzado: " + e[0], e[1])));
   if (x.err) B.err = [mk("Errores comunes", x.err)];
