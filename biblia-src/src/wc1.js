@@ -66,7 +66,7 @@ function liveRes(id){
   S.v[id] = collect(id); S.done[id] = Date.now(); S.snap[id] = JSON.stringify(S.v[id]); save();
   const t = document.createElement("template"); t.innerHTML = mFill(calcPage(id)); const nr = t.content.querySelector("#res"), or = document.getElementById("res"); if (!nr || !or) return;
   const det = or.querySelector("details.usados"); if (det && det.open) { const d2 = nr.querySelector("details.usados"); if (d2) d2.open = true; }
-  or.replaceWith(nr); try { abbrify(nr); } catch (e) {} try { wrapWide(nr); katexMotor(nr); } catch (e) {} try { nr.querySelectorAll(".qsl").forEach(eoqSlUpd); } catch (e) {}
+  or.replaceWith(nr); try { abbrify(nr); } catch (e) {} try { calloutCap(document.getElementById("app")); } catch (e) {} try { wrapWide(nr); katexMotor(nr); } catch (e) {} try { nr.querySelectorAll(".qsl").forEach(eoqSlUpd); } catch (e) {}
 }
 document.addEventListener("input", e => { const el = e.target; if (!el.dataset || !el.dataset.c || !el.dataset.k || LIVE_SKIP.has(el.dataset.c) || !liveOn()) return; clearTimeout(liveT); const id = el.dataset.c; liveT = setTimeout(() => liveRes(id), 650); });
 document.addEventListener("change", e => { const el = e.target; if (el.matches && el.matches("[data-live-toggle]")) { try { localStorage.setItem(KEY + "-live", el.checked ? "1" : "0"); } catch (er) {} toast(el.checked ? "El resultado se actualizará mientras escribes" : "El resultado se actualizará al presionar Calcular"); return; }

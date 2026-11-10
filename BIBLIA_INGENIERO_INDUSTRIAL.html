@@ -776,6 +776,73 @@ body.sheet-open{overflow:hidden}
   .sheet-in{margin-top:0;width:100%;height:100%;max-height:none;border-radius:0;border:0}
   .panel{padding:var(--sp-4)}
 }
+/* ===== F3 · MENOS CAJAS, MÁS JERARQUÍA ===== */
+/* pestañas fijas con las secciones del tema */
+.t8{margin:var(--sp-6) 0 var(--sp-8)}
+.t8-nav{display:block;position:sticky;top:calc(env(safe-area-inset-top,0px) + 56px);z-index:5;margin:0 0 var(--sp-6);background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.t8-tabs{display:flex;gap:var(--sp-1);overflow-x:auto;scrollbar-width:none;padding-inline:var(--sp-2);-webkit-mask-image:linear-gradient(90deg,transparent,black 12px,black calc(100% - 20px),transparent);mask-image:linear-gradient(90deg,transparent,black 12px,black calc(100% - 20px),transparent)}
+.t8-tabs::-webkit-scrollbar{display:none}
+.t8-nav .t8-tabs button{flex:none;display:block;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;color:var(--muted);font:inherit;font-size:var(--fs--1);font-weight:var(--fw-med);padding:var(--sp-3) var(--sp-2);min-height:var(--tap);white-space:nowrap;cursor:pointer;transition:color var(--dur-1),border-color var(--dur-1)}
+.t8-nav .t8-tabs button:hover{color:var(--ink)}
+.t8-nav .t8-tabs button[aria-current]{color:var(--brand);border-bottom-color:var(--brand)}
+.t8-b{margin:0 0 var(--sp-10);scroll-margin-top:120px}
+.t8-h{font-size:var(--fs-3);font-weight:var(--fw-semi);gap:var(--sp-3);margin:0 0 var(--sp-5);padding-top:var(--sp-8);border-top:1px solid var(--line);align-items:baseline}
+.t8-b:first-of-type .t8-h{border-top:0;padding-top:0}
+.t8-n{width:auto;height:auto;background:none;color:var(--muted);font:var(--fw-med) var(--fs--1) var(--f-mono)}
+.t8-exp{margin:0 0 var(--sp-6)!important}
+/* subsecciones: texto con subtítulo (se pueden plegar) */
+#app details.item{border:0;border-radius:0;background:none;box-shadow:none;margin:0}
+#app details.item>summary,#app details.learn>summary{display:block;position:relative;padding:0 var(--sp-8) 0 0;min-height:0;font-family:var(--f-body);border:0!important;border-radius:0;background:none}
+#app details.item>summary:hover,#app details.learn>summary:hover{background:none}
+#app details.item>summary::before,#app details.learn>summary::before{content:"";position:absolute;right:var(--sp-2);top:.55em;left:auto;margin:0;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform var(--dur-1) var(--ease)}
+#app details.item:not([open])>summary::before,#app details.learn:not([open])>summary::before{transform:rotate(-45deg)}
+#app details.item .body,#app details.learn .body{padding:0}
+#app details.item.sub{margin:0 0 var(--sp-8)}
+#app details.item.sub>summary{font-size:var(--fs-1);font-weight:var(--fw-semi);line-height:var(--lh-tight);color:var(--ink);margin:0 0 var(--sp-3)}
+#app details.item.fold{border-top:1px solid var(--line);margin:0}
+#app details.item.fold:last-of-type,#app details.item.fold+:not(details){border-bottom:0}
+#app details.item.fold+details.item.sub{margin-top:var(--sp-8)}
+#app details.item.fold>summary{font-size:var(--fs-0);font-weight:var(--fw-med);color:var(--ink-2);padding:var(--sp-3) var(--sp-8) var(--sp-3) 0;min-height:var(--tap);display:flex;align-items:center}
+#app details.item.fold>summary::before{top:50%;margin-top:-6px}
+#app details.item.fold[open]>summary{color:var(--ink)}
+#app details.item.fold>.body{padding:0 0 var(--sp-5)}
+#app details.item+.t2-flat,#app .t2-flat+details.item{margin-top:var(--sp-6)}
+.t2-flat{margin:0 0 var(--sp-6)}
+/* componentes: sin caja salvo objetos independientes (calculadora, ficha, KPI) */
+#app .c-fx{border:0;background:none;padding:0;margin:var(--sp-6) 0}
+#app .c-fx>.c-h,#app .c-ex>.c-h,#app .c-ej>.c-h{font-size:var(--fs--1);font-weight:var(--fw-semi);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 var(--sp-2)}
+#app .c-fx>.c-h{color:var(--ink);text-transform:none;letter-spacing:0;font-size:var(--fs-0)}
+#app .c-vars{margin:var(--sp-3) 0 0;padding-left:var(--sp-3);border-left:2px solid var(--line)}
+#app .c-ex,#app .c-ej{border:0;background:none;padding:0;margin:var(--sp-6) 0}
+#app details.c-hint,#app details.c-why{border:0;border-top:1px solid var(--line);border-radius:0;background:none;margin:0}
+#app details.c-hint:last-of-type{border-bottom:1px solid var(--line)}
+#app details.c-hint>summary,#app details.c-why>summary{padding:var(--sp-3) 0;min-height:var(--tap);display:flex;align-items:center;gap:var(--sp-2);color:var(--brand)}
+#app details.c-sol>summary{color:var(--ok)}
+#app details.c-hint>div,#app details.c-why>div{padding:0 0 var(--sp-4)}
+#app .c-card{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-4);padding:var(--sp-5)}
+/* avisos: hasta 2 destacados por página; el resto, como texto con etiqueta */
+.note{border:0;border-left:3px solid currentColor;border-radius:0 var(--r-3) var(--r-3) 0;padding:var(--sp-3) var(--sp-4)}
+#app .c-err{border:0;border-left:3px solid var(--bad);border-radius:0 var(--r-3) var(--r-3) 0;background:var(--bad-soft);padding:var(--sp-3) var(--sp-4)}
+#app .note.flat,#app .c-err.flat{background:none;border-left:2px solid var(--line2);border-radius:0;padding:0 0 0 var(--sp-3);color:var(--ink-2)}
+#app .c-err.flat>.c-h{color:var(--bad)}
+/* figuras y bloques explicativos sin marco */
+figure.ch,figure.dg{background:none!important;border:0;border-radius:0;padding:0;margin:var(--sp-6) 0}
+figure.ch figcaption{font-size:var(--fs--1);margin-top:var(--sp-2)}
+.deep-b,.deep-b.why,.deep-b.use,.deep-b.ejr{border:0;background:none;padding:0;margin:var(--sp-5) 0}
+.deep-b h4{color:var(--muted)}
+.howto{border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0;background:none;padding:var(--sp-1) 0;margin:0 0 var(--sp-5)}
+.howto>summary{min-height:var(--tap);display:flex;align-items:center}
+.pidx{border:0;background:none;padding:0}
+.tips li{background:none;border:0;border-radius:0;padding:var(--sp-1) 0 var(--sp-1) var(--sp-5);position:relative}
+.tips li::before{content:"";position:absolute;left:2px;top:.7em;width:7px;height:7px;border-radius:50%;background:var(--ok)}
+/* mosaicos y portadas: listas con divisores en vez de tarjetas */
+.tiles,.mods,.areas{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:0 var(--sp-8)}
+.tile,.mod,.area-c{border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none;background:none;padding:var(--sp-3) 0;min-height:var(--tap)}
+.tile:hover,.mod:hover,.area-c:hover{background:none;border-color:var(--line);box-shadow:none;transform:none}
+.tile:hover .tt,.mod:hover .mt,.area-c:hover .area-t{color:var(--brand)}
+.tile .ti,.mod .mi{border:0}
+.mod .mi{background:var(--brand-soft)}
+@media (max-width:640px){.mods{grid-template-columns:minmax(0,1fr)}}
 /* ===== SISTEMA DE DISEÑO · base (va al final: manda sobre las capas anteriores) ===== */
 svg.icon{width:1.25em;height:1.25em;flex:none;display:inline-block;vertical-align:-.25em;fill:none;stroke:currentColor;overflow:visible}
 .iconb svg.icon,.tabbar svg.icon,.mod .mi svg.icon,.tile .ti svg.icon{width:20px;height:20px;vertical-align:0}
@@ -8251,7 +8318,7 @@ function eqInit(el){
       else msg.innerHTML = note("La expresión no es equivalente. Revisa paréntesis: en formato lineal, todo el numerador o el denominador con más de un término debe ir entre paréntesis.", "bad"); }
     catch (x) { msg.innerHTML = note("No se pudo interpretar: " + esc(x.message) + ".", "bad"); } });
 }
-function afterRender(root){ try { pageEnter(root); setTimeout(() => tocBuild(root), 0); } catch (e) {} try { if (root.querySelector("[data-cr]")) dsContrast(root); } catch (e) {} try { if (typeof a11yScroll === "function") { setTimeout(() => a11yScroll(root), 60); setTimeout(() => a11yScroll(root), 900); } } catch (e) {} try { if (typeof w6Init === "function") setTimeout(() => w6Init(root), 0); } catch (e) {} root.querySelectorAll("textarea[data-c][data-k]").forEach(t => { try { gridInit(t); } catch (e) { console.error(e); } }); root.querySelectorAll("[data-xls]").forEach(xlsInit); root.querySelectorAll("[data-wdx]").forEach(wdInit); root.querySelectorAll("[data-eqx]").forEach(eqInit); if (typeof simInit === "function") root.querySelectorAll("[data-sim]").forEach(simInit); if (typeof ishiUI === "function") ishiUI(root); if (typeof w7Init === "function") try { w7Init(root); } catch (e) { console.error(e); } if (typeof wc1Init === "function") try { wc1Init(root); } catch (e) { console.error(e); } }
+function afterRender(root){ try { pageEnter(root); calloutCap(root); setTimeout(() => { calloutCap(root); tocBuild(root); t8Spy(root); }, 0); setTimeout(() => calloutCap(root), 120); } catch (e) {} try { if (root.querySelector("[data-cr]")) dsContrast(root); } catch (e) {} try { if (typeof a11yScroll === "function") { setTimeout(() => a11yScroll(root), 60); setTimeout(() => a11yScroll(root), 900); } } catch (e) {} try { if (typeof w6Init === "function") setTimeout(() => w6Init(root), 0); } catch (e) {} root.querySelectorAll("textarea[data-c][data-k]").forEach(t => { try { gridInit(t); } catch (e) { console.error(e); } }); root.querySelectorAll("[data-xls]").forEach(xlsInit); root.querySelectorAll("[data-wdx]").forEach(wdInit); root.querySelectorAll("[data-eqx]").forEach(eqInit); if (typeof simInit === "function") root.querySelectorAll("[data-sim]").forEach(simInit); if (typeof ishiUI === "function") ishiUI(root); if (typeof w7Init === "function") try { w7Init(root); } catch (e) { console.error(e); } if (typeof wc1Init === "function") try { wc1Init(root); } catch (e) { console.error(e); } }
 
 /* ---------- Ilustraciones de las ventanas ---------- */
 Object.assign(D, {
@@ -11121,6 +11188,11 @@ function t8Applies(id){ const p = pageOf(id); if (!p || T8_SKIP.has(id)) return 
   if (["lean", "mejora-continua", "calidad-7", "gestion-proyectos", "kpis"].includes(id)) return true;
   return !!SAB.find(x => x.id === id); }
 
+/* Tipo de tema: procedimiento (herramientas de gestión, ofimática, informes) o conceptual (lecciones, ramos, saberes) */
+const T8_PROC = new Set(["foda", "canvas", "raci", "sipoc", "ishikawa", "porques", "kpis", "mejora-continua", "calidad-7", "lean", "gestion-proyectos", "citas-apa", "generador-informe", "conversor"]);
+function t8Kind(id){ const p = pageOf(id); return T8_PROC.has(id) || ["ges", "ofi", "inf"].includes(p.g) ? "proc" : "conc"; }
+/* Material de consulta que queda plegado: historia, fuentes, siglas, comparaciones, explicación extendida, datos de entrada */
+const T8_FOLD = /historia|origen|fuentes|lecturas|bibliografia|siglas|comparacion|desde cero|mas a fondo|explicado en detalle|datos usados|tips del experto|notas practicas|preguntas frecuentes/;
 const kids = (el, sel) => [...el.children].filter(c => c.matches(sel)), kid1 = (el, sel) => kids(el, sel)[0] || null;
 function tpl8HTML(id, html){ if (window.__noT8) return html;
   if (!t8Applies(id)) return html;
@@ -11149,28 +11221,26 @@ function tpl8HTML(id, html){ if (window.__noT8) return html;
   if (!ds.length && !B.con.length && !B.def.length) return html;
   ds.forEach(d => { const s = d.querySelector(":scope > summary"); const k = rd && /^\d+\./.test(s.textContent.trim()) ? "con" : t8Class(s ? s.textContent : ""); B[k].push(d); });
   { const X = typeof t2Blocks === "function" ? t2Blocks(id) : null; if (X) Object.keys(X).forEach(k => { B[k] = X[k].concat(B[k]); }); }
-  /* 4) se arma la plantilla en el lugar de la primera sección */
+  /* 4) se arma el tema. El orden depende del tipo de contenido (F3):
+     cálculo → fórmulas y método primero; procedimiento → cómo se hace primero; conceptual → definición primero.
+     Los bloques sin contenido propio no se muestran (antes aparecían como «pendiente» o como lista de referencias). */
+  const kind = isCalc ? "calc" : t8Kind(id);
+  const ORD = { calc:["fx", "met", "ej", "err", "ejer", "def", "con", "fic"], proc:["met", "ej", "err", "def", "con", "fx", "ejer", "fic"], conc:["def", "con", "fx", "met", "ej", "err", "ejer", "fic"] }[kind];
+  const NAME = Object.assign(Object.fromEntries(T8), kind === "calc" ? { def:"Qué es y de dónde viene", ejer:"Practica" } : kind === "proc" ? { met:"Cómo se hace", ejer:"Practica" } : { ejer:"Practica" });
+  const SEC = ORD.filter(k => B[k].length);
   const anchor = ds[0] || kid1(host, "h2.sh, .quick, .actions") || null;
-  const wrap = document.createElement("div"); wrap.className = "t8";
-  wrap.innerHTML = '<nav class="t8-nav no-print" aria-label="Bloques del tema">' + T8.map((b, i) => '<button type="button" data-t8="' + b[0] + '"' + (B[b[0]].length ? "" : ' class="t8-empty" data-empty="1"') + "><span>" + (i + 1) + "</span>" + b[1] + "</button>").join("") + "</nav>";
-  T8.forEach((b, i) => { const sec = document.createElement("section"); sec.className = "t8-b"; sec.id = "t8-" + b[0]; sec.setAttribute("aria-labelledby", "t8h-" + b[0]);
-    sec.innerHTML = '<h2 class="t8-h" id="t8h-' + b[0] + '"><span class="t8-n">' + (i + 1) + "</span>" + b[1] + (B[b[0]].length > 1 ? ' <span class="cnt">' + B[b[0]].length + "</span>" : "") + "</h2>";
-    if (B[b[0]].length) B[b[0]].forEach(d => sec.appendChild(d)); else sec.insertAdjacentHTML("beforeend", '<p class="t8-pend">Pendiente: este bloque se completa en la Fase 2 (contenido). ' + (b[0] === "ejer" ? "Mientras tanto, practica con el ejemplo resuelto y la calculadora o el quiz relacionados." : b[0] === "def" ? "Por ahora, la descripción breve del tema está bajo el título de la página." : "") + "</p>");
-    wrap.appendChild(sec); });
-  /* referencias internas: subtítulos de otras secciones que corresponden a este bloque (sin duplicar contenido) */
-  let rn = 0;
-  ["fx", "met", "ej", "err", "ejer"].forEach(k => { const sec = wrap.querySelector("#t8-" + k), refs = [];
-    wrap.querySelectorAll(".t8-b:not(#t8-" + k + ") details.item h3, .t8-b:not(#t8-" + k + ") details.item h4").forEach(h => { if (refs.length >= 14) return; const tx = h.textContent.trim(); if (tx.length < 4 || t8Class(tx) !== k) return;
-      const d = h.closest("details.item"), st = d ? d.querySelector(":scope > summary").textContent.trim().replace(/^\d+\.\s*/, "") : ""; h.id = h.id || "t8r-" + (++rn); refs.push('<button type="button" class="chip" data-t8ref="' + h.id + '">' + esc(st.slice(0, 48)) + " › " + esc(tx.slice(0, 60)) + "</button>"); });
-    if (!refs.length) return; const pend = sec.querySelector(".t8-pend");
-    const box = '<div class="t8-refs"><p class="hint">' + (pend ? "Este bloque aún no tiene una sección propia, pero el contenido está dentro de otras secciones del tema:" : "También dentro de otras secciones del tema:") + '</p><div class="quick">' + refs.join("") + "</div></div>";
-    if (pend) { pend.outerHTML = box; const nb = wrap.querySelector('[data-t8="' + k + '"]'); if (nb) { nb.classList.remove("t8-empty"); nb.classList.add("t8-ref"); } } else sec.insertAdjacentHTML("beforeend", box); });
+  const wrap = document.createElement("div"); wrap.className = "t8 t8-" + kind;
+  wrap.innerHTML = '<nav class="t8-nav no-print" aria-label="Secciones del tema"><div class="t8-tabs">' + SEC.map(k => '<button type="button" data-t8="' + k + '">' + NAME[k] + "</button>").join("") + "</div></nav>";
+  SEC.forEach((k, i) => { const sec = document.createElement("section"); sec.className = "t8-b"; sec.id = "t8-" + k; sec.setAttribute("aria-labelledby", "t8h-" + k);
+    sec.innerHTML = '<h2 class="t8-h" id="t8h-' + k + '"><span class="t8-n">' + (i + 1) + "</span>" + NAME[k] + "</h2>";
+    B[k].forEach(d => sec.appendChild(d)); wrap.appendChild(sec); });
   if (typeof expBar === "function" && !R.querySelector('.expb [data-kind="ramo"],.expb [data-kind="saber"]')) wrap.querySelector(".t8-nav").insertAdjacentHTML("afterend", expBar("pagina", id));
   else wrap.querySelector(".t8-nav").insertAdjacentHTML("afterend", '<div class="actions no-print t8-exp">' + prnBtn + "</div>");
   if (anchor && anchor.parentNode === host) host.insertBefore(wrap, anchor); else host.appendChild(wrap);
-  if (isCalc) { const hint = kid1(host, "p.hint"); if (hint) hint.textContent = "El tema sigue siempre el mismo orden: definición, conceptos, fórmulas, método, ejemplo, errores, ejercicio y ficha resumen. Abre cada sección para estudiarla."; }
-  /* la primera sección del primer bloque con contenido queda abierta */
-  const first = wrap.querySelector("details.item"); wrap.querySelectorAll("details.item").forEach(d => d.open = d === first);
+  if (isCalc) { const hint = kid1(host, "p.hint"); if (hint) hint.textContent = "Primero las fórmulas y el método; después un ejemplo resuelto, los errores más comunes y ejercicios para practicar."; }
+  /* subsecciones: las principales quedan abiertas y se leen como texto con subtítulo; el material de consulta queda plegado */
+  wrap.querySelectorAll("details.item").forEach(d => { const sm = d.querySelector(":scope > summary"), t = t8n(sm ? sm.textContent : "");
+    const sec2 = T8_FOLD.test(t); d.classList.add(sec2 ? "fold" : "sub"); d.open = !sec2; });
   return T.innerHTML;
 }
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-t8ref]"); if (!b) return; const h = document.getElementById(b.dataset.t8ref); if (!h) return; let p = h.parentElement; while (p) { if (p.tagName === "DETAILS") p.open = true; p = p.parentElement; } h.scrollIntoView({ behavior:"smooth", block:"start" }); h.classList.add("t8-flash"); setTimeout(() => h.classList.remove("t8-flash"), 1600); });
@@ -11374,7 +11444,10 @@ T2["stock-seguridad"] = {
 /* ---------- Bloques nuevos como secciones desplegables ---------- */
 function t2Blocks(id){
   const x = T2[id]; if (!x) return null; const B = {}, pre = x.tema ? x.tema + " · " : "";
-  const mk = (t, h, open) => { const d = document.createElement("details"); d.className = "item t2"; if (open) d.open = true; d.innerHTML = "<summary>" + pre + t + '</summary><div class="body prose">' + h + "</div>"; return d; };
+  /* Si el título repite el nombre de la sección (p. ej. «Definición» dentro de «Definición»), el contenido va directo, sin envoltorio */
+  const FLAT = /^(Definición|Conceptos clave|Fórmulas clave y por qué funcionan|Método paso a paso|Errores comunes|Ejercicio con pistas|Ficha resumen)$/;
+  const mk = (t, h, open) => { if (FLAT.test(t)) { const f = document.createElement("div"); f.className = "t2-flat body prose"; f.innerHTML = h; return f; }
+    const d = document.createElement("details"); d.className = "item t2"; if (open) d.open = true; d.innerHTML = "<summary>" + pre + t + '</summary><div class="body prose">' + h + "</div>"; return d; };
   if (x.def) B.def = [mk("Definición", x.def)];
   if (x.con) B.con = [mk("Conceptos clave", x.con)];
   const fv = n => esc(n).replace(/_\(?([A-Za-z0-9áéíóú,−\-]+)\)?/g, "<sub>$1</sub>").replace(/\^([0-9*]+)/g, "<sup>$1</sup>");
@@ -12631,7 +12704,7 @@ function liveRes(id){
   S.v[id] = collect(id); S.done[id] = Date.now(); S.snap[id] = JSON.stringify(S.v[id]); save();
   const t = document.createElement("template"); t.innerHTML = mFill(calcPage(id)); const nr = t.content.querySelector("#res"), or = document.getElementById("res"); if (!nr || !or) return;
   const det = or.querySelector("details.usados"); if (det && det.open) { const d2 = nr.querySelector("details.usados"); if (d2) d2.open = true; }
-  or.replaceWith(nr); try { abbrify(nr); } catch (e) {} try { wrapWide(nr); katexMotor(nr); } catch (e) {} try { nr.querySelectorAll(".qsl").forEach(eoqSlUpd); } catch (e) {}
+  or.replaceWith(nr); try { abbrify(nr); } catch (e) {} try { calloutCap(document.getElementById("app")); } catch (e) {} try { wrapWide(nr); katexMotor(nr); } catch (e) {} try { nr.querySelectorAll(".qsl").forEach(eoqSlUpd); } catch (e) {}
 }
 document.addEventListener("input", e => { const el = e.target; if (!el.dataset || !el.dataset.c || !el.dataset.k || LIVE_SKIP.has(el.dataset.c) || !liveOn()) return; clearTimeout(liveT); const id = el.dataset.c; liveT = setTimeout(() => liveRes(id), 650); });
 document.addEventListener("change", e => { const el = e.target; if (el.matches && el.matches("[data-live-toggle]")) { try { localStorage.setItem(KEY + "-live", el.checked ? "1" : "0"); } catch (er) {} toast(el.checked ? "El resultado se actualizará mientras escribes" : "El resultado se actualizará al presionar Calcular"); return; }
@@ -13573,6 +13646,22 @@ document.addEventListener("click", e => { const b = e.target.closest && e.target
 
 /* ---------- Transición de entrada de página ---------- */
 function pageEnter(root){ root.classList.remove("enter"); void root.offsetWidth; root.classList.add("enter"); }
+
+/* ---------- F3 · máximo 2 avisos destacados por página ----------
+   Se priorizan los errores y advertencias; el resto se muestra como texto con etiqueta (clase «flat»), sin caja. */
+function calloutCap(root){ const all = [...root.querySelectorAll(".note,.c-err")]; all.forEach(n => n.classList.remove("flat"));
+  const pr = n => n.classList.contains("bad") ? 0 : n.classList.contains("c-err") ? 1 : n.classList.contains("info") ? 3 : n.classList.contains("ok") ? 4 : 2;
+  const keep = new Set(all.map((n, i) => [n, i]).sort((a, b) => pr(a[0]) - pr(b[0]) || a[1] - b[1]).slice(0, 2).map(x => x[0]));
+  all.forEach(n => { if (!keep.has(n)) n.classList.add("flat"); }); }
+
+/* ---------- F3 · pestañas de secciones del tema: marca la que se está leyendo ---------- */
+let T8_IO = null;
+function t8Spy(root){ if (T8_IO) { T8_IO.disconnect(); T8_IO = null; } const tabs = root.querySelector(".t8-tabs"); if (!tabs || !("IntersectionObserver" in window)) return;
+  const secs = [...root.querySelectorAll(".t8-b")], vis = new Set();
+  T8_IO = new IntersectionObserver(es => { es.forEach(en => en.isIntersecting ? vis.add(en.target.id) : vis.delete(en.target.id)); const f = secs.find(x => vis.has(x.id)); if (!f) return;
+    tabs.querySelectorAll("[aria-current]").forEach(b => b.removeAttribute("aria-current")); const b = tabs.querySelector('[data-t8="' + f.id.slice(3) + '"]');
+    if (b) { b.setAttribute("aria-current", "true"); const l = b.offsetLeft - 16; if (Math.abs(tabs.scrollLeft - l) > 40) tabs.scrollTo({ left:l, behavior:"auto" }); } }, { rootMargin:"-120px 0px -55% 0px" });
+  secs.forEach(x => T8_IO.observe(x)); }
 /* ============ PÁGINAS Y NAVEGACIÓN ============ */
 const GROUPS = { malla:"Mi malla (UNAB)", carrera:"Carrera y trabajo", eco:"Economía y finanzas", ops:"Producción y logística", trab:"Estudio del trabajo", cal:"Calidad y estadística", io:"Investigación de operaciones", seg:"Seguridad y ambiente", ges:"Gestión y mejora", inf:"Informes", rep:"Reportes", ind:"Industrias", sab:"Saberes de otras disciplinas", des:"Desarrollo personal y profesional", ofi:"Excel y Word", learn:"Aprender", sim:"Simuladores de software" };
 const indId = x => "ind-" + x[0].normalize("NFD").replace(/[̀-ͯ]/g, "");

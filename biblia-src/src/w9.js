@@ -197,7 +197,10 @@ T2["stock-seguridad"] = {
 /* ---------- Bloques nuevos como secciones desplegables ---------- */
 function t2Blocks(id){
   const x = T2[id]; if (!x) return null; const B = {}, pre = x.tema ? x.tema + " · " : "";
-  const mk = (t, h, open) => { const d = document.createElement("details"); d.className = "item t2"; if (open) d.open = true; d.innerHTML = "<summary>" + pre + t + '</summary><div class="body prose">' + h + "</div>"; return d; };
+  /* Si el título repite el nombre de la sección (p. ej. «Definición» dentro de «Definición»), el contenido va directo, sin envoltorio */
+  const FLAT = /^(Definición|Conceptos clave|Fórmulas clave y por qué funcionan|Método paso a paso|Errores comunes|Ejercicio con pistas|Ficha resumen)$/;
+  const mk = (t, h, open) => { if (FLAT.test(t)) { const f = document.createElement("div"); f.className = "t2-flat body prose"; f.innerHTML = h; return f; }
+    const d = document.createElement("details"); d.className = "item t2"; if (open) d.open = true; d.innerHTML = "<summary>" + pre + t + '</summary><div class="body prose">' + h + "</div>"; return d; };
   if (x.def) B.def = [mk("Definición", x.def)];
   if (x.con) B.con = [mk("Conceptos clave", x.con)];
   const fv = n => esc(n).replace(/_\(?([A-Za-z0-9áéíóú,−\-]+)\)?/g, "<sub>$1</sub>").replace(/\^([0-9*]+)/g, "<sup>$1</sup>");

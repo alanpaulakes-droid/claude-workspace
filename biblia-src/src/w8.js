@@ -76,6 +76,11 @@ function t8Applies(id){ const p = pageOf(id); if (!p || T8_SKIP.has(id)) return 
   if (["lean", "mejora-continua", "calidad-7", "gestion-proyectos", "kpis"].includes(id)) return true;
   return !!SAB.find(x => x.id === id); }
 
+/* Tipo de tema: procedimiento (herramientas de gestión, ofimática, informes) o conceptual (lecciones, ramos, saberes) */
+const T8_PROC = new Set(["foda", "canvas", "raci", "sipoc", "ishikawa", "porques", "kpis", "mejora-continua", "calidad-7", "lean", "gestion-proyectos", "citas-apa", "generador-informe", "conversor"]);
+function t8Kind(id){ const p = pageOf(id); return T8_PROC.has(id) || ["ges", "ofi", "inf"].includes(p.g) ? "proc" : "conc"; }
+/* Material de consulta que queda plegado: historia, fuentes, siglas, comparaciones, explicación extendida, datos de entrada */
+const T8_FOLD = /historia|origen|fuentes|lecturas|bibliografia|siglas|comparacion|desde cero|mas a fondo|explicado en detalle|datos usados|tips del experto|notas practicas|preguntas frecuentes/;
 const kids = (el, sel) => [...el.children].filter(c => c.matches(sel)), kid1 = (el, sel) => kids(el, sel)[0] || null;
 function tpl8HTML(id, html){ if (window.__noT8) return html;
   if (!t8Applies(id)) return html;
@@ -104,28 +109,26 @@ function tpl8HTML(id, html){ if (window.__noT8) return html;
   if (!ds.length && !B.con.length && !B.def.length) return html;
   ds.forEach(d => { const s = d.querySelector(":scope > summary"); const k = rd && /^\d+\./.test(s.textContent.trim()) ? "con" : t8Class(s ? s.textContent : ""); B[k].push(d); });
   { const X = typeof t2Blocks === "function" ? t2Blocks(id) : null; if (X) Object.keys(X).forEach(k => { B[k] = X[k].concat(B[k]); }); }
-  /* 4) se arma la plantilla en el lugar de la primera sección */
+  /* 4) se arma el tema. El orden depende del tipo de contenido (F3):
+     cálculo → fórmulas y método primero; procedimiento → cómo se hace primero; conceptual → definición primero.
+     Los bloques sin contenido propio no se muestran (antes aparecían como «pendiente» o como lista de referencias). */
+  const kind = isCalc ? "calc" : t8Kind(id);
+  const ORD = { calc:["fx", "met", "ej", "err", "ejer", "def", "con", "fic"], proc:["met", "ej", "err", "def", "con", "fx", "ejer", "fic"], conc:["def", "con", "fx", "met", "ej", "err", "ejer", "fic"] }[kind];
+  const NAME = Object.assign(Object.fromEntries(T8), kind === "calc" ? { def:"Qué es y de dónde viene", ejer:"Practica" } : kind === "proc" ? { met:"Cómo se hace", ejer:"Practica" } : { ejer:"Practica" });
+  const SEC = ORD.filter(k => B[k].length);
   const anchor = ds[0] || kid1(host, "h2.sh, .quick, .actions") || null;
-  const wrap = document.createElement("div"); wrap.className = "t8";
-  wrap.innerHTML = '<nav class="t8-nav no-print" aria-label="Bloques del tema">' + T8.map((b, i) => '<button type="button" data-t8="' + b[0] + '"' + (B[b[0]].length ? "" : ' class="t8-empty" data-empty="1"') + "><span>" + (i + 1) + "</span>" + b[1] + "</button>").join("") + "</nav>";
-  T8.forEach((b, i) => { const sec = document.createElement("section"); sec.className = "t8-b"; sec.id = "t8-" + b[0]; sec.setAttribute("aria-labelledby", "t8h-" + b[0]);
-    sec.innerHTML = '<h2 class="t8-h" id="t8h-' + b[0] + '"><span class="t8-n">' + (i + 1) + "</span>" + b[1] + (B[b[0]].length > 1 ? ' <span class="cnt">' + B[b[0]].length + "</span>" : "") + "</h2>";
-    if (B[b[0]].length) B[b[0]].forEach(d => sec.appendChild(d)); else sec.insertAdjacentHTML("beforeend", '<p class="t8-pend">Pendiente: este bloque se completa en la Fase 2 (contenido). ' + (b[0] === "ejer" ? "Mientras tanto, practica con el ejemplo resuelto y la calculadora o el quiz relacionados." : b[0] === "def" ? "Por ahora, la descripción breve del tema está bajo el título de la página." : "") + "</p>");
-    wrap.appendChild(sec); });
-  /* referencias internas: subtítulos de otras secciones que corresponden a este bloque (sin duplicar contenido) */
-  let rn = 0;
-  ["fx", "met", "ej", "err", "ejer"].forEach(k => { const sec = wrap.querySelector("#t8-" + k), refs = [];
-    wrap.querySelectorAll(".t8-b:not(#t8-" + k + ") details.item h3, .t8-b:not(#t8-" + k + ") details.item h4").forEach(h => { if (refs.length >= 14) return; const tx = h.textContent.trim(); if (tx.length < 4 || t8Class(tx) !== k) return;
-      const d = h.closest("details.item"), st = d ? d.querySelector(":scope > summary").textContent.trim().replace(/^\d+\.\s*/, "") : ""; h.id = h.id || "t8r-" + (++rn); refs.push('<button type="button" class="chip" data-t8ref="' + h.id + '">' + esc(st.slice(0, 48)) + " › " + esc(tx.slice(0, 60)) + "</button>"); });
-    if (!refs.length) return; const pend = sec.querySelector(".t8-pend");
-    const box = '<div class="t8-refs"><p class="hint">' + (pend ? "Este bloque aún no tiene una sección propia, pero el contenido está dentro de otras secciones del tema:" : "También dentro de otras secciones del tema:") + '</p><div class="quick">' + refs.join("") + "</div></div>";
-    if (pend) { pend.outerHTML = box; const nb = wrap.querySelector('[data-t8="' + k + '"]'); if (nb) { nb.classList.remove("t8-empty"); nb.classList.add("t8-ref"); } } else sec.insertAdjacentHTML("beforeend", box); });
+  const wrap = document.createElement("div"); wrap.className = "t8 t8-" + kind;
+  wrap.innerHTML = '<nav class="t8-nav no-print" aria-label="Secciones del tema"><div class="t8-tabs">' + SEC.map(k => '<button type="button" data-t8="' + k + '">' + NAME[k] + "</button>").join("") + "</div></nav>";
+  SEC.forEach((k, i) => { const sec = document.createElement("section"); sec.className = "t8-b"; sec.id = "t8-" + k; sec.setAttribute("aria-labelledby", "t8h-" + k);
+    sec.innerHTML = '<h2 class="t8-h" id="t8h-' + k + '"><span class="t8-n">' + (i + 1) + "</span>" + NAME[k] + "</h2>";
+    B[k].forEach(d => sec.appendChild(d)); wrap.appendChild(sec); });
   if (typeof expBar === "function" && !R.querySelector('.expb [data-kind="ramo"],.expb [data-kind="saber"]')) wrap.querySelector(".t8-nav").insertAdjacentHTML("afterend", expBar("pagina", id));
   else wrap.querySelector(".t8-nav").insertAdjacentHTML("afterend", '<div class="actions no-print t8-exp">' + prnBtn + "</div>");
   if (anchor && anchor.parentNode === host) host.insertBefore(wrap, anchor); else host.appendChild(wrap);
-  if (isCalc) { const hint = kid1(host, "p.hint"); if (hint) hint.textContent = "El tema sigue siempre el mismo orden: definición, conceptos, fórmulas, método, ejemplo, errores, ejercicio y ficha resumen. Abre cada sección para estudiarla."; }
-  /* la primera sección del primer bloque con contenido queda abierta */
-  const first = wrap.querySelector("details.item"); wrap.querySelectorAll("details.item").forEach(d => d.open = d === first);
+  if (isCalc) { const hint = kid1(host, "p.hint"); if (hint) hint.textContent = "Primero las fórmulas y el método; después un ejemplo resuelto, los errores más comunes y ejercicios para practicar."; }
+  /* subsecciones: las principales quedan abiertas y se leen como texto con subtítulo; el material de consulta queda plegado */
+  wrap.querySelectorAll("details.item").forEach(d => { const sm = d.querySelector(":scope > summary"), t = t8n(sm ? sm.textContent : "");
+    const sec2 = T8_FOLD.test(t); d.classList.add(sec2 ? "fold" : "sub"); d.open = !sec2; });
   return T.innerHTML;
 }
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-t8ref]"); if (!b) return; const h = document.getElementById(b.dataset.t8ref); if (!h) return; let p = h.parentElement; while (p) { if (p.tagName === "DETAILS") p.open = true; p = p.parentElement; } h.scrollIntoView({ behavior:"smooth", block:"start" }); h.classList.add("t8-flash"); setTimeout(() => h.classList.remove("t8-flash"), 1600); });

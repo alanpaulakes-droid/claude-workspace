@@ -45,3 +45,19 @@ document.addEventListener("click", e => { const b = e.target.closest && e.target
 
 /* ---------- Transición de entrada de página ---------- */
 function pageEnter(root){ root.classList.remove("enter"); void root.offsetWidth; root.classList.add("enter"); }
+
+/* ---------- F3 · máximo 2 avisos destacados por página ----------
+   Se priorizan los errores y advertencias; el resto se muestra como texto con etiqueta (clase «flat»), sin caja. */
+function calloutCap(root){ const all = [...root.querySelectorAll(".note,.c-err")]; all.forEach(n => n.classList.remove("flat"));
+  const pr = n => n.classList.contains("bad") ? 0 : n.classList.contains("c-err") ? 1 : n.classList.contains("info") ? 3 : n.classList.contains("ok") ? 4 : 2;
+  const keep = new Set(all.map((n, i) => [n, i]).sort((a, b) => pr(a[0]) - pr(b[0]) || a[1] - b[1]).slice(0, 2).map(x => x[0]));
+  all.forEach(n => { if (!keep.has(n)) n.classList.add("flat"); }); }
+
+/* ---------- F3 · pestañas de secciones del tema: marca la que se está leyendo ---------- */
+let T8_IO = null;
+function t8Spy(root){ if (T8_IO) { T8_IO.disconnect(); T8_IO = null; } const tabs = root.querySelector(".t8-tabs"); if (!tabs || !("IntersectionObserver" in window)) return;
+  const secs = [...root.querySelectorAll(".t8-b")], vis = new Set();
+  T8_IO = new IntersectionObserver(es => { es.forEach(en => en.isIntersecting ? vis.add(en.target.id) : vis.delete(en.target.id)); const f = secs.find(x => vis.has(x.id)); if (!f) return;
+    tabs.querySelectorAll("[aria-current]").forEach(b => b.removeAttribute("aria-current")); const b = tabs.querySelector('[data-t8="' + f.id.slice(3) + '"]');
+    if (b) { b.setAttribute("aria-current", "true"); const l = b.offsetLeft - 16; if (Math.abs(tabs.scrollLeft - l) > 40) tabs.scrollTo({ left:l, behavior:"auto" }); } }, { rootMargin:"-120px 0px -55% 0px" });
+  secs.forEach(x => T8_IO.observe(x)); }
