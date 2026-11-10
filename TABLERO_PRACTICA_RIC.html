@@ -838,6 +838,7 @@ var RICEngine = (() => {
     BANCO_SEC: () => BANCO_SEC,
     COM: () => COM,
     CURVAS: () => CURVAS,
+    GENERADORES: () => GENERADORES,
     INTERVALOS: () => INTERVALOS,
     KMAG: () => KMAG,
     RIC: () => RIC,
@@ -854,6 +855,7 @@ var RICEngine = (() => {
     fdViv: () => fdViv,
     fnRIC: () => fnRIC,
     fsViv: () => fsViv,
+    generarPreguntas: () => generarPreguntas,
     iccCalc: () => iccCalc,
     largoMaxCaida: () => largoMaxCaida,
     llenadoMax: () => llenadoMax,
@@ -868,6 +870,7 @@ var RICEngine = (() => {
     picaVertical: () => picaVertical,
     programar: () => programar,
     rProteccionMax: () => rProteccionMax,
+    rngSemilla: () => rngSemilla,
     serieCaida: () => serieCaida,
     simularFalla: () => simularFalla,
     sobrecargaSinDisparo: () => sobrecargaSinDisparo,
@@ -1330,47 +1333,909 @@ var RICEngine = (() => {
 
   // src/data/banco-sec.json
   var banco_sec_default = {
-    ver: "2021.1",
+    ver: "2021.2",
     nota: "Preguntas de práctica tipo certificación, basadas en el texto de los pliegos RIC (SEC, 2021). No es el examen oficial.",
     q: [
-      { id: "r03a", n: 2, t: "Caída de tensión", q: "¿Cuál es la caída de tensión máxima permitida en un alimentador?", o: ["1 %", "3 %", "5 %", "7 %"], a: 1, e: "Alimentadores, subalimentadores y conductores no deben superar el 3 % de la tensión nominal.", ref: "RIC N°03, 5.1.3" },
-      { id: "r03b", n: 2, t: "Caída de tensión", q: "¿Cuál es la caída de tensión total máxima en el punto más desfavorable de la instalación?", o: ["3 %", "4 %", "5 %", "10 %"], a: 2, e: "La caída total en el punto más desfavorable no debe exceder el 5 %.", ref: "RIC N°03, 5.1.3" },
-      { id: "r03c", n: 3, t: "Demanda", q: "Una casa tiene 10 kW de potencia instalada de alumbrado. ¿Cuál es su demanda según la Tabla 3.1?", o: ["10.000 W", "5.450 W", "3.500 W", "7.000 W"], a: 1, e: "Primeros 3 kW al 100 % y de 3 a 120 kW al 35 %: 3.000 + 7.000 × 0,35 = 5.450 W.", ref: "RIC N°03, Tabla 3.1" },
-      { id: "r03d", n: 3, t: "Demanda", q: "¿Qué factor de simultaneidad corresponde a 10 viviendas con un solo empalme?", o: ["1,00", "0,92", "0,85", "0,73"], a: 2, e: "La Tabla 3.2 asigna 0,85 a 10 viviendas.", ref: "RIC N°03, Tabla 3.2" },
-      { id: "r03e", n: 2, t: "Secciones mínimas", q: "¿Cuál es la sección mínima de un alimentador?", o: ["1,5 mm²", "2,5 mm²", "4 mm²", "6 mm²"], a: 2, e: "La sección mínima del alimentador es 4 mm² y la del subalimentador 2,5 mm².", ref: "RIC N°03, 5.1.2 · RIC N°04, 5.4" },
-      { id: "r04a", n: 1, t: "Secciones mínimas", q: "¿Cuál es la sección mínima de un circuito de iluminación?", o: ["1 mm²", "1,5 mm²", "2,5 mm²", "4 mm²"], a: 1, e: "Circuitos de iluminación: 1,5 mm²; enchufes y mixtos: 2,5 mm².", ref: "RIC N°04, 5.4" },
-      { id: "r04b", n: 1, t: "Secciones mínimas", q: "¿Cuál es la sección mínima de un circuito de enchufes?", o: ["1,5 mm²", "2,5 mm²", "4 mm²", "6 mm²"], a: 1, e: "Circuitos de enchufes y mixtos: 2,5 mm² como mínimo.", ref: "RIC N°04, 5.4" },
-      { id: "r04c", n: 1, t: "Colores", q: "¿De qué color es el conductor neutro?", o: ["Azul", "Negro", "Blanco", "Verde"], a: 2, e: "Neutro y tierra de servicio: blanco. Fases: azul, negro y rojo. Protección: verde o verde/amarillo.", ref: "RIC N°04, 5.32" },
-      { id: "r04d", n: 1, t: "Colores", q: "Según el código de colores, ¿de qué color es la fase 2?", o: ["Azul", "Negro", "Rojo", "Blanco"], a: 1, e: "Fase 1 azul, fase 2 negro, fase 3 rojo.", ref: "RIC N°04, 5.32" },
-      { id: "r04e", n: 1, t: "Colores", q: "¿Qué colores solo pueden usarse para el conductor de protección?", o: ["Rojo o negro", "Verde o verde/amarillo", "Blanco o gris", "Azul o celeste"], a: 1, e: "Las aislaciones verde o verde/amarillo se reservan para el conductor de protección.", ref: "RIC N°04, 5.32" },
-      { id: "r04f", n: 2, t: "Canalizaciones", q: "¿Qué porcentaje máximo de la sección de un tubo pueden ocupar 3 conductores?", o: ["33 %", "40 %", "50 %", "60 %"], a: 0, e: "Con 2 o más conductores, 33 %; con 1 conductor, 50 %. El conductor de tierra se incluye en el cálculo.", ref: "RIC N°04, Tabla 4.21" },
-      { id: "r04g", n: 2, t: "Canalizaciones", q: "¿En qué caso se acepta hasta un 60 % de ocupación de un tubo?", o: ["En tubos enterrados", "En tuberías de unión de gabinetes de tableros de hasta 1 m", "En tubos metálicos", "Nunca"], a: 1, e: "Para uniones de gabinetes de tableros o similares de longitud no superior a 1 m se puede considerar hasta 60 %.", ref: "RIC N°04, Tabla 4.21" },
-      { id: "r04h", n: 2, t: "Capacidad de corriente", q: "Si en un ducto van 5 conductores activos, ¿qué factor de corrección fn se aplica?", o: ["1,0", "0,8", "0,7", "0,5"], a: 1, e: "De 4 a 6 conductores activos, fn = 0,8. La tierra no cuenta como conductor activo.", ref: "RIC N°04, Tabla 4.6" },
-      { id: "r04i", n: 2, t: "Capacidad de corriente", q: "¿Qué corriente soporta un cable de 2,5 mm² de 70 °C en método A1 (embutido) a 30 °C?", o: ["15 A", "18 A", "21 A", "24 A"], a: 1, e: "Tabla 4.4, 70 °C, método A1: 2,5 mm² → 18 A.", ref: "RIC N°04, Tabla 4.4" },
-      { id: "r04j", n: 3, t: "Capacidad de corriente", q: "Con 40 °C de ambiente, ¿qué factor ft se aplica a un cable de 70 °C?", o: ["1,00", "0,94", "0,87", "0,71"], a: 2, e: "Entre 36 y 40 °C, ft = 0,87 para cables de 70 °C.", ref: "RIC N°04, Tabla 4.7" },
-      { id: "r04k", n: 2, t: "Capacidad de corriente", q: "En un circuito trifásico, ¿se cuenta el neutro como cuarto conductor activo al aplicar la Tabla 4.6?", o: ["Sí, siempre", "No", "Solo si es de igual sección", "Solo en ductos metálicos"], a: 1, e: "En circuitos trifásicos el neutro no se considera cuarto conductor, y el de protección nunca es conductor activo.", ref: "RIC N°04, 6.2.4" },
-      { id: "r10a", n: 1, t: "Diferenciales", q: "¿Qué sensibilidad máxima debe tener el diferencial de un circuito de alumbrado o enchufes?", o: ["10 mA", "30 mA", "100 mA", "300 mA"], a: 1, e: "Todo circuito de alumbrado (iluminación y enchufes) debe tener diferencial de no más de 30 mA.", ref: "RIC N°10, 5.1.3.5" },
-      { id: "r10b", n: 3, t: "Diferenciales", q: "¿Cuántos circuitos como máximo pueden derivarse de un diferencial?", o: ["2", "3", "4", "6"], a: 1, e: "Desde un diferencial no se pueden derivar más de 3 circuitos (salvo los de 300 mA de la protección general).", ref: "RIC N°10, 5.1.3.7" },
-      { id: "r10c", n: 3, t: "Circuitos", q: "¿Con qué margen se determina la capacidad de un circuito de alumbrado?", o: ["La potencia exacta", "La potencia más un 10 %", "La potencia más un 25 %", "El doble de la potencia"], a: 1, e: "La capacidad es la potencia requerida más un 10 % adicional; se elige la protección comercial inmediatamente superior.", ref: "RIC N°10, 5.1.4.1" },
-      { id: "r10d", n: 3, t: "Circuitos", q: "Un circuito de 10 A en 220 V con centros de 100 W, ¿cuántos centros admite como máximo?", o: ["22", "20", "19", "10"], a: 2, e: "Se iguala la suma de potencias al 90 % de la capacidad: 0,9 × 220 × 10 = 1.980 W → 19 centros de 100 W.", ref: "RIC N°10, 5.1.4.4 y 5.1.4.5" },
-      { id: "r10e", n: 1, t: "Circuitos", q: "Si no se conoce la potencia de un centro de iluminación, ¿cuánto se considera?", o: ["60 W", "100 W", "150 W", "250 W"], a: 1, e: "Se considera una potencia mínima de 100 W por centro.", ref: "RIC N°10, 5.1.4.5" },
-      { id: "r10f", n: 1, t: "Circuitos", q: "¿Qué potencia unitaria se considera para cada enchufe en un circuito de alumbrado?", o: ["100 W", "150 W", "250 W", "500 W"], a: 2, e: "Cada enchufe hembra se considera de 250 W (un enchufe múltiple de hasta 3 salidas equivale a un centro de 250 W).", ref: "RIC N°10, 5.1.4.6" },
-      { id: "r10g", n: 2, t: "Vivienda", q: "¿Cuántos circuitos como mínimo debe tener una vivienda de 45 m²?", o: ["1", "2", "3", "4"], a: 2, e: "Mínimo 2 circuitos bajo 30 m² y 3 circuitos para 30 m² o más.", ref: "RIC N°10, 5.2 b)" },
-      { id: "r10h", n: 2, t: "Vivienda", q: "¿Qué capacidad mínima tiene el circuito exclusivo de enchufes de cocina y lavadero?", o: ["10 A", "16 A", "20 A", "25 A"], a: 1, e: "Se debe proyectar al menos un circuito exclusivo para enchufes de cocina y/o lavadero de 16 A como mínimo.", ref: "RIC N°10, 5.2 d)" },
-      { id: "r10i", n: 1, t: "Vivienda", q: "Un dormitorio de 12 m², ¿cuántos centros de iluminación necesita como mínimo?", o: ["1", "2", "3", "Ninguno"], a: 1, e: "Hasta 10 m² basta un centro; sobre 10 m² se instalan dos como mínimo, cada uno con su interruptor.", ref: "RIC N°10, 5.2 a)" },
-      { id: "r10j", n: 2, t: "Vivienda", q: "Un living tiene 14 m de perímetro. ¿Cuántos enchufes dobles o triples necesita como mínimo?", o: ["1", "2", "3", "4"], a: 1, e: "Un enchufe por cada 8 m de perímetro o fracción: 14 m → 2 enchufes.", ref: "RIC N°10, 5.2 b)" },
-      { id: "r10k", n: 1, t: "Vivienda", q: "¿Cuántos enchufes como mínimo se instalan en una cocina?", o: ["1", "2", "3", "4"], a: 2, e: "En cocinas al menos tres enchufes dobles o triples del tipo 10/16 A.", ref: "RIC N°10, 5.2 c)" },
-      { id: "r10l", n: 2, t: "Vivienda", q: "¿Con qué potencia mínima se proyecta el enchufe de un horno eléctrico?", o: ["1.000 W", "1.500 W", "2.000 W", "3.500 W"], a: 1, e: "La potencia de estos enchufes es la del equipo, pero nunca inferior a 1.500 W.", ref: "RIC N°10, 5.2 e)" },
-      { id: "r10m", n: 2, t: "Vivienda", q: "¿Qué esquema de conexión a tierra se usa en viviendas?", o: ["TT", "IT", "TN-S", "TN-C"], a: 2, e: "El esquema de conexión de tierra de la vivienda debe ser TN-S.", ref: "RIC N°10, 5.2 f)" },
-      { id: "r10n", n: 2, t: "Vivienda", q: "¿Cuál es la capacidad mínima de la protección del empalme de una vivienda?", o: ["16 A", "20 A", "25 A", "32 A"], a: 2, e: "El empalme de una vivienda tiene una protección de al menos 25 A y su alimentador no menos de 4 mm².", ref: "RIC N°10, 5.2" },
-      { id: "r10o", n: 2, t: "Protecciones", q: "¿Qué curva de disparo se usa como referencia para circuitos de enchufes?", o: ["B", "C", "D", "Z"], a: 1, e: "Referencia: curva B para iluminación, C para enchufes, D o K para protecciones generales.", ref: "RIC N°10, 5.1.4.2" },
-      { id: "r10p", n: 1, t: "Protecciones", q: "¿Se pueden usar los automáticos como interruptores para encender y apagar cargas?", o: ["Sí, es lo recomendado", "Solo en cocinas", "No", "Solo si son curva C"], a: 2, e: "Las protecciones eléctricas no deben usarse como elementos de maniobra.", ref: "RIC N°10, 5.1.3.8" },
-      { id: "r10q", n: 2, t: "Conductores", q: "En instalaciones de uso general, ¿qué sección tiene como mínimo el neutro de un circuito?", o: ["La mitad de la fase", "Igual a la fase", "1,5 mm² siempre", "La que indique el fabricante"], a: 1, e: "La sección del neutro de los circuitos es como mínimo igual a la de la fase.", ref: "RIC N°10, 5.1.5.3" },
-      { id: "r06a", n: 4, t: "Puesta a tierra", q: "¿Cuál es el valor máximo general de la puesta a tierra de servicio?", o: ["5 Ω", "10 Ω", "20 Ω", "80 Ω"], a: 2, e: "La tierra de servicio no debe superar 20 Ω; solo con las condiciones del punto 6.2 se acepta hasta 80 Ω.", ref: "RIC N°06, 6.1 y 6.2" },
-      { id: "r06b", n: 5, t: "Puesta a tierra", q: "¿En qué caso puede la tierra de servicio llegar hasta 80 Ω?", o: ["En cualquier vivienda", "Con potencia instalada ≤ 10 kW, general omnipolar, diferencial de 300 mA en alimentadores y de 30 mA en todos los circuitos", "Si el terreno es rocoso", "Si hay pararrayos"], a: 1, e: "Es una de las condiciones del punto 6.2 (6.2.1); la otra exige protecciones de sobretensión permanente y transitoria.", ref: "RIC N°06, 6.2.1 y 6.2.2" },
-      { id: "r06c", n: 4, t: "Puesta a tierra", q: "Una pica vertical de 2 m en terreno de 100 Ω·m, ¿qué resistencia aproximada tiene?", o: ["20 Ω", "50 Ω", "100 Ω", "200 Ω"], a: 1, e: "Fórmula de estimación para pica vertical: R = ρ / L = 100 / 2 = 50 Ω.", ref: "RIC N°06, Tabla 6.4" },
-      { id: "r05a", n: 4, t: "Seguridad", q: "¿Cuál es la tensión de seguridad en corriente alterna en lugares húmedos?", o: ["12 V", "24 V", "50 V", "120 V"], a: 1, e: "Tensión de seguridad: 50 V CA en lugares secos y 24 V CA en lugares húmedos.", ref: "RIC N°05, 5.8" },
-      { id: "r05b", n: 4, t: "Seguridad", q: "En un esquema TT con diferencial, ¿qué condición debe cumplir la tierra de protección?", o: ["RA ≤ 20 Ω", "RA × IΔn ≤ UL", "RA ≥ UL", "RA × In ≤ 220 V"], a: 1, e: "La resistencia de tierra por la sensibilidad del diferencial no debe superar la tensión límite UL.", ref: "RIC N°05 (RA × Id ≤ UL)" }
+      {
+        id: "r03a",
+        n: 2,
+        t: "Caída de tensión",
+        q: "¿Cuál es la caída de tensión máxima permitida en un alimentador?",
+        o: [
+          "1 %",
+          "3 %",
+          "5 %",
+          "7 %"
+        ],
+        a: 1,
+        e: "Alimentadores, subalimentadores y conductores no deben superar el 3 % de la tensión nominal.",
+        ref: "RIC N°03, 5.1.3"
+      },
+      {
+        id: "r03b",
+        n: 2,
+        t: "Caída de tensión",
+        q: "¿Cuál es la caída de tensión total máxima en el punto más desfavorable de la instalación?",
+        o: [
+          "3 %",
+          "4 %",
+          "5 %",
+          "10 %"
+        ],
+        a: 2,
+        e: "La caída total en el punto más desfavorable no debe exceder el 5 %.",
+        ref: "RIC N°03, 5.1.3"
+      },
+      {
+        id: "r03c",
+        n: 3,
+        t: "Demanda",
+        q: "Una casa tiene 10 kW de potencia instalada de alumbrado. ¿Cuál es su demanda según la Tabla 3.1?",
+        o: [
+          "10.000 W",
+          "5.450 W",
+          "3.500 W",
+          "7.000 W"
+        ],
+        a: 1,
+        e: "Primeros 3 kW al 100 % y de 3 a 120 kW al 35 %: 3.000 + 7.000 × 0,35 = 5.450 W.",
+        ref: "RIC N°03, Tabla 3.1"
+      },
+      {
+        id: "r03d",
+        n: 3,
+        t: "Demanda",
+        q: "¿Qué factor de simultaneidad corresponde a 10 viviendas con un solo empalme?",
+        o: [
+          "1,00",
+          "0,92",
+          "0,85",
+          "0,73"
+        ],
+        a: 2,
+        e: "La Tabla 3.2 asigna 0,85 a 10 viviendas.",
+        ref: "RIC N°03, Tabla 3.2"
+      },
+      {
+        id: "r03e",
+        n: 2,
+        t: "Secciones mínimas",
+        q: "¿Cuál es la sección mínima de un alimentador?",
+        o: [
+          "1,5 mm²",
+          "2,5 mm²",
+          "4 mm²",
+          "6 mm²"
+        ],
+        a: 2,
+        e: "La sección mínima del alimentador es 4 mm² y la del subalimentador 2,5 mm².",
+        ref: "RIC N°03, 5.1.2 · RIC N°04, 5.4"
+      },
+      {
+        id: "r04a",
+        n: 1,
+        t: "Secciones mínimas",
+        q: "¿Cuál es la sección mínima de un circuito de iluminación?",
+        o: [
+          "1 mm²",
+          "1,5 mm²",
+          "2,5 mm²",
+          "4 mm²"
+        ],
+        a: 1,
+        e: "Circuitos de iluminación: 1,5 mm²; enchufes y mixtos: 2,5 mm².",
+        ref: "RIC N°04, 5.4"
+      },
+      {
+        id: "r04b",
+        n: 1,
+        t: "Secciones mínimas",
+        q: "¿Cuál es la sección mínima de un circuito de enchufes?",
+        o: [
+          "1,5 mm²",
+          "2,5 mm²",
+          "4 mm²",
+          "6 mm²"
+        ],
+        a: 1,
+        e: "Circuitos de enchufes y mixtos: 2,5 mm² como mínimo.",
+        ref: "RIC N°04, 5.4"
+      },
+      {
+        id: "r04c",
+        n: 1,
+        t: "Colores",
+        q: "¿De qué color es el conductor neutro?",
+        o: [
+          "Azul",
+          "Negro",
+          "Blanco",
+          "Verde"
+        ],
+        a: 2,
+        e: "Neutro y tierra de servicio: blanco. Fases: azul, negro y rojo. Protección: verde o verde/amarillo.",
+        ref: "RIC N°04, 5.32"
+      },
+      {
+        id: "r04d",
+        n: 1,
+        t: "Colores",
+        q: "Según el código de colores, ¿de qué color es la fase 2?",
+        o: [
+          "Azul",
+          "Negro",
+          "Rojo",
+          "Blanco"
+        ],
+        a: 1,
+        e: "Fase 1 azul, fase 2 negro, fase 3 rojo.",
+        ref: "RIC N°04, 5.32"
+      },
+      {
+        id: "r04e",
+        n: 1,
+        t: "Colores",
+        q: "¿Qué colores solo pueden usarse para el conductor de protección?",
+        o: [
+          "Rojo o negro",
+          "Verde o verde/amarillo",
+          "Blanco o gris",
+          "Azul o celeste"
+        ],
+        a: 1,
+        e: "Las aislaciones verde o verde/amarillo se reservan para el conductor de protección.",
+        ref: "RIC N°04, 5.32"
+      },
+      {
+        id: "r04f",
+        n: 2,
+        t: "Canalizaciones",
+        q: "¿Qué porcentaje máximo de la sección de un tubo pueden ocupar 3 conductores?",
+        o: [
+          "33 %",
+          "40 %",
+          "50 %",
+          "60 %"
+        ],
+        a: 0,
+        e: "Con 2 o más conductores, 33 %; con 1 conductor, 50 %. El conductor de tierra se incluye en el cálculo.",
+        ref: "RIC N°04, Tabla 4.21"
+      },
+      {
+        id: "r04g",
+        n: 2,
+        t: "Canalizaciones",
+        q: "¿En qué caso se acepta hasta un 60 % de ocupación de un tubo?",
+        o: [
+          "En tubos enterrados",
+          "En tuberías de unión de gabinetes de tableros de hasta 1 m",
+          "En tubos metálicos",
+          "Nunca"
+        ],
+        a: 1,
+        e: "Para uniones de gabinetes de tableros o similares de longitud no superior a 1 m se puede considerar hasta 60 %.",
+        ref: "RIC N°04, Tabla 4.21"
+      },
+      {
+        id: "r04h",
+        n: 2,
+        t: "Capacidad de corriente",
+        q: "Si en un ducto van 5 conductores activos, ¿qué factor de corrección fn se aplica?",
+        o: [
+          "1,0",
+          "0,8",
+          "0,7",
+          "0,5"
+        ],
+        a: 1,
+        e: "De 4 a 6 conductores activos, fn = 0,8. La tierra no cuenta como conductor activo.",
+        ref: "RIC N°04, Tabla 4.6"
+      },
+      {
+        id: "r04i",
+        n: 2,
+        t: "Capacidad de corriente",
+        q: "¿Qué corriente soporta un cable de 2,5 mm² de 70 °C en método A1 (embutido) a 30 °C?",
+        o: [
+          "15 A",
+          "18 A",
+          "21 A",
+          "24 A"
+        ],
+        a: 1,
+        e: "Tabla 4.4, 70 °C, método A1: 2,5 mm² → 18 A.",
+        ref: "RIC N°04, Tabla 4.4"
+      },
+      {
+        id: "r04j",
+        n: 3,
+        t: "Capacidad de corriente",
+        q: "Con 40 °C de ambiente, ¿qué factor ft se aplica a un cable de 70 °C?",
+        o: [
+          "1,00",
+          "0,94",
+          "0,87",
+          "0,71"
+        ],
+        a: 2,
+        e: "Entre 36 y 40 °C, ft = 0,87 para cables de 70 °C.",
+        ref: "RIC N°04, Tabla 4.7"
+      },
+      {
+        id: "r04k",
+        n: 2,
+        t: "Capacidad de corriente",
+        q: "En un circuito trifásico, ¿se cuenta el neutro como cuarto conductor activo al aplicar la Tabla 4.6?",
+        o: [
+          "Sí, siempre",
+          "No",
+          "Solo si es de igual sección",
+          "Solo en ductos metálicos"
+        ],
+        a: 1,
+        e: "En circuitos trifásicos el neutro no se considera cuarto conductor, y el de protección nunca es conductor activo.",
+        ref: "RIC N°04, 6.2.4"
+      },
+      {
+        id: "r10a",
+        n: 1,
+        t: "Diferenciales",
+        q: "¿Qué sensibilidad máxima debe tener el diferencial de un circuito de alumbrado o enchufes?",
+        o: [
+          "10 mA",
+          "30 mA",
+          "100 mA",
+          "300 mA"
+        ],
+        a: 1,
+        e: "Todo circuito de alumbrado (iluminación y enchufes) debe tener diferencial de no más de 30 mA.",
+        ref: "RIC N°10, 5.1.3.5"
+      },
+      {
+        id: "r10b",
+        n: 3,
+        t: "Diferenciales",
+        q: "¿Cuántos circuitos como máximo pueden derivarse de un diferencial?",
+        o: [
+          "2",
+          "3",
+          "4",
+          "6"
+        ],
+        a: 1,
+        e: "Desde un diferencial no se pueden derivar más de 3 circuitos (salvo los de 300 mA de la protección general).",
+        ref: "RIC N°10, 5.1.3.7"
+      },
+      {
+        id: "r10c",
+        n: 3,
+        t: "Circuitos",
+        q: "¿Con qué margen se determina la capacidad de un circuito de alumbrado?",
+        o: [
+          "La potencia exacta",
+          "La potencia más un 10 %",
+          "La potencia más un 25 %",
+          "El doble de la potencia"
+        ],
+        a: 1,
+        e: "La capacidad es la potencia requerida más un 10 % adicional; se elige la protección comercial inmediatamente superior.",
+        ref: "RIC N°10, 5.1.4.1"
+      },
+      {
+        id: "r10d",
+        n: 3,
+        t: "Circuitos",
+        q: "Un circuito de 10 A en 220 V con centros de 100 W, ¿cuántos centros admite como máximo?",
+        o: [
+          "22",
+          "20",
+          "19",
+          "10"
+        ],
+        a: 2,
+        e: "Se iguala la suma de potencias al 90 % de la capacidad: 0,9 × 220 × 10 = 1.980 W → 19 centros de 100 W.",
+        ref: "RIC N°10, 5.1.4.4 y 5.1.4.5"
+      },
+      {
+        id: "r10e",
+        n: 1,
+        t: "Circuitos",
+        q: "Si no se conoce la potencia de un centro de iluminación, ¿cuánto se considera?",
+        o: [
+          "60 W",
+          "100 W",
+          "150 W",
+          "250 W"
+        ],
+        a: 1,
+        e: "Se considera una potencia mínima de 100 W por centro.",
+        ref: "RIC N°10, 5.1.4.5"
+      },
+      {
+        id: "r10f",
+        n: 1,
+        t: "Circuitos",
+        q: "¿Qué potencia unitaria se considera para cada enchufe en un circuito de alumbrado?",
+        o: [
+          "100 W",
+          "150 W",
+          "250 W",
+          "500 W"
+        ],
+        a: 2,
+        e: "Cada enchufe hembra se considera de 250 W (un enchufe múltiple de hasta 3 salidas equivale a un centro de 250 W).",
+        ref: "RIC N°10, 5.1.4.6"
+      },
+      {
+        id: "r10g",
+        n: 2,
+        t: "Vivienda",
+        q: "¿Cuántos circuitos como mínimo debe tener una vivienda de 45 m²?",
+        o: [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        a: 2,
+        e: "Mínimo 2 circuitos bajo 30 m² y 3 circuitos para 30 m² o más.",
+        ref: "RIC N°10, 5.2 b)"
+      },
+      {
+        id: "r10h",
+        n: 2,
+        t: "Vivienda",
+        q: "¿Qué capacidad mínima tiene el circuito exclusivo de enchufes de cocina y lavadero?",
+        o: [
+          "10 A",
+          "16 A",
+          "20 A",
+          "25 A"
+        ],
+        a: 1,
+        e: "Se debe proyectar al menos un circuito exclusivo para enchufes de cocina y/o lavadero de 16 A como mínimo.",
+        ref: "RIC N°10, 5.2 d)"
+      },
+      {
+        id: "r10i",
+        n: 1,
+        t: "Vivienda",
+        q: "Un dormitorio de 12 m², ¿cuántos centros de iluminación necesita como mínimo?",
+        o: [
+          "1",
+          "2",
+          "3",
+          "Ninguno"
+        ],
+        a: 1,
+        e: "Hasta 10 m² basta un centro; sobre 10 m² se instalan dos como mínimo, cada uno con su interruptor.",
+        ref: "RIC N°10, 5.2 a)"
+      },
+      {
+        id: "r10j",
+        n: 2,
+        t: "Vivienda",
+        q: "Un living tiene 14 m de perímetro. ¿Cuántos enchufes dobles o triples necesita como mínimo?",
+        o: [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        a: 1,
+        e: "Un enchufe por cada 8 m de perímetro o fracción: 14 m → 2 enchufes.",
+        ref: "RIC N°10, 5.2 b)"
+      },
+      {
+        id: "r10k",
+        n: 1,
+        t: "Vivienda",
+        q: "¿Cuántos enchufes como mínimo se instalan en una cocina?",
+        o: [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        a: 2,
+        e: "En cocinas al menos tres enchufes dobles o triples del tipo 10/16 A.",
+        ref: "RIC N°10, 5.2 c)"
+      },
+      {
+        id: "r10l",
+        n: 2,
+        t: "Vivienda",
+        q: "¿Con qué potencia mínima se proyecta el enchufe de un horno eléctrico?",
+        o: [
+          "1.000 W",
+          "1.500 W",
+          "2.000 W",
+          "3.500 W"
+        ],
+        a: 1,
+        e: "La potencia de estos enchufes es la del equipo, pero nunca inferior a 1.500 W.",
+        ref: "RIC N°10, 5.2 e)"
+      },
+      {
+        id: "r10m",
+        n: 2,
+        t: "Vivienda",
+        q: "¿Qué esquema de conexión a tierra se usa en viviendas?",
+        o: [
+          "TT",
+          "IT",
+          "TN-S",
+          "TN-C"
+        ],
+        a: 2,
+        e: "El esquema de conexión de tierra de la vivienda debe ser TN-S.",
+        ref: "RIC N°10, 5.2 f)"
+      },
+      {
+        id: "r10n",
+        n: 2,
+        t: "Vivienda",
+        q: "¿Cuál es la capacidad mínima de la protección del empalme de una vivienda?",
+        o: [
+          "16 A",
+          "20 A",
+          "25 A",
+          "32 A"
+        ],
+        a: 2,
+        e: "El empalme de una vivienda tiene una protección de al menos 25 A y su alimentador no menos de 4 mm².",
+        ref: "RIC N°10, 5.2"
+      },
+      {
+        id: "r10o",
+        n: 2,
+        t: "Protecciones",
+        q: "¿Qué curva de disparo se usa como referencia para circuitos de enchufes?",
+        o: [
+          "B",
+          "C",
+          "D",
+          "Z"
+        ],
+        a: 1,
+        e: "Referencia: curva B para iluminación, C para enchufes, D o K para protecciones generales.",
+        ref: "RIC N°10, 5.1.4.2"
+      },
+      {
+        id: "r10p",
+        n: 1,
+        t: "Protecciones",
+        q: "¿Se pueden usar los automáticos como interruptores para encender y apagar cargas?",
+        o: [
+          "Sí, es lo recomendado",
+          "Solo en cocinas",
+          "No",
+          "Solo si son curva C"
+        ],
+        a: 2,
+        e: "Las protecciones eléctricas no deben usarse como elementos de maniobra.",
+        ref: "RIC N°10, 5.1.3.8"
+      },
+      {
+        id: "r10q",
+        n: 2,
+        t: "Conductores",
+        q: "En instalaciones de uso general, ¿qué sección tiene como mínimo el neutro de un circuito?",
+        o: [
+          "La mitad de la fase",
+          "Igual a la fase",
+          "1,5 mm² siempre",
+          "La que indique el fabricante"
+        ],
+        a: 1,
+        e: "La sección del neutro de los circuitos es como mínimo igual a la de la fase.",
+        ref: "RIC N°10, 5.1.5.3"
+      },
+      {
+        id: "r06a",
+        n: 4,
+        t: "Puesta a tierra",
+        q: "¿Cuál es el valor máximo general de la puesta a tierra de servicio?",
+        o: [
+          "5 Ω",
+          "10 Ω",
+          "20 Ω",
+          "80 Ω"
+        ],
+        a: 2,
+        e: "La tierra de servicio no debe superar 20 Ω; solo con las condiciones del punto 6.2 se acepta hasta 80 Ω.",
+        ref: "RIC N°06, 6.1 y 6.2"
+      },
+      {
+        id: "r06b",
+        n: 5,
+        t: "Puesta a tierra",
+        q: "¿En qué caso puede la tierra de servicio llegar hasta 80 Ω?",
+        o: [
+          "En cualquier vivienda",
+          "Con potencia instalada ≤ 10 kW, general omnipolar, diferencial de 300 mA en alimentadores y de 30 mA en todos los circuitos",
+          "Si el terreno es rocoso",
+          "Si hay pararrayos"
+        ],
+        a: 1,
+        e: "Es una de las condiciones del punto 6.2 (6.2.1); la otra exige protecciones de sobretensión permanente y transitoria.",
+        ref: "RIC N°06, 6.2.1 y 6.2.2"
+      },
+      {
+        id: "r06c",
+        n: 4,
+        t: "Puesta a tierra",
+        q: "Una pica vertical de 2 m en terreno de 100 Ω·m, ¿qué resistencia aproximada tiene?",
+        o: [
+          "20 Ω",
+          "50 Ω",
+          "100 Ω",
+          "200 Ω"
+        ],
+        a: 1,
+        e: "Fórmula de estimación para pica vertical: R = ρ / L = 100 / 2 = 50 Ω.",
+        ref: "RIC N°06, Tabla 6.4"
+      },
+      {
+        id: "r05a",
+        n: 4,
+        t: "Seguridad",
+        q: "¿Cuál es la tensión de seguridad en corriente alterna en lugares húmedos?",
+        o: [
+          "12 V",
+          "24 V",
+          "50 V",
+          "120 V"
+        ],
+        a: 1,
+        e: "Tensión de seguridad: 50 V CA en lugares secos y 24 V CA en lugares húmedos.",
+        ref: "RIC N°05, 5.8"
+      },
+      {
+        id: "r05b",
+        n: 4,
+        t: "Seguridad",
+        q: "En un esquema TT con diferencial, ¿qué condición debe cumplir la tierra de protección?",
+        o: [
+          "RA ≤ 20 Ω",
+          "RA × IΔn ≤ UL",
+          "RA ≥ UL",
+          "RA × In ≤ 220 V"
+        ],
+        a: 1,
+        e: "La resistencia de tierra por la sensibilidad del diferencial no debe superar la tensión límite UL.",
+        ref: "RIC N°05 (RA × Id ≤ UL)"
+      },
+      {
+        id: "r02a",
+        n: 2,
+        t: "Tableros",
+        q: "¿Qué grado de protección mínimo debe tener un tablero instalado en interior?",
+        o: [
+          "IP20",
+          "IP41",
+          "IP44",
+          "IP54"
+        ],
+        a: 1,
+        e: "Para tableros en interior se exige como mínimo IP41.",
+        ref: "RIC N°02, 6.1.21.2"
+      },
+      {
+        id: "r02b",
+        n: 2,
+        t: "Tableros",
+        q: "¿Qué grado IP mínimo exige un tablero en exterior bajo techo?",
+        o: [
+          "IP41",
+          "IP44",
+          "IP54",
+          "IP65"
+        ],
+        a: 1,
+        e: "Exterior bajo techo: IP44 mínimo; a la intemperie sin techo: IP54 mínimo.",
+        ref: "RIC N°02, 6.1.21.3"
+      },
+      {
+        id: "r02c",
+        n: 3,
+        t: "Tableros",
+        q: "Un tablero queda a la intemperie, sin techo. ¿Qué grado IP mínimo necesita?",
+        o: [
+          "IP41",
+          "IP44",
+          "IP54",
+          "IPX4"
+        ],
+        a: 2,
+        e: "Si el tablero exterior no está bajo techo debe ser IP54 como mínimo, y sus canalizaciones deben entrar por la parte inferior.",
+        ref: "RIC N°02, 6.1.21.3 y 6.1.21.6"
+      },
+      {
+        id: "r02d",
+        n: 3,
+        t: "Tableros",
+        q: "¿Qué grado de protección mínimo exige un tablero en un lugar mojado?",
+        o: [
+          "IP20",
+          "IPX4",
+          "IP41",
+          "IP2X"
+        ],
+        a: 1,
+        e: "En lugares mojados las cajas o gabinetes de tableros deben tener IPX4 como mínimo.",
+        ref: "RIC N°02, 6.1.21.5"
+      },
+      {
+        id: "r02e",
+        n: 1,
+        t: "Tableros",
+        q: "¿Entre qué alturas se montan los dispositivos de comando de un tablero?",
+        o: [
+          "0,30 m y 1,50 m",
+          "0,45 m y 2,0 m",
+          "0,80 m y 1,80 m",
+          "1,0 m y 2,2 m"
+        ],
+        a: 1,
+        e: "Altura mínima 0,45 m y máxima 2,0 m, medidas desde el piso terminado hasta la base de cada dispositivo.",
+        ref: "RIC N°02, 6.1.22"
+      },
+      {
+        id: "r02f",
+        n: 2,
+        t: "Tableros",
+        q: "Para una instalación nueva, ¿qué ampliación debe prever el tamaño del tablero?",
+        o: [
+          "10 %",
+          "20 %",
+          "25 %",
+          "50 %"
+        ],
+        a: 2,
+        e: "El tamaño inicial debe prever una ampliación del 25 % de la capacidad por cada tipo de servicio, con espacio en barras y riel DIN.",
+        ref: "RIC N°02, 6.1.16.3"
+      },
+      {
+        id: "r02g",
+        n: 3,
+        t: "Tableros",
+        q: "¿Qué tableros domiciliarios quedan exentos de la luz piloto?",
+        o: [
+          "Ninguno",
+          "Los de hasta 3 circuitos",
+          "Los de hasta 6 circuitos",
+          "Los monofásicos"
+        ],
+        a: 1,
+        e: "Todo tablero lleva indicador de presencia de energía, salvo los tableros domiciliarios de hasta 3 circuitos.",
+        ref: "RIC N°02, 6.2.14"
+      },
+      {
+        id: "r02h",
+        n: 3,
+        t: "Tableros",
+        q: "¿Cuál es la protección máxima del circuito que alimenta la luz piloto?",
+        o: [
+          "6 A",
+          "10 A",
+          "16 A",
+          "La misma del general"
+        ],
+        a: 1,
+        e: "Luces piloto, instrumentos y dispositivos de control se alimentan desde circuitos independientes protegidos con 10 A como máximo.",
+        ref: "RIC N°02, 6.2.15"
+      },
+      {
+        id: "r02i",
+        n: 3,
+        t: "Tableros",
+        q: "¿Cómo se conecta un diferencial que alimenta varios termomagnéticos?",
+        o: [
+          "Con puentes de cable de equipo a equipo",
+          "Con barra de distribución o conexiones prefabricadas (peine)",
+          "Con un solo cable por todos",
+          "Con regleta de enchufes"
+        ],
+        a: 1,
+        e: "No se acepta cablear de dispositivo a dispositivo; desde un diferencial a varios termomagnéticos se usa barra de distribución o peine.",
+        ref: "RIC N°02, 6.2.4.2"
+      },
+      {
+        id: "r02j",
+        n: 4,
+        t: "Tableros",
+        q: "Al instalar un peine de conexión, ¿qué exige la norma?",
+        o: [
+          "Cortar los dientes que sobran",
+          "Usar siempre el 100 % de sus accesorios de fábrica",
+          "Soldarlo a las protecciones",
+          "Pintarlo de rojo"
+        ],
+        a: 1,
+        e: "Las conexiones prefabricadas (peines) deben usar siempre el 100 % de sus accesorios de fábrica y quedar protegidas contra sobrecarga y cortocircuito.",
+        ref: "RIC N°02, 6.2.4.3 y 6.2.5.1"
+      },
+      {
+        id: "r02k",
+        n: 4,
+        t: "Tableros",
+        q: "¿En qué orden se montan las barras de fase en un tablero?",
+        o: [
+          "Rojo, negro, azul",
+          "Azul, negro, rojo (R-S-T)",
+          "Negro, azul, rojo",
+          "Cualquier orden"
+        ],
+        a: 1,
+        e: "De izquierda a derecha, de arriba hacia abajo y de adelante hacia atrás: azul, negro, rojo (R-S-T).",
+        ref: "RIC N°02, 6.2.9"
+      },
+      {
+        id: "r02l",
+        n: 1,
+        t: "Tableros",
+        q: "¿Se aceptan tableros de tipo abierto?",
+        o: [
+          "Sí, en interiores",
+          "Sí, si son metálicos",
+          "No",
+          "Solo en bodegas"
+        ],
+        a: 2,
+        e: "No se acepta la construcción de tableros de tipo abierto: todos llevan cubierta cubre equipos y puerta exterior.",
+        ref: "RIC N°02, 6.1.21.1 y 6.1.3"
+      },
+      {
+        id: "r02m",
+        n: 4,
+        t: "Tableros",
+        q: "¿Desde qué capacidad un tablero debe llevar instrumentos de tensión y corriente por fase?",
+        o: [
+          "25 A",
+          "63 A",
+          "100 A",
+          "250 A"
+        ],
+        a: 2,
+        e: "Los tableros de 100 A o más llevan instrumentos que indiquen la tensión y corriente de cada fase.",
+        ref: "RIC N°02, 6.2.13"
+      },
+      {
+        id: "r02n",
+        n: 4,
+        t: "Tableros",
+        q: "Un diferencial de 25 A está aguas abajo de un general de 32 A. ¿Cómo puede quedar protegido a la sobrecarga?",
+        o: [
+          "No es posible",
+          "Si la suma de los termomagnéticos que dependen de él no supera 25 A",
+          "Cambiando el general por uno de 40 A",
+          "Con un fusible en el neutro"
+        ],
+        a: 1,
+        e: "El diferencial debe tener In igual o mayor que el termomagnético aguas arriba, o bien la suma de los termomagnéticos aguas abajo no debe superar su capacidad.",
+        ref: "RIC N°02, 6.2.6 · RIC N°10, 5.1.3.6"
+      },
+      {
+        id: "r19a",
+        n: 5,
+        t: "Puesta en servicio",
+        q: "¿Cuál es el primer ensayo de la verificación inicial?",
+        o: [
+          "Resistencia de aislamiento",
+          "Continuidad de los conductores de protección y uniones equipotenciales",
+          "Ensayo de polaridad",
+          "Caída de tensión"
+        ],
+        a: 1,
+        e: "El orden comienza por la continuidad de los conductores de protección y equipotenciales, luego aislamiento y después las demás pruebas.",
+        ref: "RIC N°19, 7.1.3"
+      },
+      {
+        id: "r19b",
+        n: 5,
+        t: "Puesta en servicio",
+        q: "En un circuito de 220 V, ¿con qué tensión se ensaya el aislamiento y cuál es el mínimo?",
+        o: [
+          "250 V CC y 0,25 MΩ",
+          "500 V CC y 0,5 MΩ",
+          "1.000 V CC y 1,0 MΩ",
+          "220 V CA y 1 MΩ"
+        ],
+        a: 1,
+        e: "Para circuitos de hasta 500 V (excepto muy baja tensión) se ensaya con 500 V CC y se exige al menos 0,5 MΩ.",
+        ref: "RIC N°19, Tabla 19.1"
+      },
+      {
+        id: "r19c",
+        n: 5,
+        t: "Puesta en servicio",
+        q: "¿Con qué fuente se realiza el ensayo de continuidad?",
+        o: [
+          "220 V CA",
+          "4 V a 24 V en vacío, con al menos 0,2 A",
+          "500 V CC",
+          "1.000 V CC"
+        ],
+        a: 1,
+        e: "Fuente de 4 V a 24 V en vacío, continua o alterna, con una corriente mínima de 0,2 A.",
+        ref: "RIC N°19, 7.2.1"
+      },
+      {
+        id: "r19d",
+        n: 5,
+        t: "Puesta en servicio",
+        q: "¿Entre qué conductores se mide la resistencia de aislamiento?",
+        o: [
+          "Solo entre fase y tierra",
+          "Entre fases, fase–neutro, fase–protección y neutro–protección",
+          "Solo entre fase y neutro",
+          "Solo en el alimentador"
+        ],
+        a: 1,
+        e: "Se mide entre conductores de fase, entre fase y neutro, entre fase y protección, y entre neutro y protección.",
+        ref: "RIC N°19, 7.3.1"
+      },
+      {
+        id: "r04l",
+        n: 3,
+        t: "Canalizaciones",
+        q: "En tuberías embutidas, ¿a qué distancia se aceptan los tramos horizontales?",
+        o: [
+          "0,10 m del cielo y 0,10 m del piso",
+          "0,30 m de los cielos y 0,20 m de los pisos",
+          "0,50 m del cielo y 0,50 m del piso",
+          "En cualquier altura"
+        ],
+        a: 1,
+        e: "Los recorridos embutidos son verticales u horizontales; los horizontales se aceptan a 0,30 m de los cielos y a 0,20 m de los pisos.",
+        ref: "RIC N°04, 7.16.1.16"
+      },
+      {
+        id: "r10r",
+        n: 2,
+        t: "Vivienda",
+        q: "Un circuito de enchufes está protegido con 16 A. ¿Qué capacidad mínima deben tener sus enchufes?",
+        o: [
+          "10 A",
+          "16 A",
+          "20 A",
+          "Cualquiera"
+        ],
+        a: 1,
+        e: "La capacidad de los módulos de enchufe no debe ser inferior a la de la protección del circuito.",
+        ref: "RIC N°10, 5.1.2.9"
+      },
+      {
+        id: "r10s",
+        n: 1,
+        t: "Vivienda",
+        q: "¿Qué tipo de enchufe hembra exige la norma?",
+        o: [
+          "De alvéolos protegidos",
+          "De dos patas planas",
+          "Universal sin tapa",
+          "Cualquiera certificado"
+        ],
+        a: 0,
+        e: "Todos los enchufes hembra deben ser del tipo de alvéolos protegidos.",
+        ref: "RIC N°10, 5.1.2.8"
+      },
+      {
+        id: "r10t",
+        n: 2,
+        t: "Vivienda",
+        q: "¿Los centros de iluminación deben tener conductor de puesta a tierra?",
+        o: [
+          "No, solo los enchufes",
+          "Sí, todos",
+          "Solo si la lámpara es metálica",
+          "Solo en baños"
+        ],
+        a: 1,
+        e: "Todos los centros de iluminación deben contar con el conductor de puesta a tierra y terminar en caja de derivación.",
+        ref: "RIC N°10, 5.1.2.12 y 5.1.2.13"
+      }
     ]
   };
 
@@ -1406,6 +2271,258 @@ var RICEngine = (() => {
       [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
+  }
+
+  // src/engine/generadores.ts
+  function rngSemilla(seed) {
+    let t = seed >>> 0;
+    return () => {
+      t = t + 1831565813 >>> 0;
+      let r = Math.imul(t ^ t >>> 15, 1 | t);
+      r ^= r + Math.imul(r ^ r >>> 7, 61 | r);
+      return ((r ^ r >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  var ent = (r, a, b, paso = 1) => a + paso * Math.floor(r() * (Math.floor((b - a) / paso) + 1));
+  var fmt = (v, d = 0) => v.toLocaleString("es-CL", { minimumFractionDigits: d, maximumFractionDigits: d });
+  function opciones(r, ok, otros) {
+    const set = [ok];
+    for (const x of otros) if (!set.includes(x) && set.length < 4) set.push(x);
+    let k = 2;
+    while (set.length < 4) set.push(ok + " ".repeat(k++));
+    for (let i = set.length - 1; i > 0; i--) {
+      const j = Math.floor(r() * (i + 1));
+      [set[i], set[j]] = [set[j], set[i]];
+    }
+    return { o: set, a: set.indexOf(ok) };
+  }
+  var GENERADORES = {
+    corriente: (r) => {
+      const P = ent(r, 800, 4500, 50), I = P / 220;
+      const { o, a } = opciones(r, fmt(I, 2) + " A", [
+        fmt(P / 380, 2) + " A",
+        fmt(P / 220 * 1.1, 2) + " A",
+        fmt(P / 110, 2) + " A"
+      ]);
+      return {
+        id: "gen:corriente",
+        n: 1,
+        t: "Fundamentos",
+        q: `Un equipo resistivo de ${fmt(P)} W se conecta a 220 V (cos φ = 1). ¿Qué corriente consume?`,
+        o,
+        a,
+        e: `I = P ÷ V = ${fmt(P)} ÷ 220 = ${fmt(I, 2)} A.`,
+        ref: "Ley de Watt (P = V × I × cos φ)"
+      };
+    },
+    proteccion: (r) => {
+      const tipo = r() < 0.5 ? "alumbrado" : "enchufes";
+      const P = tipo === "alumbrado" ? ent(r, 4, 26) * 100 : ent(r, 4, 14) * 250, I = P / 220, In = chooseIn(I, P, 220, 1, 0);
+      const otros = [6, 10, 16, 20, 25].filter((x) => x !== In).map((x) => x + " A");
+      const { o, a } = opciones(r, In + " A", otros);
+      return {
+        id: "gen:proteccion",
+        n: 3,
+        t: "Circuitos",
+        q: `Un circuito de ${tipo} suma ${fmt(P)} W en 220 V. ¿Qué protección termomagnética le corresponde?`,
+        o,
+        a,
+        e: `I = ${fmt(P)} ÷ 220 = ${fmt(I, 2)} A. Se busca el calibre comercial con In ≥ 1,1 × I = ${fmt(1.1 * I, 2)} A y P ≤ 0,9 × 220 × In: ${In} A (0,9 × 220 × ${In} = ${fmt(0.9 * 220 * In)} W).`,
+        ref: "RIC N°10, 5.1.4.1 y 5.1.4.4"
+      };
+    },
+    caida: (r) => {
+      const I = ent(r, 6, 16), L = ent(r, 10, 45), S = [1.5, 2.5, 4][ent(r, 0, 2)], dv = 2 * 0.018 * L * I / S, pct = dv / 220 * 100;
+      const { o, a } = opciones(r, fmt(pct, 2) + " %", [
+        fmt(pct / 2, 2) + " %",
+        fmt(pct * 220 / 380, 2) + " %",
+        fmt(pct * 2, 2) + " %"
+      ]);
+      return {
+        id: "gen:caida",
+        n: 2,
+        t: "Caída de tensión",
+        q: `Circuito monofásico de ${fmt(S, S % 1 ? 1 : 0)} mm² y ${L} m (solo ida) que lleva ${I} A. Con ρ = 0,018 Ω·mm²/m, ¿qué caída de tensión tiene en %?`,
+        o,
+        a,
+        e: `ΔV = 2 × ρ × L × I ÷ S = 2 × 0,018 × ${L} × ${I} ÷ ${fmt(S, S % 1 ? 1 : 0)} = ${fmt(dv, 2)} V → ${fmt(dv, 2)} ÷ 220 × 100 = ${fmt(pct, 2)} %. ${pct <= 3 ? "Cumple el 3 % del tramo." : "Supera el 3 % del tramo: hay que subir la sección o acortar."}`,
+        ref: "RIC N°03, 5.1.3"
+      };
+    },
+    demanda: (r) => {
+      const P = ent(r, 4, 24) * 1e3, Pd = fdViv(P).Pd;
+      const { o, a } = opciones(r, fmt(Pd) + " W", [fmt(P) + " W", fmt(P * 0.35) + " W", fmt(3e3 + P * 0.35) + " W"]);
+      return {
+        id: "gen:demanda",
+        n: 3,
+        t: "Demanda",
+        q: `Una vivienda tiene ${fmt(P)} W de potencia instalada de alumbrado. ¿Cuál es su demanda máxima según la Tabla 3.1?`,
+        o,
+        a,
+        e: `Primeros 3.000 W al 100 % y el resto (hasta 120 kW) al 35 %: 3.000 + ${fmt(P - 3e3)} × 0,35 = ${fmt(Pd)} W.`,
+        ref: "RIC N°03, Tabla 3.1"
+      };
+    },
+    centros: (r) => {
+      const In = [10, 16][ent(r, 0, 1)], w = [60, 100][ent(r, 0, 1)], n = Math.floor(0.9 * 220 * In / w);
+      const { o, a } = opciones(r, String(n), [
+        String(Math.floor(220 * In / w)),
+        String(Math.floor(0.8 * 220 * In / w)),
+        String(n + 2)
+      ]);
+      return {
+        id: "gen:centros",
+        n: 3,
+        t: "Circuitos",
+        q: `¿Cuántos centros de ${w} W como máximo admite un circuito de ${In} A en 220 V?`,
+        o,
+        a,
+        e: `La suma de potencias se iguala al 90 % de la capacidad: 0,9 × 220 × ${In} = ${fmt(0.9 * 220 * In)} W ÷ ${w} W = ${n} centros.`,
+        ref: "RIC N°10, 5.1.4.4"
+      };
+    },
+    enchufes: (r) => {
+      const per = ent(r, 9, 30), n = Math.ceil(per / 8), rec = ["dormitorio", "living", "comedor", "sala de estar"][ent(r, 0, 3)];
+      const { o, a } = opciones(r, String(n), [
+        String(Math.max(1, n - 1)),
+        String(n + 1),
+        String(Math.ceil(per / 4)),
+        String(n + 2),
+        String(n + 3)
+      ]);
+      return {
+        id: "gen:enchufes",
+        n: 2,
+        t: "Vivienda",
+        q: `Un ${rec} tiene ${per} m de perímetro. ¿Cuántos enchufes dobles o triples necesita como mínimo?`,
+        o,
+        a,
+        e: `Uno por cada 8 m de perímetro o fracción: ${per} ÷ 8 = ${fmt(per / 8, 2)} → ${n}.`,
+        ref: "RIC N°10, 5.2 b)"
+      };
+    },
+    simultaneidad: (r) => {
+      const n = ent(r, 2, 30), fs = fsViv(n).fs;
+      const f = (x) => fmt(x, 2);
+      const { o, a } = opciones(
+        r,
+        f(fs),
+        [f(1), f(Math.max(0.5, fs - 0.05)), f(Math.min(1, fs + 0.05)), f(Math.max(0.5, fs - 0.1)), f(fs - 0.15)].filter(
+          (x) => x !== f(fs)
+        )
+      );
+      return {
+        id: "gen:simult",
+        n: 4,
+        t: "Demanda",
+        q: `¿Qué factor de simultaneidad corresponde a ${n} viviendas alimentadas desde un solo empalme?`,
+        o,
+        a,
+        e: n > 21 ? `Sobre 21 viviendas: (15,3 + (${n} − 21) × 0,5) ÷ ${n} = ${fmt(fs, 3)}.` : `Valor de la Tabla 3.2 para ${n} viviendas: ${f(fs)}.`,
+        ref: "RIC N°03, Tabla 3.2"
+      };
+    },
+    pica: (r) => {
+      const rho = ent(r, 5, 40) * 10, L = [1.5, 2, 2.5, 3][ent(r, 0, 3)], R = picaVertical(rho, L);
+      const { o, a } = opciones(r, fmt(R, 1) + " Ω", [
+        fmt(rho * L, 1) + " Ω",
+        fmt(R / 2, 1) + " Ω",
+        fmt(rho / L * 2, 1) + " Ω"
+      ]);
+      return {
+        id: "gen:pica",
+        n: 4,
+        t: "Puesta a tierra",
+        q: `Se instala una pica vertical de ${fmt(L, 1)} m en un terreno de ${rho} Ω·m. ¿Qué resistencia aproximada tendrá?`,
+        o,
+        a,
+        e: `R = ρ ÷ L = ${rho} ÷ ${fmt(L, 1)} = ${fmt(R, 1)} Ω. ${R <= RIC.tierraServ.max ? "Cumple 20 Ω." : "Supera 20 Ω: hay que agregar picas o mejorar el terreno."}`,
+        ref: "RIC N°06, Tabla 6.4"
+      };
+    },
+    tierraProt: (r) => {
+      const hum = r() < 0.5, idn = [0.03, 0.3][ent(r, 0, 1)], R = rProteccionMax(idn, hum);
+      const { o, a } = opciones(r, fmt(R) + " Ω", [
+        fmt(rProteccionMax(idn, !hum)) + " Ω",
+        fmt(20) + " Ω",
+        fmt(R / 10) + " Ω"
+      ]);
+      return {
+        id: "gen:tierraprot",
+        n: 4,
+        t: "Seguridad",
+        q: `Con un diferencial de ${fmt(idn * 1e3)} mA en un lugar ${hum ? "húmedo" : "seco"}, ¿cuál es la resistencia máxima de la tierra de protección?`,
+        o,
+        a,
+        e: `RA ≤ UL ÷ IΔn = ${hum ? 24 : 50} ÷ ${fmt(idn, 2)} = ${fmt(R)} Ω (UL = ${hum ? "24 V en lugar húmedo" : "50 V en lugar seco"}).`,
+        ref: "RIC N°05 (RA × Id ≤ UL)"
+      };
+    },
+    seccion: (r) => {
+      const In = [10, 16, 20, 25, 32][ent(r, 0, 4)], tb = ampTable({ met: "A1", tc: 70 }), S = SECC.find((s) => {
+        var _a;
+        return ((_a = tb[s]) != null ? _a : 0) >= In;
+      });
+      const sstr = (s) => fmt(s, s % 1 ? 1 : 0) + " mm²";
+      const otros = SECC.filter((s) => s !== S && s <= 10).map(sstr);
+      const { o, a } = opciones(r, sstr(S), otros);
+      return {
+        id: "gen:seccion",
+        n: 2,
+        t: "Capacidad de corriente",
+        q: `Cable de 70 °C embutido en pared (método A1, 30 °C). ¿Qué sección mínima soporta una protección de ${In} A (Iz ≥ In)?`,
+        o,
+        a,
+        e: `En la Tabla 4.4, columna A1 a 70 °C: ${sstr(S)} soporta ${tb[S]} A ≥ ${In} A${SECC.indexOf(S) > 0 ? `; ${sstr(SECC[SECC.indexOf(S) - 1])} solo ${tb[SECC[SECC.indexOf(S) - 1]]} A` : ""}. Además, revisa la sección mínima según el uso.`,
+        ref: "RIC N°04, Tabla 4.4"
+      };
+    },
+    llenado: (r) => {
+      const n = ent(r, 1, 6), m = llenadoMax(n);
+      const { o, a } = opciones(
+        r,
+        m + " %",
+        ["33 %", "40 %", "50 %", "60 %"].filter((x) => x !== m + " %")
+      );
+      return {
+        id: "gen:llenado",
+        n: 2,
+        t: "Canalizaciones",
+        q: `¿Qué porcentaje máximo de la sección de un tubo pueden ocupar ${n} conductor${n > 1 ? "es" : ""} (incluida la tierra)?`,
+        o,
+        a,
+        e: `Tabla 4.21: 1 conductor → 50 %; 2 o más → 33 %. Con ${n}: ${m} %.`,
+        ref: "RIC N°04, Tabla 4.21"
+      };
+    },
+    circMin: (r) => {
+      const m2 = ent(r, 18, 90), n = m2 < 30 ? 2 : 3;
+      const { o, a } = opciones(
+        r,
+        String(n),
+        ["1", "2", "3", "4"].filter((x) => x !== String(n))
+      );
+      return {
+        id: "gen:circmin",
+        n: 2,
+        t: "Vivienda",
+        q: `¿Cuántos circuitos como mínimo debe proyectarse en una vivienda de ${m2} m²?`,
+        o,
+        a,
+        e: `Mínimo 2 circuitos bajo 30 m² y 3 circuitos para 30 m² o más: ${m2} m² → ${n}.`,
+        ref: "RIC N°10, 5.2 b)"
+      };
+    }
+  };
+  function generarPreguntas(n, r, tipos = Object.keys(GENERADORES)) {
+    const out = [];
+    const pool = tipos.slice();
+    for (let i = 0; i < n; i++) {
+      if (!pool.length) pool.push(...tipos);
+      const k = pool.splice(Math.floor(r() * pool.length), 1)[0];
+      out.push(GENERADORES[k](r));
+    }
+    return out;
   }
   return __toCommonJS(index_exports);
 })();

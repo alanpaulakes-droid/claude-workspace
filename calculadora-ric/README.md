@@ -7,6 +7,13 @@ ni internet en iPhone, Android y computador.
 > Herramienta de apoyo. No reemplaza el proyecto ni la firma de un instalador eléctrico autorizado SEC, ni la
 > lectura del texto vigente de los pliegos.
 
+## Cuestionario de certificación SEC
+
+`npm run build` genera también `CUESTIONARIO_SEC_RIC.html` (fuentes en `src/cuestionario/`): 9 secciones de estudio con
+diagramas, práctica con corrección inmediata, desafío diario, simulacro de 30 preguntas en 45 minutos y repaso espaciado.
+Usa el banco `src/data/banco-sec.json` y los generadores de ejercicios de cálculo de `src/engine/generadores.ts`, que
+crean valores nuevos en cada intento.
+
 ## Requisitos
 
 - Node.js 20 o superior y npm.

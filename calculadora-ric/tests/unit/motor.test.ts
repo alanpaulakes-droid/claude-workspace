@@ -314,3 +314,33 @@ describe("Aprendizaje", () => {
     expect(mezclar([1, 2, 3, 4, 5], 42)).toEqual(a);
   });
 });
+
+import { GENERADORES, generarPreguntas, rngSemilla } from "../../src/engine";
+describe("Generadores de preguntas de cálculo", () => {
+  it("cada generador produce 4 opciones distintas y una correcta, para 200 semillas", () => {
+    for (const [k, g] of Object.entries(GENERADORES))
+      for (let s = 1; s <= 200; s++) {
+        const q = g(rngSemilla(s * 7919));
+        expect(q.o.length, k).toBe(4);
+        expect(new Set(q.o).size, k + " " + JSON.stringify(q.o)).toBe(4);
+        expect(q.a, k).toBeGreaterThanOrEqual(0);
+        expect(
+          q.o.every((x) => x.trim() === x),
+          k,
+        ).toBe(true);
+      }
+  });
+  it("respuestas correctas verificadas", () => {
+    const pr = GENERADORES.proteccion(rngSemilla(1));
+    const P = +pr.q.match(/suma ([\d.]+) W/)![1].replace(/\./g, "");
+    expect(pr.o[pr.a]).toBe(`${[6, 10, 16, 20, 25, 32].find((x) => x >= (1.1 * P) / 220 && P <= 0.9 * 220 * x)} A`);
+    const ce = GENERADORES.centros(rngSemilla(5));
+    const [, w, In] = ce.q.match(/centros de (\d+) W .* de (\d+) A/)!;
+    expect(+ce.o[ce.a]).toBe(Math.floor((0.9 * 220 * +In) / +w));
+  });
+  it("son reproducibles con la misma semilla y variadas entre semillas", () => {
+    expect(generarPreguntas(5, rngSemilla(3))).toEqual(generarPreguntas(5, rngSemilla(3)));
+    const qs = new Set(Array.from({ length: 20 }, (_, i) => GENERADORES.caida(rngSemilla(i + 1)).q));
+    expect(qs.size).toBeGreaterThan(15);
+  });
+});

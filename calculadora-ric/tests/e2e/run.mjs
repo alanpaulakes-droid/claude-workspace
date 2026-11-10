@@ -340,6 +340,49 @@ try {
     await p.close();
   }
 
+  // 3f. Cuestionario de certificación SEC (archivo independiente)
+  {
+    const p = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(e.message));
+    await p.goto(pathToFileURL(join(ROOT, "dist", "CUESTIONARIO_SEC_RIC.html")).href);
+    await p.click('.tabs [data-go="estudio"]');
+    const nsec = await p.$$eval(".sec", (x) => x.length);
+    await p.click('[data-sec="prot"]');
+    const ndg = await p.$$eval(".dg", (x) => x.length);
+    await p.click('[data-prac="prot"]');
+    let n = 0;
+    while ((await p.$("[data-op]:not([disabled])")) && n < 12) {
+      await p.click('[data-op="0"]');
+      if (!(await p.$(".fb"))) break;
+      await p.click('[data-go="next"]');
+      n++;
+    }
+    const res = await p.evaluate(() => document.querySelector("h1").innerText);
+    await p.click('.tabs [data-go="simulacro"]');
+    await p.click('[data-go="sgo"]');
+    const q1 = await p.evaluate(() => document.querySelector(".q").innerText);
+    for (let i = 0; i < 30; i++) {
+      await p.click('[data-op="1"]');
+      await p.click('[data-go="next"]');
+    }
+    const nota = await p.evaluate(() => document.querySelector(".kpis").innerText);
+    await p.click('[data-go="sgo"]');
+    const q2 = await p.evaluate(() => document.querySelector(".q").innerText);
+    check(
+      "Cuestionario SEC: 9 secciones, diagramas, práctica con corrección y simulacro variable",
+      nsec === 9 &&
+        ndg === 2 &&
+        n === 10 &&
+        /de 10 correctas/.test(res) &&
+        /Nota/.test(nota) &&
+        q1 !== q2 &&
+        !errs.length,
+      `${nsec} secciones · ${ndg} diagramas · ${res} · ${errs.join(" | ")}`,
+    );
+    await p.close();
+  }
+
   // 4. Armar tablero: soluciones de los niveles aprueban
   {
     const p = await browser.newPage({ viewport: { width: 1280, height: 900 } });

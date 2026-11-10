@@ -5,14 +5,15 @@
   "description": "Calculadora RIC Domiciliaria: cálculo, simulador 3D y enseñanza según los pliegos RIC (SEC, Chile). Se compila a un solo HTML.",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "build": "node scripts/build.mjs && node scripts/build-cuestionario.mjs",
     "test": "vitest run",
     "test:e2e": "node tests/e2e/run.mjs",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src/engine src/pwa tests scripts",
+    "lint": "eslint src/engine src/pwa src/cuestionario tests scripts",
     "format": "prettier --write \"src/engine/**/*.ts\" \"tests/unit/**/*.ts\" \"scripts/**/*.mjs\" \"*.md\" \"docs/**/*.md\"",
     "format:check": "prettier --check \"src/engine/**/*.ts\" \"tests/unit/**/*.ts\" \"scripts/**/*.mjs\"",
-    "check": "npm run typecheck && npm run lint && npm test && npm run build"
+    "check": "npm run typecheck && npm run lint && npm test && npm run build",
+    "build:cuestionario": "node scripts/build-cuestionario.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
