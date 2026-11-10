@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#e0245e">
-<title>Cheer Pro Anual</title>
+<title>GimnastiCheer</title>
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
 <style>
@@ -51,6 +51,11 @@ h3{font-size:1rem;margin-bottom:6px}
 .demo-w figcaption{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.72rem;color:var(--mute);margin-top:5px}
 .demo-w .mu{font-weight:700;color:var(--hlt)}.demo-w .mu.st{color:var(--stt)}
 .demo-w.slowon .slow{color:var(--acc);font-weight:700}
+.blk{font-size:.95rem;margin:14px 2px 8px;color:var(--acc)}
+.magel{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:.88rem;cursor:pointer}
+.magel input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--acc)}
+.magel.ok b{text-decoration:line-through;opacity:.7}
+nav button{min-width:44px}
 .kg{display:flex;gap:6px;align-items:center;margin-top:8px;font-size:.8rem;color:var(--mute)}
 .kg input{width:80px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card2)}
 ul.plain{padding-left:18px;font-size:.9rem}
@@ -98,7 +103,7 @@ label.f{display:block;font-size:.82rem;color:var(--mute);margin:10px 0 4px}
 </head>
 <body>
 <header>
-  <h1><img src="icon.svg" alt="">Cheer Pro · Programa anual</h1>
+  <h1><img src="icon.svg" alt="">GimnastiCheer · Programa anual</h1>
   <div id="hdr"></div>
 </header>
 <main id="app"></main>
@@ -108,6 +113,7 @@ label.f{display:block;font-size:.82rem;color:var(--mute);margin:10px 0 4px}
   <button data-v="hoy"><span>🔥</span>Hoy</button>
   <button data-v="semana"><span>📅</span>Semana</button>
   <button data-v="anual"><span>🗓️</span>Año</button>
+  <button data-v="mag"><span>🏅</span>Artística</button>
   <button data-v="tests"><span>📈</span>Tests</button>
   <button data-v="obj"><span>🎯</span>Objetivos</button>
   <button data-v="ajustes"><span>⚙️</span>Ajustes</button>
@@ -119,7 +125,7 @@ label.f{display:block;font-size:.82rem;color:var(--mute);margin:10px 0 4px}
 "use strict";
 /* ===================== DATOS ===================== */
 const DAYS=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
-const VEN={pesas:{n:'Gimnasio de pesas',i:'🏋️'},pasto:{n:'Pasto',i:'🌱'},suelo:{n:'Suelo de gimnasia',i:'🤸'}};
+const VEN={pesas:{n:'Gimnasio de pesas',i:'🏋️'},pasto:{n:'Pasto',i:'🌱'},suelo:{n:'Suelo de gimnasia',i:'🤸'},aparatos:{n:'Gimnasio de artística (aparatos)',i:'🏅'}};
 const TYPE={main:'Fuerza',acc:'Accesorio',core:'Core',plyo:'Pliometría',power:'Potencia',skill:'Técnica',flex:'Flexibilidad',bal:'Equilibrio',cond:'Resistencia'};
 
 const PHASES=[
@@ -153,6 +159,109 @@ const SKILLS={
  comp:['Pases de competencia de tu nivel','Rondada–flick–full (si dominas el layout)','Standing tuck / standing full en series','Consistencia: 10 repeticiones limpias por pase','Toe touch–flick–mortal (combinación de salto + tumbling)'],
  trans:['Técnica libre y juego','Paradas de manos','Perfeccionar rueda y rondada','Revisión de video de la temporada']
 };
+
+/* ===================== GIMNASIA ARTÍSTICA MASCULINA ===================== */
+const MAGLV=['','Básico','Intermedio','Avanzado','Élite'];
+const MAG={
+ suelo:{n:'Suelo',i:'🤸',anim:1,el:[
+  ['s1','Rol adelante y atrás (agrupado, carpado y piernas abiertas)',1,'Barbilla al pecho, apoyo simultáneo de manos, terminar de pie sin apoyarse.',['Rol en plano inclinado','Rol atrás pasando a apoyo de manos']],
+  ['s2','Parada de manos 30 s y rol adelante desde la parada',1,'Cuerpo hueco, hombros abiertos empujando el suelo, glúteos y piernas apretados.',['Parada pecho a la pared','Patada a parada con ayudante']],
+  ['s3','Rueda y rondada con rebote',1,'Rondada: manos en línea, cuarto de giro, piernas juntas antes de caer y rebote vertical.',['Rueda sobre una línea','Rondada desde un paso']],
+  ['s4','Kip de cabeza (flic de cabeza)',2,'Triángulo cabeza–manos, extensión explosiva de cadera y llegada arqueada de pie.',['Desde plinto bajo','Con ayuda en la espalda']],
+  ['s5','Paloma de manos (front handspring)',2,'Bloqueo activo de hombros, cuerpo arqueado controlado, brazos junto a las orejas al llegar.',['Bloqueo contra pared','Paloma desde trampolín a colchón alto']],
+  ['s6','Flic-flac (back handspring) y rondada–flic-flac',2,'Sentarse atrás, brazos rápidos sobre la cabeza, bloqueo de hombros y latigazo de piernas (snap down).',['Flic sobre cuña','Snap-downs desde parada de manos']],
+  ['s7','Mortal atrás agrupado (rondada–flic–mortal)',2,'Despegue vertical con brazos arriba, rodillas al pecho, abrir antes de aterrizar.',['Mortal en trampolín','Mortal desde plinto con ayudante']],
+  ['s8','Mortal adelante agrupado',2,'Golpe (punch) con piernas rectas, brazos hacia arriba, rotar desde la cadera.',['Punch en minitramp','Mortal adelante a colchón alto']],
+  ['s9','Mortal atrás extendido (layout)',3,'Cuerpo hueco y extendido de pies a manos; la rotación nace del despegue, sin carpar.',['Layout en trampolín','Rondada–flic–layout a foso']],
+  ['s10','Mortal atrás con giro completo (full)',3,'Iniciar el giro al alcanzar la vertical, brazos cerrados al pecho, buscar el suelo con la vista.',['Medio giro en trampolín','Full con cinturón de giro']],
+  ['s11','Mortal adelante extendido y barani',3,'Barani: mortal adelante con medio giro; mirar el suelo temprano y bloquear al caer.',['Barani en trampolín']],
+  ['s12','Subida a parada de manos con fuerza (press)',3,'Piernas abiertas, hombros por delante de las manos, compresión fuerte y subida lenta.',['Press desde cajón','Negativas de press']],
+  ['s13','Flair (molino) en suelo',3,'Apoyo alternado de manos, piernas abiertas circulando, cadera alta y hombros activos.',['Círculos en champiñón','Flair con banda o ayudante']],
+  ['s14','Doble mortal atrás agrupado',4,'Altura máxima en el despegue, agrupado cerrado y rápido, abrir para clavar la caída.',['Doble en trampolín/foso','Con cinturón de giro']],
+  ['s15','Doble giro (double full) y series de mortales adelante',4,'Giro temprano y compacto; en series, conectar con rebote sin perder altura.',['Double full en trampolín','Series en pista de tumbling']]]},
+ arcos:{n:'Caballo con arcos',i:'🐎',el:[
+  ['h1','Apoyo frontal y dorsal 10 s (paralelas bajas o caballo de suelo)',1,'Brazos bloqueados, hombros hundidos, cuerpo hueco.',['Apoyos en paralelas bajas']],
+  ['h2','Balanceo lateral en apoyo (pendular)',1,'Transferir el peso de un brazo al otro moviendo la cadera de lado a lado.',['Pendulares en caballo de suelo']],
+  ['h3','Cortes simples de pierna adelante y atrás',1,'Soltar la mano justo cuando pasa la pierna; cadera alta.',['Cortes en caballo de suelo']],
+  ['h4','Círculo de una pierna',2,'Pierna extendida describiendo el círculo completo, hombros sobre las manos.',['Media vuelta de pierna']],
+  ['h5','Tijeras adelante',2,'Cortes alternos con elevación de cadera y cruce de piernas en lo alto.',['Tijeras en caballo de suelo']],
+  ['h6','Círculos dobles en champiñón (seta)',2,'Cuerpo extendido, hombros sobre las manos, cadera abierta; ritmo constante.',['Círculos en champiñón de espuma','Círculos en "bucket"']],
+  ['h7','Círculos dobles en el cuerpo del caballo (sin arcos)',3,'Mantener la extensión y el ritmo del champiñón sobre el caballo.',['Series de 5 en el extremo del caballo']],
+  ['h8','Círculos dobles en arcos (10 seguidos)',3,'Hombros desplazándose sobre los arcos, manos rápidas y cuerpo largo.',['Círculos en arcos con un pie de apoyo']],
+  ['h9','Tijeras atrás',3,'Giro del tronco hacia atrás con la cadera alta; brazos bloqueados.',['Tijeras atrás en caballo de suelo']],
+  ['h10','Rusas (Russian wendeswing) en champiñón',4,'Círculos con giro del cuerpo de 180–360° manteniendo la extensión.',['Rusa media en champiñón']],
+  ['h11','Viaje en tres partes (Magyar o Sivado)',4,'Recorrer el caballo con círculos sin perder ritmo ni extensión.',['Viajes cortos en el cuerpo del caballo']],
+  ['h12','Flairs en caballo y salida a parada de manos',4,'Piernas abiertas y amplias; la salida pasa por parada de manos controlada.',['Flairs en champiñón','Salida a parada sobre colchón']]]},
+ anillas:{n:'Anillas',i:'⭕',el:[
+  ['r1','Apoyo en anillas 30 s con anillas giradas afuera',1,'Brazos bloqueados, codos pegados al cuerpo, anillas junto a la cadera.',['Apoyo en anillas bajas con pies apoyados']],
+  ['r2','Colgado invertido carpado y extendido (skin the cat)',1,'Pasar lento entre las anillas, hombros activos, sin soltar tensión.',['Invertido carpado con pies apoyados']],
+  ['r3','Balanceo en suspensión',1,'El balanceo nace de los hombros: hueco adelante, arqueo atrás, sin doblar brazos.',['Balanceos cortos con ayudante']],
+  ['r4','Escuadra (L-sit) en apoyo 15 s',2,'Piernas rectas a la horizontal, hombros hundidos, anillas quietas.',['Escuadra con una pierna','Escuadra en paralelas']],
+  ['r5','Muscle-up estricto con falso agarre',2,'Tirar hasta el pecho, transición rápida con codos atrás y fondo.',['Transiciones con pies en el suelo','Negativas de muscle-up']],
+  ['r6','Back lever (agrupado → extendido)',2,'Cuerpo recto boca abajo bajo las anillas, brazos bloqueados, hombros abiertos.',['Back lever agrupado','Back lever una pierna']],
+  ['r7','Front lever (agrupado → extendido)',3,'Escápulas hacia abajo, brazos rectos, cuerpo horizontal y hueco.',['Front lever agrupado','Front lever piernas abiertas']],
+  ['r8','Parada de hombros y subida asistida a parada de manos',3,'Codos pegados, anillas giradas, subir con control.',['Parada de hombros con banda']],
+  ['r9','Dislocación e inlocación con balanceo',3,'Extender cadera y hombros en el momento justo; agarre firme.',['Dislocaciones en suspensión baja']],
+  ['r10','Salida en mortal atrás extendido (layout)',3,'Soltar en el punto alto del balanceo atrás, cuerpo extendido, ojos al suelo.',['Salida agrupada a foso']],
+  ['r11','Cruz (cruz de hierro): bandas → libre',4,'Brazos rectos en la horizontal, hombros hundidos, anillas giradas.',['Cruz con banda de asistencia','Cruz con pies en polea']],
+  ['r12','Parada de manos con fuerza en anillas',4,'Press lento con anillas giradas afuera; parada estable 2 s.',['Press desde parada de hombros']],
+  ['r13','Plancha y maltesa en anillas',4,'Cuerpo horizontal sobre los brazos rectos; progresar con bandas.',['Plancha agrupada','Plancha piernas abiertas']],
+  ['r14','Salida doble mortal atrás',4,'Soltar alto con el cuerpo extendido y agrupar rápido.',['Doble a foso con ayudante']]]},
+ salto:{n:'Salto',i:'🚀',el:[
+  ['v1','Carrera, entrada al trampolín y bloqueo',1,'Últimos pasos rápidos, golpe de dos pies, brazos de atrás hacia adelante y cuerpo rígido.',['Carreras con entrada a colchón']],
+  ['v2','Salto a parada de manos en plinto y caída plana',1,'Bloqueo de hombros con cuerpo recto; caer de espalda sobre colchón alto.',['Bloqueo desde parada contra pared']],
+  ['v3','Paloma (handspring) sobre la mesa',2,'Primera fase corta, manos rápidas, bloqueo activo y llegada clavada.',['Paloma a colchones apilados']],
+  ['v4','Entrada rondada al trampolín (Yurchenko) a colchón',2,'Rondada rápida al trampolín, flic a la mesa con bloqueo de hombros.',['Rondada al trampolín con caída de espalda']],
+  ['v5','Tsukahara agrupado',3,'Media rueda a la mesa, bloqueo de hombros y mortal atrás agrupado.',['Media rueda a la mesa con caída']],
+  ['v6','Paloma con mortal adelante agrupado',3,'Bloqueo alto y rotación rápida tras el bloqueo; abrir para aterrizar.',['Paloma–mortal a foso']],
+  ['v7','Paloma con mortal adelante carpado o extendido',4,'Más altura de bloqueo; mantener el cuerpo largo.',['Paloma–carpado a foso']],
+  ['v8','Tsukahara extendido / Kasamatsu',4,'Bloqueo y rotación extendida, giro tardío en el Kasamatsu.',['Tsukahara extendido a foso']],
+  ['v9','Yurchenko con giros',4,'Giro iniciado tras salir de la mesa, cuerpo compacto.',['Yurchenko extendido a foso']]]},
+ paralelas:{n:'Paralelas',i:'🟰',el:[
+  ['p1','Caminar en apoyo adelante y atrás',1,'Brazos bloqueados, hombros hundidos, cuerpo hueco.',['Apoyos estáticos 20 s']],
+  ['p2','Balanceo en apoyo (piernas sobre las barras)',1,'Balancear desde los hombros, cuerpo hueco, sin doblar codos.',['Balanceos pequeños']],
+  ['p3','Escuadra (L-sit) 10 s',1,'Piernas rectas a la horizontal, hombros hundidos.',['Escuadra con rodillas']],
+  ['p4','Balanceo en apoyo braquial',2,'Apoyo en brazos, balanceo amplio y controlado.',['Balanceos cortos en braquial']],
+  ['p5','Subida de frente (front uprise) y subida de espalda (back uprise)',2,'Empujar las barras al final del balanceo y llegar a apoyo.',['Uprise desde braquial bajo']],
+  ['p6','Parada de hombros',2,'Codos abiertos, cadera sobre hombros, cuerpo recto.',['Parada de hombros en barras bajas']],
+  ['p7','Balanceo a parada de manos',3,'Hombros sobre las manos, cuerpo hueco, entrada con control.',['Parada de manos en paralelas bajas']],
+  ['p8','Salida en mortal atrás agrupado / extendido',3,'Soltar en el punto alto del balanceo atrás; ojos al suelo.',['Salida agrupada a colchón alto']],
+  ['p9','Stutz',3,'Medio giro en el balanceo adelante para volver a apoyo.',['Stutz a parada de hombros']],
+  ['p10','Cesta (peach basket) y Healy',4,'Paso bajo las barras con carpado rápido y regrabado en apoyo.',['Cesta a braquial']],
+  ['p11','Diamidov (giro en parada)',4,'Giro de 360° sobre un brazo en parada de manos.',['Media vuelta en parada']],
+  ['p12','Salida doble mortal atrás',4,'Soltar alto y agrupar rápido.',['Doble a foso']]]},
+ barra:{n:'Barra fija',i:'➖',el:[
+  ['b1','Colgado y agarres (palmar, dorsal y cubital)',1,'Hombros activos, cuerpo hueco, agarre con pulgares alrededor.',['Colgados 20–30 s']],
+  ['b2','Balanceo con tirón (tap swing)',1,'Hueco al frente, arqueo atrás y "tap" con los pies al pasar abajo.',['Balanceos en barra baja']],
+  ['b3','Vuelta de cadera atrás y subida en vuelta (pullover)',1,'Cadera pegada a la barra, piernas rectas, terminar en apoyo.',['Pullover con caja']],
+  ['b4','Kip desde balanceo',2,'Llevar los empeines a la barra y extender cadera mientras empujas hacia abajo.',['Kip en barra baja','Negativas de kip']],
+  ['b5','Despegue (cast) a horizontal y salida en mortal agrupado',2,'Cast con brazos rectos y cuerpo hueco; soltar la salida en el punto alto.',['Cast desde apoyo','Salida a foso']],
+  ['b6','Cast a parada de manos',3,'Hombros por delante, cadera arriba, brazos bloqueados.',['Cast a parada en barra baja']],
+  ['b7','Gigante atrás (con correas o grips y supervisión)',3,'Tap fuerte abajo, cuerpo extendido arriba, cambiar de hueco a arqueo.',['Gigantes con ayudante y correas']],
+  ['b8','Gigante adelante',3,'Agarre cubital/dorsal según técnica, tap adelante y cuerpo largo.',['Medio gigante adelante']],
+  ['b9','Salida mortal extendido (flyaway layout)',3,'Soltar con el tap después de la vertical, cuerpo extendido.',['Flyaway agrupado a foso']],
+  ['b10','Stalder e inbar',4,'Círculo con piernas abiertas o juntas pegadas a la barra, terminar en parada.',['Stalder en barra baja']],
+  ['b11','Pirueta en parada (cambio de agarre)',4,'Giro sobre un brazo en la vertical con cuerpo recto.',['Media pirueta']],
+  ['b12','Suelta Tkatchev',4,'Arquear en el gigante, soltar tras la vertical y regrabar a piernas abiertas.',['Tkatchev a foso']],
+  ['b13','Salida doble mortal atrás extendido',4,'Tap muy fuerte y cuerpo extendido en la rotación.',['Doble agrupado a foso']]]}
+};
+const MAGF=[ // preparación física específica: [nombre, nivel, tipo, reps]
+ ['Parada de manos contra pared',1,'core','45s'],['Hollow hold',1,'core','30s'],['Superman / arch hold',1,'core','30s'],['Escuadra (L-sit) en paralelas',1,'core','15s'],['Dominadas',1,'main','6-8'],['Fondos en paralelas',1,'main','8-10'],['Trepa de cuerda con piernas',1,'acc','2'],
+ ['Parada de manos libre',2,'core','30s'],['Front lever agrupado',2,'core','10s'],['Back lever agrupado',2,'core','10s'],['Plancha agrupada',2,'core','10s'],['Muscle-up',2,'main','3-5'],['Flexiones pike / parada de manos contra pared',2,'main','6-8'],['Trepa de cuerda sin piernas',2,'acc','2'],
+ ['Press a parada piernas abiertas',3,'main','3'],['Front lever piernas abiertas',3,'core','8s'],['Plancha agrupada avanzada',3,'core','10s'],['Back lever extendido',3,'core','10s'],['Cruz con banda',3,'core','8s'],['Flexiones en parada de manos libre',3,'main','3-5'],
+ ['Plancha completa',4,'core','5s'],['Front lever completo',4,'core','8s'],['Maltesa con banda',4,'core','5s'],['Cruz libre',4,'core','3s'],['Manna (progresión)',4,'core','5s']];
+const MAGFLEX=[['German hang (hombros)','30s'],['Puente (bridge)','45s'],['Split frontal derecho','60s'],['Split frontal izquierdo','60s'],['Split lateral (middle split)','60s'],['Pancake (piernas abiertas sentado)','45s'],['Muñecas: apoyos en 4 direcciones','45s']];
+const magDone=()=>LS.get('cheer.mag',{});
+function magTargets(ap,n){const d=magDone(),lv=S.magLvl||1;const el=MAG[ap].el.filter(e=>e[2]>=Math.min(lv,MAG[ap].el[MAG[ap].el.length-1][2]));return el.filter(e=>!d[e[0]]).slice(0,n)}
+function magLast(ap){const d=magDone();const m=MAG[ap].el.filter(e=>d[e[0]]);return m[m.length-1]}
+function magBlock(ap){const A=MAG[ap],out=[{hdr:A.i+' '+A.n}];const tg=magTargets(ap,2),lst=magLast(ap);
+ if(lst)out.push({n:lst[1],t:'skill',tip:'Consolidación (ya dominado): repeticiones perfectas. '+lst[3],noAnim:!A.anim});
+ tg.forEach((e,i)=>{out.push({n:e[1],t:'skill',tip:'Objetivo · '+MAGLV[e[2]]+'. '+e[3],noAnim:!A.anim});if(i===0&&e[4]&&e[4][0])out.push({n:'Progresión: '+e[4][0],t:'skill',tip:'Ejercicio previo para '+e[1]+'.',noAnim:1})});
+ if(!tg.length)out.push({n:'Rutina completa de '+A.n,t:'skill',r:'1',tip:'Todos los elementos dominados: practica la rutina completa y la limpieza de ejecución.',noAnim:1});
+ return out}
+function magStrength(n){const lv=S.magLvl||1;const pool=MAGF.filter(f=>f[1]===lv||f[1]===lv-1);const sel=pool.filter(f=>f[1]===lv).concat(pool.filter(f=>f[1]!==lv)).slice(0,n);
+ return [{hdr:'💪 Preparación física específica'}].concat(sel.map(f=>({n:f[0],t:f[2],r:f[3],tip:'Nivel '+MAGLV[f[1]]+'. Calidad estricta: si pierdes la forma, termina la serie.'})))}
+function magFlex(n){return [{hdr:'🧘 Flexibilidad'}].concat(MAGFLEX.slice(0,n).map(f=>({n:f[0],t:'flex',r:f[1],tip:'Al final, con el cuerpo caliente; respira y relaja en cada exhalación.'})))}
 
 const T={
  W_LOWER:{n:'Fuerza tren inferior',tag:'legs',obj:'Fuerza · Estética',ex:[
@@ -216,6 +325,10 @@ const T={
   {n:'Scorpion / needle',t:'flex',side:1,tip:'Espalda alta + cadera. Progresión con banda.'},
   {n:'Elevación activa de pierna (frente/lado)',t:'core',r:'10/lado',tip:'Flexibilidad ACTIVA: subir la pierna sin ayuda y sostener 2 s.'},
   {n:'Arch hold',t:'core',tip:'Fuerza en el rango de flexibilidad de espalda.'}]},
+ A_SUELO_SALTO:{n:'Artística: suelo y salto',tag:'skill',obj:'Técnica · Fuerza · Flexibilidad',gen:()=>[...magBlock('suelo'),...magBlock('salto'),...magStrength(3),...magFlex(3)]},
+ A_ANILLAS_BARRA:{n:'Artística: anillas y barra fija',tag:'upper',obj:'Técnica · Fuerza',gen:()=>[...magBlock('anillas'),...magBlock('barra'),...magStrength(3),...magFlex(2)]},
+ A_ARCOS_PARAL:{n:'Artística: caballo con arcos y paralelas',tag:'upper',obj:'Técnica · Fuerza',gen:()=>[...magBlock('arcos'),...magBlock('paralelas'),...magStrength(3),...magFlex(2)]},
+ A_FUERZA:{n:'Artística: preparación física específica',tag:'upper',obj:'Fuerza · Estética · Flexibilidad',gen:()=>[...magStrength(7),...magFlex(5)]},
  W_BASE:{n:'Fuerza de base: overhead, lanzamiento y agarre',tag:'upper',obj:'Fuerza · Estética',ex:[
   {n:'Push press',t:'power',kg:1,tip:'Dip corto y empuje explosivo con piernas: el mismo patrón que lanzar y subir una elevación.'},
   {n:'Sentadilla frontal',t:'main',kg:1,tip:'Tronco vertical bajo carga: fuerza para el "dip & drive" de los tosses.'},
@@ -258,6 +371,10 @@ const ROLE={
 const OPT={
  W_LOWER:[['W_LOWER','pesas',0],['BW_LOWER','pasto',3],['BW_LOWER','suelo',3]],
  W_UPPER:[['W_UPPER','pesas',0],['BW_UPPER','suelo',3],['BW_UPPER','pasto',3]],
+ A_SUELO_SALTO:[['A_SUELO_SALTO','aparatos',0],['A_SUELO_SALTO','suelo',1]],
+ A_ANILLAS_BARRA:[['A_ANILLAS_BARRA','aparatos',0],['A_FUERZA','suelo',3],['A_FUERZA','pesas',3]],
+ A_ARCOS_PARAL:[['A_ARCOS_PARAL','aparatos',0],['A_FUERZA','suelo',3],['A_FUERZA','pesas',3]],
+ A_FUERZA:[['A_FUERZA','suelo',0],['A_FUERZA','aparatos',0],['A_FUERZA','pesas',1]],
  W_BASE:[['W_BASE','pesas',0],['BW_UPPER','suelo',3],['BW_UPPER','pasto',3]],
  W_POWER:[['W_POWER','pesas',0],['P_PLYO','pasto',2],['P_PLYO','suelo',2]],
  G_TUMB:[['G_TUMB','suelo',0],['G_TUMB','pasto',4]],
@@ -267,6 +384,7 @@ const OPT={
 };
 const VENUE_NOTE={
  'G_TUMB|pasto':'En pasto: solo habilidades ya dominadas y saltos. Las habilidades nuevas, en suelo de gimnasia.',
+ 'A_SUELO_SALTO|suelo':'Sin mesa de salto: haz el bloque de salto con trampolín y colchón alto (entradas, bloqueos y caídas planas).',
  'P_COND|suelo':'Sin espacio para sprints largos: reemplaza por sprints cortos ida/vuelta o skipping en el lugar.',
  'P_COND|pesas':'En el gimnasio: sprints → intervalos en bici/remo (mismo tiempo de trabajo); trote → elíptica/cinta.',
  'G_FLEX|pesas':'Usa una colchoneta o la zona de estiramiento del gimnasio.'
@@ -274,6 +392,7 @@ const VENUE_NOTE={
 const WARM={
  all:['3–5 min trote suave o saltar la cuerda','Movilidad: cuello, hombros, cadera, tobillos','Muñecas: círculos, apoyos en 4 direcciones (¡siempre en cheer!)','Activación: puente de glúteo ×10, dead bug ×8, plancha 20 s'],
  pesas:['2–3 series de aproximación con cargas progresivas antes de cada ejercicio principal'],
+ aparatos:['Movilidad específica de muñecas (5 min) y hombros con banda','Activación: hollow/arch rocks, apoyos en paralelas bajas y colgados en barra','Elementos básicos de cada aparato del día como progresión de entrada'],
  pasto:['Skipping A/B, talones al glúteo, zancadas con giro','2–3 aceleraciones progresivas de 20 m'],
  suelo:['Saltos suaves, ruedas y paradas de manos de calentamiento','Puente y splits suaves 30 s cada uno (sin forzar)']
 };
@@ -291,7 +410,7 @@ const TESTS=[
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const iso=d=>{const x=new Date(d);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,10)};
 const mondayOf=d=>{const x=new Date(d);x.setHours(0,0,0,0);const wd=(x.getDay()+6)%7;x.setDate(x.getDate()-wd);return x};
-const defAvail=()=>DAYS.map((_,i)=>({pesas:i<5,pasto:i===1||i===3||i===5,suelo:i===1||i===3||i===5}));
+const defAvail=()=>DAYS.map((_,i)=>({pesas:i<5,pasto:i===1||i===3||i===5,suelo:i===1||i===3||i===5,aparatos:false}));
 let S=Object.assign({start:iso(new Date()),role:'base',nDays:5,sound:true,avail:defAvail(),plan:null,preview:null,view:'hoy',day:null},LS.get('cheer.v1',{}));
 if(!ROLE[S.role])S.role='base';
 const save=()=>LS.set('cheer.v1',S);
@@ -305,26 +424,26 @@ function isDeload(wy){return DELOAD.includes(wy)}
 function rpe(wy){if(isDeload(wy))return 'RPE 6 · descarga';const ph=phaseOf(wy);const i=(wy-ph.w[0])%4;return ['RPE 7','RPE 7.5–8','RPE 8–8.5','RPE 8.5–9'][i]}
 function weekDate(absW,d){const m=mondayOf(new Date(S.start+'T00:00'));m.setDate(m.getDate()+(absW-1)*7+d);return m}
 
-function rotation(phId){const pw=['fuerza','potencia','comp'].includes(phId)?'W_POWER':'P_PLYO';return ['W_LOWER','G_TUMB','W_UPPER','W_BASE','P_COND',pw]}
+function rotation(phId){if(S.avail&&S.avail.some(a=>a.aparatos))return ['A_SUELO_SALTO','W_LOWER','A_ANILLAS_BARRA','W_UPPER','A_ARCOS_PARAL','W_BASE'];return ['W_LOWER','A_SUELO_SALTO','W_UPPER','W_BASE','P_COND','A_FUERZA']}
 function buildPlan(){
  const ph=phaseOf(wInYear(curAbsWeek()));const order=rotation(ph.id).slice(0,S.nDays);const plan=Array(7).fill(null);
- for(const s of order){let best=null;
+ for(const s of [...order].sort((a,b)=>(/^A_(SUELO|ANILLAS|ARCOS)/.test(b)?1:0)-(/^A_(SUELO|ANILLAS|ARCOS)/.test(a)?1:0))){let best=null;
   for(let d=0;d<7;d++){if(plan[d])continue;
-   for(const [tk,v,pen] of OPT[s]){if(!S.avail[d][v])continue;let sc=pen+d*0.01;
+   for(const [tk,v,pen] of OPT[s]){if(!S.avail[d][v])continue;let sc=pen+d*0.01+(v!=='aparatos'&&S.avail[d].aparatos?1.5:0);
     for(const a of [d-1,d+1]){if(a<0||a>6)continue;const p=plan[a];if(!p)continue;sc+=0.6;if(T[p.k].tag===T[tk].tag&&T[tk].tag!=='light')sc+=2.5;if(['legs','run'].includes(T[p.k].tag)&&['legs','run'].includes(T[tk].tag))sc+=1}
     if(!best||sc<best.sc)best={d,tk,v,sc}}}
   if(best)plan[best.d]={k:best.tk,v:best.v}}
  S.plan=plan;S.planPhase=ph.id;save();
 }
-if(!S.plan||S.planVer!==2||S.planPhase!==phaseOf(wInYear(curAbsWeek())).id){S.planVer=2;buildPlan()}
+if(!S.plan||S.planVer!==3||S.planPhase!==phaseOf(wInYear(curAbsWeek())).id){S.planVer=3;buildPlan()}
 
 function exercisesFor(tk,ph,wy){
  const out=[];
- for(const e of T[tk].ex){
+ for(const e of (T[tk].gen?T[tk].gen(ph):T[tk].ex)){
   if(e.skills){SKILLS[ph.id].forEach(n=>out.push({n,t:'skill',tip:'Habilidades nuevas SOLO con entrenador/spotter y colchoneta. Calidad > cantidad.'}));continue}
   if(e.only&&!e.only.includes(ph.id))continue;if(e.not&&e.not.includes(ph.id))continue;out.push(e)}
  const r=ROLE[S.role];if(r&&r.add[tk])out.push(...r.add[tk]);
- return out.map(e=>{let [s,rep,rest]=e.c?e.c[ph.id]:ph.p[e.t];if(e.r&&!e.c)rep=e.r;
+ return out.map(e=>{if(e.hdr)return Object.assign({s:0,rep:'',rest:0},e);let [s,rep,rest]=e.c?e.c[ph.id]:ph.p[e.t];if(e.r&&!e.c)rep=e.r;
   if(isDeload(wy)&&e.t!=='flex'&&e.t!=='bal')s=Math.max(e.c?1:2,Math.round(s*0.6));
   return Object.assign({},e,{s,rep,rest,tip:(e.tipBy&&e.tipBy[ph.id])||e.tip})});
 }
@@ -339,7 +458,7 @@ function audio(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioConte
 function beep(f=880,d=.15,v=.25){if(!S.sound||!AC)return;try{const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(v,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.connect(g).connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
 function bigBeep(){beep(988,.18);setTimeout(()=>beep(1319,.35,.3),200)}
 function vib(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
-function notify(msg){try{if(document.hidden&&'Notification' in window&&Notification.permission==='granted')new Notification('Cheer Pro',{body:msg,icon:'icon.svg',tag:'cheer-timer'})}catch(e){}}
+function notify(msg){try{if(document.hidden&&'Notification' in window&&Notification.permission==='granted')new Notification('GimnastiCheer',{body:msg,icon:'icon.svg',tag:'cheer-timer'})}catch(e){}}
 function toast(msg,ms=2200){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',ms)}
 let wake=null;async function keepAwake(){try{if('wakeLock' in navigator&&!wake){wake=await navigator.wakeLock.request('screen');wake.addEventListener('release',()=>wake=null)}}catch(e){}}
 
@@ -385,11 +504,11 @@ function vHoy(){
  ${VENUE_NOTE[p.k+'|'+p.v]?`<div class="warnbox" style="margin-top:8px">${VENUE_NOTE[p.k+'|'+p.v]}</div>`:''}
  <div class="bar" style="margin-top:10px"><i style="width:${tot?100*dn/tot:0}%"></i></div><p class="mute" style="margin-top:4px">${dn}/${tot} series</p></div>
  <details class="card"><summary><b>🔥 Calentamiento (10–12 min)</b></summary><ul class="plain" style="margin-top:8px">${WARM.all.concat(WARM[p.v]).map(x=>'<li>'+x+'</li>').join('')}</ul></details>`;
- exs.forEach((e,i)=>{const n=prog[i]||0;const hold=secsOf(e.rep)>0;
+ let num=0;exs.forEach((e,i)=>{if(e.hdr){html+=`<h3 class="blk">${e.hdr}</h3>`;return}num++;const n=prog[i]||0;const hold=secsOf(e.rep)>0;
   const last=(LS.get('cheer.kg',{})[e.n]||[]).slice(-1)[0];
-  html+=`<div class="ex ${n>=e.s?'done':''}"><div class="top"><div><div class="nm">${i+1}. ${e.n}</div>
+  html+=`<div class="ex ${n>=e.s?'done':''}"><div class="top"><div><div class="nm">${num}. ${e.n}</div>
   <div class="rx"><b>${e.s} × ${fmtRep(e.rep)}</b>${e.side?' por lado':''} · descanso <b>${e.rest?restTxt(e.rest):'—'}</b></div></div><span class="tag">${TYPE[e.t]}</span></div>
-  ${demoHTML(e.n)}
+  ${e.noAnim?'':demoHTML(e.n)}
   <div class="tip">${e.tip||''}</div>
   <div class="sets">${Array.from({length:e.s},(_,j)=>`<button data-ex="${i}" data-set="${j}" class="${j<n?'ok':''}">${j<n?'✓':(hold?'▶':j+1)}</button>`).join('')}</div>
   ${e.kg&&p.v==='pesas'?`<div class="kg">Carga: <input type="number" inputmode="decimal" step="0.5" data-kg="${i}" placeholder="kg"> ${last?`Último: <b>${last.kg} kg</b> (${last.d})`:''}</div>`:''}</div>`});
@@ -404,7 +523,7 @@ function bindDays(){app.querySelectorAll('.daytabs button').forEach(b=>b.onclick
 function setTap(exs,i,j,key){
  const prog=LS.get(key,{});const n=prog[i]||0;
  if(j<n){prog[i]=j;LS.set(key,prog);render();return}
- const e=exs[i];const setNo=n+1;const lastSet=setNo>=e.s;const nextEx=exs[i+1];
+ const e=exs[i];const setNo=n+1;const lastSet=setNo>=e.s;const nextEx=exs.slice(i+1).find(x=>!x.hdr);
  const nextLbl=lastSet?(nextEx?'Siguiente: '+nextEx.n:''):`Siguiente: serie ${setNo+1}/${e.s} de ${e.n}`;
  const markDone=()=>{const p2=LS.get(key,{});p2[i]=Math.max(p2[i]||0,setNo);LS.set(key,p2);if(lastSet&&!nextEx){const all=exs.every((x,k)=>(p2[k]||0)>=x.s);if(all){toast('🏆 ¡Sesión completada!',3500);bigBeep()}}render()};
  const rest=(lastSet&&!nextEx)?[]:(e.rest?[{kind:'rest',secs:e.rest,label:lastSet?'Descanso · cambia de ejercicio':'Descanso entre series',next:nextLbl,endMsg:lastSet&&nextEx?'¡Vamos! '+nextEx.n:'¡Siguiente serie!'}]:[]);
@@ -459,6 +578,22 @@ function vTests(){
  document.getElementById('saveT').onclick=()=>{const r={d:iso(new Date())};let any=0;app.querySelectorAll('[data-t]').forEach(i=>{if(i.value!==''){r[i.dataset.t]=+i.value;any=1}});if(!any)return toast('Ingresa al menos un valor');db.push(r);LS.set('cheer.tests',db);toast('Resultados guardados');render()};
 }
 
+function vMag(){
+ const d=magDone();const lv=S.magLvl||1;
+ let h=`<div class="card"><h2>Gimnasia artística masculina</h2><p class="mute">Seis aparatos con progresiones de básico a élite. Marca cada elemento cuando lo hagas limpio 3 veces seguidas: tus sesiones de artística toman automáticamente los 2 próximos objetivos de cada aparato.</p>
+ <label class="f" for="magLvl">Tu nivel de artística (define desde dónde empiezan los objetivos)</label><select class="inp" id="magLvl">${[1,2,3,4].map(n=>`<option value="${n}" ${lv===n?'selected':''}>${MAGLV[n]}</option>`).join('')}</select>
+ <div class="warnbox" style="margin-top:10px">Elementos nuevos en aparatos SOLO con entrenador, colchonetas reglamentarias y foso o ayudante. Usa grips y correas en barra fija y anillas cuando corresponda.</div></div>`;
+ for(const ap in MAG){const A=MAG[ap],tot=A.el.length,dn=A.el.filter(e=>d[e[0]]).length;const tg=magTargets(ap,2).map(e=>e[0]);
+  h+=`<details class="card" ${ap==='suelo'?'open':''}><summary><b>${A.i} ${A.n}</b> <span class="mute">· ${dn}/${tot} dominados</span><div class="bar" style="margin-top:6px"><i style="width:${100*dn/tot}%"></i></div></summary>`;
+  for(const L of [1,2,3,4]){const els=A.el.filter(e=>e[2]===L);if(!els.length)continue;h+=`<h3 class="blk">${MAGLV[L]}</h3>`;
+   for(const e of els){h+=`<label class="magel ${d[e[0]]?'ok':''}"><input type="checkbox" data-m="${e[0]}" ${d[e[0]]?'checked':''}><span><b>${e[1]}</b>${tg.includes(e[0])?' <span class="pill" style="background:var(--acc);color:#fff">Objetivo</span>':''}<br><span class="mute">${e[3]}${e[4]&&e[4].length?' · Progresiones: '+e[4].join(' · '):''}</span></span></label>`}}
+  h+='</details>'}
+ h+=`<details class="card"><summary><b>💪 Preparación física específica</b></summary>${[1,2,3,4].map(L=>`<h3 class="blk">${MAGLV[L]}</h3><ul class="plain">${MAGF.filter(f=>f[1]===L).map(f=>`<li>${f[0]} <span class="mute">(${f[3]})</span></li>`).join('')}</ul>`).join('')}</details>
+ <div class="card"><h3>Cómo se organiza</h3><ul class="plain"><li>Si marcas "Gimnasio de artística (aparatos)" en tu disponibilidad semanal, el plan reparte 3 sesiones de artística: suelo + salto, anillas + barra fija y caballo con arcos + paralelas.</li><li>Cada sesión: calentamiento y movilidad, 2 aparatos (consolidación + 2 objetivos + una progresión), preparación física específica de tu nivel y flexibilidad.</li><li>Sin aparatos, se programa suelo y preparación física específica.</li></ul></div>`;
+ app.innerHTML=h;
+ document.getElementById('magLvl').onchange=e=>{S.magLvl=+e.target.value;save();render()};
+ app.querySelectorAll('[data-m]').forEach(c=>c.onchange=()=>{const db=magDone();if(c.checked)db[c.dataset.m]=1;else delete db[c.dataset.m];LS.set('cheer.mag',db);render()});
+}
 function vObj(){
  app.innerHTML=`
  <div class="card obj"><h2>💪 Fuerza</h2><ul class="plain"><li><b>Cómo:</b> sentadilla, peso muerto rumano, press militar/push press, dominadas, olímpicos; periodización hipertrofia → fuerza → potencia.</li><li><b>En cheer:</b> como base sostienes, lanzas y atrapas a la flyer; en el tumbling necesitas fuerza relativa para bloquear brazos y potencia de piernas para despegar.</li><li><b>Referencias a 1 año (orientativas, hombre):</b> sentadilla 5RM ≈ 1,5–1,75× peso corporal · press militar 5RM ≈ 0,7–0,8× · push press 1RM ≈ 1× · dominadas estrictas 12–15 (o lastradas +20 kg) · plancha 2 min.</li></ul></div>
@@ -487,7 +622,7 @@ function vAjustes(){
  document.getElementById('rst').onclick=()=>{if(!confirm('¿Borrar todo el progreso y ajustes?'))return;Object.keys(localStorage).filter(k=>k.startsWith('cheer.')).forEach(k=>localStorage.removeItem(k));location.reload()};
 }
 
-const VIEWS={hoy:vHoy,semana:vSemana,anual:vAnual,tests:vTests,obj:vObj,ajustes:vAjustes};
+const VIEWS={mag:vMag,hoy:vHoy,semana:vSemana,anual:vAnual,tests:vTests,obj:vObj,ajustes:vAjustes};
 function go(v){S.view=v;save();render();window.scrollTo(0,0)}
 function render(){header();document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===S.view));(VIEWS[S.view]||vHoy)()}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='hoy'&&S.view!=='hoy')S.day=null;go(b.dataset.v)});

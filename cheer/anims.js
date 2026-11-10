@@ -115,7 +115,7 @@ const ANAME={
 function animKey(n){
  if(ANAME[n])return ANAME[n];const s=n.toLowerCase();
  const R=[['revisión de video',null],['rol adelante','rolls'],['toe touch','toeTouch'],['puente con patada','backWalk'],['bajada a puente','toBridge'],['back walkover','backWalk'],['front walkover','frontWalk'],
-  ['mortal adelante','frontTuck'],['flick adelante','frontHs'],['mortal','backTuck'],['standing tuck','backTuck'],['flick','bhs'],['rueda','cartwheel'],['rondada','cartwheel'],['parada','handstand'],
+  ['barani','frontTuck'],['paloma','frontHs'],['kip de cabeza','frontHs'],['mortal adelante','frontTuck'],['flick adelante','frontHs'],['mortal','backTuck'],['standing tuck','backTuck'],['flick','bhs'],['flic','bhs'],['full','backTuck'],['doble mortal','backTuck'],['rueda','cartwheel'],['rondada','cartwheel'],['parada','handstand'],
   ['pases','bhs'],['consistencia','bhs'],['combinación','toeTouch'],['simulación','bhs'],['técnica libre','cartwheel']];
  for(const [k,v] of R)if(s.includes(k))return v;return null}
 

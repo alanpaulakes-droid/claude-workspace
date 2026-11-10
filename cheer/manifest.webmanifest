@@ -1,8 +1,8 @@
 {
   "id": "cheer-pro-anual",
-  "name": "Cheer Pro · Programa anual",
-  "short_name": "Cheer Pro",
-  "description": "Programa anual de fuerza, resistencia, flexibilidad y estética para cheerleading.",
+  "name": "GimnastiCheer · Programa anual",
+  "short_name": "GimnastiCheer",
+  "description": "Gimnasia artística masculina y cheer: fuerza, técnica, progresiones y flexibilidad.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
