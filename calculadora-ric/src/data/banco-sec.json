@@ -1,5 +1,5 @@
 {
- "ver": "2021.2",
+ "ver": "2021.3",
  "nota": "Preguntas de práctica tipo certificación, basadas en el texto de los pliegos RIC (SEC, 2021). No es el examen oficial.",
  "q": [
   {
@@ -554,7 +554,7 @@
     "120 V"
    ],
    "a": 1,
-   "e": "Tensión de seguridad: 50 V CA en lugares secos y 24 V CA en lugares húmedos.",
+   "e": "Tensión de seguridad: 50 V CA (120 V CC) en lugares secos y 24 V CA (60 V CC) en lugares húmedos o mojados.",
    "ref": "RIC N°05, 5.8"
   },
   {
@@ -569,8 +569,8 @@
     "RA × In ≤ 220 V"
    ],
    "a": 1,
-   "e": "La resistencia de tierra por la sensibilidad del diferencial no debe superar la tensión límite UL.",
-   "ref": "RIC N°05 (RA × Id ≤ UL)"
+   "e": "En el esquema TT la resistencia de tierra de las masas por la corriente de funcionamiento del dispositivo (la sensibilidad, si es un diferencial) no debe superar la tensión límite UL.",
+   "ref": "RIC N°05, 8.7.7.3"
   },
   {
    "id": "r02a",
@@ -901,6 +901,51 @@
    "a": 1,
    "e": "Todos los centros de iluminación deben contar con el conductor de puesta a tierra y terminar en caja de derivación.",
    "ref": "RIC N°10, 5.1.2.12 y 5.1.2.13"
+  },
+  {
+   "id": "r05c",
+   "n": 4,
+   "t": "Seguridad",
+   "q": "En un esquema TN con tensión de 220 V, ¿en qué tiempo máximo debe cortar la protección ante una falla a masa?",
+   "o": [
+    "0,1 s",
+    "0,2 s",
+    "0,4 s",
+    "5 s"
+   ],
+   "a": 2,
+   "e": "Se cumple Zs × Ia ≤ UL y el corte debe ocurrir en el tiempo de la Tabla 5.1: 0,4 s en corriente alterna para U0 = 220 V (0,2 s para 380 V).",
+   "ref": "RIC N°05, 8.7.6.2 y Tabla 5.1"
+  },
+  {
+   "id": "r05d",
+   "n": 4,
+   "t": "Seguridad",
+   "q": "¿Qué resistencia del cuerpo humano toma como referencia el RIC N°05?",
+   "o": [
+    "500 Ω",
+    "1.000 Ω",
+    "2.000 Ω",
+    "10.000 Ω"
+   ],
+   "a": 2,
+   "e": "Se considera 2.000 Ω como valor referencial, de uso exclusivo para la aplicación del pliego (según UNE-IEC/TS 60479-1).",
+   "ref": "RIC N°05, 5.7"
+  },
+  {
+   "id": "r05e",
+   "n": 4,
+   "t": "Seguridad",
+   "q": "En un esquema TN, ¿qué condición deben cumplir las protecciones ante una falla entre fase y masa?",
+   "o": [
+    "RA × Ia ≤ UL",
+    "Zs × Ia ≤ UL",
+    "Ia ≥ 10 × In",
+    "Zs ≤ 20 Ω"
+   ],
+   "a": 1,
+   "e": "En el esquema TN (neutralización) la impedancia del bucle de defecto por la corriente de funcionamiento del dispositivo no debe superar UL; con diferencial, Ia es su sensibilidad.",
+   "ref": "RIC N°05, 8.7.6.2"
   }
  ]
 }

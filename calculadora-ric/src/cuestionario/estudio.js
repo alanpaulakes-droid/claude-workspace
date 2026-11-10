@@ -78,7 +78,7 @@ const DG = {
      <path d="M400 85V60M400 115V60" class="w"/><rect x="380" y="40" width="40" height="22" rx="4" class="ac"/>${T(430, 56, "Carga", "m")}
      <path d="M330 85V180H460" class="w pe dsh2"/>${T(340, 175, "fuga a tierra", "m")}${T(466, 184, "PE", "b")}
      <rect x="210" y="20" width="110" height="34" rx="8" class="bx"/>${T(265, 42, "Disparo", "b", "middle")}<path d="M210 37 180 75" class="dsh"/>
-     ${T(20, 202, "Si I fase − I neutro ≥ IΔn (30 mA) el diferencial corta (RIC N°10, 5.1.3.5)", "m")}`,
+     ${T(20, 202, "Si la diferencia entre fase y neutro alcanza IΔn, corta · exigencia ≤ 30 mA: RIC N°10, 5.1.3.5", "m")}`,
     "Principio del diferencial",
   ),
   tablero: S(
@@ -117,15 +117,15 @@ const DG = {
     `<path d="M20 70H500" class="ax"/>${T(500, 62, "nivel de terreno", "m", "end")}<rect x="20" y="70" width="480" height="160" class="soil"/>
      <path d="M140 40V200" class="pica"/><rect x="128" y="30" width="24" height="18" rx="3" class="bx"/>${T(160, 44, "Cámara de registro", "m")}
      <path d="M140 200l-6-14h12z" class="pica"/>${T(155, 140, "L", "b")}<path d="M150 72V198" class="dsh"/>
-     ${T(260, 110, "R ≈ ρ ÷ L (pica vertical, RIC N°06 Tabla 6.4)", "b")}${T(260, 134, "Servicio: ≤ 20 Ω (hasta 80 Ω con 6.2)", "m")}${T(260, 156, "Protección: RA × IΔn ≤ UL", "m")}${T(260, 178, "UL = 50 V seco · 24 V húmedo (RIC N°05)", "m")}`,
+     ${T(260, 110, "R ≈ ρ ÷ L (pica vertical, RIC N°06 Tabla 6.4)", "b")}${T(260, 134, "Servicio: ≤ 20 Ω (hasta 80 Ω con 6.2)", "m")}${T(260, 156, "TN: Zs × Ia ≤ UL · TT: RA × Ia ≤ UL", "m")}${T(260, 178, "UL = 50 V seco · 24 V húmedo (RIC N°05)", "m")}`,
     "Puesta a tierra con pica vertical",
   ),
   servicio: S(
     "0 0 520 230",
     `<rect x="20" y="30" width="120" height="90" rx="12" class="ac2f"/>${T(80, 60, "Megóhmetro", "b", "middle")}${T(80, 82, "500 V CC", "m", "middle")}${T(80, 104, "≥ 0,5 MΩ", "b", "middle")}
      <path d="M140 60H300M140 90H300" class="w"/>${T(310, 64, "Fase", "m")}${T(310, 94, "Neutro / PE", "m")}
-     ${["1 · Continuidad PE (4–24 V, ≥ 0,2 A)", "2 · Resistencia de aislamiento", "3 · Desconexión automática", "4 · Protección complementaria (DR)", "5 · Polaridad y orden de fases", "6 · Caída de tensión y funcionamiento"].map((t, i) => T(20, 150 + i * 14, t, "m")).join("")}
-     ${T(320, 150, "Orden de ensayos", "b")}${T(320, 168, "RIC N°19, 7.1.3", "m")}${T(320, 186, "Tabla 19.1", "m")}`,
+     ${["7.1.3.1 · Continuidad PE (4–24 V, ≥ 0,2 A)", "7.1.3.2 · Resistencia de aislamiento", "7.1.3.5 · Desconexión automática", "7.1.3.6 · Protección complementaria (DR)", "7.1.3.7–8 · Polaridad y orden de fases", "7.1.3.9–10 · Caída de tensión y funcionamiento"].map((t, i) => T(20, 150 + i * 14, t, "m")).join("")}
+     ${T(320, 150, "Orden de ensayos (extracto)", "b")}${T(320, 168, "RIC N°19, 7.1.3", "m")}${T(320, 186, "Tabla 19.1", "m")}`,
     "Ensayos de puesta en servicio",
   ),
 };
@@ -142,7 +142,7 @@ export const SECCIONES = [
     intro: "Magnitudes y fórmulas que se usan en todos los cálculos de una instalación domiciliaria.",
     dg: ["circuito"],
     reglas: [
-      ["Tensión de la red", "220 V fase–neutro y 380 V entre fases, 50 Hz."],
+      ["Tensión de la red", "380/220 V y 50 Hz: 220 V entre fase y neutro, 380 V entre fases (RIC N°05, 5.9)."],
       ["Ley de Ohm", "I = V ÷ R. A más resistencia, menos corriente."],
       ["Potencia", "P = V × I × cos φ (monofásico) y P = √3 × VL × I × cos φ (trifásico)."],
       ["Factor de potencia", "Cargas resistivas: cos φ = 1; motores y fuentes: menor que 1."],
@@ -322,8 +322,13 @@ export const SECCIONES = [
     reglas: [
       ["Tierra de servicio (RIC N°06, 6.1)", "Máximo 20 Ω; hasta 80 Ω solo con las condiciones de 6.2."],
       ["Estimación (Tabla 6.4)", "Pica vertical R = ρ ÷ L · placa R = 0,8 ρ ÷ P · conductor horizontal R = 2 ρ ÷ L."],
-      ["Tensión de seguridad (RIC N°05, 5.8)", "50 V CA en lugar seco y 24 V CA en lugar húmedo."],
-      ["Protección (RIC N°05)", "RA × IΔn ≤ UL: con 30 mA y 50 V, RA ≤ 1.667 Ω."],
+      ["Tensión de seguridad (RIC N°05, 5.8)", "50 V CA en lugar seco y 24 V CA en lugar húmedo o mojado."],
+      [
+        "Esquema TN, como la vivienda TN-S (RIC N°05, 8.7.6.2 y Tabla 5.1)",
+        "Zs × Ia ≤ UL y corte en 0,4 s como máximo a 220 V (0,2 s a 380 V). Con diferencial, Ia es su sensibilidad.",
+      ],
+      ["Esquema TT (RIC N°05, 8.7.7.3)", "RA × Ia ≤ UL: con diferencial de 30 mA y 50 V, RA ≤ 1.667 Ω."],
+      ["Cuerpo humano (RIC N°05, 5.7)", "2.000 Ω como valor referencial."],
     ],
     errores: [
       "Confundir la tierra de servicio (≤ 20 Ω) con la de protección.",

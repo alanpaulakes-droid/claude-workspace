@@ -222,11 +222,11 @@ export const GENERADORES: Record<string, Gen> = {
       id: "gen:tierraprot",
       n: 4,
       t: "Seguridad",
-      q: `Con un diferencial de ${fmt(idn * 1000)} mA en un lugar ${hum ? "húmedo" : "seco"}, ¿cuál es la resistencia máxima de la tierra de protección?`,
+      q: `En un esquema TT con diferencial de ${fmt(idn * 1000)} mA, en un lugar ${hum ? "húmedo" : "seco"}, ¿cuál es la resistencia máxima de la tierra de protección?`,
       o,
       a,
       e: `RA ≤ UL ÷ IΔn = ${hum ? 24 : 50} ÷ ${fmt(idn, 2)} = ${fmt(R)} Ω (UL = ${hum ? "24 V en lugar húmedo" : "50 V en lugar seco"}).`,
-      ref: "RIC N°05 (RA × Id ≤ UL)",
+      ref: "RIC N°05, 8.7.7.3 y 5.8",
     };
   },
   seccion: (r) => {

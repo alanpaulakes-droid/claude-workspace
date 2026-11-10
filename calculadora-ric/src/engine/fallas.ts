@@ -57,7 +57,7 @@ export interface EntradaFalla {
   dr: { tiene: boolean; idn?: number; funciona?: boolean };
   /** Conductor de protección conectado */
   pe: boolean;
-  /** Resistencia del cuerpo humano para contacto mano–pies (criterio usual: 1.000 Ω) */
+  /** Resistencia del cuerpo humano (RIC N°05, 5.7: 2.000 Ω referencial) */
   Rcuerpo?: number;
 }
 export interface ResultadoFalla {
@@ -130,7 +130,7 @@ export function simularFalla(e: EntradaFalla): ResultadoFalla {
   }
   // Falla a tierra: la fase toca una carcasa metálica
   if (!e.pe) {
-    const Ib = U0 / (e.Rcuerpo ?? 1000);
+    const Ib = U0 / (e.Rcuerpo ?? 2000);
     return {
       I: Ib,
       k: Ib / e.In,

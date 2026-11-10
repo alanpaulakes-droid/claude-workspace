@@ -1,6 +1,6 @@
 import { RIC } from "./datos";
 
-/** Resistencia máxima de la tierra de protección: R ≤ UL / IΔn (RIC N°05, RA × Id ≤ UL). */
+/** Resistencia máxima de la tierra de protección en esquema TT: RA × Ia ≤ UL, con Ia = sensibilidad del diferencial (RIC N°05, 8.7.7.3). */
 export const rProteccionMax = (idn: number, humedo = false): number =>
   (humedo ? RIC.UL.humedo : RIC.UL.seco) / (idn || 0.03);
 

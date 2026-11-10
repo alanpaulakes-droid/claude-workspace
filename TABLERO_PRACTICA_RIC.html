@@ -1283,7 +1283,7 @@ var RICEngine = (() => {
       };
     }
     if (!e.pe) {
-      const Ib = U0 / ((_e = e.Rcuerpo) != null ? _e : 1e3);
+      const Ib = U0 / ((_e = e.Rcuerpo) != null ? _e : 2e3);
       return {
         I: Ib,
         k: Ib / e.In,
@@ -1333,7 +1333,7 @@ var RICEngine = (() => {
 
   // src/data/banco-sec.json
   var banco_sec_default = {
-    ver: "2021.2",
+    ver: "2021.3",
     nota: "Preguntas de práctica tipo certificación, basadas en el texto de los pliegos RIC (SEC, 2021). No es el examen oficial.",
     q: [
       {
@@ -1888,7 +1888,7 @@ var RICEngine = (() => {
           "120 V"
         ],
         a: 1,
-        e: "Tensión de seguridad: 50 V CA en lugares secos y 24 V CA en lugares húmedos.",
+        e: "Tensión de seguridad: 50 V CA (120 V CC) en lugares secos y 24 V CA (60 V CC) en lugares húmedos o mojados.",
         ref: "RIC N°05, 5.8"
       },
       {
@@ -1903,8 +1903,8 @@ var RICEngine = (() => {
           "RA × In ≤ 220 V"
         ],
         a: 1,
-        e: "La resistencia de tierra por la sensibilidad del diferencial no debe superar la tensión límite UL.",
-        ref: "RIC N°05 (RA × Id ≤ UL)"
+        e: "En el esquema TT la resistencia de tierra de las masas por la corriente de funcionamiento del dispositivo (la sensibilidad, si es un diferencial) no debe superar la tensión límite UL.",
+        ref: "RIC N°05, 8.7.7.3"
       },
       {
         id: "r02a",
@@ -2235,6 +2235,51 @@ var RICEngine = (() => {
         a: 1,
         e: "Todos los centros de iluminación deben contar con el conductor de puesta a tierra y terminar en caja de derivación.",
         ref: "RIC N°10, 5.1.2.12 y 5.1.2.13"
+      },
+      {
+        id: "r05c",
+        n: 4,
+        t: "Seguridad",
+        q: "En un esquema TN con tensión de 220 V, ¿en qué tiempo máximo debe cortar la protección ante una falla a masa?",
+        o: [
+          "0,1 s",
+          "0,2 s",
+          "0,4 s",
+          "5 s"
+        ],
+        a: 2,
+        e: "Se cumple Zs × Ia ≤ UL y el corte debe ocurrir en el tiempo de la Tabla 5.1: 0,4 s en corriente alterna para U0 = 220 V (0,2 s para 380 V).",
+        ref: "RIC N°05, 8.7.6.2 y Tabla 5.1"
+      },
+      {
+        id: "r05d",
+        n: 4,
+        t: "Seguridad",
+        q: "¿Qué resistencia del cuerpo humano toma como referencia el RIC N°05?",
+        o: [
+          "500 Ω",
+          "1.000 Ω",
+          "2.000 Ω",
+          "10.000 Ω"
+        ],
+        a: 2,
+        e: "Se considera 2.000 Ω como valor referencial, de uso exclusivo para la aplicación del pliego (según UNE-IEC/TS 60479-1).",
+        ref: "RIC N°05, 5.7"
+      },
+      {
+        id: "r05e",
+        n: 4,
+        t: "Seguridad",
+        q: "En un esquema TN, ¿qué condición deben cumplir las protecciones ante una falla entre fase y masa?",
+        o: [
+          "RA × Ia ≤ UL",
+          "Zs × Ia ≤ UL",
+          "Ia ≥ 10 × In",
+          "Zs ≤ 20 Ω"
+        ],
+        a: 1,
+        e: "En el esquema TN (neutralización) la impedancia del bucle de defecto por la corriente de funcionamiento del dispositivo no debe superar UL; con diferencial, Ia es su sensibilidad.",
+        ref: "RIC N°05, 8.7.6.2"
       }
     ]
   };
@@ -2451,11 +2496,11 @@ var RICEngine = (() => {
         id: "gen:tierraprot",
         n: 4,
         t: "Seguridad",
-        q: `Con un diferencial de ${fmt(idn * 1e3)} mA en un lugar ${hum ? "húmedo" : "seco"}, ¿cuál es la resistencia máxima de la tierra de protección?`,
+        q: `En un esquema TT con diferencial de ${fmt(idn * 1e3)} mA, en un lugar ${hum ? "húmedo" : "seco"}, ¿cuál es la resistencia máxima de la tierra de protección?`,
         o,
         a,
         e: `RA ≤ UL ÷ IΔn = ${hum ? 24 : 50} ÷ ${fmt(idn, 2)} = ${fmt(R)} Ω (UL = ${hum ? "24 V en lugar húmedo" : "50 V en lugar seco"}).`,
-        ref: "RIC N°05 (RA × Id ≤ UL)"
+        ref: "RIC N°05, 8.7.7.3 y 5.8"
       };
     },
     seccion: (r) => {
@@ -3211,7 +3256,7 @@ var RICEngine = (() => {
   function cTierra() {
     const t = T("tierra"), UL = t.amb === "humedo" ? 24 : 50, Rmax = UL / (+t.idn || 0.03), Sf = +t.Sf, pe = Sf <= 25 ? Sf : Sf <= 50 ? 25 : Sf / 2;
     return kpis([kpi("R protecci\xF3n m\xE1x.", n0(Rmax), "\u03A9"), kpi("R servicio m\xE1x.", 20, "\u03A9"), kpi("Conductor PE", sStr(pe), "mm\xB2")]) + steps([
-      { t: "Tierra de protecci\xF3n", f: "R m\xE1x = UL \xF7 I\u0394n", s: "".concat(UL, " \xF7 ").concat(nf(+t.idn, 3), " = ").concat(n0(Rmax), " \u03A9").concat(+t.R > 0 ? " \xB7 medido ".concat(nf(+t.R, 1), " \u03A9") : " \xB7 ingresa el valor medido para comparar"), r: "".concat(n0(Rmax), " \u03A9 m\xE1ximo"), ok: +t.R > 0 ? +t.R <= Rmax : void 0 },
+      { t: "Tierra de protecci\xF3n (esquema TT)", q: "En TT: RA \xD7 Ia \u2264 UL (RIC N\xB005, 8.7.7.3; UL 50 V seco, 24 V h\xFAmedo, 5.8). En la vivienda TN-S la condici\xF3n es Zs \xD7 Ia \u2264 UL con corte en 0,4 s a 220 V (8.7.6.2 y Tabla 5.1); este valor sirve como referencia del electrodo.", f: "RA m\xE1x = UL \xF7 I\u0394n", s: "".concat(UL, " \xF7 ").concat(nf(+t.idn, 3), " = ").concat(n0(Rmax), " \u03A9").concat(+t.R > 0 ? " \xB7 medido ".concat(nf(+t.R, 1), " \u03A9") : " \xB7 ingresa el valor medido para comparar"), r: "".concat(n0(Rmax), " \u03A9 m\xE1ximo"), ok: +t.R > 0 ? +t.R <= Rmax : void 0 },
       { t: "Tierra de servicio", f: "R \u2264 20 \u03A9 (RIC N\xB006, 6.1) \xB7 hasta 80 \u03A9 solo con las condiciones de 6.2", s: +t.Rs > 0 ? "".concat(nf(+t.Rs, 1), " \u03A9") : "Ingresa el valor medido para comparar", ok: +t.Rs > 0 ? +t.Rs <= 20 ? true : +t.Rs <= 80 ? "warn" : false : void 0, why: +t.Rs > 20 && +t.Rs <= 80 ? "sobre 20 \u03A9 solo se acepta hasta 80 \u03A9 si se cumple 6.2.1 (potencia instalada \u2264 10 kW, esquema de neutralizaci\xF3n, general omnipolar, diferencial de 300 mA en los alimentadores y de 30 mA en todos los circuitos) o 6.2.2 (protecciones de sobretensi\xF3n permanente y transitoria en todos los tableros). Si no, mejora el electrodo." : "mantiene el neutro cerca del potencial de tierra." },
       { t: "Conductor de protecci\xF3n ".concat(ab("PE")), f: "S \u2264 25 \u2192 PE = S \xB7 25 < S \u2264 50 \u2192 25 mm\xB2 \xB7 S > 50 \u2192 S \xF7 2", s: "Fase ".concat(sStr(Sf), " mm\xB2 \u2192 PE ").concat(sStr(pe), " mm\xB2"), r: "".concat(sStr(pe), " mm\xB2, verde o verde/amarillo"), why: "debe soportar la corriente de falla mientras la protecci\xF3n corta." },
       (() => {
