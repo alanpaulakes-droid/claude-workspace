@@ -36,6 +36,7 @@ Todo el código corre dentro de una sola función `(() => { … })();`: los nomb
 | `wd5.js` | Ramos dictados en varios trimestres (Inglés I a IV en 3.° a 6.°), según la malla oficial 2026 |
 | `wd1.js` – `wd4.js` | Bloques que faltaban en los temas (Fundamentos, ramos, saberes, desarrollo personal, gestión, informes, ofimática). Registros `T2` parciales: solo agregan bloques |
 | `w5.js` | Set único de íconos de línea `SVGP`; `icoSprite()` los publica una vez como `<symbol>` y `svgIco(id)` los usa con `<use>` |
+| `wd7.js` | F2 layout: hoja de búsqueda (Ctrl+K o «/»), menú lateral colapsable en escritorio, índice «En esta página» con scroll-spy y transición de página |
 | `wd6.js` | Página interna `#sistema-diseno`: tokens vivos con contraste medido en el navegador, tipografía, íconos y componentes |
 | `p8.js` | Páginas, navegación, eventos y `render()` (va al final) |
 

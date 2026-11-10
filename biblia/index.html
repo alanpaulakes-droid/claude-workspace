@@ -680,6 +680,111 @@ svg .dlab{fill:var(--muted)}
 .ds-sp{display:flex;flex-direction:column;gap:var(--sp-2);margin-bottom:var(--sp-6)}.ds-sp div{display:grid;grid-template-columns:96px 1fr;align-items:center}.ds-sp i{display:block;height:12px;background:var(--brand);border-radius:var(--r-1)}
 .ds-rad{height:72px;border:1px solid var(--line2);background:var(--surface);display:grid;place-items:center;margin-bottom:var(--sp-3)}
 .ds-icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:var(--sp-2)}.ds-icons div{display:flex;flex-direction:column;align-items:center;gap:var(--sp-2);padding:var(--sp-3) var(--sp-1);border:1px solid var(--line);border-radius:var(--r-3);text-align:center;min-width:0}.ds-icons svg.icon{width:24px;height:24px}.ds-icons code{overflow-wrap:anywhere}
+/* ===== F2 · LAYOUT TIPO APP ===== */
+.top{border-bottom:1px solid var(--line)}
+.top-in{max-width:none;padding-block:var(--sp-1);gap:var(--sp-1);min-height:56px}
+.iconb{width:var(--tap);height:var(--tap);border:0;background:transparent;border-radius:var(--r-3);transition:background var(--dur-1) var(--ease)}
+.iconb:hover{background:var(--surface2)}
+.menub{display:grid}
+.brand{margin-inline:var(--sp-1) var(--sp-2);font-size:var(--fs-0);font-weight:var(--fw-semi)}
+.brand::before{background:var(--brand);color:var(--on-brand)}
+#searchBtn{margin-left:auto}
+.backb{min-height:36px;border:0}
+/* columnas: menú · contenido (ancho de lectura) · índice */
+.layout{max-width:1480px;grid-template-columns:264px minmax(0,1fr);gap:var(--sp-10);padding-top:var(--sp-6)}
+#app{width:100%;max-width:820px;min-width:0}
+body.side-off .layout{grid-template-columns:minmax(0,1fr)}
+body.side-off .side{display:none}
+body.side-off #app{margin-inline:auto}
+#app p,#app li,#app dd{max-width:var(--measure)}
+.toc{display:none}
+@media (min-width:1200px){
+  body.has-toc .layout{grid-template-columns:264px minmax(0,1fr) 216px}
+  body.side-off.has-toc .layout{grid-template-columns:minmax(0,1fr) 216px}
+  body.has-toc .toc{display:block;position:sticky;top:calc(env(safe-area-inset-top,0px) + 80px);max-height:calc(100vh - 110px);overflow:auto;font-size:var(--fs--1)}
+}
+.toc-h{font-size:var(--fs--2);font-weight:var(--fw-semi);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 var(--sp-2)}
+.toc ol{list-style:none;margin:0;padding:0;border-left:1px solid var(--line)}
+.toc button{display:block;width:100%;text-align:left;border:0;background:none;font:inherit;color:var(--muted);cursor:pointer;padding:6px var(--sp-3);margin-left:-1px;border-left:2px solid transparent;line-height:1.35;transition:color var(--dur-1),border-color var(--dur-1)}
+.toc button:hover{color:var(--ink)}
+.toc button[aria-current]{color:var(--brand);border-left-color:var(--brand);font-weight:var(--fw-semi)}
+/* menú lateral */
+.side .gsw{display:none}
+.side button{min-height:36px;align-items:center;gap:var(--sp-2);border-radius:var(--r-2)}
+.side button .k{min-width:20px;display:inline-grid;place-items:center}
+.side button .k svg.icon{width:18px;height:18px}
+.side .done{display:inline-grid;color:var(--ok)}.side .done svg.icon{width:16px;height:16px}
+/* búsqueda: hoja y resultados en lista */
+.sheet{position:fixed;inset:0;z-index:60;background:var(--scrim);display:flex;justify-content:center;align-items:flex-start;padding:var(--sp-4)}
+.sheet[hidden]{display:none}
+body.sheet-open{overflow:hidden}
+.sheet-in{width:min(640px,100%);margin-top:8vh;max-height:80vh;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-4);box-shadow:var(--sh-3);overflow:hidden;animation:sheetIn var(--dur-2) var(--ease)}
+.sheet-bar{display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-1) var(--sp-2) var(--sp-1) var(--sp-4);border-bottom:1px solid var(--line);color:var(--muted)}
+.sheet-bar input{flex:1;min-width:0;border:0;background:transparent;box-shadow:none!important;font-size:var(--fs-1);min-height:52px;padding:0;color:var(--ink)}
+.sheet-bar .btn{min-height:var(--tap)}
+#gsres3{overflow:auto;flex:1}
+.sheet-tip{margin:0;padding:var(--sp-2) var(--sp-4);border-top:1px solid var(--line)}
+@keyframes sheetIn{from{transform:translateY(-8px)}to{transform:none}}
+.hits{display:flex;flex-direction:column}
+.hit{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:var(--sp-3);row-gap:2px;align-items:center;text-align:left;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);padding:var(--sp-3) var(--sp-4);min-height:var(--tap);cursor:pointer;font:inherit}
+.hit:last-child{border-bottom:0}
+.hit:hover,.hit:focus-visible{background:var(--surface2)}
+.hit-t{font-weight:var(--fw-med);min-width:0}
+.hit-k{grid-row:2;color:var(--muted);font-size:var(--fs--1);margin:0!important}
+.hit svg.icon{grid-row:1/3;grid-column:2;color:var(--muted)}
+#gsres2:not(:empty){margin-top:var(--sp-2);border:1px solid var(--line);border-radius:var(--r-3);background:var(--surface);overflow:hidden}
+.mob-search input{min-height:var(--tap)}
+/* inicio tipo panel */
+.home-h{margin-bottom:var(--sp-4)}
+.home-h .lead{max-width:62ch}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:var(--sp-4);margin:var(--sp-4) 0 var(--sp-6)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-4);padding:var(--sp-5);min-width:0}
+.panel-h{display:flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-1);margin:0 0 var(--sp-3)}
+.panel-h svg.icon{color:var(--brand)}
+.panel-sub{font-size:var(--fs--1);color:var(--muted);font-weight:var(--fw-semi);margin:var(--sp-5) 0 var(--sp-1)}
+.panel .resume{width:100%;border-radius:var(--r-3);justify-content:flex-start}
+.lrows{display:flex;flex-direction:column;margin-top:var(--sp-3);border-top:1px solid var(--line)}
+.lrow{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:var(--sp-2);align-items:center;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink);padding:var(--sp-2) 0;min-height:var(--tap);font:inherit;cursor:pointer}
+.lrow:last-child{border-bottom:0}
+.lrow-t{font-weight:var(--fw-med)}.lrow-d{grid-row:2;color:var(--muted);font-size:var(--fs--2)}
+.lrow svg.icon{grid-row:1/3;grid-column:2;color:var(--muted)}
+.lrow:hover .lrow-t,.aprog-r:hover .aprog-t{color:var(--brand)}
+.prog{margin:0 0 var(--sp-3)}
+.prog-r{display:flex;justify-content:space-between;align-items:baseline;gap:var(--sp-2);font-size:var(--fs--1);margin-bottom:var(--sp-1)}
+.prog-r b{font-variant-numeric:tabular-nums;font-weight:var(--fw-semi)}
+.bar{display:block;height:6px;border-radius:var(--r-full);background:var(--surface2);overflow:hidden}
+.bar i{display:block;height:100%;min-width:0;background:var(--ac,var(--brand));border-radius:inherit;transition:width var(--dur-3) var(--ease)}
+.aprog{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));column-gap:var(--sp-5)}
+.aprog-r{display:grid;grid-template-columns:22px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:var(--sp-2);row-gap:6px;align-items:center;border:0;background:none;color:var(--ink);padding:var(--sp-2) 0;min-height:var(--tap);text-align:left;font:inherit;font-size:var(--fs--1);cursor:pointer}
+.aprog-i{color:var(--ac);display:grid;place-items:center}.aprog-i svg.icon{width:18px;height:18px}
+.aprog-n{color:var(--muted);font-variant-numeric:tabular-nums}
+.aprog-r .bar{grid-column:2/4;height:4px}
+/* mosaicos con el color de su área */
+.tile .ti,.area-n{color:var(--ac,var(--brand));background:color-mix(in srgb,var(--ac,var(--brand)) 12%,var(--surface));border:0}
+.area-n svg.icon{width:20px;height:20px}
+.tile.done .ti{color:var(--ok);background:var(--ok-soft)}
+.mod .mi{color:var(--brand)}
+/* malla: los trimestres se acomodan en filas en vez de cortarse */
+@media (min-width:901px){.malla{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));overflow:visible;row-gap:var(--sp-5)}}
+/* movimiento */
+#app.enter{animation:pageIn var(--dur-1) var(--ease)}
+@keyframes pageIn{from{transform:translateY(4px)}to{transform:none}}
+@keyframes drawerIn{from{transform:translateX(-16px)}to{transform:none}}
+@media (max-width:900px){
+  .layout{padding-top:var(--sp-3);padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .tabbar{grid-template-columns:repeat(5,minmax(0,1fr));background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:saturate(1.4) blur(10px)}
+  .tabbar button{min-height:60px;font-size:var(--fs--2);font-weight:var(--fw-med);gap:2px;padding:6px 0 var(--sp-2);color:var(--muted)}
+  .tabbar .ic{padding:var(--sp-1) var(--sp-5);border-radius:var(--r-full);transition:background var(--dur-1) var(--ease)}
+  .tabbar button[aria-current="true"]{color:var(--brand)}
+  .tabbar button[aria-current="true"] .ic{background:var(--brand-soft);padding:var(--sp-1) var(--sp-5)}
+  .btn,.btn.small,.chip,.resume,.side button,details.item>summary,details.learn>summary,.t8-nav button,.retbar{min-height:var(--tap)}
+  .btn,.chip{display:inline-flex;align-items:center;justify-content:center}
+  .favb{min-width:var(--tap);min-height:var(--tap)}
+  body.nav-open .side{animation:drawerIn var(--dur-2) var(--ease);box-shadow:var(--sh-3)}
+  .sheet{padding:0}
+  .sheet-in{margin-top:0;width:100%;height:100%;max-height:none;border-radius:0;border:0}
+  .panel{padding:var(--sp-4)}
+}
 /* ===== SISTEMA DE DISEÑO · base (va al final: manda sobre las capas anteriores) ===== */
 svg.icon{width:1.25em;height:1.25em;flex:none;display:inline-block;vertical-align:-.25em;fill:none;stroke:currentColor;overflow:visible}
 .iconb svg.icon,.tabbar svg.icon,.mod .mi svg.icon,.tile .ti svg.icon{width:20px;height:20px;vertical-align:0}
@@ -703,12 +808,15 @@ h4{font-size:var(--fs-0)}
   <button class="btn ghost small backb" type="button" id="backBtn" aria-label="Volver" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg><span class="bt"> Volver</span></button>
   <button class="brand" type="button" data-go="inicio"><span>Biblia del <b>Ingeniero Industrial</b></span></button>
   <nav class="crumb" id="crumb" aria-label="Ruta"></nav>
+  <button class="iconb" type="button" id="searchBtn" aria-label="Buscar (Ctrl+K)" aria-haspopup="dialog" aria-controls="searchSheet"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-buscar"/></svg></button>
   <button class="iconb" type="button" id="themeBtn" aria-label="Cambiar tema"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-auto"/></svg></button>
 </div></header>
 <div class="layout">
   <nav class="side" id="side" aria-label="Secciones"></nav>
   <main id="app"></main>
+  <aside class="toc" id="toc" aria-label="En esta página"></aside>
 </div>
+<div id="searchSheet" class="sheet" role="dialog" aria-modal="true" aria-label="Buscar en la app" hidden><div class="sheet-in"><div class="sheet-bar"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-buscar"/></svg><input type="search" id="gsearch3" placeholder="Buscar ramo, herramienta, tema o término…" aria-label="Buscar en la app" autocomplete="off"><button class="btn ghost small" type="button" id="searchClose">Cerrar</button></div><div id="gsres3" class="hits" aria-live="polite"></div><p class="hint sheet-tip">Atajo: Ctrl + K o la tecla /</p></div></div>
 <div id="navScrim" aria-hidden="true"></div>
 <nav class="tabbar" id="tabbar" aria-label="Navegación principal"></nav>
 <div id="toast" role="status" aria-live="polite" hidden></div>
@@ -8152,7 +8260,7 @@ function eqInit(el){
       else msg.innerHTML = note("La expresión no es equivalente. Revisa paréntesis: en formato lineal, todo el numerador o el denominador con más de un término debe ir entre paréntesis.", "bad"); }
     catch (x) { msg.innerHTML = note("No se pudo interpretar: " + esc(x.message) + ".", "bad"); } });
 }
-function afterRender(root){ try { if (root.querySelector("[data-cr]")) dsContrast(root); } catch (e) {} try { if (typeof a11yScroll === "function") { setTimeout(() => a11yScroll(root), 60); setTimeout(() => a11yScroll(root), 900); } } catch (e) {} try { if (typeof w6Init === "function") setTimeout(() => w6Init(root), 0); } catch (e) {} root.querySelectorAll("textarea[data-c][data-k]").forEach(t => { try { gridInit(t); } catch (e) { console.error(e); } }); root.querySelectorAll("[data-xls]").forEach(xlsInit); root.querySelectorAll("[data-wdx]").forEach(wdInit); root.querySelectorAll("[data-eqx]").forEach(eqInit); if (typeof simInit === "function") root.querySelectorAll("[data-sim]").forEach(simInit); if (typeof ishiUI === "function") ishiUI(root); if (typeof w7Init === "function") try { w7Init(root); } catch (e) { console.error(e); } if (typeof wc1Init === "function") try { wc1Init(root); } catch (e) { console.error(e); } }
+function afterRender(root){ try { pageEnter(root); setTimeout(() => tocBuild(root), 0); } catch (e) {} try { if (root.querySelector("[data-cr]")) dsContrast(root); } catch (e) {} try { if (typeof a11yScroll === "function") { setTimeout(() => a11yScroll(root), 60); setTimeout(() => a11yScroll(root), 900); } } catch (e) {} try { if (typeof w6Init === "function") setTimeout(() => w6Init(root), 0); } catch (e) {} root.querySelectorAll("textarea[data-c][data-k]").forEach(t => { try { gridInit(t); } catch (e) { console.error(e); } }); root.querySelectorAll("[data-xls]").forEach(xlsInit); root.querySelectorAll("[data-wdx]").forEach(wdInit); root.querySelectorAll("[data-eqx]").forEach(eqInit); if (typeof simInit === "function") root.querySelectorAll("[data-sim]").forEach(simInit); if (typeof ishiUI === "function") ishiUI(root); if (typeof w7Init === "function") try { w7Init(root); } catch (e) { console.error(e); } if (typeof wc1Init === "function") try { wc1Init(root); } catch (e) { console.error(e); } }
 
 /* ---------- Ilustraciones de las ventanas ---------- */
 Object.assign(D, {
@@ -10822,7 +10930,7 @@ function pgArea(k){ const a = CAREAS.find(x => x[0] === k), i = CAREAS.indexOf(a
 function pgPorArea(){
   return '<p class="eyebrow">Navegación</p><h1>Estudiar por área</h1><p class="lead">Cada área reúne los ramos de tu malla, la teoría, las calculadoras y los simuladores del mismo tema. Un tema puede aparecer en más de un área cuando se usa en ambas.</p>' +
     '<div class="areas">' + CAREAS.map((a, i) => { const ps = a[3].map(id => PAGES.find(p => p.id === id)).filter(Boolean), c = k => ps.filter(p => kindOf(p) === k).length;
-      return '<button class="area-c" type="button" data-go="' + AREA_ID(a) + '"><span class="area-n">' + String.fromCharCode(97 + i) + '</span><span class="area-t">' + a[1] + '</span><span class="area-d">' + a[2] + '</span><span class="area-m">' + [[c("ramo"), "ramos"], [c("teo"), "temas"], [c("calc"), "calculadoras"], [c("sim"), "simuladores"]].filter(x => x[0]).map(x => x[0] + " " + x[1]).join(" · ") + "</span></button>"; }).join("") + "</div>"; }
+      return '<button class="area-c" type="button" data-go="' + AREA_ID(a) + '"><span class="area-n" style="--ac:var(--a-' + a[0] + ')">' + icoUse("a-" + a[0]) + '</span><span class="area-t">' + a[1] + '</span><span class="area-d">' + a[2] + '</span><span class="area-m">' + [[c("ramo"), "ramos"], [c("teo"), "temas"], [c("calc"), "calculadoras"], [c("sim"), "simuladores"]].filter(x => x[0]).map(x => x[0] + " " + x[1]).join(" · ") + "</span></button>"; }).join("") + "</div>"; }
 function pgPorTrimestre(){
   S.malla = S.malla || {}; let t = +(S.triSel || 1); if (!(t >= 1 && t <= 8)) t = 1;
   const cs = COURSES.filter(c => inTri(c, t));
@@ -10884,7 +10992,8 @@ document.addEventListener("click", e => { if (!e.target.closest || !e.target.clo
 /* ---------- Menú lateral colapsable en móvil ---------- */
 function navOpen(on){ document.body.classList.toggle("nav-open", on); const b = document.getElementById("menuBtn"); if (b) b.setAttribute("aria-expanded", on); if (on) { const s = document.querySelector("#side input, #side button"); if (s) try { s.focus({ preventScroll:true }); } catch (e) {} } }
 document.addEventListener("click", e => { if (!e.target.closest) return;
-  if (e.target.closest("#menuBtn")) { navOpen(!document.body.classList.contains("nav-open")); return; }
+  if (e.target.closest("#menuBtn")) { if (window.matchMedia("(min-width:901px)").matches) { sideCollapse(!document.body.classList.contains("side-off")); return; } navOpen(!document.body.classList.contains("nav-open")); return; }
+  if (e.target.closest("[data-more]")) { navOpen(true); return; }
   if (e.target.closest("#navScrim")) { navOpen(false); return; }
   if (document.body.classList.contains("nav-open") && e.target.closest("#side [data-go]")) navOpen(false); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) { navOpen(false); const b = document.getElementById("menuBtn"); if (b) b.focus(); } });
@@ -10893,8 +11002,8 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && document.b
 function sideTopHTML(){
   const fav = S.fav.map(id => PAGES.find(p => p.id === id)).filter(Boolean), ca = areaOf(cur), cp = pageOf(cur);
   let h = "";
-  if (fav.length) h += '<details class="sgp" data-sgp="_fav" open><summary>Favoritos</summary>' + fav.map(p => '<button type="button" data-go="' + p.id + '" aria-current="' + (p.id === cur) + '"><span class="k">★</span>' + p.t + "</button>").join("") + "</details>";
-  h += '<details class="sgp" data-sgp="_area"' + (sideOpen("_area") ? " open" : "") + '><summary>Por área</summary>' + CAREAS.map((a, i) => '<button type="button" data-go="' + AREA_ID(a) + '" aria-current="' + (cur === AREA_ID(a) || (ca === a && cp.g !== "area")) + '"><span class="k">' + String.fromCharCode(97 + i) + "</span>" + a[1] + "</button>").join("") + "</details>";
+  if (fav.length) h += '<details class="sgp" data-sgp="_fav" open><summary>Favoritos</summary>' + fav.map(p => '<button type="button" data-go="' + p.id + '" aria-current="' + (p.id === cur) + '"><span class="k" style="color:var(--star)">' + icoUse("estrella-on") + "</span>" + p.t + "</button>").join("") + "</details>";
+  h += '<details class="sgp" data-sgp="_area"' + (sideOpen("_area") ? " open" : "") + '><summary>Por área</summary>' + CAREAS.map((a, i) => '<button type="button" data-go="' + AREA_ID(a) + '" aria-current="' + (cur === AREA_ID(a) || (ca === a && cp.g !== "area")) + '"><span class="k" style="color:var(--a-' + a[0] + ')">' + icoUse("a-" + a[0]) + "</span>" + a[1] + "</button>").join("") + "</details>";
   h += '<details class="sgp" data-sgp="_tri"' + (sideOpen("_tri") ? " open" : "") + '><summary>Por trimestre</summary><div class="tri-row">' + [1, 2, 3, 4, 5, 6, 7, 8].map(n => '<button type="button" data-go="por-trimestre" data-tri="' + n + '" aria-current="' + (cur === "por-trimestre" && +(S.triSel || 1) === n || (cp.g === "malla" && cp.tri === n)) + '">' + n + "°</button>").join("") + "</div></details>";
   return h; }
 function sideOpen(k){ try { const c = JSON.parse(localStorage.getItem(KEY + "-side2") || "null"); return !c || !c.includes(k); } catch (e) { return true; } }
@@ -13426,6 +13535,53 @@ function dsContrast(root){
     el.textContent = "Contraste sobre superficie: " + r.toFixed(2).replace(".", ",") + ":1" + (r >= 4.5 ? " · AA" : r >= 3 ? " · solo AA grande" : " · decorativo"); });
   probe.remove(); }
 document.addEventListener("click", e => { if (e.target.closest && e.target.closest("#themeBtn")) setTimeout(() => { const r = document.getElementById("app"); if (r && r.querySelector("[data-cr]")) dsContrast(r); }, 60); });
+/* ============ F2 · LAYOUT TIPO APP ============
+   Búsqueda en hoja (botón del encabezado, Ctrl+K o «/»), menú lateral colapsable en escritorio,
+   índice «En esta página» con scroll-spy y transición breve al cambiar de página. */
+
+/* ---------- Menú lateral colapsable (escritorio) ---------- */
+function sideCollapse(off){ document.body.classList.toggle("side-off", off); const b = document.getElementById("menuBtn");
+  if (b && window.matchMedia("(min-width:901px)").matches) { b.setAttribute("aria-expanded", String(!off)); b.setAttribute("aria-label", off ? "Mostrar el menú lateral" : "Ocultar el menú lateral"); }
+  try { localStorage.setItem(KEY + "-sideoff", off ? "1" : "0"); } catch (e) {} }
+try { if (localStorage.getItem(KEY + "-sideoff") === "1") document.body.classList.add("side-off"); } catch (e) {}
+
+/* ---------- Hoja de búsqueda ---------- */
+let SRCH_RET = null;
+function searchOpen(on){ const sh = document.getElementById("searchSheet"); if (!sh) return;
+  if (on) { SRCH_RET = document.activeElement; sh.hidden = false; document.body.classList.add("sheet-open"); const i = document.getElementById("gsearch3"); if (i) { i.value = ""; document.getElementById("gsres3").innerHTML = ""; setTimeout(() => i.focus(), 30); } }
+  else { sh.hidden = true; document.body.classList.remove("sheet-open"); if (SRCH_RET && SRCH_RET.focus) try { SRCH_RET.focus({ preventScroll:true }); } catch (e) {} } }
+document.addEventListener("click", e => { if (!e.target.closest) return;
+  if (e.target.closest("#searchBtn")) { searchOpen(true); return; }
+  if (e.target.closest("#searchClose")) { searchOpen(false); return; }
+  const sh = document.getElementById("searchSheet");
+  if (sh && !sh.hidden) { if (e.target === sh) searchOpen(false); else if (e.target.closest("#gsres3 [data-go]")) { SRCH_RET = null; searchOpen(false); } } });
+document.addEventListener("keydown", e => {
+  const sh = document.getElementById("searchSheet"), typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || "") || (e.target && e.target.isContentEditable);
+  if ((e.key === "k" || e.key === "K") && (e.ctrlKey || e.metaKey)) { e.preventDefault(); searchOpen(sh && sh.hidden); return; }
+  if (e.key === "/" && !typing && sh && sh.hidden) { e.preventDefault(); searchOpen(true); return; }
+  if (e.key === "Escape" && sh && !sh.hidden) { searchOpen(false); return; }
+  if (e.key === "Enter" && e.target && e.target.id === "gsearch3") { const f = document.querySelector("#gsres3 [data-go]"); if (f) f.click(); } });
+
+/* ---------- Índice «En esta página» con scroll-spy ---------- */
+let TOC_IO = null;
+const tocSlug = (t, i) => "s-" + String(t).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) + "-" + i;
+function tocBuild(root){ const box = document.getElementById("toc"); if (!box) return; if (TOC_IO) { TOC_IO.disconnect(); TOC_IO = null; }
+  const hs = [...root.querySelectorAll("h2")].filter(h => !h.closest("details:not([open]),.sheet,.c-card,.doc,.sw,[hidden]") && h.textContent.trim());
+  if (hs.length < 3) { box.innerHTML = ""; document.body.classList.remove("has-toc"); return; }
+  hs.forEach((h, i) => { if (!h.id) h.id = tocSlug(h.textContent, i); });
+  box.innerHTML = '<p class="toc-h">En esta página</p><ol>' + hs.map(h => { const c = h.cloneNode(true); c.querySelectorAll(".cnt,.t8-n,.favb,svg").forEach(x => x.remove());
+    return '<li><button type="button" data-toc="' + h.id + '">' + esc(c.textContent.trim()) + "</button></li>"; }).join("") + "</ol>";
+  document.body.classList.add("has-toc");
+  if (!("IntersectionObserver" in window)) return;
+  const btn = id => box.querySelector('[data-toc="' + id + '"]'), vis = new Set();
+  TOC_IO = new IntersectionObserver(es => { es.forEach(en => en.isIntersecting ? vis.add(en.target.id) : vis.delete(en.target.id));
+    const first = hs.find(h => vis.has(h.id)); if (!first) return; box.querySelectorAll("[aria-current]").forEach(b => b.removeAttribute("aria-current")); const b = btn(first.id); if (b) b.setAttribute("aria-current", "true"); }, { rootMargin:"-72px 0px -60% 0px" });
+  hs.forEach(h => TOC_IO.observe(h)); }
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-toc]"); if (!b) return; const h = document.getElementById(b.dataset.toc); if (!h) return;
+  h.scrollIntoView({ behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start" }); });
+
+/* ---------- Transición de entrada de página ---------- */
+function pageEnter(root){ root.classList.remove("enter"); void root.offsetWidth; root.classList.add("enter"); }
 /* ============ PÁGINAS Y NAVEGACIÓN ============ */
 const GROUPS = { malla:"Mi malla (UNAB)", carrera:"Carrera y trabajo", eco:"Economía y finanzas", ops:"Producción y logística", trab:"Estudio del trabajo", cal:"Calidad y estadística", io:"Investigación de operaciones", seg:"Seguridad y ambiente", ges:"Gestión y mejora", inf:"Informes", rep:"Reportes", ind:"Industrias", sab:"Saberes de otras disciplinas", des:"Desarrollo personal y profesional", ofi:"Excel y Word", learn:"Aprender", sim:"Simuladores de software" };
 const indId = x => "ind-" + x[0].normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -13456,10 +13612,18 @@ if (typeof areaPages === "function") areaPages(PAGES);
 if (typeof extraPages === "function") extraPages(PAGES);
 const pageOf = id => PAGES.find(p => p.id === id) || PAGES[0];
 const PARENT = { malla:"mi-malla", carrera:"carrera", ind:"industrias", eco:"herramientas", ops:"herramientas", trab:"herramientas", cal:"herramientas", io:"herramientas", seg:"herramientas", ges:"gestion", inf:"informes", learn:"aprender", sab:"saberes", des:"desarrollo", ofi:"ofimatica", rep:"informes", hub:"inicio", sim:"simuladores", area:"por-area" };
-const TABS = [["inicio", "⌂", "Inicio"], ["mi-malla", "★", "Malla"], ["herramientas", "ƒ", "Cálculos"], ["por-area", "◫", "Áreas"], ["informes", "✎", "Informes"], ["aprender", "§", "Aprender"], ["carrera", "▣", "Carrera"]];
-const tabOf = id => { const p = pageOf(id); if (id === "inicio") return "inicio"; if (p.g === "area" || ["por-area", "gestion", "por-trimestre", "favoritos"].includes(id) || p.g === "ges") return id === "por-trimestre" ? "mi-malla" : "por-area"; if (p.g === "hub") return id; if (p.g === "malla") return "mi-malla"; if (p.g === "ind" || p.g === "sim" || id === "simuladores") return "carrera"; if (p.g === "sab" || id === "saberes" || p.g === "des" || id === "desarrollo" || p.g === "ofi" || id === "ofimatica") return "aprender"; return PARENT[p.g] || "inicio"; };
+const TABS = [["inicio", "inicio", "Inicio"], ["por-area", "temas", "Temas"], ["herramientas", "calcular", "Calcular"], ["mi-malla", "malla", "Malla"], ["_more", "mas", "Más"]];
+/* Barra inferior: 5 destinos. «Más» abre el panel con todas las secciones (informes, carrera, simuladores, ajustes). */
+const tabOf = id => { const p = pageOf(id), g = p.g;
+  if (id === "inicio") return "inicio";
+  if (g === "malla" || id === "mi-malla" || id === "por-trimestre") return "mi-malla";
+  if (p.calc || ["eco", "ops", "trab", "cal", "io", "seg", "ges"].includes(g) || ["herramientas", "gestion"].includes(id)) return "herramientas";
+  if (["area", "learn", "sab", "des", "ofi"].includes(g) || ["por-area", "aprender", "saberes", "desarrollo", "ofimatica", "favoritos"].includes(id)) return "por-area";
+  return "_more"; };
 
-function tile(p){ return '<button class="tile' + (S.done[p.id] ? " done" : "") + '" type="button" data-go="' + p.id + '"><span class="ti">' + esc(p.ico || "·") + '</span><span class="tt">' + p.t + (S.done[p.id] ? " ✓" : "") + '</span><span class="td">' + (p.d || "") + "</span></button>"; }
+/* Mosaico de una página: ícono y color del área a la que pertenece */
+function tile(p){ const a = typeof areaOf === "function" ? areaOf(p.id) : null, k = a ? a[0] : "ref";
+  return '<button class="tile' + (S.done[p.id] ? " done" : "") + '" type="button" data-go="' + p.id + '" style="--ac:var(--a-' + k + ')"><span class="ti">' + icoUse(S.done[p.id] ? "check" : "a-" + k) + '</span><span class="tt">' + p.t + '</span><span class="td">' + (p.d || "") + (S.done[p.id] ? ' <span class="pill ok">Usada</span>' : "") + "</span></button>"; }
 function pgHub(h){
   const H = HUBS[h];
   return '<p class="eyebrow">Biblia del Ingeniero Industrial</p><h1>' + H[0] + '</h1><p class="lead">' + H[3] + "</p>" + H[2].map(g => (H[2].length > 1 ? '<h2 class="sh">' + GROUPS[g] + "</h2>" : "") + '<div class="tiles">' + PAGES.filter(p => p.g === g).map(tile).join("") + "</div>").join("");
@@ -13470,12 +13634,26 @@ function pgHome(){
   const M = [["por-area", "◫", "Estudiar por área", "10 áreas de la carrera + carrera y habilidades + referencia"], ["por-trimestre", "★", "Estudiar por trimestre", "Ramos de cada trimestre con sus calculadoras y áreas"]].concat(S.fav && S.fav.length ? [["favoritos", "★", "Mis favoritos", S.fav.length + " página" + (S.fav.length === 1 ? "" : "s") + " guardada" + (S.fav.length === 1 ? "" : "s")]] : []).concat([["mi-malla", "★", "Mi malla UNAB", COURSES.length + " ramos con apuntes por unidad · " + nOk + " aprobados"], ["herramientas", "ƒ", "Herramientas de cálculo", nCalc + " calculadoras con guía de estudio completa"], ["gestion", "◫", "Gestión y mejora", "FODA, Ishikawa, SIPOC, RACI, Lean, DMAIC, KPI"], ["informes", "✎", "Informes en Word y PDF", "Generador, plantillas, APA y memoria de cálculo" + (nDone ? " (" + nDone + " resultados)" : "")], ["industrias", "▣", "Industrias", "Minería, banca, retail, manufactura, alimentos, energía y más"], ["ofimatica", "▦", "Excel y Word profesional", "Cursos básico, avanzado y profesional con ejercicios interactivos"], ["simuladores", "▶", "Simuladores de software", "Proyectos, estadística, procesos, ERP, optimización, BI, SQL y layout, con instructivo"], ["desarrollo", "◎", "Desarrollo personal y profesional", "Vida cotidiana, hábitos, relaciones, bienestar, habilidades blandas, oratoria, libros y experiencias"], ["saberes", "⚙", "Saberes de otras áreas", "Electricidad, mecánica, mantenimiento, comercio exterior, datos e IA, casos integrados, ruta pro"], ["aprender", "§", "Aprender desde cero", "11 lecciones desde cero, historia, pensadores, formulario, glosario, tablas, normas, quiz"]]);
   const top = ["van-tir", "flujo-caja", "eoq", "pronosticos", "control-xr", "capacidad", "programacion-lineal", "cpm", "balanceo", "smed", "iper", "pareto"];
   const flow = [["sipoc", "Definir"], ["descriptiva", "Medir"], ["pareto", "Priorizar"], ["ishikawa", "Analizar causas"], ["smed", "Mejorar"], ["flujo-caja", "Evaluar"], ["generador-informe", "Informar"]];
-  return '<p class="eyebrow">Ingeniería Industrial · Chile</p><h1>Biblia del Ingeniero Industrial</h1><p class="lead">Estudiar, calcular, decidir y documentar en un solo lugar: tu malla con apuntes por ramo, herramientas con desarrollo paso a paso y guías de estudio, métodos de gestión, informes descargables en Word y PDF, y el conocimiento de cada industria.</p>' +
-    '<div class="mob-search gsw"><input type="search" id="gsearch2" placeholder="Buscar ramo, herramienta, tema o término…" aria-label="Buscar en la app" autocomplete="off"><div id="gsres2"></div></div>' +
-    (typeof resumeHTML === "function" ? resumeHTML() : lp ? '<button class="resume" type="button" data-go="' + lp.id + '">↻ Continuar: <b>' + esc(lp.t) + "</b></button>" : "") +
-    '<div class="mods">' + M.map(m => '<button class="mod" type="button" data-go="' + m[0] + '"><span class="mi">' + (typeof svgIco === "function" && svgIco(m[0]) || m[1]) + '</span><span class="mt">' + m[2] + '</span><span class="md">' + m[3] + "</span></button>").join("") + "</div>" +
-    '<h2 class="sh">Flujo de un proyecto de mejora</h2><ol class="flow">' + flow.map((f, i) => '<li><button type="button" data-go="' + f[0] + '"><span>' + (i + 1) + "</span>" + f[1] + "</button></li>").join("") + "</ol>" +
-    '<h2 class="sh">Más usadas</h2><div class="tiles">' + top.map(id => tile(pageOf(id))).join("") + "</div>" +
+  const seen = S.seen || {}, bar = (n, t, lab) => '<span class="bar" role="progressbar" aria-label="' + esc(lab) + '" aria-valuemin="0" aria-valuemax="' + t + '" aria-valuenow="' + n + '"><i style="width:' + (t ? Math.round(n / t * 100) : 0) + '%"></i></span>';
+  const rec = (S.recent || []).map(id => PAGES.find(p => p.id === id)).filter(p => p && p.id !== "inicio" && p.g !== "hub").slice(0, 4);
+  const fav = (S.fav || []).map(id => PAGES.find(p => p.id === id)).filter(Boolean);
+  const ar = CAREAS.map(a => { const ids = a[3].filter(id => PAGES.some(p => p.id === id)); return [a, ids.filter(id => seen[id]).length, ids.length]; });
+  const row = p => '<button class="lrow" type="button" data-go="' + p.id + '"><span class="lrow-t">' + esc(p.t) + '</span><small class="lrow-d">' + esc(GROUPS[p.g] || "") + "</small>" + icoUse("chev-r") + "</button>";
+  return '<header class="home-h"><p class="eyebrow">Ingeniería Industrial · Chile</p><h1>Biblia del Ingeniero Industrial</h1><p class="lead">Estudiar, calcular, decidir y documentar en un solo lugar: tu malla con apuntes por ramo, herramientas con desarrollo paso a paso y guías de estudio, métodos de gestión, informes descargables en Word y PDF, y el conocimiento de cada industria.</p></header>' +
+    '<div class="mob-search gsw"><input type="search" id="gsearch2" placeholder="Buscar ramo, herramienta, tema o término…" aria-label="Buscar en la app" autocomplete="off"><div id="gsres2" class="hits"></div></div>' +
+    '<div class="home-grid">' +
+      '<section class="panel" aria-labelledby="h-cont"><h2 class="panel-h" id="h-cont">' + icoUse("reloj") + 'Continuar</h2>' +
+        ((typeof resumeHTML === "function" ? resumeHTML() : "") || '<p class="hint">Todavía no abres ningún tema. Un buen comienzo: <button class="linkb" type="button" data-go="empieza-aqui">la ruta de aprendizaje</button>.</p>') +
+        (rec.length ? '<div class="lrows">' + rec.map(row).join("") + "</div>" : "") + "</section>" +
+      '<section class="panel" aria-labelledby="h-prog"><h2 class="panel-h" id="h-prog">' + icoUse("a-eco") + 'Tu progreso</h2>' +
+        '<div class="prog"><div class="prog-r"><button class="linkb" type="button" data-go="mi-malla">Ramos aprobados</button><b>' + nOk + " de " + COURSES.length + "</b></div>" + bar(nOk, COURSES.length, "Ramos aprobados") + "</div>" +
+        '<div class="prog"><div class="prog-r"><button class="linkb" type="button" data-go="herramientas">Calculadoras usadas</button><b>' + nDone + " de " + nCalc + "</b></div>" + bar(nDone, nCalc, "Calculadoras usadas") + "</div>" +
+        '<h3 class="panel-sub">Temas vistos por área</h3><div class="aprog">' + ar.map(x => '<button class="aprog-r" type="button" data-go="' + AREA_ID(x[0]) + '" style="--ac:var(--a-' + x[0][0] + ')"><span class="aprog-i">' + icoUse("a-" + x[0][0]) + '</span><span class="aprog-t">' + esc(x[0][1]) + '</span><span class="aprog-n">' + x[1] + "/" + x[2] + "</span>" + bar(x[1], x[2], x[0][1] + ": temas vistos") + "</button>").join("") + "</div></section>" +
+    "</div>" +
+    (fav.length ? '<section aria-labelledby="h-fav"><h2 class="sh" id="h-fav">Favoritos</h2><div class="quick">' + fav.map(p => '<button class="chip" type="button" data-go="' + p.id + '">' + icoUse("estrella-on") + " " + esc(p.t) + "</button>").join("") + "</div></section>" : "") +
+    '<section aria-labelledby="h-top"><h2 class="sh" id="h-top">Calculadoras más usadas</h2><div class="tiles">' + top.map(id => tile(pageOf(id))).join("") + "</div></section>" +
+    '<section aria-labelledby="h-exp"><h2 class="sh" id="h-exp">Explorar</h2><div class="mods">' + M.map(m => '<button class="mod" type="button" data-go="' + m[0] + '"><span class="mi">' + (svgIco(m[0]) || icoUse("temas")) + '</span><span class="mt">' + m[2] + '</span><span class="md">' + m[3] + "</span></button>").join("") + "</div></section>" +
+    '<section aria-labelledby="h-flow"><h2 class="sh" id="h-flow">Flujo de un proyecto de mejora</h2><ol class="flow">' + flow.map((f, i) => '<li><button type="button" data-go="' + f[0] + '"><span>' + (i + 1) + "</span>" + f[1] + "</button></li>").join("") + "</ol></section>" +
     note("Cada herramienta abre con un ejemplo resuelto y una guía de estudio desplegable. Reemplaza los datos por los tuyos y presiona <b>Calcular</b>; los resultados se guardan en este navegador y se pueden descargar en Word o PDF.", "info");
 }
 
@@ -13584,20 +13762,20 @@ function searchHits(q){
   if (q.length > 3) searchHits.ix.forEach(e => { if (H.length < 24 && !e[3].includes(q) && e[4].includes(q) && !H.some(h => h.go === e[0] && h.t.endsWith(e[2]))) H.push({ go:e[0], t:e[1] + " · " + e[2], k:(kx[gx(e[0])] || "Saberes") + " (en el texto)" }); });
   return H.slice(0, 24);
 }
-const hitsHTML = (H, q) => H.map(x => '<button type="button" data-go="' + x.go + '"><span class="k">›</span>' + esc(x.t) + ' <small class="hint">' + esc(x.k) + "</small></button>").join("") || (q.trim().length >= 2 ? '<p class="hint" style="padding:4px 8px;margin:0">Sin resultados</p>' : "");
+const hitsHTML = (H, q) => H.map(x => '<button type="button" class="hit" data-go="' + x.go + '"><span class="hit-t">' + esc(x.t) + '</span><small class="hit-k">' + esc(x.k) + "</small>" + icoUse("chev-r") + "</button>").join("") || (q.trim().length >= 2 ? '<p class="hint" style="padding:4px 8px;margin:0">Sin resultados</p>' : "");
 function renderSide(){
   let closed = null; try { closed = JSON.parse(localStorage.getItem(KEY + "-side2") || "null"); } catch (e) {}
   if (!closed) closed = Object.keys(GROUPS).filter(g => g !== "malla");
   const cg = pageOf(cur).g;
-  let h = '<div class="gsw"><input type="search" id="gsearch" placeholder="Buscar ramo, herramienta o término…" aria-label="Buscar en la app" autocomplete="off"><div id="gsres"></div></div><button type="button" data-go="inicio" aria-current="' + (cur === "inicio") + '"><span class="k">⌂</span>Inicio</button>' + (typeof sideTopHTML === "function" ? sideTopHTML() : "");
+  let h = '<div class="gsw"><input type="search" id="gsearch" placeholder="Buscar ramo, herramienta o término…" aria-label="Buscar en la app" autocomplete="off"><div id="gsres"></div></div><button type="button" data-go="inicio" aria-current="' + (cur === "inicio") + '"><span class="k">' + icoUse("inicio") + "</span>Inicio</button>" + (typeof sideTopHTML === "function" ? sideTopHTML() : "");
   Object.keys(GROUPS).forEach(g => { const ps = PAGES.filter(p => p.g === g); const op = g === cg || !closed.includes(g);
-    h += '<details class="sgp" data-sgp="' + g + '"' + (op ? " open" : "") + "><summary>" + GROUPS[g] + "</summary>" + ps.map(p => '<button type="button" data-go="' + p.id + '" aria-current="' + (p.id === cur) + '"><span class="k">' + (p.calc ? "ƒ" : p.tri ? "T" + p.tri : "·") + "</span>" + p.t + (S.done[p.id] || (S.malla && S.malla[p.id]) ? '<span class="done">✓</span>' : "") + "</button>").join("") + "</details>"; });
+    h += '<details class="sgp" data-sgp="' + g + '"' + (op ? " open" : "") + "><summary>" + GROUPS[g] + "</summary>" + ps.map(p => '<button type="button" data-go="' + p.id + '" aria-current="' + (p.id === cur) + '"><span class="k">' + (p.tri ? "T" + p.tri : "") + "</span>" + p.t + (S.done[p.id] || (S.malla && S.malla[p.id]) ? '<span class="done" aria-label="completado">' + icoUse("check") + "</span>" : "") + "</button>").join("") + "</details>"; });
   document.getElementById("side").innerHTML = h;
   const p = pageOf(cur);
   document.getElementById("crumb").innerHTML = cur === "inicio" ? "" : typeof crumbHTML === "function" ? crumbHTML(cur) : esc((GROUPS[p.g] ? GROUPS[p.g] + " › " : "") + p.t);
   document.getElementById("backBtn").hidden = cur === "inicio" && !NAV.length;
   const tb = tabOf(cur);
-  document.getElementById("tabbar").innerHTML = TABS.map(t => '<button type="button" data-go="' + t[0] + '" aria-current="' + (t[0] === tb) + '"><span class="ic">' + (typeof svgIco === "function" && svgIco(t[0]) || t[1]) + "</span><span>" + t[2] + "</span></button>").join("");
+  document.getElementById("tabbar").innerHTML = TABS.map(t => '<button type="button" ' + (t[0] === "_more" ? 'data-more="1" aria-haspopup="dialog"' : 'data-go="' + t[0] + '"') + ' aria-current="' + (t[0] === tb) + '"><span class="ic">' + icoUse(t[1]) + "</span><span>" + t[2] + "</span></button>").join("");
 }
 function goBack(){
   const sn = NAV.pop();
@@ -13626,7 +13804,7 @@ function navSnap(fromApp){ const app = document.getElementById("app"); return { 
 function go(id, fromApp){
   if (!PAGES.find(p => p.id === id)) id = "inicio";
   if (id !== cur) { NAV.push(navSnap(fromApp)); if (NAV.length > 60) NAV.shift(); }
-  cur = id; if (pageOf(id).g !== "hub" && id !== "inicio") { S.last = id; save(); }
+  cur = id; if (pageOf(id).g !== "hub" && id !== "inicio") { S.last = id; S.seen = S.seen || {}; S.seen[id] = 1; S.recent = [id].concat((S.recent || []).filter(x => x !== id)).slice(0, 6); save(); }
   try { if (location.hash.slice(1) !== id) history.replaceState(null, "", "#" + id); } catch (e) {}
   render();
 }
@@ -13664,7 +13842,7 @@ document.addEventListener("click", async e => {
 });
 document.addEventListener("input", e => {
   const el = e.target;
-  if (el.id === "gsearch" || el.id === "gsearch2") { const box = document.getElementById(el.id === "gsearch" ? "gsres" : "gsres2"); if (box) box.innerHTML = hitsHTML(searchHits(el.value), el.value); return; }
+  if (el.id === "gsearch" || el.id === "gsearch2" || el.id === "gsearch3") { const box = document.getElementById({ gsearch:"gsres", gsearch2:"gsres2", gsearch3:"gsres3" }[el.id]); if (box) box.innerHTML = hitsHTML(searchHits(el.value), el.value); return; }
   if (el.id === "glf") { const q = el.value.toLowerCase().trim(); document.querySelectorAll("#gll dt,#gll dd").forEach(x => { const k = x.dataset.k, dd = x.tagName === "DD" ? x.textContent.toLowerCase() : (x.nextElementSibling ? x.nextElementSibling.textContent.toLowerCase() : ""); x.hidden = q && !(k.includes(q) || dd.includes(q)); }); return; }
   if (el.id === "tfi" || el.id === "tfn") { tfTable(); return; }
   if (el.dataset.malla) return;

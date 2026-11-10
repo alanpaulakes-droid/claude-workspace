@@ -52,7 +52,7 @@ function pgArea(k){ const a = CAREAS.find(x => x[0] === k), i = CAREAS.indexOf(a
 function pgPorArea(){
   return '<p class="eyebrow">Navegación</p><h1>Estudiar por área</h1><p class="lead">Cada área reúne los ramos de tu malla, la teoría, las calculadoras y los simuladores del mismo tema. Un tema puede aparecer en más de un área cuando se usa en ambas.</p>' +
     '<div class="areas">' + CAREAS.map((a, i) => { const ps = a[3].map(id => PAGES.find(p => p.id === id)).filter(Boolean), c = k => ps.filter(p => kindOf(p) === k).length;
-      return '<button class="area-c" type="button" data-go="' + AREA_ID(a) + '"><span class="area-n">' + String.fromCharCode(97 + i) + '</span><span class="area-t">' + a[1] + '</span><span class="area-d">' + a[2] + '</span><span class="area-m">' + [[c("ramo"), "ramos"], [c("teo"), "temas"], [c("calc"), "calculadoras"], [c("sim"), "simuladores"]].filter(x => x[0]).map(x => x[0] + " " + x[1]).join(" · ") + "</span></button>"; }).join("") + "</div>"; }
+      return '<button class="area-c" type="button" data-go="' + AREA_ID(a) + '"><span class="area-n" style="--ac:var(--a-' + a[0] + ')">' + icoUse("a-" + a[0]) + '</span><span class="area-t">' + a[1] + '</span><span class="area-d">' + a[2] + '</span><span class="area-m">' + [[c("ramo"), "ramos"], [c("teo"), "temas"], [c("calc"), "calculadoras"], [c("sim"), "simuladores"]].filter(x => x[0]).map(x => x[0] + " " + x[1]).join(" · ") + "</span></button>"; }).join("") + "</div>"; }
 function pgPorTrimestre(){
   S.malla = S.malla || {}; let t = +(S.triSel || 1); if (!(t >= 1 && t <= 8)) t = 1;
   const cs = COURSES.filter(c => inTri(c, t));
@@ -114,7 +114,8 @@ document.addEventListener("click", e => { if (!e.target.closest || !e.target.clo
 /* ---------- Menú lateral colapsable en móvil ---------- */
 function navOpen(on){ document.body.classList.toggle("nav-open", on); const b = document.getElementById("menuBtn"); if (b) b.setAttribute("aria-expanded", on); if (on) { const s = document.querySelector("#side input, #side button"); if (s) try { s.focus({ preventScroll:true }); } catch (e) {} } }
 document.addEventListener("click", e => { if (!e.target.closest) return;
-  if (e.target.closest("#menuBtn")) { navOpen(!document.body.classList.contains("nav-open")); return; }
+  if (e.target.closest("#menuBtn")) { if (window.matchMedia("(min-width:901px)").matches) { sideCollapse(!document.body.classList.contains("side-off")); return; } navOpen(!document.body.classList.contains("nav-open")); return; }
+  if (e.target.closest("[data-more]")) { navOpen(true); return; }
   if (e.target.closest("#navScrim")) { navOpen(false); return; }
   if (document.body.classList.contains("nav-open") && e.target.closest("#side [data-go]")) navOpen(false); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) { navOpen(false); const b = document.getElementById("menuBtn"); if (b) b.focus(); } });
@@ -123,8 +124,8 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && document.b
 function sideTopHTML(){
   const fav = S.fav.map(id => PAGES.find(p => p.id === id)).filter(Boolean), ca = areaOf(cur), cp = pageOf(cur);
   let h = "";
-  if (fav.length) h += '<details class="sgp" data-sgp="_fav" open><summary>Favoritos</summary>' + fav.map(p => '<button type="button" data-go="' + p.id + '" aria-current="' + (p.id === cur) + '"><span class="k">★</span>' + p.t + "</button>").join("") + "</details>";
-  h += '<details class="sgp" data-sgp="_area"' + (sideOpen("_area") ? " open" : "") + '><summary>Por área</summary>' + CAREAS.map((a, i) => '<button type="button" data-go="' + AREA_ID(a) + '" aria-current="' + (cur === AREA_ID(a) || (ca === a && cp.g !== "area")) + '"><span class="k">' + String.fromCharCode(97 + i) + "</span>" + a[1] + "</button>").join("") + "</details>";
+  if (fav.length) h += '<details class="sgp" data-sgp="_fav" open><summary>Favoritos</summary>' + fav.map(p => '<button type="button" data-go="' + p.id + '" aria-current="' + (p.id === cur) + '"><span class="k" style="color:var(--star)">' + icoUse("estrella-on") + "</span>" + p.t + "</button>").join("") + "</details>";
+  h += '<details class="sgp" data-sgp="_area"' + (sideOpen("_area") ? " open" : "") + '><summary>Por área</summary>' + CAREAS.map((a, i) => '<button type="button" data-go="' + AREA_ID(a) + '" aria-current="' + (cur === AREA_ID(a) || (ca === a && cp.g !== "area")) + '"><span class="k" style="color:var(--a-' + a[0] + ')">' + icoUse("a-" + a[0]) + "</span>" + a[1] + "</button>").join("") + "</details>";
   h += '<details class="sgp" data-sgp="_tri"' + (sideOpen("_tri") ? " open" : "") + '><summary>Por trimestre</summary><div class="tri-row">' + [1, 2, 3, 4, 5, 6, 7, 8].map(n => '<button type="button" data-go="por-trimestre" data-tri="' + n + '" aria-current="' + (cur === "por-trimestre" && +(S.triSel || 1) === n || (cp.g === "malla" && cp.tri === n)) + '">' + n + "°</button>").join("") + "</div></details>";
   return h; }
 function sideOpen(k){ try { const c = JSON.parse(localStorage.getItem(KEY + "-side2") || "null"); return !c || !c.includes(k); } catch (e) { return true; } }
