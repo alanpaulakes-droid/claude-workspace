@@ -44,7 +44,7 @@ document.addEventListener("click", e => { const b = e.target.closest && e.target
   h.scrollIntoView({ behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start" }); });
 
 /* ---------- Transición de entrada de página ---------- */
-function pageEnter(root){ root.classList.remove("enter"); void root.offsetWidth; root.classList.add("enter"); }
+function pageEnter(root){ root.classList.remove("enter"); requestAnimationFrame(() => root.classList.add("enter")); }  /* sin forzar un cálculo de layout */
 
 /* ---------- F3 · máximo 2 avisos destacados por página ----------
    Se priorizan los errores y advertencias; el resto se muestra como texto con etiqueta (clase «flat»), sin caja. */

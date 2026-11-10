@@ -71,7 +71,7 @@ function t8Class(title){
 /* Páginas que usan la plantilla: calculadoras (su guía), ramos, lecciones, saberes, gestión, Excel/Word y desarrollo personal */
 const T8_SKIP = new Set(["libros", "experiencias", "excel-lab", "excel-ejercicios", "word-ejercicios", "empieza-aqui"]);
 function t8Applies(id){ const p = pageOf(id); if (!p || T8_SKIP.has(id)) return false;
-  if (p.calc) return !!(GUIDE[id] || C[id].learn || (typeof BG !== "undefined" && BG[id]));
+  if (p.calc) { ensureContent(); return !!(GUIDE[id] || C[id].learn || (typeof BG !== "undefined" && BG[id])); }
   if (p.g === "malla") return id !== "mi-malla";
   if (["lean", "mejora-continua", "calidad-7", "gestion-proyectos", "kpis"].includes(id)) return true;
   return !!SAB.find(x => x.id === id); }

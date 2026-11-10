@@ -26,6 +26,12 @@ PAGES.push({ id:"reportes", g:"rep", t:"Memoria de cálculo", d:"Todos tus resul
 Object.keys(C).forEach(id => { if (!PAGES.find(p => p.id === id)) PAGES.push({ id, g:C[id].g, t:C[id].t, d:C[id].d, ico:C[id].ico, r:() => calcPage(id), calc:true }); });
 if (typeof areaPages === "function") areaPages(PAGES);
 if (typeof extraPages === "function") extraPages(PAGES);
+/* F6: el contenido pesado (guías, ejemplos, apuntes, bloques T2) se evalúa una sola vez, cuando hace falta */
+let __lazyI = 0;
+function ensureContent(){ while (__lazyI < __LAZY.length) __LAZY[__lazyI++](); }
+/* carga en tiempo ocioso, de a un módulo, sin bloquear la pantalla (cada porción deja al menos 4 ms libres) */
+function lazyIdle(dl){ while (__lazyI < __LAZY.length && (!dl || dl.didTimeout || dl.timeRemaining() > 4)) { __LAZY[__lazyI++](); if (!dl || dl.didTimeout) break; }
+  if (__lazyI < __LAZY.length) (window.requestIdleCallback || (f => setTimeout(f, 16)))(lazyIdle, { timeout:400 }); }
 const pageOf = id => PAGES.find(p => p.id === id) || PAGES[0];
 const PARENT = { malla:"mi-malla", carrera:"carrera", ind:"industrias", eco:"herramientas", ops:"herramientas", trab:"herramientas", cal:"herramientas", io:"herramientas", seg:"herramientas", ges:"gestion", inf:"informes", learn:"aprender", sab:"saberes", des:"desarrollo", ofi:"ofimatica", rep:"informes", hub:"inicio", sim:"simuladores", area:"por-area" };
 const TABS = [["inicio", "inicio", "Inicio"], ["por-area", "temas", "Temas"], ["herramientas", "calcular", "Calcular"], ["mi-malla", "malla", "Malla"], ["_more", "mas", "Más"]];
@@ -146,6 +152,7 @@ function pgReportes(){
 /* ============ EXPORTACIÓN: QUÉ SE EXPORTA ============ */
 function tmpEl(html){ const d = document.createElement("div"); d.className = "doc"; d.style.cssText = "position:absolute;left:-10000px;top:0;width:900px"; d.innerHTML = html; document.body.appendChild(d); return d; }
 async function doExport(kind, fmt, id){
+  ensureContent();
   const P = S.proj, who = [["Autor", P.autor], ["Organización", P.empresa], ["Fecha", P.fecha]].filter(x => x[1]);
   if (kind === "formulario" || kind === "glosario") return exportRef(kind, fmt);
   if ((kind === "pagina" || kind === "ramo" || kind === "saber" || kind === "guia") && id === cur && document.querySelector("#app .t8")) return exportPage(fmt, id);
@@ -167,6 +174,7 @@ async function doExport(kind, fmt, id){
 /* ============ RENDER ============ */
 let cur = "inicio";
 function searchHits(q){
+  ensureContent();
   const nz = t => String(t || "").replace(/<[^>]+>/g, "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); q = nz(q).trim(); if (q.length < 2) return [];
   const H = []; PAGES.forEach(p => { if (p.id !== "inicio" && nz(p.t + " " + (p.d || "") + " " + (C[p.id] ? C[p.id].ey : "")).includes(q)) H.push({ go:p.id, t:p.t, k:GROUPS[p.g] || "Sección" }); });
   COURSES.forEach(c => c.u.forEach(u => { if (nz(u[0]).includes(q) || (q.length > 3 && nz(u[1]).includes(q))) H.push({ go:c.id, t:c.t + " · " + u[0].replace(/^\d+\.\s*/, ""), k:"Ramo" }); }));
@@ -202,6 +210,7 @@ function goBack(){
   if (sn) { const ds = document.querySelectorAll("#app details"); sn.open.forEach((o, i) => { if (ds[i]) ds[i].open = o; }); requestAnimationFrame(() => window.scrollTo(0, sn.y)); }
 }
 function render(keepScroll){
+  if (cur !== "inicio") ensureContent();
   const p = pageOf(cur); let html;
   try { html = p.r(); } catch (e) { html = note("Error al mostrar esta sección: " + esc(e.message), "bad"); }
   try { if (typeof expandHTML === "function") html = expandHTML(cur, html); } catch (e) { console.error(e); }
@@ -273,6 +282,8 @@ document.addEventListener("toggle", e => { const d = e.target; if (!d.dataset ||
 document.getElementById("backBtn").addEventListener("click", goBack);
 
 /* ============ INICIO ============ */
-(function(){ try { icoSprite(); } catch (e) {} const h = location.hash.slice(1); cur = h && PAGES.find(p => p.id === h) ? h : "inicio"; render(); })();
+(function(){ try { icoSprite(); } catch (e) {} const h = location.hash.slice(1); cur = h && PAGES.find(p => p.id === h) ? h : "inicio"; render();
+  /* el contenido diferido se carga en tiempo ocioso, apenas se muestra la primera pantalla */
+  (window.requestIdleCallback || (f => setTimeout(f, 30)))(lazyIdle, { timeout:400 }); })();
 })();
 </script>

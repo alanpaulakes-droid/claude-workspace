@@ -31,6 +31,7 @@ function formularioT2HTML(){
 }
 
 async function exportRef(kind, fmt){
+  ensureContent();
   let html = "", meta;
   if (kind === "formulario") {
     const ar = [...new Set(FORM.map(f => f[0]))];
