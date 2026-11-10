@@ -25,6 +25,7 @@ Object.keys(GROUPS).forEach(g => {
 PAGES.push({ id:"reportes", g:"rep", t:"Memoria de cálculo", d:"Todos tus resultados en un documento descargable", ico:"⎙", r:pgReportes });
 Object.keys(C).forEach(id => { if (!PAGES.find(p => p.id === id)) PAGES.push({ id, g:C[id].g, t:C[id].t, d:C[id].d, ico:C[id].ico, r:() => calcPage(id), calc:true }); });
 if (typeof areaPages === "function") areaPages(PAGES);
+if (typeof extraPages === "function") extraPages(PAGES);
 const pageOf = id => PAGES.find(p => p.id === id) || PAGES[0];
 const PARENT = { malla:"mi-malla", carrera:"carrera", ind:"industrias", eco:"herramientas", ops:"herramientas", trab:"herramientas", cal:"herramientas", io:"herramientas", seg:"herramientas", ges:"gestion", inf:"informes", learn:"aprender", sab:"saberes", des:"desarrollo", ofi:"ofimatica", rep:"informes", hub:"inicio", sim:"simuladores", area:"por-area" };
 const TABS = [["inicio", "⌂", "Inicio"], ["mi-malla", "★", "Malla"], ["herramientas", "ƒ", "Cálculos"], ["por-area", "◫", "Áreas"], ["informes", "✎", "Informes"], ["aprender", "§", "Aprender"], ["carrera", "▣", "Carrera"]];
@@ -250,6 +251,6 @@ document.addEventListener("toggle", e => { const d = e.target; if (!d.dataset ||
 document.getElementById("backBtn").addEventListener("click", goBack);
 
 /* ============ INICIO ============ */
-(function(){ const h = location.hash.slice(1); cur = h && PAGES.find(p => p.id === h) ? h : "inicio"; render(); })();
+(function(){ try { icoSprite(); } catch (e) {} const h = location.hash.slice(1); cur = h && PAGES.find(p => p.id === h) ? h : "inicio"; render(); })();
 })();
 </script>

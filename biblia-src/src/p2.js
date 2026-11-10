@@ -1,6 +1,8 @@
 <script>
 (function(){
 "use strict";
+/* Referencia a un ícono del sprite (el sprite se arma al iniciar, en w5.js · icoSprite) */
+const icoUse = id => '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-' + id + '"/></svg>';
 /* ============ ESTADO ============ */
 const KEY = "biblia-ii-v1";
 let S = { v:{}, snap:{}, done:{}, proj:{ nombre:"", autor:"", empresa:"", fecha:"" }, quiz:{}, last:null };

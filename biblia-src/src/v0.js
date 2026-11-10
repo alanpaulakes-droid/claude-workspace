@@ -32,6 +32,6 @@ function swCSV(name, head, body){ const q = v => { const s = String(v == null ? 
   try { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type:"text/csv;charset=utf-8" })); a.download = name + ".csv"; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); return true; } catch (e) { return false; } }
 /* Botones del instructivo que cargan un ejemplo en el simulador: data-simq="id" data-q="texto" */
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-simq]"); if (!b) return; const box = document.querySelector('[data-sim="' + b.dataset.simq + '"]'); if (!box || typeof box._load !== "function") return; box._load(b.dataset.q); box.scrollIntoView({ behavior:"smooth", block:"start" }); });
-const LQ = (id, q, t) => '<button class="btn small ghost lq" type="button" data-simq="' + id + '" data-q="' + esc(q) + '">' + (t || "▶ Cargar y ejecutar en el simulador") + "</button>";
+const LQ = (id, q, t) => '<button class="btn small ghost lq" type="button" data-simq="' + id + '" data-q="' + esc(q) + '">' + (t || icoUse("play") + " Cargar y ejecutar en el simulador") + "</button>";
 const QX = (id, q, t) => '<div class="sw-out">' + esc(q) + "</div>" + LQ(id, q, t);
 const SIMX = (id, o) => { const s = SIMS.find(x => x.id === id); if (!s) return; if (o.quick) s.quick = o.quick; if (o.pre) s.ins = o.pre.concat(s.ins); if (o.post) s.ins = s.ins.concat(o.post); };

@@ -16,8 +16,8 @@ Todo el código corre dentro de una sola función `(() => { … })();`: los nomb
 
 | Archivo | Contenido |
 |---|---|
-| `p1.html` | HTML base, CSS (temas claro/oscuro, impresión) y apertura del script |
-| `p2.js` | Estado y guardado (`localStorage` en try/catch) |
+| `p1.html` | HTML base y CSS. Arriba van los **tokens del sistema de diseño** (color de marca, neutros, semánticos, uno por área, series de gráficos, espaciado base 4, escala tipográfica 1,125, radios, sombras y duraciones) con sus variantes oscuras; los nombres antiguos (`--blue`, `--copper`…) son alias. Sin fuentes externas: solo fuentes del sistema |
+| `p2.js` | Estado y guardado (`localStorage` en try/catch); `icoUse(id)` para íconos del sprite |
 | `x1.js`, `x2.js`, `x4.js` | Motor de fórmulas `M()`, gráficos y diagramas base |
 | `p3.js` – `p6b.js` | Registro de calculadoras `C[id]` (campos y cálculo) |
 | `px.js` | Exportación a Word y PDF |
@@ -35,6 +35,8 @@ Todo el código corre dentro de una sola función `(() => { … })();`: los nomb
 | `wc2.js` | F5: exportar fichas, formulario y glosario; impresión; accesibilidad |
 | `wd5.js` | Ramos dictados en varios trimestres (Inglés I a IV en 3.° a 6.°), según la malla oficial 2026 |
 | `wd1.js` – `wd4.js` | Bloques que faltaban en los temas (Fundamentos, ramos, saberes, desarrollo personal, gestión, informes, ofimática). Registros `T2` parciales: solo agregan bloques |
+| `w5.js` | Set único de íconos de línea `SVGP`; `icoSprite()` los publica una vez como `<symbol>` y `svgIco(id)` los usa con `<use>` |
+| `wd6.js` | Página interna `#sistema-diseno`: tokens vivos con contraste medido en el navegador, tipografía, íconos y componentes |
 | `p8.js` | Páginas, navegación, eventos y `render()` (va al final) |
 
 ## Pruebas (`tests/`)
@@ -60,5 +62,6 @@ Requieren Node y Playwright con Chromium, más `npm install` dentro de `tests/` 
 ## App instalable (PWA)
 
 `build.sh` también genera `biblia/` en la raíz del repositorio: `index.html` (la misma app, con manifiesto e íconos), `manifest.webmanifest`, `biblia-sw.js` (funcionamiento sin conexión; solo crea y borra cachés `biblia-*`) e íconos (`icon-180/192/512.png`, fuente en `pwa/icon.svg`).
+La app no descarga nada para funcionar: las fórmulas usan el motor propio `M()` (KaTeX ya no se carga). Solo «Descargar PDF» usa pdfmake desde un CDN; sin conexión, ese botón abre la impresión del navegador («Guardar como PDF»).
 Para instalarla, la carpeta `biblia/` debe publicarse por HTTPS (por ejemplo, GitHub Pages) y abrirse en el celular: Chrome muestra «Instalar app»; en iPhone, Safari → Compartir → «Agregar a pantalla de inicio».
 Al publicar una versión nueva, sube el número de `CACHE` en `pwa/sw.js` si cambian los íconos o el manifiesto (el HTML se actualiza solo).

@@ -217,6 +217,9 @@ const fileBase = s => String(s || "documento").normalize("NFD").replace(/[̀-ͯ]
 async function exportDoc(fmt, meta, el){
   if (!el) return; toast(fmt === "pdf" ? "Generando PDF…" : "Generando Word…");
   try { const B = await toModel(el); const blob = fmt === "pdf" ? await buildPdf(meta, B) : buildDocx(meta, B); await saveFile(fileBase(meta.title) + (fmt === "pdf" ? ".pdf" : ".docx"), blob); }
-  catch (e) { toast(e.message || "No se pudo generar el archivo"); }
+  catch (e) {
+    /* Sin conexión no se puede descargar el generador de PDF: se ofrece la impresión del navegador («Guardar como PDF»), que funciona offline */
+    if (fmt === "pdf" && /generador de PDF/.test(e.message || "") && typeof printPage === "function") { toast("Sin conexión: elige «Guardar como PDF» en la ventana de impresión"); setTimeout(printPage, 600); return; }
+    toast(e.message || "No se pudo generar el archivo"); }
 }
 const expBtns = (kind, extra) => '<span class="expb no-print"><button class="btn small" type="button" data-act="exp" data-fmt="docx" data-kind="' + kind + '"' + (extra || "") + '>Descargar Word</button><button class="btn small ghost" type="button" data-act="exp" data-fmt="pdf" data-kind="' + kind + '"' + (extra || "") + ">Descargar PDF</button></span>";

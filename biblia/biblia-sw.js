@@ -2,12 +2,12 @@
    Ubicado en /biblia/ → su alcance es solo /biblia/, aislado de las otras apps del repositorio.
    Todas las apps comparten el mismo dominio y su almacenamiento de caché: este SW solo crea y borra cachés que empiezan con «biblia-».
    - La app (HTML): red primero, para recibir actualizaciones; sin conexión usa la copia guardada.
-   - Librerías y fuentes externas (KaTeX, Google Fonts, pdfmake): se guardan la primera vez que se usan. */
-const CACHE = 'biblia-v1';
+   - Todo funciona sin conexión desde la primera visita; solo el generador de PDF (pdfmake) es externo y se guarda la primera vez que se usa. */
+const CACHE = 'biblia-v2';
 const CDN = 'biblia-cdn-v1';
 const ASSETS = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
-const EXT = ['https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js'];
-const EXT_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
+const EXT = [];   /* la app no depende de recursos externos; pdfmake se guarda la primera vez que se descarga un PDF */
+const EXT_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net'];
 
 self.addEventListener('install', e => {
   e.waitUntil(Promise.all([
