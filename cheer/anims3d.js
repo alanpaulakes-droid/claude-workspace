@@ -12,7 +12,7 @@ const MU3={};
  [['superman'],'LB G'],[['handstandWall','handstand'],'D TR AB'],[['toeTouch','hurdlerPike'],'HF AB AD'],
  [['splitR','splitL'],'H HF'],[['middle'],'AD'],[['heelStretch'],'H'],[['legRaise'],'HF AB'],[['scorpion'],'HF AB D'],[['bridge','toBridge'],'AB P D HF'],
  [['run','jog','shuttle'],'Q H C G'],[['jacks'],'C D'],[['liberty','balanceRelevé','heelArab'],'C AB G'],
- [['rolls','rollFwd','cartwheel','backWalk','frontWalk','bhs','frontHs','backTuck','frontTuck'],'D TR AB Q']
+ [['rolls','rollFwd','cartwheel','backWalk','frontWalk','bhs','frontHs','backTuck','frontTuck'],'D TR AB Q'],[['rdlSingle','goodMorning'],'H G LB'],[['walkLunge','stepUp'],'Q G'],[['deadbug','mountain'],'AB'],[['legRaiseHang','hFrontLever','rFrontLever'],'AB L'],[['dbRow','ropeClimb','rMuscleUp'],'L B F'],[['hKip','hSwing','rSwing','hHipCircle'],'L AB D'],[['planche','rPlanche','rCross','rSupport','rBackLever'],'D P B TR'],[['pSupport','pSwing','pHandstand','hCast','hCastHS','hGiant','hGiantF','hStalder','hHandstand','pUpperArm','pShoulderStand'],'D TR AB'],[['phSupport','phPendulum','phScissors','phCircles','phMushroom','phFlair','flair'],'D TR AB OB'],[['rLsit','pLsit'],'AB HF'],[['vRun','vHandspring'],'Q C D'],[['pancake'],'AD H'],[['rSkin'],'D P'],[['wrists'],'F']
 ].forEach(([ks,c])=>ks.forEach(k=>MU3[k]=c.split(' ')));
 
 const RAD3={H:6.6,M:7.2,S:7.2,N:7,p1:6.4,p2:6.4,K1:4.3,K2:4.3,A1:3.3,A2:3.3,T1:2.7,T2:2.7,E1:2.9,E2:2.9,W1:1.6,W2:1.6,s1:4.4,s2:4.4};
@@ -26,11 +26,13 @@ function to3(an,J){const T=THREE,o={},fv=an.v==='f',z3=an.z3||{};
   const zE=sg*(pz.ez!=null?pz.ez:(z3.E||11)),zW=sg*(pz.wz!=null?pz.wz:(z3.W||11));
   const fix=(a,b,L,zb)=>{const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,dz=zb-a.z,k=Math.sqrt(Math.max(L*L-dz*dz,9))/d;return new T.Vector3(a.x+dx*k,a.y+dy*k,zb)};
   const E=fix(s,o['E'+n],LN.ua,zE),W=fix(E,o['W'+n],LN.fa,zW);o['E'+n]=E;o['W'+n]=W}}
+ if(an.yaw&&J._p&&J._p.yw){const c=o.WM||o.W1,ang=J._p.yw*Math.PI/180,ca=Math.cos(ang),sa=Math.sin(ang);for(const k in o){if(k==='W1'||k==='W2'||k==='WM')continue;const v=o[k],dx=v.x-c.x,dz=v.z-c.z;v.x=c.x+dx*ca+dz*sa;v.z=c.z-dx*sa+dz*ca}}
  if(!(J._p&&J._p.pin)){let lo=1e9;for(const k in RAD3)if(o[k])lo=Math.min(lo,o[k].y-RAD3[k]);if(lo<0)for(const k in o)o[k].y-=lo}
  return o}
 function bbox2(key){const an=AN[key];if(an._bb)return an._bb;let x0=1e9,x1=-1e9,y0=1e9;
  for(let i=0;i<48;i++){const J=solveJ(poseAt(an,an.total*i/48),an);for(const k in J){const [x,y]=J[k];x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y-(k==='N'?9:5))}}
  for(const q of an.p||[]){if(q.k==='box'){x0=Math.min(x0,q.x);x1=Math.max(x1,q.x+q.w)}if(q.k==='cone'){x0=Math.min(x0,q.x);x1=Math.max(x1,q.x)}if(q.k==='band'&&Array.isArray(q.to)){x0=Math.min(x0,q.to[0]);x1=Math.max(x1,q.to[0]);y0=Math.min(y0,q.to[1])}}
+ if(an.yaw){const J=solveJ(poseAt(an,0),an);const hx=(J.W1[0]+J.W2[0])/2;const e=Math.max(Math.abs(x0-hx),Math.abs(x1-hx))*1.1;x0=hx-e;x1=hx+e}
  return an._bb={x0,x1,y0}}
 
 function r3init(){
@@ -181,6 +183,17 @@ function props3(key){const R=R3,T=R.T;if(R.props[key])return R.props[key];const 
   if(q.k==='ball'){const b=sh(new T.Mesh(new T.SphereGeometry(8.5,28,20),R.M(0x5b3fd1,{roughness:.7})));ups.push(J=>{const P=J[q.at];b.position.set(P.x+3,P.y,0)})}
   if(q.k==='wheel'){const w=sh(new T.Mesh(new T.TorusGeometry(5.5,2,14,28),eq));const ax=sh(new T.Mesh(new T.CylinderGeometry(.9,.9,26,8),eq2));ax.rotation.x=Math.PI/2;ups.push(J=>{const P=J[q.at];w.position.set(P.x,Math.max(7.5,P.y),0);ax.position.copy(w.position)})}
   if(q.k==='pad'){const p=sh(new T.Mesh(new T.BoxGeometry(10,6,30),pad));ups.push(J=>{const P=J[q.at];p.position.set(P.x,P.y+7.6,0)})}
+  if(q.k==='rings'){const rm=R.M(0x8b5a2b,{roughness:.5});const rs=[],st=[];for(const k of ['W1','W2']){rs.push([sh(new T.Mesh(new T.TorusGeometry(5.2,1.1,12,32),rm)),k]);st.push(sh(new T.Mesh(new T.BoxGeometry(1.6,1,.5),R.M(0x2a2a30,{roughness:.8}))))}
+   ups.push((J,an)=>{rs.forEach(([m,k],i)=>{const P=J[k];const sg=k==='W1'?1:-1;const off=an.v==='f'?new T.Vector3(0,0,-sg*0):new T.Vector3(0,0,sg*2.5);m.position.set(P.x,P.y-1.5,P.z).add(off);m.rotation.set(0,an.v==='f'?Math.PI/2:0,0);const top=420;st[i].scale.y=top-P.y-5;st[i].position.set(P.x,(top+P.y+5)/2,P.z).add(off);st[i].userData.noCol=1})})}
+  if(q.k==='pommel'){const leather=R.M(0x6b4a2f,{roughness:.65}),wood=R.M(0xd8c49b,{roughness:.5});const body=sh(new T.Mesh(new T.CylinderGeometry(14,14,110,24),leather));body.rotation.x=Math.PI/2;body.scale.set(1,1,.85);
+   const pm=[-15,15].map(()=>sh(new T.Mesh(new T.TorusGeometry(5,1.6,10,24,Math.PI),wood)));const legs=[-40,40].map(()=>sh(new T.Mesh(new T.CylinderGeometry(2.4,3.2,1,10),eq)));
+   ups.push((J,an)=>{const P=J.WM||J.W1;const top=P.y-11;body.position.set(5,top-12,0);pm.forEach((m,i)=>{m.position.set(0,top,i?15:-15);m.rotation.set(0,Math.PI/2,0)});legs.forEach((l,i)=>{l.scale.y=Math.max(.1,top-24);l.position.set(5,(top-24)/2,i?40:-40)})})}
+  if(q.k==='mush'){const leather=R.M(0x6b4a2f,{roughness:.65});const dome=sh(new T.Mesh(new T.CylinderGeometry(19,22,10,32),leather));const stem=sh(new T.Mesh(new T.CylinderGeometry(4,9,1,16),eq));
+   ups.push(J=>{const P=J.WM||J.W1;const top=P.y-2;dome.position.set(0,top-5,0);stem.scale.y=Math.max(.1,top-10);stem.position.set(0,(top-10)/2,0)})}
+  if(q.k==='board'){const b=sh(new T.Mesh(new T.BoxGeometry(32,4,40),R.M(0xd9d4c8,{roughness:.7})));b.position.set(q.x-120,3,0);b.rotation.z=-.12}
+  if(q.k==='vault'){const top=sh(new T.Mesh(new T.CylinderGeometry(30,30,8,32),R.M(0x2e3a8c,{roughness:.6})));top.scale.set(q.w/60,1,1);top.position.set(q.x+q.w/2-120,q.h-4,0);const post=sh(new T.Mesh(new T.CylinderGeometry(4,7,q.h-8,14),eq));post.position.set(q.x+q.w/2-120,(q.h-8)/2,0);const base=sh(new T.Mesh(new T.BoxGeometry(50,3,46),eq));base.position.set(q.x+q.w/2-120,1.5,0)}
+  if(q.k==='rope'){const r=sh(new T.Mesh(new T.CylinderGeometry(1.4,1.4,600,10),R.M(0xc9b48a,{roughness:.9})));r.position.set(q.x-120,300,0)}
+  if(q.k==='db1'){const h=sh(new T.Mesh(new T.CylinderGeometry(1,1,12,10),eq2));h.rotation.x=Math.PI/2;const pl=[-5.2,5.2].map(z=>{const p=sh(new T.Mesh(new T.CylinderGeometry(4.6,4.6,3.6,6),eq));p.rotation.x=Math.PI/2;return [p,z]});ups.push(J=>{const P=J.W1;h.position.set(P.x,P.y,P.z);for(const [p,z] of pl)p.position.set(P.x,P.y,P.z+z)})}
   if(q.k==='box'){const b=sh(new T.Mesh(new T.BoxGeometry(q.w,q.h,42),R.M(0x8f6440,{roughness:.8})));b.position.set(q.x+q.w/2-120,q.h/2,0)}
   if(q.k==='wall'){const w=sh(new T.Mesh(new T.BoxGeometry(5,220,120),R.M(0xcfcadf,{roughness:1})));w.position.set(q.x-120+2.5,110,0)}
   if(q.k==='cone'){const c=sh(new T.Mesh(new T.ConeGeometry(6,14,24),R.M(0xff7a1a,{roughness:.6})));c.position.set(q.x-120,7,0)}
@@ -192,7 +205,7 @@ function props3(key){const R=R3,T=R.T;if(R.props[key])return R.props[key];const 
   if(q.k==='pbar'){const par=q.w===14;const bars=[],posts=[];
    if(par){for(const z of [-12,12])bars.push([sh(new T.Mesh(new T.CylinderGeometry(1.3,1.3,60,10),eq2)),z]);bars.forEach(([b])=>b.rotation.z=Math.PI/2);for(let i=0;i<4;i++)posts.push(sh(new T.Mesh(new T.CylinderGeometry(1.3,1.3,1,8),eq)))}
    else{bars.push([sh(new T.Mesh(new T.CylinderGeometry(1.3,1.3,64,10),eq2)),0]);bars[0][0].rotation.x=Math.PI/2;for(let i=0;i<2;i++)posts.push(sh(new T.Mesh(new T.CylinderGeometry(1.6,1.6,1,8),eq)))}
-   ups.push(J=>{const P=J[q.at];for(const [b,z] of bars)b.position.set(P.x,P.y+1,z);
+   ups.push((J,an)=>{const P=Array.isArray(q.at)?(an.v==='f'?new T.Vector3(0,GY-q.at[1],-(q.at[0]-120)):new T.Vector3(q.at[0]-120,GY-q.at[1],0)):J[q.at];for(const [b,z] of bars)b.position.set(P.x,P.y+1,z);
     const pts=par?[[P.x-26,-12],[P.x+26,-12],[P.x-26,12],[P.x+26,12]]:[[P.x,-32],[P.x,32]];posts.forEach((p,i)=>{p.scale.y=Math.max(.1,P.y);p.position.set(pts[i][0],P.y/2,pts[i][1])})})}
   if(q.k==='band'){const bm=R.M(0xe0245e,{roughness:.5});const b=sh(new T.Mesh(new T.CylinderGeometry(.8,.8,1,8),bm));let post=null;if(Array.isArray(q.to))post=sh(new T.Mesh(new T.CylinderGeometry(2,2,1,10),eq));
    ups.push((J,an)=>{const a=J[q.at];let c;if(Array.isArray(q.to)){c=an.v==='f'?new T.Vector3(0,GY-q.to[1],-(q.to[0]-120)):new T.Vector3(q.to[0]-120,GY-q.to[1],a.z);post.scale.y=c.y+6;post.position.set(c.x,(c.y+6)/2,c.z)}else c=J[q.to];cylBetween(b,a,c)})}

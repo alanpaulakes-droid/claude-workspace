@@ -157,7 +157,7 @@ const SKILLS={
  fuerza:['Flick parado (standing BHS)','Rondada–flick','Serie de flicks (2–3)','Mortal atrás agrupado (standing tuck) con spotter','Drill de flick adelante'],
  potencia:['Standing tuck limpio','Rondada–flick–mortal agrupado','Rondada–flick–mortal estirado (layout)','Flick parado–mortal (standing BHS–tuck)','Drill de full: mortal estirado con giro en trampolín o colchoneta'],
  comp:['Pases de competencia de tu nivel','Rondada–flick–full (si dominas el layout)','Standing tuck / standing full en series','Consistencia: 10 repeticiones limpias por pase','Toe touch–flick–mortal (combinación de salto + tumbling)'],
- trans:['Técnica libre y juego','Paradas de manos','Perfeccionar rueda y rondada','Revisión de video de la temporada']
+ trans:['Técnica libre y juego','Paradas de manos','Perfeccionar rueda y rondada','Rueda, rondada y flic de repaso']
 };
 
 /* ===================== GIMNASIA ARTÍSTICA MASCULINA ===================== */
@@ -255,13 +255,13 @@ const magDone=()=>LS.get('cheer.mag',{});
 function magTargets(ap,n){const d=magDone(),lv=S.magLvl||1;const el=MAG[ap].el.filter(e=>e[2]>=Math.min(lv,MAG[ap].el[MAG[ap].el.length-1][2]));return el.filter(e=>!d[e[0]]).slice(0,n)}
 function magLast(ap){const d=magDone();const m=MAG[ap].el.filter(e=>d[e[0]]);return m[m.length-1]}
 function magBlock(ap){const A=MAG[ap],out=[{hdr:A.i+' '+A.n}];const tg=magTargets(ap,2),lst=magLast(ap);
- if(lst)out.push({n:lst[1],t:'skill',tip:'Consolidación (ya dominado): repeticiones perfectas. '+lst[3],noAnim:!A.anim});
- tg.forEach((e,i)=>{out.push({n:e[1],t:'skill',tip:'Objetivo · '+MAGLV[e[2]]+'. '+e[3],noAnim:!A.anim});if(i===0&&e[4]&&e[4][0])out.push({n:'Progresión: '+e[4][0],t:'skill',tip:'Ejercicio previo para '+e[1]+'.',noAnim:1})});
- if(!tg.length)out.push({n:'Rutina completa de '+A.n,t:'skill',r:'1',tip:'Todos los elementos dominados: practica la rutina completa y la limpieza de ejecución.',noAnim:1});
+ if(lst)out.push({n:lst[1],t:'skill',tip:'Consolidación (ya dominado): repeticiones perfectas. '+lst[3],a:MAGANIM[lst[0]]});
+ tg.forEach((e,i)=>{out.push({n:e[1],t:'skill',tip:'Objetivo · '+MAGLV[e[2]]+'. '+e[3],a:MAGANIM[e[0]]});if(e[4]&&e[4].length){const d=e[4][((S.__wy||1)+i)%e[4].length];out.push({n:'Progresión: '+d,t:'skill',tip:'Ejercicio previo para '+e[1]+'.',a:animKey(d)||MAGANIM[e[0]]})}});
+ if(!tg.length)out.push({n:'Rutina completa de '+A.n,t:'skill',r:'1',tip:'Todos los elementos dominados: practica la rutina completa y la limpieza de ejecución.',a:MAGANIM[A.el[A.el.length-1][0]]});
  return out}
-function magStrength(n){const lv=S.magLvl||1;const pool=MAGF.filter(f=>f[1]===lv||f[1]===lv-1);const sel=pool.filter(f=>f[1]===lv).concat(pool.filter(f=>f[1]!==lv)).slice(0,n);
+function magStrength(n,wy){const lv=S.magLvl||1;const pool=MAGF.filter(f=>f[1]===lv||f[1]===lv-1);const o=(wy||1)%pool.length;const rot=pool.slice(o).concat(pool.slice(0,o));const sel=rot.filter(f=>f[1]===lv).concat(rot.filter(f=>f[1]!==lv)).slice(0,n);
  return [{hdr:'💪 Preparación física específica'}].concat(sel.map(f=>({n:f[0],t:f[2],r:f[3],tip:'Nivel '+MAGLV[f[1]]+'. Calidad estricta: si pierdes la forma, termina la serie.'})))}
-function magFlex(n){return [{hdr:'🧘 Flexibilidad'}].concat(MAGFLEX.slice(0,n).map(f=>({n:f[0],t:'flex',r:f[1],tip:'Al final, con el cuerpo caliente; respira y relaja en cada exhalación.'})))}
+function magFlex(n,wy){const o=(wy||1)%MAGFLEX.length;const r=MAGFLEX.slice(o).concat(MAGFLEX.slice(0,o));return [{hdr:'🧘 Flexibilidad'}].concat(r.slice(0,n).map(f=>({n:f[0],t:'flex',r:f[1],tip:'Al final, con el cuerpo caliente; respira y relaja en cada exhalación.'})))}
 
 const T={
  W_LOWER:{n:'Fuerza tren inferior',tag:'legs',obj:'Fuerza · Estética',ex:[
@@ -325,10 +325,10 @@ const T={
   {n:'Scorpion / needle',t:'flex',side:1,tip:'Espalda alta + cadera. Progresión con banda.'},
   {n:'Elevación activa de pierna (frente/lado)',t:'core',r:'10/lado',tip:'Flexibilidad ACTIVA: subir la pierna sin ayuda y sostener 2 s.'},
   {n:'Arch hold',t:'core',tip:'Fuerza en el rango de flexibilidad de espalda.'}]},
- A_SUELO_SALTO:{n:'Artística: suelo y salto',tag:'skill',obj:'Técnica · Fuerza · Flexibilidad',gen:()=>[...magBlock('suelo'),...magBlock('salto'),...magStrength(3),...magFlex(3)]},
- A_ANILLAS_BARRA:{n:'Artística: anillas y barra fija',tag:'upper',obj:'Técnica · Fuerza',gen:()=>[...magBlock('anillas'),...magBlock('barra'),...magStrength(3),...magFlex(2)]},
- A_ARCOS_PARAL:{n:'Artística: caballo con arcos y paralelas',tag:'upper',obj:'Técnica · Fuerza',gen:()=>[...magBlock('arcos'),...magBlock('paralelas'),...magStrength(3),...magFlex(2)]},
- A_FUERZA:{n:'Artística: preparación física específica',tag:'upper',obj:'Fuerza · Estética · Flexibilidad',gen:()=>[...magStrength(7),...magFlex(5)]},
+ A_SUELO_SALTO:{n:'Artística: suelo y salto',tag:'skill',obj:'Técnica · Fuerza · Flexibilidad',gen:(ph,wy)=>{S.__wy=wy;return [...magBlock('suelo'),...magBlock('salto'),...magStrength(3,wy),...magFlex(3,wy)]}},
+ A_ANILLAS_BARRA:{n:'Artística: anillas y barra fija',tag:'upper',obj:'Técnica · Fuerza',gen:(ph,wy)=>{S.__wy=wy;return [...magBlock('anillas'),...magBlock('barra'),...magStrength(3,wy),...magFlex(2,wy)]}},
+ A_ARCOS_PARAL:{n:'Artística: caballo con arcos y paralelas',tag:'upper',obj:'Técnica · Fuerza',gen:(ph,wy)=>{S.__wy=wy;return [...magBlock('arcos'),...magBlock('paralelas'),...magStrength(3,wy),...magFlex(2,wy)]}},
+ A_FUERZA:{n:'Artística: preparación física específica',tag:'upper',obj:'Fuerza · Estética · Flexibilidad',gen:(ph,wy)=>[...magStrength(7,wy),...magFlex(5,wy)]},
  W_BASE:{n:'Fuerza de base: overhead, lanzamiento y agarre',tag:'upper',obj:'Fuerza · Estética',ex:[
   {n:'Push press',t:'power',kg:1,tip:'Dip corto y empuje explosivo con piernas: el mismo patrón que lanzar y subir una elevación.'},
   {n:'Sentadilla frontal',t:'main',kg:1,tip:'Tronco vertical bajo carga: fuerza para el "dip & drive" de los tosses.'},
@@ -367,6 +367,47 @@ const ROLE={
   W_LOWER:[{n:'Sentadilla con pausa',t:'acc',kg:1,r:'5',tip:'Pausa 2 s abajo: fuerza para atrapar.'}],
   BW_UPPER:[{n:'Parada de manos contra pared (hold)',t:'core',r:'30s',tip:'Hombros fuertes overhead.'}]}}
 };
+
+/* ===================== VARIANTES (rotación) ===================== */
+const ALTS={
+ 'W_LOWER|Sentadilla trasera':[{n:'Sentadilla frontal',tip:'Tronco vertical: más cuádriceps y core.'},{n:'Sentadilla con pausa',tip:'Pausa 2 s abajo: fuerza desde el fondo.'}],
+ 'W_LOWER|Peso muerto rumano':[{n:'Peso muerto rumano a una pierna',r:'8/lado',tip:'Equilibrio y glúteo medio; cadera cuadrada.'},{n:'Good morning',tip:'Barra en la espalda, bisagra de cadera con espalda neutra.'}],
+ 'W_LOWER|Sentadilla búlgara':[{n:'Zancada caminando con mancuernas',r:'10/lado',tip:'Paso largo, rodilla trasera cerca del suelo.'},{n:'Step-up al cajón con mancuernas',r:'8/lado',tip:'Empuja con la pierna de arriba, sin impulso de la de abajo.'}],
+ 'W_LOWER|Hip thrust':[{n:'Puente de glúteo a una pierna',kg:0,r:'12/lado'},{n:'Nordic curl',kg:0,r:'5-6',tip:'Isquios excéntricos: prevención de lesiones.'}],
+ 'W_LOWER|Elevación de talones de pie':[{n:'Elevación de talones a una pierna',r:'12/lado'}],
+ 'W_LOWER|Plancha Copenhague':[{n:'Plancha lateral',side:1,r:'30s'}],
+ 'W_LOWER|Pallof press':[{n:'Dead bug',r:'10/lado',tip:'Lumbar pegada al suelo, movimiento lento.'},{n:'Rueda abdominal',r:'8-10'}],
+ 'W_UPPER|Press militar de pie':[{n:'Press Z sentado (mancuernas)',tip:'Overhead estricto sin ayuda de piernas.'},{n:'Flexiones pike / parada de manos contra pared',kg:0,tip:'Hombros overhead con peso corporal.'}],
+ 'W_UPPER|Dominadas':[{n:'Dominadas supinas (chin-up)',tip:'Agarre supino: más bíceps.'},{n:'Remo invertido',kg:0,tip:'Pecho a la barra, cuerpo rígido.'}],
+ 'W_UPPER|Press banca con mancuernas':[{n:'Flexiones con pausa abajo',kg:0,r:'8-12'},{n:'Fondos en paralelas'}],
+ 'W_UPPER|Remo con barra':[{n:'Remo con mancuerna a una mano',r:'10/lado',tip:'Codo hacia la cadera, sin girar el tronco.'}],
+ 'W_UPPER|Face pull':[{n:'Rotación externa con banda',r:'15'}],
+ 'W_UPPER|Fondos en paralelas':[{n:'Fondos en banco'}],
+ 'W_UPPER|Farmer walk':[{n:'Caminata de oso',kg:0,r:'20 m'}],
+ 'W_UPPER|Hollow hold':[{n:'Hollow rocks',r:'20'},{n:'V-ups',r:'12'}],
+ 'W_POWER|Salto al cajón':[{n:'Salto de longitud'},{n:'Tuck jumps'}],
+ 'W_POWER|Rueda abdominal':[{n:'Elevación de piernas colgado',r:'8-10',tip:'Sin balanceo; piernas rectas.'}],
+ 'W_POWER|Remo invertido':[{n:'Remo con mancuerna a una mano',kg:1,r:'10/lado'}],
+ 'W_BASE|Press Z sentado (mancuernas)':[{n:'Press militar de pie'}],
+ 'W_BASE|Plancha frontal':[{n:'Plancha lateral',side:1},{n:'Mountain climbers',r:'30s'}],
+ 'W_BASE|Dominadas':[{n:'Dominadas supinas (chin-up)'},{n:'Elevación de piernas colgado',kg:0,r:'8-10'}],
+ 'BW_LOWER|Zancada con salto alternada':[{n:'Zancada caminando con mancuernas',r:'10/lado'}],
+ 'BW_LOWER|Plancha lateral':[{n:'Dead bug',r:'10/lado'}],
+ 'BW_UPPER|Hollow hold':[{n:'Hollow rocks',r:'20'},{n:'V-ups',r:'12'}],
+ 'BW_UPPER|Superman / arch hold':[{n:'Mountain climbers',r:'30s'}],
+ 'P_PLYO|Pogo jumps (saltos de tobillo)':[{n:'Saltos de tijera (jumping jacks)',r:'30s'}],
+ 'P_PLYO|Salto de longitud':[{n:'Salto al cajón'}],
+ 'P_PLYO|Tuck jumps':[{n:'Toe touch repetidos',t:'skill',r:'5'}],
+ 'P_PLYO|V-ups':[{n:'Mountain climbers',r:'30s'},{n:'Hollow rocks',r:'20'}],
+ 'P_COND|Plancha frontal':[{n:'Mountain climbers',r:'30s'},{n:'Dead bug',r:'10/lado'}],
+ 'P_COND|Superman / arch hold':[{n:'Caminata de oso',r:'20 m'}],
+ 'G_TUMB|Hurdler y pike':[{n:'Tuck jumps',t:'plyo'}],
+ 'G_TUMB|Compresión: elevación de piernas sentado':[{n:'V-ups',r:'12'}],
+ 'G_TUMB|Hollow rocks':[{n:'Hollow hold',r:'30s'}],
+ 'G_FLEX|Heel stretch con banda':[{n:'Pancake (piernas abiertas sentado)',side:0}],
+ 'G_FLEX|Scorpion / needle':[{n:'German hang (hombros)',side:0}]
+};
+for(const k in ALTS){const [tk,n]=k.split('|');const e=T[tk]&&T[tk].ex&&T[tk].ex.find(x=>x.n===n);if(e)e.alt=ALTS[k]}
 
 const OPT={
  W_LOWER:[['W_LOWER','pesas',0],['BW_LOWER','pasto',3],['BW_LOWER','suelo',3]],
@@ -413,7 +454,7 @@ const mondayOf=d=>{const x=new Date(d);x.setHours(0,0,0,0);const wd=(x.getDay()+
 const defAvail=()=>DAYS.map((_,i)=>({pesas:i<5,pasto:i===1||i===3||i===5,suelo:i===1||i===3||i===5,aparatos:false}));
 let S=Object.assign({start:iso(new Date()),role:'base',nDays:5,sound:true,avail:defAvail(),plan:null,preview:null,view:'hoy',day:null},LS.get('cheer.v1',{}));
 if(!ROLE[S.role])S.role='base';
-const save=()=>LS.set('cheer.v1',S);
+const save=()=>{const c=Object.assign({},S);delete c.__wy;LS.set('cheer.v1',c)};
 
 function realWeek(){const ms=mondayOf(new Date())-mondayOf(new Date(S.start+'T00:00'));return Math.floor(Math.round(ms/864e5)/7)+1}
 function curAbsWeek(){return S.preview||Math.max(1,realWeek())}
@@ -439,7 +480,8 @@ if(!S.plan||S.planVer!==3||S.planPhase!==phaseOf(wInYear(curAbsWeek())).id){S.pl
 
 function exercisesFor(tk,ph,wy){
  const out=[];
- for(const e of (T[tk].gen?T[tk].gen(ph):T[tk].ex)){
+ for(let e of (T[tk].gen?T[tk].gen(ph,wy):T[tk].ex)){
+  if(e.alt){const big=['main','power'].includes(e.t);const L=e.alt.length+1;const idx=((big?Math.floor((wy-1)/4):wy-1)%L+L)%L;if(idx)e=Object.assign({},e,e.alt[idx-1])}
   if(e.skills){SKILLS[ph.id].forEach(n=>out.push({n,t:'skill',tip:'Habilidades nuevas SOLO con entrenador/spotter y colchoneta. Calidad > cantidad.'}));continue}
   if(e.only&&!e.only.includes(ph.id))continue;if(e.not&&e.not.includes(ph.id))continue;out.push(e)}
  const r=ROLE[S.role];if(r&&r.add[tk])out.push(...r.add[tk]);
@@ -508,7 +550,7 @@ function vHoy(){
   const last=(LS.get('cheer.kg',{})[e.n]||[]).slice(-1)[0];
   html+=`<div class="ex ${n>=e.s?'done':''}"><div class="top"><div><div class="nm">${num}. ${e.n}</div>
   <div class="rx"><b>${e.s} × ${fmtRep(e.rep)}</b>${e.side?' por lado':''} · descanso <b>${e.rest?restTxt(e.rest):'—'}</b></div></div><span class="tag">${TYPE[e.t]}</span></div>
-  ${e.noAnim?'':demoHTML(e.n)}
+  ${e.noAnim?'':demoHTML(e.n,e.a)}
   <div class="tip">${e.tip||''}</div>
   <div class="sets">${Array.from({length:e.s},(_,j)=>`<button data-ex="${i}" data-set="${j}" class="${j<n?'ok':''}">${j<n?'✓':(hold?'▶':j+1)}</button>`).join('')}</div>
   ${e.kg&&p.v==='pesas'?`<div class="kg">Carga: <input type="number" inputmode="decimal" step="0.5" data-kg="${i}" placeholder="kg"> ${last?`Último: <b>${last.kg} kg</b> (${last.d})`:''}</div>`:''}</div>`});
