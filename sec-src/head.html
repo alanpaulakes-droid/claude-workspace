@@ -189,6 +189,17 @@ svg .hl{fill:none;stroke:var(--bad);stroke-width:2.5;stroke-dasharray:5 3}
 .sres a:hover{background:var(--surface2)}
 .sres small{color:var(--muted)}
 mark{background:#FDE68A;color:#111;border-radius:3px;padding:0 2px}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}.btn.big{min-height:52px;font-size:16.5px;padding:10px 18px}
+.tile.big{padding:18px;border-left:4px solid var(--blue)}.tile.big b{font-size:17px;margin-bottom:4px}
+.bnav{display:none}
+@media (max-width:979px){
+  body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  .bnav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--surface);border-top:1px solid var(--line);padding:4px 4px calc(4px + env(safe-area-inset-bottom));box-shadow:0 -4px 16px rgba(0,0,0,.08)}
+  .bnav a,.bnav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:56px;border:0;background:none;color:var(--muted);text-decoration:none;font:600 11px var(--fb);border-radius:10px}
+  .bnav span{font-size:20px;line-height:1}
+  .bnav [aria-current="page"]{color:var(--blue-ink);background:var(--blue-soft)}
+  .bnav .ev{color:var(--blue-ink)}}
+@media print{.bnav{display:none!important}}
 footer.foot{border-top:1px solid var(--line);margin-top:30px;padding-top:14px;color:var(--muted);font-size:13.5px}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
@@ -230,5 +241,14 @@ footer.foot{border-top:1px solid var(--line);margin-top:30px;padding-top:14px;co
 <div class="layout">
   <nav class="side" id="side" aria-label="Módulos del curso"></nav>
   <div class="scrim" id="scrim" hidden></div>
-  <main id="main" tabindex="-1"></main>
+  <main id="main" tabindex="-1"><p class="muted">Cargando el curso…</p>
+    <noscript><div class="note warn"><b>Esta página necesita JavaScript.</b> En iPhone, la vista previa de Archivos, Mail o WhatsApp no ejecuta JavaScript: abre la página en Safari (botón Compartir → «Abrir en Safari») o usa el enlace publicado.</div></noscript></main>
 </div>
+<nav class="bnav" id="bnav" aria-label="Navegación rápida">
+  <a href="#/inicio" data-b="inicio"><span aria-hidden="true">⌂</span>Inicio</a>
+  <a href="#/ric" data-b="ric"><span aria-hidden="true">📘</span>Estudiar</a>
+  <a href="#/evaluar" data-b="evaluar" class="ev"><span aria-hidden="true">★</span>Evaluar</a>
+  <a href="#/simulador" data-b="simulador"><span aria-hidden="true">⏱</span>Simulador</a>
+  <button type="button" data-menu><span aria-hidden="true">☰</span>Menú</button>
+</nav>
+<script>window.onerror=function(m){var e=document.getElementById("main");if(e&&!e.dataset.ok){e.innerHTML='<div class="note bad" style="margin:16px 0"><b>No se pudo iniciar el curso en este navegador.</b><br>Actualiza iOS/Safari o abre la página en Safari (no en la vista previa). Detalle: '+String(m).replace(/</g,"&lt;")+'</div>'}};</script>

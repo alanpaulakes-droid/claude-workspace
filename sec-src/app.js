@@ -27,16 +27,18 @@ $("#themeBtn").onclick=()=>{const dark=S.theme?S.theme==="dark":matchMedia("(pre
 
 /* ---------- Módulos ---------- */
 const MOD=[
- ["inicio","Inicio","0"],["ric","Estudio por RIC","1"],["teoria","Teoría eléctrica aplicada","2"],["diagramas","Diagramas técnicos","3"],
+ ["inicio","Inicio","0"],["evaluar","★ Evaluaciones","★"],["ric","Estudio por RIC","1"],["teoria","Teoría eléctrica aplicada","2"],["diagramas","Diagramas técnicos","3"],
  ["practica","Instalación paso a paso","4"],["proyecto","Proceso del proyecto","5"],["pruebas","Pruebas y mediciones","6"],
  ["casos","Casos prácticos","7"],["banco","Banco de preguntas","8"],["simulador","Simulador de examen","9"],["repaso","Repaso de falladas","↻"],["recursos","Recursos","10"]];
+const NOREAD=new Set(["evaluar","banco","simulador","repaso"]);
 const READKEYS=[...RIC.map(r=>"ric"+r.n),"teoria","diagramas","practica","proyecto","pruebas","casos","recursos"];
 const progress=()=>Math.round(READKEYS.filter(k=>S.read[k]).length/READKEYS.length*100);
 const setProg=()=>{const p=progress();const el=$("#progTop");el.setAttribute("aria-valuenow",p);el.firstElementChild.style.width=p+"%"};
 
 function renderSide(cur){
   const ricLinks=RIC.filter(r=>r.prio).map(r=>`<a href="#/ric/${r.n}" ${cur==="ric/"+r.n?'aria-current="page"':""}><span class="num">${r.n}</span>${esc(r.t.replace(/ ⚠$/,""))}${S.read["ric"+r.n]?'<span class="done" aria-label="leído">✓</span>':""}</a>`).join("");
-  $("#side").innerHTML=`<h2>Módulos</h2>${MOD.map(([id,t,n])=>`<a href="#/${id}" ${cur===id?'aria-current="page"':""}><span class="num">${n}</span>${t}${S.read[id]?'<span class="done" aria-label="leído">✓</span>':""}</a>`).join("")}
+  $("#side").innerHTML=`<h2>Evaluaciones</h2>${[["evaluar","Centro de evaluaciones"],["simulador","Simulador de examen"],["banco","Banco de preguntas"],["repaso","Repaso de falladas ("+Object.keys(S.fails).length+")"]].map(([id,t])=>`<a href="#/${id}" ${cur===id?'aria-current="page"':""}><span class="num">★</span>${t}</a>`).join("")}
+  <h2>Módulos de estudio</h2>${MOD.filter(m=>!NOREAD.has(m[0])).map(([id,t,n])=>`<a href="#/${id}" ${cur===id?'aria-current="page"':""}><span class="num">${n}</span>${t}${S.read[id]?'<span class="done" aria-label="leído">✓</span>':""}</a>`).join("")}
   <h2>Fichas prioritarias (vivienda)</h2>${ricLinks}<a href="#/ric"><span class="num">…</span>Todas las fichas (01–19)</a>`;
 }
 const side=$("#side"),scrim=$("#scrim"),mb=$("#menuBtn");
@@ -99,7 +101,7 @@ function Quiz(el,qs,o={}){
     else if(b.dataset.check!=null)check();
     else if(b.dataset.nav){const n=st.i+ +b.dataset.nav;if(n>=qs.length){finish();return}st.i=Math.max(0,n);draw(true)}
     else if(b.dataset.go!=null){st.i=+b.dataset.go;draw(true)}
-    else if(b.dataset.submit!=null){const sin=st.ans.filter(x=>x==null).length;if(!sin||confirm(`Quedan ${sin} preguntas sin responder. ¿Entregar de todas formas?`))finish()}
+    else if(b.dataset.submit!=null){const sin=st.ans.filter(x=>x==null).length;if(!sin||b.dataset.sure)finish();else{b.dataset.sure="1";b.classList.add("pri");b.textContent=`Quedan ${sin} sin responder · toca otra vez para entregar`}}
     else if(b.dataset.again!=null)o.again()};
   el.onkeydown=e=>{if(st.fin||e.target.closest("input,select,textarea,summary"))return;const k=e.key.toLowerCase();const m={a:0,b:1,c:2,d:3,1:0,2:1,3:2,4:3}[k];if(m!=null&&!e.ctrlKey&&!e.metaKey){e.preventDefault();choose(m)}else if(k==="enter"&&!exam&&!st.done[st.i]&&st.ans[st.i]!=null&&!e.target.closest("button")){e.preventDefault();check()}};
   if(st.limit)timer=setInterval(tick,1000);
@@ -182,6 +184,7 @@ const V={};
 V.inicio=()=>{const n=Object.keys(S.ans).length,tot=Object.values(S.ans).reduce((a,b)=>a+b.n,0),ok=Object.values(S.ans).reduce((a,b)=>a+b.ok,0),best=S.sims.reduce((m,s)=>Math.max(m,s.p),0),p=progress();
  return `<span class="eb">Curso de certificación · Instalaciones domiciliarias BT</span><h1>Preparación para la certificación SEC</h1>
  <p class="lead">Estudia los pliegos RIC con citas al numeral, practica con diagramas técnicos y casos resueltos, y mide tu avance con un simulador de examen.</p>
+ <div class="cta"><a class="btn pri big" href="#/evaluar">★ Ir a las evaluaciones</a><a class="btn big" href="#/simulador">⏱ Simulador de examen</a><a class="btn big" href="#/ric">📘 Estudiar por RIC</a></div>
  <div class="note warn"><b>Aviso:</b> ${esc(MARCO.aviso)} Los datos que no se pudieron confirmar contra el texto oficial se marcan con ${VF}.</div>
  <section class="card"><h2>Tu progreso global</h2><div class="row" style="margin-top:0"><span class="bar" role="progressbar" aria-label="Progreso global" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></span><b>${p} %</b></div>
  <div class="kpis" style="margin-top:12px"><div class="kpi"><span>Temas leídos</span><b>${READKEYS.filter(k=>S.read[k]).length}/${READKEYS.length}</b></div><div class="kpi"><span>Preguntas distintas</span><b>${n}/${PREGUNTAS.length}</b></div><div class="kpi ${tot&&pct(ok,tot)>=60?"ok":"warn"}"><span>Acierto histórico</span><b>${tot?pct(ok,tot)+" %":"—"}</b></div><div class="kpi ${Object.keys(S.fails).length?"bad":""}"><span>Falladas por repasar</span><b>${Object.keys(S.fails).length}</b></div><div class="kpi"><span>Mejor simulacro</span><b>${S.sims.length?best+" %":"—"}</b></div></div></section>
@@ -193,15 +196,28 @@ V.ric=()=>`${crumbs([["Estudio por RIC"]])}<span class="eb">Módulo 1</span><h1>
  <div class="grid">${[...RIC].sort((a,b)=>b.prio-a.prio||a.n.localeCompare(b.n)).map(r=>{const m=S.mini[r.n];return `<a class="tile" href="#/ric/${r.n}"><b>RIC N°${r.n}</b><small>${esc(r.t.replace(" ⚠",""))}</small>${r.prio?'<span class="tag prio">Prioritario vivienda</span> ':'<span class="tag">Resumido</span> '}${S.read["ric"+r.n]?'<span class="tag ok">✓ leído</span> ':""}${m!=null?`<span class="tag">Mini-quiz ${m} %</span>`:""}</a>`}).join("")}</div>`;
 V.ricN=n=>{const r=RIC.find(x=>x.n===n);if(!r)return V.ric();const i=RIC.indexOf(r),prev=RIC[i-1],next=RIC[i+1];
  return `${crumbs([["Estudio por RIC","#/ric"],["RIC N°"+r.n]])}<span class="eb">RIC N°${r.n} · ${r.prio?"Prioritario":"Resumido"}</span><h1>${fmt(r.t)}</h1>
+ <div class="row no-print" style="margin:0 0 12px"><a class="btn pri sm" href="#/ric/${r.n}" data-jump="miniq">★ Ir al mini-quiz de esta ficha</a><a class="btn sm" href="#/evaluar">Centro de evaluaciones</a></div>
  <section class="card"><h2>Objetivo</h2><p>${fmt(r.obj)}</p></section>
  <section class="card"><h2>Definiciones clave</h2><dl class="defs">${r.defs.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${fmt(b)}</dd>`).join("")}</dl></section>
  <section class="card"><h2>Requisitos</h2>${r.req.map(table).join("")}</section>
  ${r.dg.map(fig).join("")}
  <section class="card"><h2>Errores frecuentes en terreno</h2><ul class="err">${r.err.map(e=>`<li>${fmt(e)}</li>`).join("")}</ul></section>
  <section class="card exam"><h2>Lo que entra en el examen</h2><ul>${r.exam.map(e=>`<li>${fmt(e)}</li>`).join("")}</ul></section>
- <section class="no-print"><h2>Mini-quiz (5 preguntas)</h2><div id="mini"></div></section>
+ <section class="no-print" id="miniq"><h2>Mini-quiz (5 preguntas)</h2><div id="mini"></div></section>
  ${readBtn("ric"+r.n)}
  <div class="row no-print">${prev?`<a class="btn" href="#/ric/${prev.n}">← RIC N°${prev.n}</a>`:""}${next?`<a class="btn" href="#/ric/${next.n}">RIC N°${next.n} →</a>`:""}</div>`};
+V.evaluar=()=>{const tot=Object.values(S.ans).reduce((a,b)=>a+b.n,0),ok=Object.values(S.ans).reduce((a,b)=>a+b.ok,0),f=Object.keys(S.fails).length,best=S.sims.reduce((m,x)=>Math.max(m,x.p),0);
+ return `${crumbs([["Evaluaciones"]])}<span class="eb">Evaluaciones</span><h1>Centro de evaluaciones</h1><p class="lead">Todas las formas de evaluarte en un solo lugar.</p>
+ <div class="kpis"><div class="kpi"><span>Respuestas</span><b>${tot}</b></div><div class="kpi ${tot&&pct(ok,tot)>=60?"ok":"warn"}"><span>Acierto</span><b>${tot?pct(ok,tot)+" %":"—"}</b></div><div class="kpi ${f?"bad":""}"><span>Falladas</span><b>${f}</b></div><div class="kpi"><span>Mejor simulacro</span><b>${S.sims.length?best+" %":"—"}</b></div></div>
+ <div class="grid ev">
+  <a class="tile big" href="#/simulador"><b>⏱ Simulador de examen</b><small>Cronometrado, preguntas aleatorias, nota mínima y feedback por RIC débil.</small></a>
+  <a class="tile big" href="#/banco"><b>📋 Banco de preguntas</b><small>${PREGUNTAS.length} preguntas filtrables por RIC, dificultad e imagen.</small></a>
+  <a class="tile big" href="#/repaso"><b>↻ Repaso de falladas</b><small>${f?f+" preguntas pendientes":"Sin pendientes"}</small></a>
+  <button class="tile big" id="ev-img" style="text-align:left;font:inherit"><b>🖼 Preguntas con imagen</b><small>${PREGUNTAS.filter(q=>q.img).length} preguntas: identifica conexiones y errores.</small></button>
+ </div>
+ <section class="card" style="margin-top:14px"><h2>Práctica rápida por pliego</h2><div class="form"><label class="f"><span>Pliego</span><select id="ev-r">${[...RIC.map(r=>r.n),"GEN"].map(n=>`<option value="${n}">${n==="GEN"?"Teoría y generales":"RIC N°"+n+" — "+esc(RIC.find(r=>r.n===n).t.replace(" ⚠",""))}</option>`).join("")}</select></label><label class="f"><span>Preguntas</span><select id="ev-n"><option>5</option><option selected>10</option><option>15</option></select></label></div><div class="row"><button class="btn pri" id="ev-go">Comenzar práctica</button></div></section>
+ <div id="evq"></div>
+ <section class="card"><h2>Mini-quiz de cada ficha</h2><div class="grid">${RIC.map(r=>`<a class="tile" href="#/ric/${r.n}" data-jump="miniq"><b>RIC N°${r.n}</b><small>${S.mini[r.n]!=null?"Último: "+S.mini[r.n]+" %":"Sin rendir"}</small></a>`).join("")}</div></section>`};
 V.teoria=()=>`${crumbs([["Teoría eléctrica aplicada"]])}<span class="eb">Módulo 2</span><h1>Teoría eléctrica aplicada</h1>${TEORIA.map(t=>`<section class="card" id="t-${t.id}"><h2>${t.t}</h2>${fmt(t.html)}</section>${(t.dg||[]).map(fig).join("")}`).join("")}${readBtn("teoria")}`;
 V.diagramas=()=>`${crumbs([["Diagramas técnicos"]])}<span class="eb">Módulo 3</span><h1>Diagramas e imágenes técnicas</h1><p class="lead">Cada diagrama incluye leyenda, referencia normativa y un botón para ver el error común en terreno.</p>
  <nav class="card no-print" aria-label="Índice de diagramas"><div class="row" style="margin:0">${Object.entries(FIG).map(([k,f])=>`<a class="btn sm" href="#/diagramas" data-jump="fig-${k}">${esc(f.t)}</a>`).join("")}</div></nav>${Object.keys(FIG).map(fig).join("")}${readBtn("diagramas")}`;
@@ -275,18 +291,21 @@ V.buscar=q=>{if(!IDX)buildIdx();const ws=norm(q).split(/\s+/).filter(w=>w.length
  const hl=s=>{let h=esc(s);ws.forEach(w=>{h=h.replace(new RegExp("("+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","gi"),"<mark>$1</mark>")});return h};
  const snip=e=>{const i=e.n.indexOf(ws[0]);return i<0?"":"…"+e.x.substr(Math.max(0,i-60),160)+"…"};
  return `${crumbs([["Búsqueda"]])}<h1>Resultados para «${esc(q)}»</h1><p class="muted" role="status">${res.length} resultado(s)</p><div class="card sres" style="padding:0">${res.map(({e})=>`<a href="${e.h}" ${e.j?`data-jump="${e.j}"`:""}><b>${hl(e.t)}</b><br><small>${e.s} · ${hl(snip(e))}</small></a>`).join("")||'<p style="padding:14px">Sin resultados. Prueba con otra palabra (p. ej., «diferencial», «IP44», «TE1»).</p>'}</div>`};
-let sT;$("#q").addEventListener("input",e=>{clearTimeout(sT);sT=setTimeout(()=>{const v=e.target.value.trim();if(v.length<2)return;history.replaceState(null,"","#/buscar/"+encodeURIComponent(v));route(false)},250)});
+let sT;$("#q").addEventListener("input",e=>{clearTimeout(sT);sT=setTimeout(()=>{const v=e.target.value.trim();if(v.length<2)return;CUR="buscar/"+v;try{history.replaceState(null,"","#/buscar/"+encodeURIComponent(v))}catch(e){}route(false)},250)});
 $("#q").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("#main").focus()}});
 
 /* ---------- Router ---------- */
 let pendingJump=null,stepFn=null;
+const hashPath=()=>{try{return decodeURIComponent(location.hash.replace(/^#\/?/,""))}catch(e){return ""}};
+let CUR=hashPath()||"inicio";
+function go(path,focus=true){CUR=path;try{history.pushState(null,"","#/"+path)}catch(e){}route(focus)}
 function route(focus=true){
   activeQuiz&&activeQuiz.stop();activeQuiz=null;
-  const h=decodeURIComponent(location.hash.replace(/^#\/?/,""))||"inicio";const [a,b]=h.split("/");
+  const h=CUR||"inicio";const [a,b]=h.split("/");
   let html,cur=a;
   if(a==="ric"&&b){html=V.ricN(b);cur="ric/"+b}else if(a==="buscar")html=V.buscar(h.slice(7));else html=(V[a]||V.inicio)();
-  const m=$("#main");m.innerHTML=html+`<footer class="foot"><p>${esc(MARCO.aviso)} Datos con ${VF} deben confirmarse en el pliego vigente.</p></footer>`;
-  renderSide(V[a]?cur:"inicio");setProg();closeMenu();
+  const m=$("#main");m.dataset.ok="1";m.innerHTML=html+`<footer class="foot"><p>${esc(MARCO.aviso)} Datos con ${VF} deben confirmarse en el pliego vigente.</p></footer>`;
+  renderSide(V[a]?cur:"inicio");document.querySelectorAll("#bnav [data-b]").forEach(x=>{const k=x.dataset.b;const on=k===a||(k==="ric"&&a==="ric");if(on)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current")});setProg();closeMenu();
   document.title=(a==="ric"&&b?`RIC N°${b} · `:"")+"Curso SEC RIC";
   after(a,b);
   if(pendingJump){const el=document.getElementById(pendingJump);pendingJump=null;if(el){el.scrollIntoView();el.querySelector("button,a")?.focus();return}}
@@ -295,6 +314,9 @@ function route(focus=true){
 function after(a,b){
   stepFn=null;
   if(a==="ric"&&b){const qs=shuffle(PREGUNTAS.filter(q=>q.ric===b)).slice(0,5);if(qs.length)startQuiz($("#mini"),qs,{mode:"practice",onDone:r=>{S.mini[b]=pct(r.ok,r.n);save()},again:()=>after(a,b)})}
+  if(a==="evaluar"){const st=qs=>{startQuiz($("#evq"),qs,{mode:"practice",again:()=>route()});$("#evq").scrollIntoView()};
+   $("#ev-go").onclick=()=>{const r=$("#ev-r").value;st(shuffle(PREGUNTAS.filter(q=>q.ric===r)).slice(0,+$("#ev-n").value))};
+   $("#ev-img").onclick=()=>st(shuffle(PREGUNTAS.filter(q=>q.img)))}
   if(a==="teoria"){calcCaida($("#calcCaida"));calcSecc($("#calcSecc"))}
   if(a==="proyecto"){const show=i=>{const p=PROYECTO[i];$("#stepd").innerHTML=`<h2>${i+1} · ${esc(p.t)}</h2><dl class="defs"><dt>Responsable</dt><dd>${esc(p.r)}</dd><dt>Documentos</dt><dd>${esc(p.d)}</dd><dt>Detalle</dt><dd>${fmt(p.x)}</dd></dl><div class="row">${i>0?`<button class="btn" data-step="${i-1}">← Anterior</button>`:""}${i<PROYECTO.length-1?`<button class="btn pri" data-step="${i+1}">Siguiente etapa →</button>`:""}</div>`;document.querySelectorAll(".flow button").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.step===i)))};show(0);stepFn=show}
   if(a==="banco"){const sel=()=>{const r=$("#bf-r").value,d=+$("#bf-d").value,t=+$("#bf-i").value;return PREGUNTAS.filter(q=>(r==="todos"||q.ric===r)&&(!d||q.d===d)&&(t!==1||q.img)&&(t!==2||!S.ans[q.id]))};
@@ -306,17 +328,20 @@ function after(a,b){
     $("#simcfg").hidden=true;startQuiz($("#simq"),qs,{mode:"exam",minutes:t,pass:p,onDone:r=>{const pp=pct(r.ok,r.n);S.sims.push({f:Date.now(),p:pp,ok:pp>=p,n:r.n});save()},again:()=>route()})}}
   if(a==="repaso"){const go=$("#rp-go");if(go)go.onclick=()=>{const qs=shuffle(PREGUNTAS.filter(q=>S.fails[q.id])).slice(0,20);startQuiz($("#rpq"),qs,{mode:"practice",again:()=>route()})};
    const c=$("#rp-clr");if(c)c.onclick=()=>{S.fails={};save();route()};
-   $("#rp-reset").onclick=()=>{if(confirm("¿Borrar todo tu progreso (lecturas, respuestas, simulacros)?")){Object.assign(S,{read:{},ans:{},fails:{},sims:[],mini:{}});save();route()}}}
+   $("#rp-reset").onclick=e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure="1";b.textContent="¿Seguro? Toca otra vez para borrar todo";return}Object.assign(S,{read:{},ans:{},fails:{},sims:[],mini:{}});save();route()}}
   if(a==="recursos")document.querySelectorAll("[data-chk]").forEach(c=>c.onchange=()=>{S.read["chk:"+c.dataset.chk]=c.checked;save()});
 }
 document.addEventListener("click",e=>{
   const st=e.target.closest("[data-step]");if(st&&stepFn){stepFn(+st.dataset.step);return}
-  const r=e.target.closest("[data-read]");if(r){const k=r.dataset.read;S.read[k]=!S.read[k];save();r.textContent=S.read[k]?"✓ Marcado como leído":"Marcar como leído";r.classList.toggle("pri",!S.read[k]);r.setAttribute("aria-pressed",String(S.read[k]));renderSide(location.hash.slice(2)||"inicio");setProg();return}
+  const r=e.target.closest("[data-read]");if(r){const k=r.dataset.read;S.read[k]=!S.read[k];save();r.textContent=S.read[k]?"✓ Marcado como leído":"Marcar como leído";r.classList.toggle("pri",!S.read[k]);r.setAttribute("aria-pressed",String(S.read[k]));renderSide(CUR);setProg();return}
   if(e.target.closest("[data-print]")){document.querySelectorAll("details").forEach(d=>d.open=true);window.print();return}
   const er=e.target.closest("[data-err]");if(er){const k=er.dataset.err,f=document.getElementById("fig-"+k),on=er.getAttribute("aria-pressed")!=="true";f.querySelector(".sv").innerHTML=FIG[k].svg(on?"err":"ok");f.querySelector(".errbox").hidden=!on;er.setAttribute("aria-pressed",String(on));er.textContent=on?"✓ Ver instalación correcta":"⚠ Ver error común";return}
-  const j=e.target.closest("[data-jump]");if(j){e.preventDefault();const id=j.dataset.jump,href=j.getAttribute("href");if(location.hash===href){const el=document.getElementById(id);el&&el.scrollIntoView();el?.querySelector("button")?.focus()}else{pendingJump=id;location.hash=href}}
+  const j=e.target.closest("[data-jump]");if(j){e.preventDefault();const id=j.dataset.jump,path=(j.getAttribute("href")||"#/"+CUR).replace(/^#\/?/,"");if(path===CUR){const el=document.getElementById(id);if(el){el.scrollIntoView();const f=el.querySelector("button,a");f&&f.focus()}}else{pendingJump=id;go(path)}return}
+  const ln=e.target.closest('a[href^="#/"]');if(ln&&!e.ctrlKey&&!e.metaKey){e.preventDefault();go(ln.getAttribute("href").slice(2));return}
+  const bm=e.target.closest("[data-menu]");if(bm){mb.click();return}
 });
-window.addEventListener("hashchange",()=>route());
+window.addEventListener("popstate",()=>{CUR=hashPath()||"inicio";route()});
+window.addEventListener("hashchange",()=>{const h=hashPath()||"inicio";if(h!==CUR){CUR=h;route()}});
 window.addEventListener("beforeprint",()=>document.querySelectorAll("details").forEach(d=>d.open=true));
 route(false);
 })();
