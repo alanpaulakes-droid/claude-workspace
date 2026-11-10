@@ -40,6 +40,7 @@ Todo el código corre dentro de una sola función `(() => { … })();`: los nomb
 | `wd8.js` | F4 diagramas: `<title>`/`<desc>` en todos los SVG, ancho mínimo para que el texto se lea a 12 px o más, tooltips (`data-tip`), mapa VSM y rótulos del SIPOC dibujados al mostrar (la calculadora deja solo datos: así no cambia el texto que compara `snap.js`), red CPM con ruta crítica resaltable |
 | `wd9.js` | F4 ilustraciones: una por área (SVG propio, < 2 KB, coloreado con el token del área) |
 | `wd6.js` | Página interna `#sistema-diseno`: tokens vivos con contraste medido en el navegador, tipografía, íconos y componentes |
+| `we1.js` | F5 contenido: introducción, explicación y consejos reescritos de los 20 temas principales (reemplaza `C[id].lead`, `GUIDE[id].que` y `GX[id].tips` al cargar) |
 | `p8.js` | Páginas, navegación, eventos y `render()` (va al final) |
 
 ## Pruebas (`tests/`)
