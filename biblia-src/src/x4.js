@@ -16,19 +16,8 @@ Object.assign(D, {
     ASMEN.forEach((n, i) => { const x = 60 + i * 110; g += asme(i, x, 40, 15) + tx(x, 78, n, { b:true, s:11.5 }) + tx(x, 98, ["transforma", "mueve", "verifica", "espera", "guarda"][i], { s:10.5, cls:"dgs" }); });
     return fig(W, H, g, cap || "Los cinco símbolos de la ASME para analizar procesos: solo la operación agrega valor; los demás son candidatos a eliminar o reducir.", 420); },
   // Diagrama de flujo ANSI: items [tipo, texto, (para decisión) texto rama No]
-  flow(items, cap){ const W = 520, bw = 200, bh = 44, gy = 30, cx = 200; let y = 14, g = "", ys = [];
-    items.forEach((it, i) => { const [k, t] = it; ys.push(y);
-      if (k === "s" || k === "e") g += '<rect class="' + (k === "s" ? "dgb3" : "dgb4") + '" x="' + (cx - bw / 2) + '" y="' + y + '" width="' + bw + '" height="' + bh + '" rx="22"/>';
-      else if (k === "d") g += '<polygon class="dgb2" points="' + cx + "," + y + " " + (cx + bw / 2 + 10) + "," + (y + bh / 2) + " " + cx + "," + (y + bh) + " " + (cx - bw / 2 - 10) + "," + (y + bh / 2) + '"/>';
-      else if (k === "io") g += '<polygon class="dgb5" points="' + (cx - bw / 2 + 14) + "," + y + " " + (cx + bw / 2 + 14) + "," + y + " " + (cx + bw / 2 - 14) + "," + (y + bh) + " " + (cx - bw / 2 - 14) + "," + (y + bh) + '"/>';
-      else g += rect(cx - bw / 2, y, bw, bh, "dgb1", 4);
-      g += tx(cx, y + bh / 2, t, { s:11.5, b:k !== "p", n:k === "d" ? 22 : 30 });
-      if (k === "d" && it[2]) { const bx = cx + bw / 2 + 40; g += ln(cx + bw / 2 + 10, y + bh / 2, bx, y + bh / 2) + rect(bx, y + 4, 130, bh - 8, "dgb1", 4) + tx(bx + 65, y + bh / 2, it[2], { s:11, n:20 }) + tx(cx + bw / 2 + 24, y + bh / 2 - 9, "No", { s:10.5, b:true, cls:"dgs" }) + tx(cx + 12, y + bh + 11, "Sí", { s:10.5, b:true, cls:"dgs", a:"start" });
-        if (it[3] != null) { const ty = ys[it[3]] + bh / 2; g += ln(bx + 130, y + bh / 2, bx + 150, y + bh / 2) + ln(bx + 150, y + bh / 2, bx + 150, ty) + arrow(bx + 150, ty, cx + bw / 2 + 4, ty); } }
-      if (i < items.length - 1) g += arrow(cx, y + bh, cx, y + bh + gy - 3);
-      y += bh + gy; });
-    return fig(W, y - gy + 14, g, cap, 380); },
-  // Diagrama de operaciones del proceso (DOP): líneas [nombre, pasos [[k(0 op | 2 insp), texto]]]
+  flow(items, cap){ /* F4: usa el diagrama de flujo común (FC): formas estándar, flechas con punta y grilla */
+    const T = { s:"ini", e:"fin", d:"dec", io:"io" }; return FC(items.map(it => it[0] === "d" && it[2] ? { t:"dec", x:it[1], lbl:["Sí", "No"], side:{ t:"pro", x:it[2], to:it[3] } } : { t:T[it[0]] || "pro", x:it[1] }), cap); },
   dop(lines, cap){ const W = 560, step = 46; let g = "", maxN = Math.max(...lines.map(l => l[1].length)), x0 = 70, dx = (W - 290) / Math.max(1, lines.length - 1), n = [0, 0];
     const H = 50 + (maxN + 1) * step + 40;
     lines.forEach((l, j) => { const x = lines.length === 1 ? W / 2 - 60 : x0 + j * dx; g += tx(x, 22, l[0], { b:true, s:11.5, n:20 }) + ln(x, 34, x, 44 + l[1].length * step);
@@ -79,11 +68,7 @@ Object.assign(D, {
     ents.forEach(e => { const [x, y, h] = P[e[0]]; g += rect(x, y, bw, h, "dgbl", 6) + rect(x, y, bw, 24, "dgb1", 6) + tx(x + bw / 2, y + 12, e[0], { b:true, s:11.5 }) + e[3].map((a, i) => tx(x + 10, y + 36 + i * 17, a, { a:"start", s:10.5, n:26 })).join(""); });
     return fig(W, H, g + cards, cap, 520); },
   // Espina de pescado (Ishikawa): efecto, cats [[nombre, [causas]]]
-  fishbone(effect, cats, cap){ const W = 680, H = 300, sy = 150, ex = 560; let g = ln(30, sy, ex, sy, "dgcrit") + rect(ex, sy - 30, 110, 60, "dgbh", 8) + tx(ex + 55, sy, effect, { b:true, s:11.5, n:16 });
-    const top = cats.filter((_, i) => i % 2 === 0), bot = cats.filter((_, i) => i % 2 === 1), n = Math.max(top.length, bot.length), dx = (ex - 150) / n;
-    [[top, -1], [bot, 1]].forEach(([cs, s]) => cs.forEach((c, i) => { const x = 150 + i * dx + dx * 0.6, y0 = sy + s * 115; g += ln(x - 60, y0, x, sy, "dga") + rect(x - 120, y0 + (s < 0 ? -22 : 2), 120, 22, "dgb1", 4) + tx(x - 60, y0 + (s < 0 ? -11 : 13), c[0], { b:true, s:11 });
-      c[1].forEach((t, j) => { const f = (j + 1) / (c[1].length + 1), px = x - 60 + 60 * f, py = y0 + (sy - y0) * f; g += ln(px - 56, py, px, py, "ax") + tx(px - 58, py, t, { a:"end", s:9.5, n:16, lh:11 }); }); }));
-    return fig(W, H, g, cap, 560); },
+  fishbone(effect, cats, cap){ /* F4: mismo diseño que el Ishikawa de la calculadora */ const h = ishiSVG(effect, cats); return cap ? h.replace(/<figcaption>[\s\S]*<\/figcaption>/, "<figcaption>" + cap + "</figcaption>") : h; },
   // Dispersión con recta de ajuste: pts [[x,y]]
   scatter(pts, cap, o){ o = o || {}; const W = 560, H = 250, xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), X = x => 55 + (x - x0) / (x1 - x0 || 1) * 480, Y = y => 205 - (y - y0) / (y1 - y0 || 1) * 175;
     let g = ln(50, 210, 545, 210, "ax") + ln(50, 20, 50, 210, "ax") + tx(300, 238, o.xl || "x", { s:11, cls:"dgs" }) + '<text x="16" y="115" transform="rotate(-90 16 115)" text-anchor="middle" class="mu">' + esc(o.yl || "y") + "</text>";
@@ -112,10 +97,15 @@ Object.assign(D, {
     cols.forEach((c, i) => { const x = 15 + i * 195; g += rect(x, 10, 180, 200, "dgbl", 8) + tx(x + 90, 28, c[0], { b:true, s:11.5 }); c[1].forEach((t, j) => g += rect(x + 15, 46 + j * 50, 150, 38, ["dgb4", "dgb1", "dgb3"][i], 6) + tx(x + 90, 65 + j * 50, t, { s:11 })); if (i < 2) g += arrow(x + 182, 110, x + 193, 110); });
     return fig(W, H, g, cap || "Tablero kanban: cada tarjeta es un trabajo; limitar cuántos pueden estar «en proceso» evita la sobrecarga y acorta el tiempo de entrega.", 460); },
   // Costo-volumen-utilidad
-  cvp(cf, p, cv, qmax, cap){ const W = 560, H = 250, ymax = p * qmax * 1.05, X = q => 55 + q / qmax * 480, Y = v => 210 - v / ymax * 185, qe = cf / (p - cv);
-    let g = ln(50, 210, 545, 210, "ax") + ln(50, 20, 50, 210, "ax") + ln(X(0), Y(cf), X(qmax), Y(cf), "ax", "stroke-dasharray:4 4") + ln(X(0), Y(cf), X(qmax), Y(cf + cv * qmax), "s2") + ln(X(0), Y(0), X(qmax), Y(p * qmax), "s1") + ln(X(qe), 20, X(qe), 210, "sb") +
-      tx(X(qmax) - 4, Y(p * qmax) + 14, "Ingresos", { a:"end", s:11, b:true }) + tx(X(qmax) - 4, Y(cf + cv * qmax) + 16, "Costo total", { a:"end", s:11, b:true }) + tx(X(qmax) - 4, Y(cf) - 8, "Costo fijo", { a:"end", s:10.5, cls:"dgs" }) + tx(X(qe) + 6, 32, "Equilibrio: " + Math.round(qe) + " u", { a:"start", s:11, b:true }) + tx(X(qe * 0.45), Y(cf * 0.7), "Pérdida", { s:11, cls:"dgs" }) + tx(X(qe + (qmax - qe) * 0.55), Y(p * (qe + (qmax - qe) * 0.55)) - 26, "Utilidad", { s:11, cls:"dgs" }) + tx(300, 238, "unidades vendidas", { s:11, cls:"dgs" });
-    return fig(W, H, g, cap, 420); },
+  cvp(cf, p, cv, qmax, cap){ /* F4: zonas de pérdida y utilidad, punto de equilibrio y grilla */
+    const W = 620, H = 290, L = 64, R = 590, B = 240, T = 22, ymax = p * qmax * 1.08, X = q => L + q / qmax * (R - L), Y = v => B - v / ymax * (B - T), qe = cf / (p - cv), ct = q => cf + cv * q;
+    let g = ""; [0.25, 0.5, 0.75, 1].forEach(t => g += ln(L, Y(ymax * t), R, Y(ymax * t), "gr") + ln(X(qmax * t), T, X(qmax * t), B, "gr gv"));
+    g += '<polygon class="cvp-loss" points="' + X(0) + "," + Y(0) + " " + X(qe) + "," + Y(p * qe) + " " + X(0) + "," + Y(cf) + '"/><polygon class="cvp-gain" points="' + X(qe) + "," + Y(p * qe) + " " + X(qmax) + "," + Y(p * qmax) + " " + X(qmax) + "," + Y(ct(qmax)) + '"/>';
+    g += ln(L, B, R, B, "ax") + ln(L, T, L, B, "ax") + ln(X(0), Y(cf), X(qmax), Y(cf), "sm") + ln(X(0), Y(cf), X(qmax), Y(ct(qmax)), "s2") + ln(X(0), Y(0), X(qmax), Y(p * qmax), "s1") + ln(X(qe), T, X(qe), B, "sb");
+    g += '<circle class="pt d2" cx="' + X(qe) + '" cy="' + Y(p * qe) + '" r="6" data-tip="Equilibrio: ' + Math.round(qe).toLocaleString("es-CL") + ' unidades"/>';
+    g += tx(X(qmax) - 6, Y(p * qmax) + 18, "Ingresos", { a:"end", s:13, b:true, cls:"halo" }) + tx(X(qmax) - 6, Y(ct(qmax)) + 20, "Costo total", { a:"end", s:13, b:true, cls:"halo" }) + tx(X(qmax) - 6, Y(cf) - 10, "Costo fijo", { a:"end", s:13, cls:"dgs halo" }) +
+      tx(X(qe) + 8, T + 14, "Equilibrio: " + Math.round(qe) + " u", { a:"start", s:13, b:true, cls:"halo" }) + tx(X(qe * 0.42), Y(cf * 0.62), "Pérdida", { s:13, b:true, cls:"cvp-lt" }) + tx(X(qe + (qmax - qe) * 0.62), Y(p * (qe + (qmax - qe) * 0.62)) + 34, "Utilidad", { s:13, b:true, cls:"cvp-gt" }) + tx((L + R) / 2, H - 10, "unidades vendidas", { s:13, cls:"dgs" });
+    return fig(W, H, g, cap); },
   // Gantt simple: tareas [[nombre, inicio, duración, crítica]]
   gantt2(tasks, cap){ const W = 600, rh = 28, L = 150, T = 26, end = Math.max(...tasks.map(t => t[1] + t[2])), H = T + tasks.length * rh + 26, X = x => L + x / end * (W - L - 16); let g = "";
     for (let t = 0; t <= end; t++) g += ln(X(t), T - 6, X(t), H - 22, "ax", "opacity:.35") + tx(X(t), H - 10, String(t), { s:9.5, cls:"dgs" });

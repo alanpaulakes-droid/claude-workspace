@@ -122,7 +122,7 @@ function tpl8HTML(id, html){ if (window.__noT8) return html;
   SEC.forEach((k, i) => { const sec = document.createElement("section"); sec.className = "t8-b"; sec.id = "t8-" + k; sec.setAttribute("aria-labelledby", "t8h-" + k);
     sec.innerHTML = '<h2 class="t8-h" id="t8h-' + k + '"><span class="t8-n">' + (i + 1) + "</span>" + NAME[k] + "</h2>";
     B[k].forEach(d => sec.appendChild(d)); wrap.appendChild(sec); });
-  if (typeof expBar === "function" && !R.querySelector('.expb [data-kind="ramo"],.expb [data-kind="saber"]')) wrap.querySelector(".t8-nav").insertAdjacentHTML("afterend", expBar("pagina", id));
+  if (typeof expBar === "function" && !R.querySelector('.expb [data-kind="ramo"],.expb [data-kind="saber"],.expb [data-kind="guia"]')) wrap.querySelector(".t8-nav").insertAdjacentHTML("afterend", expBar("pagina", id));
   else wrap.querySelector(".t8-nav").insertAdjacentHTML("afterend", '<div class="actions no-print t8-exp">' + prnBtn + "</div>");
   if (anchor && anchor.parentNode === host) host.insertBefore(wrap, anchor); else host.appendChild(wrap);
   if (isCalc) { const hint = kid1(host, "p.hint"); if (hint) hint.textContent = "Primero las fórmulas y el método; después un ejemplo resuelto, los errores más comunes y ejercicios para practicar."; }

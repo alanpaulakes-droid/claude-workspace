@@ -37,6 +37,8 @@ Todo el código corre dentro de una sola función `(() => { … })();`: los nomb
 | `wd1.js` – `wd4.js` | Bloques que faltaban en los temas (Fundamentos, ramos, saberes, desarrollo personal, gestión, informes, ofimática). Registros `T2` parciales: solo agregan bloques |
 | `w5.js` | Set único de íconos de línea `SVGP`; `icoSprite()` los publica una vez como `<symbol>` y `svgIco(id)` los usa con `<use>` |
 | `wd7.js` | F2 layout: hoja de búsqueda (Ctrl+K o «/»), menú lateral colapsable en escritorio, índice «En esta página» con scroll-spy y transición de página |
+| `wd8.js` | F4 diagramas: `<title>`/`<desc>` en todos los SVG, ancho mínimo para que el texto se lea a 12 px o más, tooltips (`data-tip`), mapa VSM y rótulos del SIPOC dibujados al mostrar (la calculadora deja solo datos: así no cambia el texto que compara `snap.js`), red CPM con ruta crítica resaltable |
+| `wd9.js` | F4 ilustraciones: una por área (SVG propio, < 2 KB, coloreado con el token del área) |
 | `wd6.js` | Página interna `#sistema-diseno`: tokens vivos con contraste medido en el navegador, tipografía, íconos y componentes |
 | `p8.js` | Páginas, navegación, eventos y `render()` (va al final) |
 

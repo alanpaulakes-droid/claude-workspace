@@ -843,6 +843,93 @@ figure.ch figcaption{font-size:var(--fs--1);margin-top:var(--sp-2)}
 .tile .ti,.mod .mi{border:0}
 .mod .mi{background:var(--brand-soft)}
 @media (max-width:640px){.mods{grid-template-columns:minmax(0,1fr)}}
+/* ===== F4 · DIAGRAMAS Y GRÁFICOS ===== */
+figure.ch svg,figure.dg svg{min-width:0;max-width:none}
+figure.ch svg[data-w]{width:100%;height:auto}
+svg text{font-size:13px;fill:var(--ink)}
+#app svg text,#app figure.dg svg text,#app figure.ch svg text{font-size:13px}
+svg text.mu,svg text.lg,svg .lg,svg text.dgs{fill:var(--muted)}
+#app figure.ch svg[data-w] text{font-size:12px}
+svg .pa{fill:none}
+svg .gr{stroke:var(--line);stroke-width:1}
+svg .gv{stroke-dasharray:2 4}
+svg .ax{stroke:var(--line2);stroke-width:1.2}
+svg text.halo,svg .halo{paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+svg text.thin{display:none}
+svg .pt{transition:r var(--dur-1) var(--ease)}
+svg .pt.hot,svg rect.hot{stroke:var(--ink);stroke-width:2}
+svg .ring{fill:none;stroke:var(--bad);stroke-width:1.6;opacity:.6}
+svg .row{fill:var(--surface2);opacity:.6}
+svg [data-tip]{cursor:pointer}
+svg .bar1,svg .bar2,svg .bar3{transition:opacity var(--dur-1)}
+.ctip{position:fixed;z-index:70;pointer-events:none;background:var(--ink);color:var(--bg);font-size:var(--fs--1);font-variant-numeric:tabular-nums;padding:var(--sp-1) var(--sp-2);border-radius:var(--r-2);box-shadow:var(--sh-2);max-width:260px}
+.ctip[hidden]{display:none}
+.legend{font-size:var(--fs--1);gap:var(--sp-1) var(--sp-4)}
+.legend i{height:10px;width:16px;border-radius:var(--r-1)}
+/* diagramas F4: grilla de puntos, Ishikawa, CPM, SIPOC, VSM */
+svg .dgdot{fill:var(--line2)}
+svg .dgah{fill:var(--ink-2)}
+svg .ishi-sp{stroke:var(--brand);stroke-width:4;stroke-linecap:round}
+svg .ishi-ah{fill:var(--brand)}
+svg .ishi-ef{fill:var(--brand-soft);stroke:var(--brand);stroke-width:1.5}
+svg text.ishi-eft,svg text.ishi-eft tspan{fill:var(--brand);font-weight:700;font-size:15px}
+svg .ishi-bn{stroke:var(--ink-2);stroke-width:2.4;stroke-linecap:round}
+svg .ishi-cat{fill:var(--surface);stroke:var(--cat-2);stroke-width:1.5}
+svg text.ishi-catt,svg text.ishi-catt tspan{font-weight:700;fill:var(--ink)}
+svg .ishi-cz{stroke:var(--line2);stroke-width:1.4}
+svg .ishi-dot{fill:var(--ink-2)}
+svg .cpm-e{fill:none;stroke:var(--line2);stroke-width:1.8;transition:opacity var(--dur-1),stroke var(--dur-1)}
+svg .cpm-e.crit{stroke:var(--cat-2);stroke-width:3}
+svg .cpm-ahc{fill:var(--cat-2)}
+svg .cpm-b{fill:var(--surface);stroke:var(--line2);stroke-width:1.4}
+svg .cpm-n.crit .cpm-b{stroke:var(--cat-2);stroke-width:2.4;fill:color-mix(in srgb,var(--cat-2) 8%,var(--surface))}
+svg .cpm-l{stroke:var(--line);stroke-width:1;fill:none}
+svg text.cpm-id{font-weight:700;font-size:16px}
+svg .cpm-n{transition:opacity var(--dur-1)}
+.crit-only svg .cpm-n:not(.crit),.crit-only svg .cpm-e:not(.crit){opacity:.25}
+svg.hov .cpm-n:not(.nb),svg.hov .cpm-e:not(.nb){opacity:.35}
+svg .cpm-e.nb{stroke:var(--brand);stroke-width:3}
+.cpm-tb{display:flex;flex-wrap:wrap;gap:var(--sp-2) var(--sp-3);align-items:center;margin:0 0 var(--sp-2)}
+.cpm-tb .hint{margin:0}
+svg .sip-hd{fill:var(--surface2);stroke:var(--line2)}
+svg .sip-hd.mid{fill:var(--brand);stroke:var(--brand)}
+svg text.sip-ht{font-weight:700}
+svg .sip-hd.mid+text.sip-ht{fill:var(--on-brand)}
+svg .sip-i{fill:var(--surface);stroke:var(--line2)}
+svg .sip-p{fill:var(--brand-soft);stroke:var(--brand);stroke-width:1.4}
+svg .sip-n{fill:var(--brand)}
+svg text.sip-nt{fill:var(--on-brand);font-weight:700;font-size:12px}
+svg text.sip-pt{font-weight:600}
+svg .vsm-inv{fill:color-mix(in srgb,var(--warn) 18%,var(--surface));stroke:var(--warn);stroke-width:1.4}
+svg text.vsm-i{fill:var(--warn);font-weight:700}
+svg .vsm-p{fill:var(--surface);stroke:var(--brand);stroke-width:1.6}
+svg .vsm-p.over{stroke:var(--cat-2);stroke-width:2.4}
+svg text.vsm-n{font-weight:700}
+svg .vsm-push{stroke:var(--ink-2);stroke-width:2;stroke-dasharray:6 4}
+svg .vsm-lad{fill:none;stroke:var(--ink);stroke-width:2}
+svg .vsm-sum{fill:var(--brand-soft);stroke:var(--brand)}
+svg text.vsm-big{font-size:18px;font-weight:700;fill:var(--brand)}
+svg .zc1{fill:color-mix(in srgb,var(--ok) 9%,transparent)}
+svg .zc2{fill:color-mix(in srgb,var(--warn) 9%,transparent)}
+svg .zc3{fill:color-mix(in srgb,var(--bad) 7%,transparent)}
+svg .cvp-loss{fill:color-mix(in srgb,var(--bad) 14%,transparent)}
+svg .cvp-gain{fill:color-mix(in srgb,var(--ok) 16%,transparent)}
+svg text.cvp-lt,svg .cvp-lt tspan{fill:var(--bad)}
+svg text.cvp-gt,svg .cvp-gt tspan{fill:var(--ok)}
+/* ilustraciones por área */
+.area-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:var(--sp-6);align-items:center;margin-bottom:var(--sp-4)}
+.area-art{margin:0;padding:var(--sp-3);border-radius:var(--r-4);background:color-mix(in srgb,var(--ac) 7%,var(--surface))}
+.area-art svg{display:block;width:100%;height:auto}
+svg .ar-g{stroke:var(--line2);stroke-width:1.5;fill:none}
+svg .ar-l{stroke:var(--ac);stroke-width:2;fill:none;opacity:.55}
+svg .ar-s{stroke:var(--ac);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+svg .ar-t{stroke:var(--muted);stroke-width:2;fill:none;stroke-linecap:round}
+svg .ar-b{fill:color-mix(in srgb,var(--ac) 22%,var(--surface));stroke:none}
+svg .ar-n{fill:color-mix(in srgb,var(--ac) 16%,var(--surface));stroke:var(--ac);stroke-width:2}
+svg .ar-h{fill:var(--surface);stroke:var(--ac);stroke-width:1.5}
+svg .ar-f{fill:var(--ac)}
+#app svg text.ar-x{fill:var(--ac);font:600 19px var(--f-math)}
+@media (max-width:640px){.area-head{grid-template-columns:minmax(0,1fr)}.area-art{max-width:360px}}
 /* ===== SISTEMA DE DISEÑO · base (va al final: manda sobre las capas anteriores) ===== */
 svg.icon{width:1.25em;height:1.25em;flex:none;display:inline-block;vertical-align:-.25em;fill:none;stroke:currentColor;overflow:visible}
 .iconb svg.icon,.tabbar svg.icon,.mod .mi svg.icon,.tile .ti svg.icon{width:20px;height:20px;vertical-align:0}
@@ -1069,8 +1156,13 @@ function niceTicks(lo, hi, cnt){
 }
 function tickLbl(v){ const a = Math.abs(v); if (a >= 1e9) return nf(v / 1e9, 1) + " MM"; if (a >= 1e6) return nf(v / 1e6, a >= 1e7 ? 0 : 1) + " M"; if (a >= 1e4) return nf(v / 1e3, 0) + " k"; if (a >= 100 || Number.isInteger(v)) return nf(v, 0); return nf(v, a < 1 ? 2 : 1); }
 /* o: {series:[{pts,cls,dot,lbl}], h:[{y,cls,lbl}], v:[{x,cls,lbl}], xlab, ylab, ymin, ymax, xmin, xmax, bars:[{x,y,cls,lbl}], bw, poly:[{pts,cls}], xcat:[labels]} */
+/* ---------- Gráficos (F4) ----------
+   Se dibujan al ancho real del contenedor (las etiquetas miden 12 px en pantalla), con grilla suave, ejes,
+   líneas de referencia rotuladas con halo y puntos que muestran su valor (el tooltip se agrega al mostrar la página).
+   El texto de los ejes y rótulos se mantiene igual y en el mismo orden: las pruebas lo comparan. */
+function chartW(){ const a = typeof document !== "undefined" && document.getElementById("app"), w = a && a.clientWidth ? a.clientWidth - (a.clientWidth < 600 ? 34 : 46) : 760; return Math.max(280, Math.min(760, Math.round(w))); }  /* descuenta el relleno de la tarjeta de resultados */
 function chart(o){
-  const W = 760, H = o.h0 || 300, L = 62, Rr = 18, T = 16, Bm = o.xcat ? 56 : 42;
+  const W = chartW(), narrow = W < 520, H = o.h0 || (narrow ? 260 : 300), Rr = narrow ? 10 : 18, T = 18, Bm = o.xcat ? 56 : 44;
   let xs = [], ys = [];
   (o.series || []).forEach(s => s.pts.forEach(p => { xs.push(p[0]); ys.push(p[1]); }));
   (o.bars || []).forEach(b => { xs.push(b.x); ys.push(b.y); ys.push(0); });
@@ -1083,33 +1175,35 @@ function chart(o){
   if (x0 === x1) { x0 -= 1; x1 += 1; }
   const yt = niceTicks(y0, y1, 5); if (o.ymin == null) y0 = Math.min(y0, yt[0]); if (o.ymax == null) y1 = Math.max(y1, yt[yt.length - 1]);
   if (y0 === y1) { y0 -= 1; y1 += 1; }
-  const X = x => L + (x - x0) / (x1 - x0) * (W - L - Rr), Y = y => T + (1 - (y - y0) / (y1 - y0)) * (H - T - Bm);
-  let g = "";
-  yt.filter(t => t >= y0 - 1e-9 && t <= y1 + 1e-9).forEach(t => { g += '<line class="gr" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(t) + '" y2="' + Y(t) + '"/><text class="mu" x="' + (L - 6) + '" y="' + (Y(t) + 4) + '" text-anchor="end">' + tickLbl(t) + "</text>"; });
-  if (o.xcat) o.xcat.forEach((c, i) => { const xx = X(i + 1); g += '<text class="mu" x="' + xx + '" y="' + (H - Bm + 16) + '" text-anchor="middle">' + esc(String(c).slice(0, 12)) + "</text>"; });
-  else niceTicks(x0, x1, 8).filter(t => t >= x0 - 1e-9 && t <= x1 + 1e-9).forEach(t => { g += '<text class="mu" x="' + X(t) + '" y="' + (H - Bm + 16) + '" text-anchor="middle">' + tickLbl(t) + "</text>"; });
-  g += '<line class="ax" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(Math.max(y0, Math.min(y1, 0))) + '" y2="' + Y(Math.max(y0, Math.min(y1, 0))) + '"/><line class="ax" x1="' + L + '" x2="' + L + '" y1="' + T + '" y2="' + (H - Bm) + '"/>';
-  (o.poly || []).forEach(p => { g += '<polygon class="' + (p.cls || "reg") + '" points="' + p.pts.map(q => X(q[0]) + "," + Y(q[1])).join(" ") + '"/>'; });
-  const bw = o.bars && o.bars.length ? Math.max(4, Math.min(60, (W - L - Rr) / ((x1 - x0) || 1) * (o.bw || 0.7))) : 0;
-  (o.bars || []).forEach(b => { const ya = Y(Math.max(0, b.y)), yb = Y(Math.min(0, b.y)); g += '<rect class="' + (b.cls || "bar1") + '" x="' + (X(b.x) - bw / 2) + '" y="' + ya + '" width="' + bw + '" height="' + Math.max(0.5, yb - ya) + '" rx="2"/>' + (b.lbl ? '<text x="' + X(b.x) + '" y="' + (ya - 4) + '" text-anchor="middle" class="mu">' + b.lbl + "</text>" : ""); });
-  (o.h || []).forEach(h => { if (h.y < y0 || h.y > y1) return; g += '<line class="' + (h.cls || "sb") + '" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(h.y) + '" y2="' + Y(h.y) + '"/>' + (h.lbl ? '<text class="lg" x="' + (W - Rr - 4) + '" y="' + (Y(h.y) - 4) + '" text-anchor="end">' + h.lbl + "</text>" : ""); });
-  (o.v || []).forEach(v => { g += '<line class="' + (v.cls || "sm") + '" x1="' + X(v.x) + '" x2="' + X(v.x) + '" y1="' + T + '" y2="' + (H - Bm) + '"/>' + (v.lbl ? '<text class="lg" x="' + (X(v.x) + 4) + '" y="' + (T + 12) + '">' + v.lbl + "</text>" : ""); });
+  const ytl = yt.filter(t => t >= y0 - 1e-9 && t <= y1 + 1e-9), L = Math.max(44, 18 + 7.2 * Math.max.apply(null, ytl.map(t => String(tickLbl(t)).length).concat([3])) + (o.ylab ? 16 : 0));
+  const X = x => L + (x - x0) / (x1 - x0) * (W - L - Rr), Y = y => T + (1 - (y - y0) / (y1 - y0)) * (H - T - Bm), f1 = v => +v.toFixed(1);
+  let g = '<rect class="pa" x="' + L + '" y="' + T + '" width="' + (W - L - Rr) + '" height="' + (H - T - Bm) + '"/>';
+  ytl.forEach(t => { g += '<line class="gr" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + f1(Y(t)) + '" y2="' + f1(Y(t)) + '"/><text class="mu tk" x="' + (L - 8) + '" y="' + f1(Y(t) + 4) + '" text-anchor="end">' + tickLbl(t) + "</text>"; });
+  if (o.xcat) { const step = Math.max(1, Math.ceil(o.xcat.length * 64 / (W - L - Rr))); o.xcat.forEach((c, i) => { const xx = X(i + 1); g += '<text class="mu tk' + (i % step ? " thin" : "") + '" x="' + f1(xx) + '" y="' + (H - Bm + 18) + '" text-anchor="middle">' + esc(String(c).slice(0, 12)) + "</text>"; }); }
+  else niceTicks(x0, x1, narrow ? 5 : 8).filter(t => t >= x0 - 1e-9 && t <= x1 + 1e-9).forEach(t => { g += '<line class="gr gv" x1="' + f1(X(t)) + '" x2="' + f1(X(t)) + '" y1="' + T + '" y2="' + (H - Bm) + '"/><text class="mu tk" x="' + f1(X(t)) + '" y="' + (H - Bm + 18) + '" text-anchor="middle">' + tickLbl(t) + "</text>"; });
+  g += '<line class="ax" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + f1(Y(Math.max(y0, Math.min(y1, 0)))) + '" y2="' + f1(Y(Math.max(y0, Math.min(y1, 0)))) + '"/><line class="ax" x1="' + L + '" x2="' + L + '" y1="' + T + '" y2="' + (H - Bm) + '"/>';
+  (o.poly || []).forEach(p => { g += '<polygon class="' + (p.cls || "reg") + '" points="' + p.pts.map(q => f1(X(q[0])) + "," + f1(Y(q[1]))).join(" ") + '"/>'; });
+  const bw = o.bars && o.bars.length ? Math.max(4, Math.min(56, (W - L - Rr) / ((x1 - x0) || 1) * (o.bw || 0.62))) : 0;
+  (o.bars || []).forEach(b => { const ya = Y(Math.max(0, b.y)), yb = Y(Math.min(0, b.y)); g += '<rect class="' + (b.cls || "bar1") + '" x="' + f1(X(b.x) - bw / 2) + '" y="' + f1(ya) + '" width="' + f1(bw) + '" height="' + f1(Math.max(0.5, yb - ya)) + '" rx="3" data-tip="' + esc(String(b.y)) + '"/>' + (b.lbl ? '<text x="' + f1(X(b.x)) + '" y="' + f1(ya - 6) + '" text-anchor="middle" class="mu vl">' + b.lbl + "</text>" : ""); });
+  (o.h || []).forEach(h => { if (h.y < y0 || h.y > y1) return; g += '<line class="' + (h.cls || "sb") + '" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + f1(Y(h.y)) + '" y2="' + f1(Y(h.y)) + '"/>' + (h.lbl ? '<text class="lg halo" x="' + (W - Rr - 4) + '" y="' + f1(Y(h.y) - 5) + '" text-anchor="end">' + h.lbl + "</text>" : ""); });
+  (o.v || []).forEach(v => { g += '<line class="' + (v.cls || "sm") + '" x1="' + f1(X(v.x)) + '" x2="' + f1(X(v.x)) + '" y1="' + T + '" y2="' + (H - Bm) + '"/>' + (v.lbl ? '<text class="lg halo" x="' + f1(X(v.x) + 5) + '" y="' + (T + 14) + '">' + v.lbl + "</text>" : ""); });
   (o.series || []).forEach(s => { const pts = s.pts.filter(p => fin(p[0]) && fin(p[1]));
-    if (!s.only) g += '<polyline class="' + (s.cls || "s1") + '" points="' + pts.map(p => X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1)).join(" ") + '"' + (s.dash ? ' stroke-dasharray="6 4"' : "") + "/>";
-    if (s.dot) pts.forEach((p, i) => { const bad = s.badIdx && s.badIdx.includes(i); g += '<circle class="' + (bad ? "db" : s.dot) + '" cx="' + X(p[0]) + '" cy="' + Y(p[1]) + '" r="' + (bad ? 5 : (s.r || 3.5)) + '"/>' + (s.tags && s.tags[i] ? '<text x="' + (X(p[0]) + 7) + '" y="' + (Y(p[1]) - 6) + '">' + esc(s.tags[i]) + "</text>" : ""); }); });
-  if (o.xlab) g += '<text class="mu" x="' + ((W + L) / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + o.xlab + "</text>";
-  if (o.ylab) g += '<text class="mu" x="14" y="' + ((H - Bm + T) / 2) + '" text-anchor="middle" transform="rotate(-90 14 ' + ((H - Bm + T) / 2) + ')">' + o.ylab + "</text>";
+    if (!s.only) g += '<polyline class="' + (s.cls || "s1") + '" points="' + pts.map(p => f1(X(p[0])) + "," + f1(Y(p[1]))).join(" ") + '"' + (s.dash ? ' stroke-dasharray="6 4"' : "") + "/>";
+    if (s.dot) pts.forEach((p, i) => { const bad = s.badIdx && s.badIdx.includes(i), tip = esc((o.xcat ? o.xcat[i] || p[0] : p[0]) + " → " + (typeof nf === "function" ? nf(p[1], 3) : p[1]) + (bad ? " (fuera de control)" : ""));
+      g += (bad ? '<circle class="ring" cx="' + f1(X(p[0])) + '" cy="' + f1(Y(p[1])) + '" r="9"/>' : "") + '<circle class="pt ' + (bad ? "db" : s.dot) + '" cx="' + f1(X(p[0])) + '" cy="' + f1(Y(p[1])) + '" r="' + (bad ? 5.5 : (s.r || 4)) + '" data-tip="' + tip + '"/>' + (s.tags && s.tags[i] ? '<text class="halo" x="' + f1(X(p[0]) + 8) + '" y="' + f1(Y(p[1]) - 8) + '">' + esc(s.tags[i]) + "</text>" : ""); }); });
+  if (o.xlab) g += '<text class="mu" x="' + f1((W + L) / 2) + '" y="' + (H - 8) + '" text-anchor="middle">' + o.xlab + "</text>";
+  if (o.ylab) g += '<text class="mu" x="14" y="' + f1((H - Bm + T) / 2) + '" text-anchor="middle" transform="rotate(-90 14 ' + f1((H - Bm + T) / 2) + ')">' + o.ylab + "</text>";
   const lg = (o.legend || []).map(l => '<span><i style="background:var(' + l[0] + ')"></i>' + l[1] + "</span>").join("");
-  return '<figure class="ch"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(o.title || "Gráfico") + '">' + g + "</svg></div>" + (lg ? '<div class="legend">' + lg + "</div>" : "") + (o.cap ? "<figcaption>" + o.cap + "</figcaption>" : "") + "</figure>";
+  return '<figure class="ch"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" width="' + W + '" role="img" aria-label="' + esc(o.title || "Gráfico") + '" data-w="' + W + '">' + g + "</svg></div>" + (lg ? '<div class="legend">' + lg + "</div>" : "") + (o.cap ? "<figcaption>" + o.cap + "</figcaption>" : "") + "</figure>";
 }
 function gantt(items, o){
-  o = o || {}; const W = 760, rowH = 26, L = 110, T = 22, end = Math.max.apply(null, items.map(i => i.s + i.d).concat([1]));
-  const H = T + items.length * rowH + 24, X = x => L + x / end * (W - L - 16);
-  let g = ""; niceTicks(0, end, 10).filter(t => t <= end + 1e-9).forEach(t => { g += '<line class="gr" x1="' + X(t) + '" x2="' + X(t) + '" y1="' + (T - 4) + '" y2="' + (H - 20) + '"/><text class="mu" x="' + X(t) + '" y="' + (H - 6) + '" text-anchor="middle">' + tickLbl(t) + "</text>"; });
-  items.forEach((it, i) => { const y = T + i * rowH; g += '<text x="' + (L - 8) + '" y="' + (y + 16) + '" text-anchor="end">' + esc(it.id) + "</text>";
-    if (it.slack > 0) g += '<rect class="barm" x="' + X(it.s + it.d) + '" y="' + (y + 9) + '" width="' + (X(it.s + it.d + it.slack) - X(it.s + it.d)) + '" height="6" rx="3"/>';
-    g += '<rect class="' + (it.crit ? "bar2" : "bar1") + '" x="' + X(it.s) + '" y="' + (y + 4) + '" width="' + Math.max(1, X(it.s + it.d) - X(it.s)) + '" height="16" rx="3"/>'; });
-  return '<figure class="ch"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Carta Gantt">' + g + '</svg></div><div class="legend">' + (o.leg || '<span><i style="background:var(--copper)"></i>Ruta crítica</span><span><i style="background:var(--blue)"></i>Actividad con holgura</span><span><i style="background:var(--line)"></i>Holgura total</span>') + "</div></figure>";
+  o = o || {}; const W = chartW(), rowH = 30, L = Math.min(150, Math.max(64, 14 + 7.4 * Math.max.apply(null, items.map(i => String(i.id).length).concat([3])))), T = 24, end = Math.max.apply(null, items.map(i => i.s + i.d).concat([1]));
+  const H = T + items.length * rowH + 26, X = x => L + x / end * (W - L - 16), f1 = v => +v.toFixed(1);
+  let g = ""; niceTicks(0, end, W < 520 ? 6 : 10).filter(t => t <= end + 1e-9).forEach(t => { g += '<line class="gr" x1="' + f1(X(t)) + '" x2="' + f1(X(t)) + '" y1="' + (T - 6) + '" y2="' + (H - 22) + '"/><text class="mu tk" x="' + f1(X(t)) + '" y="' + (H - 6) + '" text-anchor="middle">' + tickLbl(t) + "</text>"; });
+  items.forEach((it, i) => { const y = T + i * rowH; g += (i % 2 ? '<rect class="row" x="0" y="' + y + '" width="' + W + '" height="' + rowH + '"/>' : "") + '<text x="' + (L - 10) + '" y="' + (y + 19) + '" text-anchor="end">' + esc(it.id) + "</text>";
+    if (it.slack > 0) g += '<rect class="barm" x="' + f1(X(it.s + it.d)) + '" y="' + (y + 12) + '" width="' + f1(X(it.s + it.d + it.slack) - X(it.s + it.d)) + '" height="6" rx="3"/>';
+    g += '<rect class="' + (it.crit ? "bar2" : "bar1") + '" x="' + f1(X(it.s)) + '" y="' + (y + 6) + '" width="' + f1(Math.max(1, X(it.s + it.d) - X(it.s))) + '" height="18" rx="4" data-tip="' + esc(it.id + ": inicio " + it.s + ", duración " + it.d + (it.crit ? " (crítica)" : ", holgura " + it.slack)) + '"/>'; });
+  return '<figure class="ch"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" width="' + W + '" role="img" aria-label="Carta Gantt" data-w="' + W + '">' + g + '</svg></div><div class="legend">' + (o.leg || '<span><i style="background:var(--copper)"></i>Ruta crítica</span><span><i style="background:var(--blue)"></i>Actividad con holgura</span><span><i style="background:var(--line)"></i>Holgura total</span>') + "</div></figure>";
 }
 /* ============ MOTOR DE FÓRMULAS ============
    Convierte fórmulas escritas en forma lineal ("VAN = Σ F_t ÷ (1 + r)^t") en un árbol
@@ -1272,7 +1366,10 @@ async function mImage(lin){
 function wrapT(t, n){ const w = String(t).split(" "), out = []; let l = ""; w.forEach(x => { if ((l + " " + x).trim().length > n && l) { out.push(l); l = x; } else l = (l + " " + x).trim(); }); if (l) out.push(l); return out; }
 function tx(x, y, t, o){ o = o || {}; const L = wrapT(t, o.n || 18), lh = o.lh || 14, y0 = y - (L.length - 1) * lh / 2; return '<text x="' + x + '" y="' + y0 + '" text-anchor="' + (o.a || "middle") + '" dominant-baseline="middle"' + (o.cls ? ' class="' + o.cls + '"' : "") + (o.s ? ' style="font-size:' + o.s + 'px' + (o.b ? ";font-weight:700" : "") + '"' : o.b ? ' style="font-weight:700"' : "") + ">" + L.map((l, i) => '<tspan x="' + x + '" y="' + (y0 + i * lh) + '">' + esc(l) + "</tspan>").join("") + "</text>"; }
 const arrow = (x1, y1, x2, y2, cls) => { const a = Math.atan2(y2 - y1, x2 - x1), h = 8; return '<line class="' + (cls || "dga") + '" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/><polygon class="dgah" points="' + x2 + "," + y2 + " " + (x2 - h * Math.cos(a - 0.45)) + "," + (y2 - h * Math.sin(a - 0.45)) + " " + (x2 - h * Math.cos(a + 0.45)) + "," + (y2 - h * Math.sin(a + 0.45)) + '"/>'; };
-const fig = (W, H, g, cap, minw) => '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(cap || "Diagrama") + '"' + ' style="max-width:' + Math.round(W * 1.2) + 'px;margin:0 auto;' + (minw ? 'min-width:' + Math.min(minw, W) + 'px' : "") + '"' + ">" + g + "</svg></div>" + (cap ? "<figcaption>" + cap + "</figcaption>" : "") + "</figure>";
+/* Fondo de grilla de puntos y punta de flecha comunes a los diagramas F4 (sin texto: no altera lo que comparan las pruebas) */
+function dgGrid(id, W, H){ return '<defs><pattern id="' + id + '" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" class="dgdot"/></pattern></defs><rect width="' + W + '" height="' + H + '" fill="url(#' + id + ')"/>'; }
+/* Envoltorio común de diagramas (F4): el ancho mínimo para que el texto se lea a 12 px o más lo fija svgA11y al mostrar la página */
+const fig = (W, H, g, cap) => '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(String(cap || "Diagrama").replace(/<[^>]+>/g, "").split(/[.:]/)[0]) + '"' + ' style="max-width:' + Math.round(W * 1.25) + 'px;margin:0 auto">' + g + "</svg></div>" + (cap ? "<figcaption>" + cap + "</figcaption>" : "") + "</figure>";
 const DGC = ["dgb1", "dgb2", "dgb3", "dgb4", "dgb5"];
 const D = {
   chain(steps, cap, o){ o = o || {}; const per = Math.min(steps.length, o.per || (steps.length > 3 ? 2 : 3)), rowsN = Math.ceil(steps.length / per), bw = 128, bh = 64, gx = 34, gy = 44, W = per * bw + (per - 1) * gx + 20, H = rowsN * bh + (rowsN - 1) * gy + 20; let g = "";
@@ -1319,10 +1416,14 @@ const D = {
     if (o.spec) { g += '<line class="sb" x1="' + (mu - 2.6 * sd) + '" x2="' + (mu - 2.6 * sd) + '" y1="30" y2="190"/><line class="sb" x1="' + (mu + 2.8 * sd) + '" x2="' + (mu + 2.8 * sd) + '" y1="30" y2="190"/>' + tx(mu - 2.6 * sd, 22, "LEI", { b:true, s:11 }) + tx(mu + 2.8 * sd, 22, "LES", { b:true, s:11 }); }
     else g += tx(mu, 100, "68 % entre ±1σ · 95 % entre ±2σ · 99,73 % entre ±3σ", { n:60, s:11.5, b:true });
     return fig(W, H, g, cap || "Distribución normal: la mayoría de los datos se concentra cerca de la media.", 420); },
-  control(cap){ const W = 600, H = 230, pts = [0.2, -0.5, 0.8, 0.1, -0.9, 0.4, 1.1, -0.2, 0.6, 3.4, 0.3, -0.7, 0.2, 1.4, -0.4], Y = v => 115 - v * 26; let g = "";
-    [[3, "LSC", "sb"], [0, "LC", "sm"], [-3, "LIC", "sb"]].forEach(l => g += '<line class="' + l[2] + '" x1="40" x2="560" y1="' + Y(l[0]) + '" y2="' + Y(l[0]) + '"/><text x="566" y="' + (Y(l[0]) + 4) + '" class="dgs" style="font-size:11px">' + l[1] + "</text>");
-    g += '<polyline class="s1" points="' + pts.map((v, i) => (50 + i * 35) + "," + Y(v)).join(" ") + '"/>' + pts.map((v, i) => '<circle class="' + (Math.abs(v) > 3 ? "db" : "d1") + '" cx="' + (50 + i * 35) + '" cy="' + Y(v) + '" r="' + (Math.abs(v) > 3 ? 6 : 3.5) + '"/>').join("") + tx(50 + 9 * 35 + 10, Y(3.4) - 14, "Causa asignable: investigar", { a:"start", s:11, b:true, n:30 });
-    return fig(W, H, g, cap || "Gráfico de control: los puntos dentro de los límites son variación normal; uno fuera indica una causa especial.", 420); },
+  control(cap){ /* F4: zonas de 1σ, 2σ y 3σ, puntos con tooltip y causa asignable destacada */
+    const W = 660, H = 270, pts = [0.2, -0.5, 0.8, 0.1, -0.9, 0.4, 1.1, -0.2, 0.6, 3.4, 0.3, -0.7, 0.2, 1.4, -0.4], L = 44, R = 600, Y = v => 130 - v * 30, X = i => L + 18 + i * (R - L - 36) / (pts.length - 1); let g = "";
+    [[3, 2, "zc3"], [2, 1, "zc2"], [1, -1, "zc1"], [-1, -2, "zc2"], [-2, -3, "zc3"]].forEach(z => g += '<rect class="' + z[2] + '" x="' + L + '" y="' + Y(z[0]) + '" width="' + (R - L) + '" height="' + (Y(z[1]) - Y(z[0])) + '"/>');
+    [[3, "LSC", "sb"], [2, "+2σ", "zn"], [1, "+1σ", "zn"], [0, "LC", "sm"], [-1, "−1σ", "zn"], [-2, "−2σ", "zn"], [-3, "LIC", "sb"]].forEach(l => g += '<line class="' + l[2] + '" x1="' + L + '" x2="' + R + '" y1="' + Y(l[0]) + '" y2="' + Y(l[0]) + '"/><text x="' + (R + 8) + '" y="' + (Y(l[0]) + 5) + '" class="' + (l[2] === "zn" ? "dgs" : "dgk") + '">' + l[1] + "</text>");
+    g += '<polyline class="s1" points="' + pts.map((v, i) => X(i) + "," + Y(v)).join(" ") + '"/>' + pts.map((v, i) => (Math.abs(v) > 3 ? '<circle class="ring" cx="' + X(i) + '" cy="' + Y(v) + '" r="11"/>' : "") + '<circle class="pt ' + (Math.abs(v) > 3 ? "db" : "d1") + '" cx="' + X(i) + '" cy="' + Y(v) + '" r="' + (Math.abs(v) > 3 ? 6 : 4.5) + '" data-tip="Muestra ' + (i + 1) + ": " + (v > 0 ? "+" : "") + v.toLocaleString("es-CL") + ' σ"/>').join("");
+    g += '<path d="M' + (X(9) + 10) + "," + (Y(3.4) - 4) + " L" + (X(9) + 40) + "," + (Y(3.4) - 22) + '" class="dga"/>' + tx(X(9) + 44, Y(3.4) - 26, "Causa asignable: investigar", { a:"start", s:13, b:true, n:30, cls:"halo" });
+    g += tx(L + (R - L) / 2, H - 8, "Muestras en el tiempo →", { s:13, cls:"dgs" });
+    return fig(W, H, g, cap || "Gráfico de control: los puntos dentro de los límites son variación normal; uno fuera indica una causa especial. Las bandas marcan 1, 2 y 3 desviaciones desde la línea central."); },
   queue(s, cap){ s = s || 3; const W = 600, H = 60 + s * 50; let g = "";
     for (let i = 0; i < 5; i++) g += '<circle class="d2" cx="' + (40 + i * 26) + '" cy="' + (H / 2) + '" r="9"/>';
     g += tx(92, H / 2 + 26, "Llegadas λ", { s:11, cls:"dgs" }) + '<rect class="dgbl" x="180" y="' + (H / 2 - 22) + '" width="150" height="44" rx="8"/>' + '<circle class="d2" cx="200" cy="' + (H / 2) + '" r="8"/><circle class="d2" cx="222" cy="' + (H / 2) + '" r="8"/><circle class="d2" cx="244" cy="' + (H / 2) + '" r="8"/>' + tx(255, H / 2 + 34, "Cola (Lq, Wq)", { s:11, cls:"dgs" }) + arrow(160, H / 2, 178, H / 2);
@@ -1384,19 +1485,8 @@ Object.assign(D, {
     ASMEN.forEach((n, i) => { const x = 60 + i * 110; g += asme(i, x, 40, 15) + tx(x, 78, n, { b:true, s:11.5 }) + tx(x, 98, ["transforma", "mueve", "verifica", "espera", "guarda"][i], { s:10.5, cls:"dgs" }); });
     return fig(W, H, g, cap || "Los cinco símbolos de la ASME para analizar procesos: solo la operación agrega valor; los demás son candidatos a eliminar o reducir.", 420); },
   // Diagrama de flujo ANSI: items [tipo, texto, (para decisión) texto rama No]
-  flow(items, cap){ const W = 520, bw = 200, bh = 44, gy = 30, cx = 200; let y = 14, g = "", ys = [];
-    items.forEach((it, i) => { const [k, t] = it; ys.push(y);
-      if (k === "s" || k === "e") g += '<rect class="' + (k === "s" ? "dgb3" : "dgb4") + '" x="' + (cx - bw / 2) + '" y="' + y + '" width="' + bw + '" height="' + bh + '" rx="22"/>';
-      else if (k === "d") g += '<polygon class="dgb2" points="' + cx + "," + y + " " + (cx + bw / 2 + 10) + "," + (y + bh / 2) + " " + cx + "," + (y + bh) + " " + (cx - bw / 2 - 10) + "," + (y + bh / 2) + '"/>';
-      else if (k === "io") g += '<polygon class="dgb5" points="' + (cx - bw / 2 + 14) + "," + y + " " + (cx + bw / 2 + 14) + "," + y + " " + (cx + bw / 2 - 14) + "," + (y + bh) + " " + (cx - bw / 2 - 14) + "," + (y + bh) + '"/>';
-      else g += rect(cx - bw / 2, y, bw, bh, "dgb1", 4);
-      g += tx(cx, y + bh / 2, t, { s:11.5, b:k !== "p", n:k === "d" ? 22 : 30 });
-      if (k === "d" && it[2]) { const bx = cx + bw / 2 + 40; g += ln(cx + bw / 2 + 10, y + bh / 2, bx, y + bh / 2) + rect(bx, y + 4, 130, bh - 8, "dgb1", 4) + tx(bx + 65, y + bh / 2, it[2], { s:11, n:20 }) + tx(cx + bw / 2 + 24, y + bh / 2 - 9, "No", { s:10.5, b:true, cls:"dgs" }) + tx(cx + 12, y + bh + 11, "Sí", { s:10.5, b:true, cls:"dgs", a:"start" });
-        if (it[3] != null) { const ty = ys[it[3]] + bh / 2; g += ln(bx + 130, y + bh / 2, bx + 150, y + bh / 2) + ln(bx + 150, y + bh / 2, bx + 150, ty) + arrow(bx + 150, ty, cx + bw / 2 + 4, ty); } }
-      if (i < items.length - 1) g += arrow(cx, y + bh, cx, y + bh + gy - 3);
-      y += bh + gy; });
-    return fig(W, y - gy + 14, g, cap, 380); },
-  // Diagrama de operaciones del proceso (DOP): líneas [nombre, pasos [[k(0 op | 2 insp), texto]]]
+  flow(items, cap){ /* F4: usa el diagrama de flujo común (FC): formas estándar, flechas con punta y grilla */
+    const T = { s:"ini", e:"fin", d:"dec", io:"io" }; return FC(items.map(it => it[0] === "d" && it[2] ? { t:"dec", x:it[1], lbl:["Sí", "No"], side:{ t:"pro", x:it[2], to:it[3] } } : { t:T[it[0]] || "pro", x:it[1] }), cap); },
   dop(lines, cap){ const W = 560, step = 46; let g = "", maxN = Math.max(...lines.map(l => l[1].length)), x0 = 70, dx = (W - 290) / Math.max(1, lines.length - 1), n = [0, 0];
     const H = 50 + (maxN + 1) * step + 40;
     lines.forEach((l, j) => { const x = lines.length === 1 ? W / 2 - 60 : x0 + j * dx; g += tx(x, 22, l[0], { b:true, s:11.5, n:20 }) + ln(x, 34, x, 44 + l[1].length * step);
@@ -1447,11 +1537,7 @@ Object.assign(D, {
     ents.forEach(e => { const [x, y, h] = P[e[0]]; g += rect(x, y, bw, h, "dgbl", 6) + rect(x, y, bw, 24, "dgb1", 6) + tx(x + bw / 2, y + 12, e[0], { b:true, s:11.5 }) + e[3].map((a, i) => tx(x + 10, y + 36 + i * 17, a, { a:"start", s:10.5, n:26 })).join(""); });
     return fig(W, H, g + cards, cap, 520); },
   // Espina de pescado (Ishikawa): efecto, cats [[nombre, [causas]]]
-  fishbone(effect, cats, cap){ const W = 680, H = 300, sy = 150, ex = 560; let g = ln(30, sy, ex, sy, "dgcrit") + rect(ex, sy - 30, 110, 60, "dgbh", 8) + tx(ex + 55, sy, effect, { b:true, s:11.5, n:16 });
-    const top = cats.filter((_, i) => i % 2 === 0), bot = cats.filter((_, i) => i % 2 === 1), n = Math.max(top.length, bot.length), dx = (ex - 150) / n;
-    [[top, -1], [bot, 1]].forEach(([cs, s]) => cs.forEach((c, i) => { const x = 150 + i * dx + dx * 0.6, y0 = sy + s * 115; g += ln(x - 60, y0, x, sy, "dga") + rect(x - 120, y0 + (s < 0 ? -22 : 2), 120, 22, "dgb1", 4) + tx(x - 60, y0 + (s < 0 ? -11 : 13), c[0], { b:true, s:11 });
-      c[1].forEach((t, j) => { const f = (j + 1) / (c[1].length + 1), px = x - 60 + 60 * f, py = y0 + (sy - y0) * f; g += ln(px - 56, py, px, py, "ax") + tx(px - 58, py, t, { a:"end", s:9.5, n:16, lh:11 }); }); }));
-    return fig(W, H, g, cap, 560); },
+  fishbone(effect, cats, cap){ /* F4: mismo diseño que el Ishikawa de la calculadora */ const h = ishiSVG(effect, cats); return cap ? h.replace(/<figcaption>[\s\S]*<\/figcaption>/, "<figcaption>" + cap + "</figcaption>") : h; },
   // Dispersión con recta de ajuste: pts [[x,y]]
   scatter(pts, cap, o){ o = o || {}; const W = 560, H = 250, xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), X = x => 55 + (x - x0) / (x1 - x0 || 1) * 480, Y = y => 205 - (y - y0) / (y1 - y0 || 1) * 175;
     let g = ln(50, 210, 545, 210, "ax") + ln(50, 20, 50, 210, "ax") + tx(300, 238, o.xl || "x", { s:11, cls:"dgs" }) + '<text x="16" y="115" transform="rotate(-90 16 115)" text-anchor="middle" class="mu">' + esc(o.yl || "y") + "</text>";
@@ -1480,10 +1566,15 @@ Object.assign(D, {
     cols.forEach((c, i) => { const x = 15 + i * 195; g += rect(x, 10, 180, 200, "dgbl", 8) + tx(x + 90, 28, c[0], { b:true, s:11.5 }); c[1].forEach((t, j) => g += rect(x + 15, 46 + j * 50, 150, 38, ["dgb4", "dgb1", "dgb3"][i], 6) + tx(x + 90, 65 + j * 50, t, { s:11 })); if (i < 2) g += arrow(x + 182, 110, x + 193, 110); });
     return fig(W, H, g, cap || "Tablero kanban: cada tarjeta es un trabajo; limitar cuántos pueden estar «en proceso» evita la sobrecarga y acorta el tiempo de entrega.", 460); },
   // Costo-volumen-utilidad
-  cvp(cf, p, cv, qmax, cap){ const W = 560, H = 250, ymax = p * qmax * 1.05, X = q => 55 + q / qmax * 480, Y = v => 210 - v / ymax * 185, qe = cf / (p - cv);
-    let g = ln(50, 210, 545, 210, "ax") + ln(50, 20, 50, 210, "ax") + ln(X(0), Y(cf), X(qmax), Y(cf), "ax", "stroke-dasharray:4 4") + ln(X(0), Y(cf), X(qmax), Y(cf + cv * qmax), "s2") + ln(X(0), Y(0), X(qmax), Y(p * qmax), "s1") + ln(X(qe), 20, X(qe), 210, "sb") +
-      tx(X(qmax) - 4, Y(p * qmax) + 14, "Ingresos", { a:"end", s:11, b:true }) + tx(X(qmax) - 4, Y(cf + cv * qmax) + 16, "Costo total", { a:"end", s:11, b:true }) + tx(X(qmax) - 4, Y(cf) - 8, "Costo fijo", { a:"end", s:10.5, cls:"dgs" }) + tx(X(qe) + 6, 32, "Equilibrio: " + Math.round(qe) + " u", { a:"start", s:11, b:true }) + tx(X(qe * 0.45), Y(cf * 0.7), "Pérdida", { s:11, cls:"dgs" }) + tx(X(qe + (qmax - qe) * 0.55), Y(p * (qe + (qmax - qe) * 0.55)) - 26, "Utilidad", { s:11, cls:"dgs" }) + tx(300, 238, "unidades vendidas", { s:11, cls:"dgs" });
-    return fig(W, H, g, cap, 420); },
+  cvp(cf, p, cv, qmax, cap){ /* F4: zonas de pérdida y utilidad, punto de equilibrio y grilla */
+    const W = 620, H = 290, L = 64, R = 590, B = 240, T = 22, ymax = p * qmax * 1.08, X = q => L + q / qmax * (R - L), Y = v => B - v / ymax * (B - T), qe = cf / (p - cv), ct = q => cf + cv * q;
+    let g = ""; [0.25, 0.5, 0.75, 1].forEach(t => g += ln(L, Y(ymax * t), R, Y(ymax * t), "gr") + ln(X(qmax * t), T, X(qmax * t), B, "gr gv"));
+    g += '<polygon class="cvp-loss" points="' + X(0) + "," + Y(0) + " " + X(qe) + "," + Y(p * qe) + " " + X(0) + "," + Y(cf) + '"/><polygon class="cvp-gain" points="' + X(qe) + "," + Y(p * qe) + " " + X(qmax) + "," + Y(p * qmax) + " " + X(qmax) + "," + Y(ct(qmax)) + '"/>';
+    g += ln(L, B, R, B, "ax") + ln(L, T, L, B, "ax") + ln(X(0), Y(cf), X(qmax), Y(cf), "sm") + ln(X(0), Y(cf), X(qmax), Y(ct(qmax)), "s2") + ln(X(0), Y(0), X(qmax), Y(p * qmax), "s1") + ln(X(qe), T, X(qe), B, "sb");
+    g += '<circle class="pt d2" cx="' + X(qe) + '" cy="' + Y(p * qe) + '" r="6" data-tip="Equilibrio: ' + Math.round(qe).toLocaleString("es-CL") + ' unidades"/>';
+    g += tx(X(qmax) - 6, Y(p * qmax) + 18, "Ingresos", { a:"end", s:13, b:true, cls:"halo" }) + tx(X(qmax) - 6, Y(ct(qmax)) + 20, "Costo total", { a:"end", s:13, b:true, cls:"halo" }) + tx(X(qmax) - 6, Y(cf) - 10, "Costo fijo", { a:"end", s:13, cls:"dgs halo" }) +
+      tx(X(qe) + 8, T + 14, "Equilibrio: " + Math.round(qe) + " u", { a:"start", s:13, b:true, cls:"halo" }) + tx(X(qe * 0.42), Y(cf * 0.62), "Pérdida", { s:13, b:true, cls:"cvp-lt" }) + tx(X(qe + (qmax - qe) * 0.62), Y(p * (qe + (qmax - qe) * 0.62)) + 34, "Utilidad", { s:13, b:true, cls:"cvp-gt" }) + tx((L + R) / 2, H - 10, "unidades vendidas", { s:13, cls:"dgs" });
+    return fig(W, H, g, cap); },
   // Gantt simple: tareas [[nombre, inicio, duración, crítica]]
   gantt2(tasks, cap){ const W = 600, rh = 28, L = 150, T = 26, end = Math.max(...tasks.map(t => t[1] + t[2])), H = T + tasks.length * rh + 26, X = x => L + x / end * (W - L - 16); let g = "";
     for (let t = 0; t <= end; t++) g += ln(X(t), T - 6, X(t), H - 22, "ax", "opacity:.35") + tx(X(t), H - 10, String(t), { s:9.5, cls:"dgs" });
@@ -2109,6 +2200,8 @@ def("vsm", "ops", {
       { t:"Lead time (por ley de Little)", f:"Días de inventario = Inventario ÷ Demanda diaria   ·   LT = Σ días", s:"LT = " + n0(sum(P.map(p => p.inv))) + " ÷ " + n0(dd) + " = " + nf(LTd, 2) + " días", r:nf(LTd, 1) + " días", why:"una pieza que entra hoy debe esperar a que salgan todas las que están delante." },
       { t:"Eficiencia del ciclo del proceso", f:"PCE = Tiempo de valor agregado ÷ Lead time", s:"PCE = " + n0(VA) + " s ÷ " + n0(LTs) + " s = " + pc(PCE, 4), r:pc(PCE, 3), c:PCE > 0.25 ? "ok" : "warn", why:"en procesos tradicionales suele ser menor a 1 %. Reducir inventarios (supermercados, FIFO, flujo continuo) baja el lead time sin trabajar más rápido." }
     ]);
+    /* F4: mapa de flujo de valor. Solo datos en el atributo; el dibujo y sus rótulos se generan al mostrar la página (wd8.js · drawVsm) */
+    h += '<figure class="ch dg vsm-map" data-vsm="' + esc(JSON.stringify({ takt, dd, P:P.map(p => [p.nm, p.tc, p.inv, p.op]) })) + '"><div class="sv"></div></figure>';
     h += chart({ title:"Ciclo por proceso vs takt", bars:P.map((p, k) => ({ x:k + 1, y:p.tc, cls:p.tc > takt ? "bar2" : "bar1" })), h:[{ y:takt, cls:"sb", lbl:"Takt" }], xcat:P.map(p => p.nm), ymin:0, ylab:"Segundos" });
     return h;
   },
@@ -2879,8 +2972,15 @@ def("sipoc", "ges", {
   c(v){
     const P = lines(v.P);
     let h = h3(esc(v.n || "Proceso")) + '<div class="tbl-wrap"><table><thead><tr><th>Proveedores</th><th>Entradas</th><th>Proceso</th><th>Salidas</th><th>Clientes</th></tr></thead><tbody><tr>' + [lines(v.S), lines(v.I), P, lines(v.O), lines(v.Cl)].map((a, i) => "<td>" + (i === 2 ? "<ol>" + a.map(x => "<li>" + esc(x) + "</li>").join("") + "</ol>" : ul(a)) + "</td>").join("") + "</tr></tbody></table></div>";
-    if (P.length) { const w = 150, gap = 26, W = P.length * (w + gap); let g = ""; P.forEach((p, i) => { const x = i * (w + gap) + 4; g += '<rect class="box" x="' + x + '" y="10" width="' + w + '" height="56" rx="8"/><text x="' + (x + w / 2) + '" y="34" text-anchor="middle" style="font-weight:700">' + (i + 1) + "</text><text x=\"" + (x + w / 2) + '" y="52" text-anchor="middle" style="font-size:11.5px">' + esc(p.length > 24 ? p.slice(0, 23) + "…" : p) + "</text>" + (i < P.length - 1 ? '<line class="s1" x1="' + (x + w + 2) + '" y1="38" x2="' + (x + w + gap - 4) + '" y2="38"/><polygon class="d1" points="' + (x + w + gap - 4) + ",33 " + (x + w + gap + 2) + ",38 " + (x + w + gap - 4) + ',43"/>' : ""); });
-      h += '<figure class="ch"><div class="sv"><svg viewBox="0 0 ' + W + ' 76" style="min-width:' + Math.min(W, 900) + 'px" role="img" aria-label="Flujo del proceso">' + g + "</svg></div></figure>"; }
+    if (P.length) { /* F4: diagrama SIPOC completo. Los pasos conservan su texto; los rótulos de las demás columnas se escriben al mostrar la página (data-t) */
+      const cols = [["Proveedores", lines(v.S)], ["Entradas", lines(v.I)], ["Proceso", P], ["Salidas", lines(v.O)], ["Clientes", lines(v.Cl)]], cw = 168, gap = 34, W = 5 * cw + 4 * gap + 8, ih = 54, ig = 10, top = 56;
+      const H = top + Math.max(...cols.map(c => c[1].length), 1) * (ih + ig) + 10; let g = '<defs><marker id="sipa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="dgah"/></marker></defs>';
+      cols.forEach((c, k) => { const x = 4 + k * (cw + gap), mid = k === 2; g += '<rect class="sip-hd' + (mid ? " mid" : "") + '" x="' + x + '" y="4" width="' + cw + '" height="38" rx="10"/><text class="sip-ht" x="' + (x + cw / 2) + '" y="28" text-anchor="middle" data-t="' + c[0] + '"></text>';
+        if (k < 4) g += '<line class="dga" x1="' + (x + cw + 4) + '" y1="23" x2="' + (x + cw + gap - 4) + '" y2="23" marker-end="url(#sipa)"/>';
+        c[1].forEach((t, r) => { const y = top + r * (ih + ig);
+          if (mid) g += '<rect class="sip-p" x="' + x + '" y="' + y + '" width="' + cw + '" height="' + ih + '" rx="10"/><circle class="sip-n" cx="' + (x + 18) + '" cy="' + (y + ih / 2) + '" r="11"/><text x="' + (x + 18) + '" y="' + (y + ih / 2 + 4) + '" text-anchor="middle" class="sip-nt">' + (r + 1) + '</text><text x="' + (x + 36) + '" y="' + (y + ih / 2 + 5) + '" class="sip-pt">' + esc(t.length > 24 ? t.slice(0, 23) + "…" : t) + "</text>" + (r < P.length - 1 ? '<line class="dga" x1="' + (x + cw / 2) + '" y1="' + (y + ih) + '" x2="' + (x + cw / 2) + '" y2="' + (y + ih + ig - 1) + '" marker-end="url(#sipa)"/>' : "");
+          else g += '<rect class="sip-i" x="' + x + '" y="' + y + '" width="' + cw + '" height="' + ih + '" rx="8"/><text class="sip-it" x="' + (x + cw / 2) + '" y="' + (y + ih / 2 + 5) + '" text-anchor="middle" data-t="' + esc(t) + '" data-w="20"></text>'; }); });
+      h += '<figure class="ch dg sipoc"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Flujo del proceso">' + g + "</svg></div></figure>"; }
     h += note("Define también el inicio y el fin del proceso, y los requisitos críticos del cliente (CTQ) para cada salida.", "info");
     return h;
   },
@@ -3128,6 +3228,7 @@ async function svgToImage(svg){
 }
 
 async function toModel(root){
+  try { if (typeof diagramsAfter === "function") diagramsAfter(root); } catch (e) {}  /* VSM y rótulos del SIPOC se dibujan al mostrar */
   const B = [], prevTheme = document.documentElement.getAttribute("data-theme");
   document.documentElement.setAttribute("data-theme", "light");
   let lastH = "";
@@ -8318,7 +8419,7 @@ function eqInit(el){
       else msg.innerHTML = note("La expresión no es equivalente. Revisa paréntesis: en formato lineal, todo el numerador o el denominador con más de un término debe ir entre paréntesis.", "bad"); }
     catch (x) { msg.innerHTML = note("No se pudo interpretar: " + esc(x.message) + ".", "bad"); } });
 }
-function afterRender(root){ try { pageEnter(root); calloutCap(root); setTimeout(() => { calloutCap(root); tocBuild(root); t8Spy(root); }, 0); setTimeout(() => calloutCap(root), 120); } catch (e) {} try { if (root.querySelector("[data-cr]")) dsContrast(root); } catch (e) {} try { if (typeof a11yScroll === "function") { setTimeout(() => a11yScroll(root), 60); setTimeout(() => a11yScroll(root), 900); } } catch (e) {} try { if (typeof w6Init === "function") setTimeout(() => w6Init(root), 0); } catch (e) {} root.querySelectorAll("textarea[data-c][data-k]").forEach(t => { try { gridInit(t); } catch (e) { console.error(e); } }); root.querySelectorAll("[data-xls]").forEach(xlsInit); root.querySelectorAll("[data-wdx]").forEach(wdInit); root.querySelectorAll("[data-eqx]").forEach(eqInit); if (typeof simInit === "function") root.querySelectorAll("[data-sim]").forEach(simInit); if (typeof ishiUI === "function") ishiUI(root); if (typeof w7Init === "function") try { w7Init(root); } catch (e) { console.error(e); } if (typeof wc1Init === "function") try { wc1Init(root); } catch (e) { console.error(e); } }
+function afterRender(root){ try { diagramsAfter(root); svgA11y(root); RSW = root.clientWidth; } catch (e) { console.error(e); } try { pageEnter(root); calloutCap(root); setTimeout(() => { calloutCap(root); tocBuild(root); t8Spy(root); }, 0); setTimeout(() => calloutCap(root), 120); } catch (e) {} try { if (root.querySelector("[data-cr]")) dsContrast(root); } catch (e) {} try { if (typeof a11yScroll === "function") { setTimeout(() => a11yScroll(root), 60); setTimeout(() => a11yScroll(root), 900); } } catch (e) {} try { if (typeof w6Init === "function") setTimeout(() => w6Init(root), 0); } catch (e) {} root.querySelectorAll("textarea[data-c][data-k]").forEach(t => { try { gridInit(t); } catch (e) { console.error(e); } }); root.querySelectorAll("[data-xls]").forEach(xlsInit); root.querySelectorAll("[data-wdx]").forEach(wdInit); root.querySelectorAll("[data-eqx]").forEach(eqInit); if (typeof simInit === "function") root.querySelectorAll("[data-sim]").forEach(simInit); if (typeof ishiUI === "function") ishiUI(root); if (typeof w7Init === "function") try { w7Init(root); } catch (e) { console.error(e); } if (typeof wc1Init === "function") try { wc1Init(root); } catch (e) { console.error(e); } }
 
 /* ---------- Ilustraciones de las ventanas ---------- */
 Object.assign(D, {
@@ -10983,7 +11084,7 @@ const KINDS = [["ramo", "Ramos de tu malla"], ["teo", "Teoría, lecciones y mét
 function areaTiles(ids){ const ps = ids.map(id => PAGES.find(p => p.id === id)).filter(Boolean);
   return KINDS.map(k => { const g = ps.filter(p => kindOf(p) === k[0]); return g.length ? '<h2 class="sh">' + k[1] + ' <span class="cnt">' + g.length + "</span></h2>" + '<div class="tiles">' + g.map(tile).join("") + "</div>" : ""; }).join(""); }
 function pgArea(k){ const a = CAREAS.find(x => x[0] === k), i = CAREAS.indexOf(a), pr = CAREAS[i - 1], nx = CAREAS[i + 1];
-  return '<p class="eyebrow">Estudiar por área · ' + (i + 1) + " de " + CAREAS.length + "</p><h1>" + a[1] + '</h1><p class="lead">' + a[2] + "</p>" + areaTiles(a[3]) +
+  return '<div class="area-head"><div><p class="eyebrow">Estudiar por área · ' + (i + 1) + " de " + CAREAS.length + "</p><h1>" + a[1] + '</h1><p class="lead">' + a[2] + "</p></div>" + (typeof areaArt === "function" ? areaArt(a[0], a[1]) : "") + "</div>" + areaTiles(a[3]) +
     '<div class="pager">' + (pr ? '<button class="btn ghost" type="button" data-go="' + AREA_ID(pr) + '">← ' + pr[1] + "</button>" : "<span></span>") + (nx ? '<button class="btn ghost" type="button" data-go="' + AREA_ID(nx) + '">' + nx[1] + " →</button>" : "") + "</div>"; }
 function pgPorArea(){
   return '<p class="eyebrow">Navegación</p><h1>Estudiar por área</h1><p class="lead">Cada área reúne los ramos de tu malla, la teoría, las calculadoras y los simuladores del mismo tema. Un tema puede aparecer en más de un área cuando se usa en ambas.</p>' +
@@ -11234,7 +11335,7 @@ function tpl8HTML(id, html){ if (window.__noT8) return html;
   SEC.forEach((k, i) => { const sec = document.createElement("section"); sec.className = "t8-b"; sec.id = "t8-" + k; sec.setAttribute("aria-labelledby", "t8h-" + k);
     sec.innerHTML = '<h2 class="t8-h" id="t8h-' + k + '"><span class="t8-n">' + (i + 1) + "</span>" + NAME[k] + "</h2>";
     B[k].forEach(d => sec.appendChild(d)); wrap.appendChild(sec); });
-  if (typeof expBar === "function" && !R.querySelector('.expb [data-kind="ramo"],.expb [data-kind="saber"]')) wrap.querySelector(".t8-nav").insertAdjacentHTML("afterend", expBar("pagina", id));
+  if (typeof expBar === "function" && !R.querySelector('.expb [data-kind="ramo"],.expb [data-kind="saber"],.expb [data-kind="guia"]')) wrap.querySelector(".t8-nav").insertAdjacentHTML("afterend", expBar("pagina", id));
   else wrap.querySelector(".t8-nav").insertAdjacentHTML("afterend", '<div class="actions no-print t8-exp">' + prnBtn + "</div>");
   if (anchor && anchor.parentNode === host) host.insertBefore(wrap, anchor); else host.appendChild(wrap);
   if (isCalc) { const hint = kid1(host, "p.hint"); if (hint) hint.textContent = "Primero las fórmulas y el método; después un ejemplo resuelto, los errores más comunes y ejercicios para practicar."; }
@@ -11483,7 +11584,7 @@ function FC(nodes, cap){
     if (n.side) { const s = n.side, sd = dims(s); g += '<line class="dga" x1="' + (CX + d.w / 2) + '" y1="' + cy + '" x2="' + (SX - sd.w / 2 - 2) + '" y2="' + cy + '" marker-end="url(#' + mk + ')"/><text x="' + (CX + d.w / 2 + 8) + '" y="' + (cy - 7) + '" class="mu">' + esc((n.lbl || ["No", "Sí"])[1]) + "</text>" + shape(s, SX, cy, sd) + dgText(SX, cy, sd.L);
       if (s.to != null && out[s.to]) { const tg = out[s.to], tx = CX + tg.d.w / 2 + 2, up = tg.cy < cy, sy = up ? cy - sd.h / 2 : cy + sd.h / 2;
         g += '<polyline class="dga" points="' + SX + "," + sy + " " + SX + "," + tg.cy + " " + tx + "," + tg.cy + '" marker-end="url(#' + mk + ')"/>'; } } });
-  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagrama de flujo" style="min-width:440px">' + dgDefs(mk) + g + '</svg></div><figcaption>' + (cap || "") + ' Símbolos: óvalo = inicio/fin; rectángulo = proceso; paralelogramo = entrada/salida; rombo = decisión.</figcaption></figure>'; }
+  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagrama de flujo">' + dgDefs(mk) + dgGrid("fg" + mk, W, H) + g + '</svg></div><figcaption>' + (cap || "") + ' Símbolos: óvalo = inicio/fin; rectángulo = proceso; paralelogramo = entrada/salida; rombo = decisión.</figcaption></figure>'; }
 
 /* Layout de 2 × 2 áreas: compara dos disposiciones con líneas de flujo de grosor proporcional a los viajes */
 function LAYD(names, flows, a, b, cap){
@@ -11497,7 +11598,7 @@ function LAYD(names, flows, a, b, cap){
     g += labs;
     g += '<text x="' + (ox + PW / 2) + '" y="' + (34 + 2 * cell + 22) + '" text-anchor="middle" class="mu">Viajes × m = ' + total + "</text>"; return g; };
   const W = 2 * PW + 20, H = 34 + 2 * cell + 34;
-  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Comparación de layouts" style="min-width:420px">' + panel(a[0], 0, a[1], a[2]) + panel(b[0], PW + 20, b[1], b[2]) + "</svg></div><figcaption>" + (cap || "") + "</figcaption></figure>"; }
+  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Comparación de layouts">' + dgGrid("lg" + (++DGN), W, H) + panel(a[0], 0, a[1], a[2]) + panel(b[0], PW + 20, b[1], b[2]) + "</svg></div><figcaption>" + (cap || "") + "</figcaption></figure>"; }
 /* ============ FASE 2 · ÁREA D: PRODUCCIÓN Y PROCESOS ============
    Números verificados con cálculo independiente y con las calculadoras de la app. Empresas y cifras ilustrativas. */
 
@@ -12641,41 +12742,40 @@ function pgPruebas(){
 /* ---------- Ishikawa: textos completos (ajuste de línea), cabeza siempre visible y alto según el número de causas ---------- */
 function ishiSVG(problem, cats){
   const nT = Math.ceil(cats.length / 2), top = cats.slice(0, nT), bot = cats.slice(nT), nC = Math.max(top.length, bot.length, 1);
-  const W = 1040, xh = 790, colW = (xh - 40) / nC, chars = Math.max(14, Math.floor((colW - 46) / 6.4));
-  const prep = c => ({ name:dgWrap(c[0], Math.max(14, Math.floor(colW / 7.5))).slice(0, 2), causes:c[1].slice(0, 6).map(t => dgWrap(t, chars).slice(0, 3)) });
+  const W = 1080, xh = 800, colW = (xh - 40) / nC, chars = Math.max(14, Math.floor((colW - 46) / 7.2));
+  const prep = c => ({ name:dgWrap(c[0], Math.max(12, Math.floor(colW / 8.4))).slice(0, 2), causes:c[1].slice(0, 6).map(t => dgWrap(t, chars).slice(0, 3)) });
   const T = top.map(prep), B = bot.map(prep);
-  const need = arr => Math.max(3, ...arr.map(c => c.causes.reduce((s, x) => s + x.length * 13 + 12, 0)));
-  const hTop = need(T) + 50, hBot = need(B) + 50, y0 = hTop + 20, H = y0 + hBot + 20;
-  let g = '<line class="s1" x1="30" y1="' + y0 + '" x2="' + xh + '" y2="' + y0 + '" style="stroke-width:3"/><polygon class="d1" points="' + xh + "," + (y0 - 10) + " " + (xh + 16) + "," + y0 + " " + xh + "," + (y0 + 10) + '"/>';
-  const pl = dgWrap(problem || "Problema", 24).slice(0, 6), bh = Math.max(70, pl.length * 16 + 26);
-  g += '<rect class="boxc" x="' + (xh + 22) + '" y="' + (y0 - bh / 2) + '" width="' + (W - xh - 30) + '" height="' + bh + '" rx="8"/>' + dgText(xh + 22 + (W - xh - 30) / 2, y0, pl, { lh:16, st:"font-weight:700" });
-  const branch = (c, j, up) => { const xa = 40 + colW * (j + 1) - 14, ey = up ? 34 : H - 34, dx = Math.min(90, colW * 0.4), xb = xa - dx; let s = '<line class="s2" x1="' + xb + '" y1="' + ey + '" x2="' + xa + '" y2="' + y0 + '" style="stroke-width:2"/>';
-    s += dgText(xb, up ? ey - 14 - (c.name.length - 1) * 7 : ey + 14 + (c.name.length - 1) * 7, c.name, { lh:14, st:"font-weight:700" });
+  const need = arr => Math.max(3, ...arr.map(c => c.causes.reduce((s, x) => s + x.length * 15 + 12, 0)));
+  const hTop = need(T) + 64, hBot = need(B) + 64, y0 = hTop + 20, H = y0 + hBot + 20, gid = "ig" + (++DGN);
+  let g = dgGrid(gid, W, H) + '<line class="ishi-sp" x1="30" y1="' + y0 + '" x2="' + xh + '" y2="' + y0 + '"/><polygon class="ishi-ah" points="' + xh + "," + (y0 - 11) + " " + (xh + 18) + "," + y0 + " " + xh + "," + (y0 + 11) + '"/>';
+  const pl = dgWrap(problem || "Problema", 22).slice(0, 6), bh = Math.max(76, pl.length * 18 + 28);
+  g += '<rect class="ishi-ef" x="' + (xh + 26) + '" y="' + (y0 - bh / 2) + '" width="' + (W - xh - 34) + '" height="' + bh + '" rx="12"/>' + dgText(xh + 26 + (W - xh - 34) / 2, y0, pl, { lh:18, cls:"ishi-eft" });
+  const branch = (c, j, up) => { const xa = 40 + colW * (j + 1) - 14, ey = up ? 46 : H - 46, dx = Math.min(90, colW * 0.4), xb = xa - dx; let s = '<line class="ishi-bn" x1="' + xb + '" y1="' + ey + '" x2="' + xa + '" y2="' + y0 + '"/>';
+    const nw = Math.min(colW - 12, Math.max(...c.name.map(l => l.length)) * 8 + 24), nh = c.name.length * 16 + 12, ny = up ? ey - 10 - nh : ey + 10;
+    s += '<rect class="ishi-cat" x="' + (xb - nw / 2) + '" y="' + ny + '" width="' + nw + '" height="' + nh + '" rx="' + nh / 2 + '"/>' + dgText(xb, ny + nh / 2, c.name, { lh:16, cls:"ishi-catt" });
     let acc = 22; const span = Math.abs(y0 - ey);
-    c.causes.forEach(L => { const hh = L.length * 13 + 12, f = (acc + hh / 2) / (span + 10); acc += hh; const yy = up ? ey + f * span : ey - f * span, xx = xb + (xa - xb) * f;
-      s += '<line class="sm" x1="' + (xx - 14) + '" y1="' + yy + '" x2="' + xx + '" y2="' + yy + '"/>' + dgText(xx - 18, yy, L, { a:"end", lh:13, st:"font-size:11px" }); });
+    c.causes.forEach(L => { const hh = L.length * 15 + 12, f = (acc + hh / 2) / (span + 10); acc += hh; const yy = up ? ey + f * span : ey - f * span, xx = xb + (xa - xb) * f;
+      s += '<line class="ishi-cz" x1="' + (xx - 16) + '" y1="' + yy + '" x2="' + xx + '" y2="' + yy + '"/><circle class="ishi-dot" cx="' + xx + '" cy="' + yy + '" r="2.5"/>' + dgText(xx - 20, yy, L, { a:"end", lh:15 }); });
     return s; };
   T.forEach((c, j) => g += branch(c, j, true)); B.forEach((c, j) => g += branch(c, j + (nC - B.length) / 2, false));
-  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagrama de Ishikawa" style="min-width:640px">' + g + '</svg></div><figcaption>Las causas más probables se verifican con datos (Pareto, gráficos de control, pruebas) antes de actuar. En el celular desliza el diagrama hacia el lado.</figcaption></figure>';
+  return '<figure class="ch dg ishi"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagrama de Ishikawa">' + g + '</svg></div><figcaption>Las causas más probables se verifican con datos (Pareto, gráficos de control, pruebas) antes de actuar. En el celular desliza el diagrama hacia el lado.</figcaption></figure>';
 }
-
-/* ---------- Red de actividades (actividad en el nodo) con la ruta crítica destacada ---------- */
 function cpmNet(A, order){
   const lev = {}; order.forEach(id => { lev[id] = A[id].p.length ? 1 + Math.max.apply(null, A[id].p.map(p => lev[p])) : 0; });
   const cols = {}; order.forEach(id => (cols[lev[id]] = cols[lev[id]] || []).push(id));
   const nL = Object.keys(cols).length, maxR = Math.max.apply(null, Object.values(cols).map(c => c.length));
-  const bw = 132, bh = 72, gx = 54, gy = 26, W = 30 + nL * (bw + gx), H = 30 + maxR * (bh + gy), P = {}, mk = "na" + (++DGN);
+  const bw = 140, bh = 80, gx = 60, gy = 28, W = 40 + nL * (bw + gx) - gx + 20, H = 40 + maxR * (bh + gy) - gy, P = {}, mk = "na" + (++DGN), mkc = mk + "c";
   Object.keys(cols).forEach(l => { const c = cols[l], off = (maxR - c.length) * (bh + gy) / 2; c.forEach((id, r) => { P[id] = [20 + l * (bw + gx), 20 + off + r * (bh + gy)]; }); });
   const f = x => nf(x, Math.abs(x - Math.round(x)) < 1e-9 ? 0 : 1);
-  let g = dgDefs(mk);
+  let g = dgGrid("cg" + mk, W, H) + '<defs><marker id="' + mk + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="dgah"/></marker><marker id="' + mkc + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="cpm-ahc"/></marker></defs>';
   order.forEach(id => A[id].p.forEach(p => { const crit = A[id].crit && A[p].crit && Math.abs(A[p].EF - A[id].ES) < 1e-9, [x1, y1] = P[p], [x2, y2] = P[id];
-    g += '<path d="M' + (x1 + bw) + "," + (y1 + bh / 2) + " C" + (x1 + bw + gx / 2) + "," + (y1 + bh / 2) + " " + (x2 - gx / 2) + "," + (y2 + bh / 2) + " " + (x2 - 2) + "," + (y2 + bh / 2) + '" class="' + (crit ? "dgcrit" : "dga") + '" marker-end="url(#' + mk + ')"/>'; }));
+    g += '<path d="M' + (x1 + bw) + "," + (y1 + bh / 2) + " C" + (x1 + bw + gx / 2) + "," + (y1 + bh / 2) + " " + (x2 - gx / 2) + "," + (y2 + bh / 2) + " " + (x2 - 2) + "," + (y2 + bh / 2) + '" class="cpm-e' + (crit ? " crit" : "") + '" data-a="' + esc(p) + '" data-b="' + esc(id) + '" marker-end="url(#' + (crit ? mkc : mk) + ')"/>'; }));
   order.forEach(id => { const a = A[id], [x, y] = P[id];
-    g += '<rect x="' + x + '" y="' + y + '" width="' + bw + '" height="' + bh + '" rx="6" class="' + (a.crit ? "boxc" : "box") + '"/><line class="gr" x1="' + x + '" y1="' + (y + 22) + '" x2="' + (x + bw) + '" y2="' + (y + 22) + '"/><line class="gr" x1="' + x + '" y1="' + (y + bh - 22) + '" x2="' + (x + bw) + '" y2="' + (y + bh - 22) + '"/>' +
-      '<text x="' + (x + 8) + '" y="' + (y + 15) + '" class="mu">' + f(a.ES) + '</text><text x="' + (x + bw / 2) + '" y="' + (y + 15) + '" text-anchor="middle" class="mu">' + f(a.te) + '</text><text x="' + (x + bw - 8) + '" y="' + (y + 15) + '" text-anchor="end" class="mu">' + f(a.EF) + "</text>" +
-      '<text x="' + (x + bw / 2) + '" y="' + (y + bh / 2 + 5) + '" text-anchor="middle" style="font-weight:700;font-size:14px">' + esc(id) + "</text>" +
-      '<text x="' + (x + 8) + '" y="' + (y + bh - 7) + '" class="mu">' + f(a.LS) + '</text><text x="' + (x + bw / 2) + '" y="' + (y + bh - 7) + '" text-anchor="middle" class="mu">H ' + f(a.HT) + '</text><text x="' + (x + bw - 8) + '" y="' + (y + bh - 7) + '" text-anchor="end" class="mu">' + f(a.LF) + "</text>"; });
-  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Red del proyecto" style="min-width:' + Math.min(W, 640) + 'px">' + g + '</svg></div><figcaption>Red del proyecto (actividad en el nodo). Arriba: inicio temprano · duración · término temprano. Abajo: inicio tardío · holgura · término tardío. En cobre, la ruta crítica.</figcaption></figure>';
+    g += '<g class="cpm-n' + (a.crit ? " crit" : "") + '" data-n="' + esc(id) + '" data-tip="' + esc(id + ": duración " + f(a.te) + " · inicio " + f(a.ES) + "–" + f(a.LS) + " · holgura " + f(a.HT) + (a.crit ? " · crítica" : "")) + '"><rect x="' + x + '" y="' + y + '" width="' + bw + '" height="' + bh + '" rx="10" class="cpm-b"/><path d="M' + x + "," + (y + 24) + "h" + bw + "M" + x + "," + (y + bh - 24) + "h" + bw + '" class="cpm-l"/>' +
+      '<text x="' + (x + 10) + '" y="' + (y + 17) + '" class="mu">' + f(a.ES) + '</text><text x="' + (x + bw / 2) + '" y="' + (y + 17) + '" text-anchor="middle" class="mu">' + f(a.te) + '</text><text x="' + (x + bw - 10) + '" y="' + (y + 17) + '" text-anchor="end" class="mu">' + f(a.EF) + "</text>" +
+      '<text x="' + (x + bw / 2) + '" y="' + (y + bh / 2 + 6) + '" text-anchor="middle" class="cpm-id">' + esc(id) + "</text>" +
+      '<text x="' + (x + 10) + '" y="' + (y + bh - 8) + '" class="mu">' + f(a.LS) + '</text><text x="' + (x + bw / 2) + '" y="' + (y + bh - 8) + '" text-anchor="middle" class="mu">H ' + f(a.HT) + '</text><text x="' + (x + bw - 10) + '" y="' + (y + bh - 8) + '" text-anchor="end" class="mu">' + f(a.LF) + "</text></g>"; });
+  return '<figure class="ch dg cpmnet"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Red del proyecto">' + g + '</svg></div><figcaption>Red del proyecto (actividad en el nodo). Arriba: inicio temprano · duración · término temprano. Abajo: inicio tardío · holgura · término tardío. En cobre, la ruta crítica.</figcaption></figure>';
 }
 
 /* ---------- Región factible: deslizador de la recta del objetivo ---------- */
@@ -12704,7 +12804,7 @@ function liveRes(id){
   S.v[id] = collect(id); S.done[id] = Date.now(); S.snap[id] = JSON.stringify(S.v[id]); save();
   const t = document.createElement("template"); t.innerHTML = mFill(calcPage(id)); const nr = t.content.querySelector("#res"), or = document.getElementById("res"); if (!nr || !or) return;
   const det = or.querySelector("details.usados"); if (det && det.open) { const d2 = nr.querySelector("details.usados"); if (d2) d2.open = true; }
-  or.replaceWith(nr); try { abbrify(nr); } catch (e) {} try { calloutCap(document.getElementById("app")); } catch (e) {} try { wrapWide(nr); katexMotor(nr); } catch (e) {} try { nr.querySelectorAll(".qsl").forEach(eoqSlUpd); } catch (e) {}
+  or.replaceWith(nr); try { abbrify(nr); } catch (e) {} try { calloutCap(document.getElementById("app")); } catch (e) {} try { diagramsAfter(nr); svgA11y(nr); } catch (e) {} try { wrapWide(nr); katexMotor(nr); } catch (e) {} try { nr.querySelectorAll(".qsl").forEach(eoqSlUpd); } catch (e) {}
 }
 document.addEventListener("input", e => { const el = e.target; if (!el.dataset || !el.dataset.c || !el.dataset.k || LIVE_SKIP.has(el.dataset.c) || !liveOn()) return; clearTimeout(liveT); const id = el.dataset.c; liveT = setTimeout(() => liveRes(id), 650); });
 document.addEventListener("change", e => { const el = e.target; if (el.matches && el.matches("[data-live-toggle]")) { try { localStorage.setItem(KEY + "-live", el.checked ? "1" : "0"); } catch (er) {} toast(el.checked ? "El resultado se actualizará mientras escribes" : "El resultado se actualizará al presionar Calcular"); return; }
@@ -12777,7 +12877,7 @@ function a11yScroll(root){ if (!root || !root.querySelectorAll) return;
     if (!/auto|scroll/.test(cs.overflowX + cs.overflowY)) return; if (el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight) { el.tabIndex = 0; if (!el.getAttribute("role")) el.setAttribute("role", "region"); if (!el.getAttribute("aria-label")) el.setAttribute("aria-label", "Contenido desplazable"); } }); }
 document.addEventListener("toggle", e => { if (e.target && e.target.tagName === "DETAILS" && e.target.open) a11yScroll(e.target); }, true);
 window.addEventListener("resize", () => { clearTimeout(a11yScroll.t); a11yScroll.t = setTimeout(() => a11yScroll(document.getElementById("app")), 300); });
-try { const A = document.getElementById("app"); if (A && window.MutationObserver) new MutationObserver(() => { clearTimeout(a11yScroll.m); a11yScroll.m = setTimeout(() => a11yScroll(A), 250); }).observe(A, { childList:true, subtree:true }); } catch (e) {}
+try { const A = document.getElementById("app"); if (A && window.MutationObserver) new MutationObserver(() => { clearTimeout(a11yScroll.m); a11yScroll.m = setTimeout(() => { a11yScroll(A); try { svgA11y(A); } catch (e) {} }, 250); }).observe(A, { childList:true, subtree:true }); } catch (e) {}
 /* ============ COMPLETAR TEMAS · LOTE 1: FUNDAMENTOS (bloques pendientes) ============
    Registro T2 parcial: solo se agregan los bloques que faltaban; el resto del tema se conserva. */
 const apl = (t, h) => '<div class="c-ex"><div class="c-h">Aplicación rápida · ' + t + "</div>" + h + "</div>";
@@ -13662,6 +13762,94 @@ function t8Spy(root){ if (T8_IO) { T8_IO.disconnect(); T8_IO = null; } const tab
     tabs.querySelectorAll("[aria-current]").forEach(b => b.removeAttribute("aria-current")); const b = tabs.querySelector('[data-t8="' + f.id.slice(3) + '"]');
     if (b) { b.setAttribute("aria-current", "true"); const l = b.offsetLeft - 16; if (Math.abs(tabs.scrollLeft - l) > 40) tabs.scrollTo({ left:l, behavior:"auto" }); } }, { rootMargin:"-120px 0px -55% 0px" });
   secs.forEach(x => T8_IO.observe(x)); }
+/* ============ F4 · DIAGRAMAS: accesibilidad, legibilidad y tooltips ============
+   Se aplica a todos los SVG de la página después de dibujarla (no cambia el texto que generan las calculadoras):
+   - <title> y <desc> en cada diagrama, enlazados con aria-labelledby;
+   - escala mínima para que ningún texto se vea bajo 12 px (si no cabe, el diagrama se desplaza en horizontal);
+   - tooltip propio para puntos y barras con data-tip (mouse, teclado y toque). */
+let SVGN = 0;
+function svgA11y(root){
+  root.querySelectorAll("svg").forEach(s => { if (s.classList.contains("icon") || s.id === "icoSprite" || s.closest(".mblk,.mx")) return;
+    const vb = s.viewBox && s.viewBox.baseVal, vw = vb && vb.width;
+    if (!s.getAttribute("role")) s.setAttribute("role", "img");
+    if (!s.querySelector(":scope > title")) { const fig = s.closest("figure"), cap = fig && fig.querySelector("figcaption"), lab = s.getAttribute("aria-label") || (cap && cap.textContent.trim().split(/[.:]/)[0]) || "Diagrama";
+      const n = ++SVGN, t = document.createElementNS("http://www.w3.org/2000/svg", "title"), d = document.createElementNS("http://www.w3.org/2000/svg", "desc");
+      t.id = "svt" + n; t.textContent = lab; d.id = "svd" + n; d.textContent = svgDesc(s, cap, lab); s.insertBefore(d, s.firstChild); s.insertBefore(t, s.firstChild);
+      s.setAttribute("aria-labelledby", t.id + " " + d.id); s.removeAttribute("aria-label"); }
+    /* legibilidad: el texto base mide 13 unidades; con escala ≥ 0,93 se ve a 12 px o más */
+    if (!s.dataset.w) s.querySelectorAll("text,tspan").forEach(t => { const fs = parseFloat(t.style.fontSize || t.getAttribute("font-size") || 0); if (fs && fs < 13) { t.style.fontSize = "13px"; t.removeAttribute("font-size"); } });
+    if (vw && s.dataset.w && s.getBoundingClientRect().width && s.getBoundingClientRect().width < vw - 1) s.style.minWidth = vw + "px";  /* gráfico en un contenedor más angosto: se desplaza en vez de achicarse */
+    if (vw && !s.dataset.w && !s.closest(".tile,.mod,.area-art")) { const min = Math.round(vw * 0.93); if (!s.style.minWidth || parseFloat(s.style.minWidth) < min) s.style.minWidth = min + "px"; } });
+}
+function svgDesc(s, cap, lab){
+  const pts = s.querySelectorAll(".pt").length, bad = s.querySelectorAll(".pt.db").length, bars = s.querySelectorAll("rect.bar1,rect.bar2,rect.bar3").length, refs = [...s.querySelectorAll("text.lg")].map(t => t.textContent.trim()).filter(Boolean);
+  const parts = [];
+  if (pts) parts.push(pts + " puntos" + (bad ? ", " + bad + " fuera de control" : ""));
+  if (bars) parts.push(bars + " barras");
+  if (refs.length) parts.push("líneas de referencia: " + refs.slice(0, 6).join(", "));
+  const c = cap ? cap.textContent.trim() : ""; return (c && c !== lab ? c + " " : "") + (parts.length ? parts.join("; ") + "." : "");
+}
+/* tooltip */
+let TIP = null;
+function tipShow(el, x, y){ if (!TIP) { TIP = document.createElement("div"); TIP.className = "ctip"; TIP.setAttribute("role", "tooltip"); document.body.appendChild(TIP); }
+  TIP.textContent = el.dataset.tip; TIP.hidden = false; const r = TIP.getBoundingClientRect(), vw = document.documentElement.clientWidth;
+  TIP.style.left = Math.max(8, Math.min(vw - r.width - 8, x - r.width / 2)) + "px"; TIP.style.top = Math.max(8, y - r.height - 12) + "px"; el.classList.add("hot"); }
+function tipHide(){ if (TIP) TIP.hidden = true; document.querySelectorAll("#app .hot").forEach(e => e.classList.remove("hot")); }
+document.addEventListener("pointerover", e => { const el = e.target.closest && e.target.closest("#app svg [data-tip]"); if (!el) return; tipHide(); tipShow(el, e.clientX, e.clientY); });
+document.addEventListener("pointerout", e => { if (e.target.closest && e.target.closest("#app svg [data-tip]")) tipHide(); });
+document.addEventListener("scroll", tipHide, { passive:true });
+/* al girar el celular o cambiar mucho el ancho, los gráficos se vuelven a dibujar a la nueva medida */
+let RSZ = null, RSW = 0;
+window.addEventListener("resize", () => { clearTimeout(RSZ); RSZ = setTimeout(() => { const a = document.getElementById("app"); if (!a || !a.querySelector("svg[data-w]")) return; const w = a.clientWidth;
+  if (RSW && Math.abs(w - RSW) / RSW > 0.15 && typeof render === "function") render(true); RSW = w; }, 350); });
+
+/* ---------- Rótulos diferidos (data-t) y diagramas dibujados al mostrar la página ---------- */
+const SVGNS = "http://www.w3.org/2000/svg";
+function fillDataText(root){ root.querySelectorAll("svg text[data-t]").forEach(t => { if (t.firstChild) return; const n = +t.dataset.w || 0, L = n ? dgWrap(t.dataset.t, n).slice(0, 2) : [t.dataset.t];
+  if (L.length === 1) { t.textContent = L[0]; return; } const y = +t.getAttribute("y"), x = t.getAttribute("x");
+  L.forEach((l, i) => { const s = document.createElementNS(SVGNS, "tspan"); s.setAttribute("x", x); s.setAttribute("y", y + (i - (L.length - 1) / 2) * 15); s.textContent = l; t.appendChild(s); }); }); }
+function drawVsm(fig){ let d; try { d = JSON.parse(fig.dataset.vsm); } catch (e) { return; } const P = d.P || []; if (!P.length || fig.querySelector("svg")) return;
+  const bw = 138, iw = 64, step = bw + iw, W = 24 + P.length * step + 150, H = 300, yb = 92, bh = 96, f1 = v => nf(v, v < 10 ? 1 : 0);
+  let g = '<defs><marker id="vsa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="dgah"/></marker></defs>';
+  let tx = 24, ladder = [], LT = 0, VA = 0;
+  P.forEach((p, i) => { const days = d.dd ? p[2] / d.dd : 0, x = tx + iw, cx = tx + iw / 2; LT += days; VA += p[1];
+    g += '<path d="M' + (cx - 20) + "," + (yb + 74) + " L" + cx + "," + (yb + 38) + " L" + (cx + 20) + "," + (yb + 74) + ' Z" class="vsm-inv"/><text x="' + cx + '" y="' + (yb + 68) + '" text-anchor="middle" class="vsm-i">I</text><text x="' + cx + '" y="' + (yb + 92) + '" text-anchor="middle" class="mu">' + n0(p[2]) + "</text>";
+    g += '<g data-tip="' + esc(p[0] + ": ciclo " + nf(p[1], 0) + " s" + (p[1] > d.takt ? " (sobre el takt)" : "") + " · " + p[3] + " operario(s)") + '"><rect x="' + x + '" y="' + yb + '" width="' + (bw - 20) + '" height="' + bh + '" rx="10" class="vsm-p' + (p[1] > d.takt ? " over" : "") + '"/><path d="M' + x + "," + (yb + 30) + "h" + (bw - 20) + '" class="cpm-l"/>' +
+      '<text x="' + (x + (bw - 20) / 2) + '" y="' + (yb + 20) + '" text-anchor="middle" class="vsm-n">' + esc(String(p[0]).slice(0, 14)) + '</text><text x="' + (x + 10) + '" y="' + (yb + 52) + '" class="mu">C/T ' + nf(p[1], 0) + ' s</text><text x="' + (x + 10) + '" y="' + (yb + 72) + '" class="mu">Operarios ' + p[3] + "</text></g>";
+    if (i < P.length - 1) g += '<line class="vsm-push" x1="' + (x + bw - 18) + '" y1="' + (yb + bh / 2) + '" x2="' + (x + bw + iw - 22) + '" y2="' + (yb + bh / 2) + '" marker-end="url(#vsa)"/>';
+    ladder.push([tx, x, x + bw - 20, days, p[1]]); tx += step; });
+  const yL = 236, yH = 268; let path = "M" + 24 + "," + yL;
+  ladder.forEach(l => { path += " L" + l[1] + "," + yL + " L" + l[1] + "," + yH + " L" + l[2] + "," + yH + " L" + l[2] + "," + yL; g += '<text x="' + (l[0] + iw / 2) + '" y="' + (yL - 8) + '" text-anchor="middle" class="mu">' + f1(l[3]) + ' d</text><text x="' + ((l[1] + l[2]) / 2) + '" y="' + (yH + 18) + '" text-anchor="middle" class="mu">' + nf(l[4], 0) + " s</text>"; });
+  g += '<path d="' + path + '" class="vsm-lad"/>';
+  const sx = tx + 20; g += '<rect x="' + sx + '" y="' + (yL - 22) + '" width="128" height="84" rx="10" class="vsm-sum"/><text x="' + (sx + 12) + '" y="' + yL + '" class="mu">Lead time</text><text x="' + (sx + 12) + '" y="' + (yL + 20) + '" class="vsm-big">' + nf(LT, 1) + ' días</text><text x="' + (sx + 12) + '" y="' + (yL + 42) + '" class="mu">Valor agregado ' + nf(VA, 0) + " s</text>";
+  g += '<text x="24" y="28" class="vsm-n">Flujo de valor: proveedor → cliente</text><text x="24" y="48" class="mu">Takt ' + nf(d.takt, 1) + " s · demanda " + n0(d.dd) + " unid/día · los procesos sobre el takt se marcan en cobre</text>";
+  fig.querySelector(".sv").innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Mapa de flujo de valor (VSM)" style="min-width:' + Math.round(W * 0.93) + 'px">' + g + "</svg>";
+  if (!fig.querySelector("figcaption")) fig.insertAdjacentHTML("beforeend", "<figcaption>Triángulos: inventario que espera antes de cada proceso (en unidades). Escalera: arriba, días de espera; abajo, segundos que agregan valor. La diferencia entre ambos es el desperdicio que ataca Lean.</figcaption>"); }
+/* red CPM: resaltar ruta crítica y dependencias */
+function cpmUI(fig){ if (fig.querySelector(".cpm-tb")) return; fig.insertAdjacentHTML("afterbegin", '<div class="cpm-tb no-print"><button class="chip" type="button" aria-pressed="false" data-cpmcrit="1">Resaltar ruta crítica</button><span class="hint">Pasa el puntero o toca una actividad para ver de qué depende.</span></div>'); }
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-cpmcrit]"); if (!b) return; const f = b.closest("figure"), on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", on); f.classList.toggle("crit-only", on); });
+function cpmHi(n, on){ const svg = n.closest("svg"), id = n.dataset.n; svg.classList.toggle("hov", on); svg.querySelectorAll(".cpm-e").forEach(e => { const r = on && (e.dataset.a === id || e.dataset.b === id); e.classList.toggle("nb", r); if (r) svg.querySelectorAll('.cpm-n[data-n="' + CSS.escape(e.dataset.a === id ? e.dataset.b : e.dataset.a) + '"]').forEach(x => x.classList.add("nb")); }); n.classList.toggle("nb", on); if (!on) svg.querySelectorAll(".nb").forEach(x => x.classList.remove("nb")); }
+document.addEventListener("pointerover", e => { const n = e.target.closest && e.target.closest("#app .cpm-n"); if (n) cpmHi(n, true); });
+document.addEventListener("pointerout", e => { const n = e.target.closest && e.target.closest("#app .cpm-n"); if (n) cpmHi(n, false); });
+function diagramsAfter(root){ fillDataText(root); root.querySelectorAll("figure.vsm-map").forEach(drawVsm); root.querySelectorAll("figure.cpmnet").forEach(cpmUI); }
+/* ============ F4 · ILUSTRACIONES POR ÁREA ============
+   Una ilustración técnica abstracta por área (360 × 150), dibujada solo con el color del área (--ac) y los
+   neutros del sistema: se adapta sola al tema claro u oscuro. Cada una pesa menos de 2 KB. */
+const ART = {
+  mat:'<path class="ar-g" d="M20 120H340M40 20V130"/><path class="ar-s" d="M40 115C90 112 110 40 160 38S240 110 290 60 330 30 340 28"/><circle class="ar-f" cx="160" cy="38" r="5"/><path class="ar-t" d="M150 38H200M160 30V48"/><text class="ar-x" x="236" y="46">f′(x) = 0</text>',
+  est:'<path class="ar-g" d="M20 130H340"/>' + [0.15, 0.32, 0.58, 0.86, 1, 0.84, 0.6, 0.34, 0.16].map((h, i) => '<rect class="ar-b" x="' + (66 + i * 26) + '" y="' + (130 - h * 96) + '" width="20" height="' + h * 96 + '" rx="3"/>').join("") + '<path class="ar-s" d="M50 128C110 126 140 30 180 30S250 126 310 128"/><path class="ar-t" d="M180 24V134"/>',
+  io:'<path class="ar-l" d="M48 75 120 35 200 60 280 30 320 90M48 75 110 115 200 60M110 115 230 120 320 90M200 60 230 120"/><path class="ar-s" d="M48 75 120 35 200 60 230 120 320 90"/>' + [[48, 75], [120, 35], [110, 115], [200, 60], [280, 30], [230, 120], [320, 90]].map(p => '<circle class="ar-n" cx="' + p[0] + '" cy="' + p[1] + '" r="9"/>').join(""),
+  prod:'<g class="ar-gear" transform="translate(110 70)"><circle r="30" class="ar-n"/><circle r="10" class="ar-h"/><path class="ar-s" d="M0-42V-30M0 30V42M-42 0H-30M30 0H42M-30-30-21-21M21 21 30 30M-30 30-21 21M21-21 30-30"/></g><g transform="translate(176 52)"><circle r="18" class="ar-n"/><circle r="6" class="ar-h"/></g><path class="ar-g" d="M40 128H330"/>' + [0, 1, 2, 3, 4].map(i => '<rect class="ar-b" x="' + (200 + i * 26) + '" y="106" width="18" height="18" rx="3"/>').join("") + '<path class="ar-t" d="M200 132H330"/>',
+  cal:'<circle class="ar-l" cx="90" cy="75" r="52"/><circle class="ar-l" cx="90" cy="75" r="34"/><circle class="ar-f" cx="90" cy="75" r="10"/><path class="ar-t" d="M170 40H340M170 110H340"/><path class="ar-g" d="M170 75H340"/><path class="ar-s" d="M170 80 196 66 222 84 248 70 274 78 300 62 326 74"/>' + [[196, 66], [248, 70], [300, 62]].map(p => '<circle class="ar-f" cx="' + p[0] + '" cy="' + p[1] + '" r="4"/>').join(""),
+  log:'<path class="ar-l" d="M40 110C100 110 90 40 160 40S220 110 290 100"/><path class="ar-s" stroke-dasharray="2 8" d="M40 110C100 110 90 40 160 40S220 110 290 100"/>' + [[40, 110], [160, 40], [290, 100]].map(p => '<rect class="ar-b" x="' + (p[0] - 12) + '" y="' + (p[1] - 12) + '" width="24" height="24" rx="4"/>').join("") + '<path class="ar-n" d="M300 70h30v18h-30z"/><circle class="ar-f" cx="308" cy="92" r="4"/><circle class="ar-f" cx="324" cy="92" r="4"/>',
+  eco:'<path class="ar-g" d="M30 130H340"/>' + [24, 40, 34, 58, 72, 90].map((h, i) => '<rect class="ar-b" x="' + (48 + i * 34) + '" y="' + (130 - h) + '" width="22" height="' + h + '" rx="3"/>').join("") + '<path class="ar-s" d="M59 100 93 86 127 92 161 68 195 52 229 34"/><path class="ar-t" d="M270 40V90M262 82 270 90 278 82M300 120V70M292 78 300 70 308 78"/><circle class="ar-n" cx="320" cy="44" r="16"/>',
+  ges:'<rect class="ar-l" x="40" y="20" width="120" height="110" rx="6"/><path class="ar-g" d="M100 20V130M40 75H160"/><circle class="ar-f" cx="72" cy="48" r="6"/><circle class="ar-f" cx="128" cy="100" r="6"/><circle class="ar-n" cx="260" cy="75" r="50"/><path class="ar-s" d="M260 75 292 43M260 75 230 110"/><path class="ar-t" d="M260 20V32M260 118V130M205 75H217M303 75H315"/>',
+  prog:'<rect class="ar-l" x="30" y="22" width="170" height="106" rx="8"/><path class="ar-g" d="M30 42H200"/><path class="ar-s" d="M54 66 42 78 54 90M92 66 104 78 92 90"/><path class="ar-t" d="M120 66H180M120 82H164M120 98H174"/>' + [0, 1, 2, 3].map(r => [0, 1, 2].map(c => '<rect class="' + (r === 0 ? "ar-b" : "ar-h") + '" x="' + (226 + c * 38) + '" y="' + (28 + r * 26) + '" width="34" height="22" rx="3"/>').join("")).join(""),
+  seg:'<path class="ar-n" d="M100 18 52 36V72C52 102 74 124 100 134 126 124 148 102 148 72V36Z"/><path class="ar-s" d="M80 76 95 91 122 62"/><path class="ar-l" d="M250 28 310 128H190Z"/><path class="ar-s" d="M250 64V96M250 108V110"/>',
+  car:'<path class="ar-g" d="M30 132H340"/><path class="ar-s" d="M50 128H110V100H170V72H230V44H290"/><path class="ar-t" d="M290 44V16"/><path class="ar-n" d="M290 16H322L314 26 322 36H290Z"/>' + [[80, 128], [140, 100], [200, 72], [260, 44]].map(p => '<circle class="ar-f" cx="' + p[0] + '" cy="' + (p[1] - 10) + '" r="5"/>').join(""),
+  ref:[0, 1, 2, 3, 4].map(i => '<rect class="' + (i === 2 ? "ar-n" : "ar-b") + '" x="' + (60 + i * 30) + '" y="' + (40 + (i % 2) * 10) + '" width="24" height="' + (90 - (i % 2) * 10) + '" rx="3"/>').join("") + '<path class="ar-g" d="M40 130H340"/><path class="ar-l" d="M230 40H320V130H230Z"/><path class="ar-t" d="M246 62H304M246 80H304M246 98H284"/><path class="ar-s" d="M300 40V70L292 62 284 70V40"/>'
+};
+function areaArt(k, name){ return ART[k] ? '<figure class="area-art" style="--ac:var(--a-' + k + ')"><svg viewBox="0 0 360 150" role="img" aria-label="Ilustración del área ' + esc(name || "") + '">' + ART[k] + "</svg></figure>" : ""; }
 /* ============ PÁGINAS Y NAVEGACIÓN ============ */
 const GROUPS = { malla:"Mi malla (UNAB)", carrera:"Carrera y trabajo", eco:"Economía y finanzas", ops:"Producción y logística", trab:"Estudio del trabajo", cal:"Calidad y estadística", io:"Investigación de operaciones", seg:"Seguridad y ambiente", ges:"Gestión y mejora", inf:"Informes", rep:"Reportes", ind:"Industrias", sab:"Saberes de otras disciplinas", des:"Desarrollo personal y profesional", ofi:"Excel y Word", learn:"Aprender", sim:"Simuladores de software" };
 const indId = x => "ind-" + x[0].normalize("NFD").replace(/[̀-ͯ]/g, "");

@@ -47,7 +47,7 @@ const KINDS = [["ramo", "Ramos de tu malla"], ["teo", "Teoría, lecciones y mét
 function areaTiles(ids){ const ps = ids.map(id => PAGES.find(p => p.id === id)).filter(Boolean);
   return KINDS.map(k => { const g = ps.filter(p => kindOf(p) === k[0]); return g.length ? '<h2 class="sh">' + k[1] + ' <span class="cnt">' + g.length + "</span></h2>" + '<div class="tiles">' + g.map(tile).join("") + "</div>" : ""; }).join(""); }
 function pgArea(k){ const a = CAREAS.find(x => x[0] === k), i = CAREAS.indexOf(a), pr = CAREAS[i - 1], nx = CAREAS[i + 1];
-  return '<p class="eyebrow">Estudiar por área · ' + (i + 1) + " de " + CAREAS.length + "</p><h1>" + a[1] + '</h1><p class="lead">' + a[2] + "</p>" + areaTiles(a[3]) +
+  return '<div class="area-head"><div><p class="eyebrow">Estudiar por área · ' + (i + 1) + " de " + CAREAS.length + "</p><h1>" + a[1] + '</h1><p class="lead">' + a[2] + "</p></div>" + (typeof areaArt === "function" ? areaArt(a[0], a[1]) : "") + "</div>" + areaTiles(a[3]) +
     '<div class="pager">' + (pr ? '<button class="btn ghost" type="button" data-go="' + AREA_ID(pr) + '">← ' + pr[1] + "</button>" : "<span></span>") + (nx ? '<button class="btn ghost" type="button" data-go="' + AREA_ID(nx) + '">' + nx[1] + " →</button>" : "") + "</div>"; }
 function pgPorArea(){
   return '<p class="eyebrow">Navegación</p><h1>Estudiar por área</h1><p class="lead">Cada área reúne los ramos de tu malla, la teoría, las calculadoras y los simuladores del mismo tema. Un tema puede aparecer en más de un área cuando se usa en ambas.</p>' +

@@ -3,41 +3,40 @@
 /* ---------- Ishikawa: textos completos (ajuste de línea), cabeza siempre visible y alto según el número de causas ---------- */
 function ishiSVG(problem, cats){
   const nT = Math.ceil(cats.length / 2), top = cats.slice(0, nT), bot = cats.slice(nT), nC = Math.max(top.length, bot.length, 1);
-  const W = 1040, xh = 790, colW = (xh - 40) / nC, chars = Math.max(14, Math.floor((colW - 46) / 6.4));
-  const prep = c => ({ name:dgWrap(c[0], Math.max(14, Math.floor(colW / 7.5))).slice(0, 2), causes:c[1].slice(0, 6).map(t => dgWrap(t, chars).slice(0, 3)) });
+  const W = 1080, xh = 800, colW = (xh - 40) / nC, chars = Math.max(14, Math.floor((colW - 46) / 7.2));
+  const prep = c => ({ name:dgWrap(c[0], Math.max(12, Math.floor(colW / 8.4))).slice(0, 2), causes:c[1].slice(0, 6).map(t => dgWrap(t, chars).slice(0, 3)) });
   const T = top.map(prep), B = bot.map(prep);
-  const need = arr => Math.max(3, ...arr.map(c => c.causes.reduce((s, x) => s + x.length * 13 + 12, 0)));
-  const hTop = need(T) + 50, hBot = need(B) + 50, y0 = hTop + 20, H = y0 + hBot + 20;
-  let g = '<line class="s1" x1="30" y1="' + y0 + '" x2="' + xh + '" y2="' + y0 + '" style="stroke-width:3"/><polygon class="d1" points="' + xh + "," + (y0 - 10) + " " + (xh + 16) + "," + y0 + " " + xh + "," + (y0 + 10) + '"/>';
-  const pl = dgWrap(problem || "Problema", 24).slice(0, 6), bh = Math.max(70, pl.length * 16 + 26);
-  g += '<rect class="boxc" x="' + (xh + 22) + '" y="' + (y0 - bh / 2) + '" width="' + (W - xh - 30) + '" height="' + bh + '" rx="8"/>' + dgText(xh + 22 + (W - xh - 30) / 2, y0, pl, { lh:16, st:"font-weight:700" });
-  const branch = (c, j, up) => { const xa = 40 + colW * (j + 1) - 14, ey = up ? 34 : H - 34, dx = Math.min(90, colW * 0.4), xb = xa - dx; let s = '<line class="s2" x1="' + xb + '" y1="' + ey + '" x2="' + xa + '" y2="' + y0 + '" style="stroke-width:2"/>';
-    s += dgText(xb, up ? ey - 14 - (c.name.length - 1) * 7 : ey + 14 + (c.name.length - 1) * 7, c.name, { lh:14, st:"font-weight:700" });
+  const need = arr => Math.max(3, ...arr.map(c => c.causes.reduce((s, x) => s + x.length * 15 + 12, 0)));
+  const hTop = need(T) + 64, hBot = need(B) + 64, y0 = hTop + 20, H = y0 + hBot + 20, gid = "ig" + (++DGN);
+  let g = dgGrid(gid, W, H) + '<line class="ishi-sp" x1="30" y1="' + y0 + '" x2="' + xh + '" y2="' + y0 + '"/><polygon class="ishi-ah" points="' + xh + "," + (y0 - 11) + " " + (xh + 18) + "," + y0 + " " + xh + "," + (y0 + 11) + '"/>';
+  const pl = dgWrap(problem || "Problema", 22).slice(0, 6), bh = Math.max(76, pl.length * 18 + 28);
+  g += '<rect class="ishi-ef" x="' + (xh + 26) + '" y="' + (y0 - bh / 2) + '" width="' + (W - xh - 34) + '" height="' + bh + '" rx="12"/>' + dgText(xh + 26 + (W - xh - 34) / 2, y0, pl, { lh:18, cls:"ishi-eft" });
+  const branch = (c, j, up) => { const xa = 40 + colW * (j + 1) - 14, ey = up ? 46 : H - 46, dx = Math.min(90, colW * 0.4), xb = xa - dx; let s = '<line class="ishi-bn" x1="' + xb + '" y1="' + ey + '" x2="' + xa + '" y2="' + y0 + '"/>';
+    const nw = Math.min(colW - 12, Math.max(...c.name.map(l => l.length)) * 8 + 24), nh = c.name.length * 16 + 12, ny = up ? ey - 10 - nh : ey + 10;
+    s += '<rect class="ishi-cat" x="' + (xb - nw / 2) + '" y="' + ny + '" width="' + nw + '" height="' + nh + '" rx="' + nh / 2 + '"/>' + dgText(xb, ny + nh / 2, c.name, { lh:16, cls:"ishi-catt" });
     let acc = 22; const span = Math.abs(y0 - ey);
-    c.causes.forEach(L => { const hh = L.length * 13 + 12, f = (acc + hh / 2) / (span + 10); acc += hh; const yy = up ? ey + f * span : ey - f * span, xx = xb + (xa - xb) * f;
-      s += '<line class="sm" x1="' + (xx - 14) + '" y1="' + yy + '" x2="' + xx + '" y2="' + yy + '"/>' + dgText(xx - 18, yy, L, { a:"end", lh:13, st:"font-size:11px" }); });
+    c.causes.forEach(L => { const hh = L.length * 15 + 12, f = (acc + hh / 2) / (span + 10); acc += hh; const yy = up ? ey + f * span : ey - f * span, xx = xb + (xa - xb) * f;
+      s += '<line class="ishi-cz" x1="' + (xx - 16) + '" y1="' + yy + '" x2="' + xx + '" y2="' + yy + '"/><circle class="ishi-dot" cx="' + xx + '" cy="' + yy + '" r="2.5"/>' + dgText(xx - 20, yy, L, { a:"end", lh:15 }); });
     return s; };
   T.forEach((c, j) => g += branch(c, j, true)); B.forEach((c, j) => g += branch(c, j + (nC - B.length) / 2, false));
-  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagrama de Ishikawa" style="min-width:640px">' + g + '</svg></div><figcaption>Las causas más probables se verifican con datos (Pareto, gráficos de control, pruebas) antes de actuar. En el celular desliza el diagrama hacia el lado.</figcaption></figure>';
+  return '<figure class="ch dg ishi"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagrama de Ishikawa">' + g + '</svg></div><figcaption>Las causas más probables se verifican con datos (Pareto, gráficos de control, pruebas) antes de actuar. En el celular desliza el diagrama hacia el lado.</figcaption></figure>';
 }
-
-/* ---------- Red de actividades (actividad en el nodo) con la ruta crítica destacada ---------- */
 function cpmNet(A, order){
   const lev = {}; order.forEach(id => { lev[id] = A[id].p.length ? 1 + Math.max.apply(null, A[id].p.map(p => lev[p])) : 0; });
   const cols = {}; order.forEach(id => (cols[lev[id]] = cols[lev[id]] || []).push(id));
   const nL = Object.keys(cols).length, maxR = Math.max.apply(null, Object.values(cols).map(c => c.length));
-  const bw = 132, bh = 72, gx = 54, gy = 26, W = 30 + nL * (bw + gx), H = 30 + maxR * (bh + gy), P = {}, mk = "na" + (++DGN);
+  const bw = 140, bh = 80, gx = 60, gy = 28, W = 40 + nL * (bw + gx) - gx + 20, H = 40 + maxR * (bh + gy) - gy, P = {}, mk = "na" + (++DGN), mkc = mk + "c";
   Object.keys(cols).forEach(l => { const c = cols[l], off = (maxR - c.length) * (bh + gy) / 2; c.forEach((id, r) => { P[id] = [20 + l * (bw + gx), 20 + off + r * (bh + gy)]; }); });
   const f = x => nf(x, Math.abs(x - Math.round(x)) < 1e-9 ? 0 : 1);
-  let g = dgDefs(mk);
+  let g = dgGrid("cg" + mk, W, H) + '<defs><marker id="' + mk + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="dgah"/></marker><marker id="' + mkc + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="cpm-ahc"/></marker></defs>';
   order.forEach(id => A[id].p.forEach(p => { const crit = A[id].crit && A[p].crit && Math.abs(A[p].EF - A[id].ES) < 1e-9, [x1, y1] = P[p], [x2, y2] = P[id];
-    g += '<path d="M' + (x1 + bw) + "," + (y1 + bh / 2) + " C" + (x1 + bw + gx / 2) + "," + (y1 + bh / 2) + " " + (x2 - gx / 2) + "," + (y2 + bh / 2) + " " + (x2 - 2) + "," + (y2 + bh / 2) + '" class="' + (crit ? "dgcrit" : "dga") + '" marker-end="url(#' + mk + ')"/>'; }));
+    g += '<path d="M' + (x1 + bw) + "," + (y1 + bh / 2) + " C" + (x1 + bw + gx / 2) + "," + (y1 + bh / 2) + " " + (x2 - gx / 2) + "," + (y2 + bh / 2) + " " + (x2 - 2) + "," + (y2 + bh / 2) + '" class="cpm-e' + (crit ? " crit" : "") + '" data-a="' + esc(p) + '" data-b="' + esc(id) + '" marker-end="url(#' + (crit ? mkc : mk) + ')"/>'; }));
   order.forEach(id => { const a = A[id], [x, y] = P[id];
-    g += '<rect x="' + x + '" y="' + y + '" width="' + bw + '" height="' + bh + '" rx="6" class="' + (a.crit ? "boxc" : "box") + '"/><line class="gr" x1="' + x + '" y1="' + (y + 22) + '" x2="' + (x + bw) + '" y2="' + (y + 22) + '"/><line class="gr" x1="' + x + '" y1="' + (y + bh - 22) + '" x2="' + (x + bw) + '" y2="' + (y + bh - 22) + '"/>' +
-      '<text x="' + (x + 8) + '" y="' + (y + 15) + '" class="mu">' + f(a.ES) + '</text><text x="' + (x + bw / 2) + '" y="' + (y + 15) + '" text-anchor="middle" class="mu">' + f(a.te) + '</text><text x="' + (x + bw - 8) + '" y="' + (y + 15) + '" text-anchor="end" class="mu">' + f(a.EF) + "</text>" +
-      '<text x="' + (x + bw / 2) + '" y="' + (y + bh / 2 + 5) + '" text-anchor="middle" style="font-weight:700;font-size:14px">' + esc(id) + "</text>" +
-      '<text x="' + (x + 8) + '" y="' + (y + bh - 7) + '" class="mu">' + f(a.LS) + '</text><text x="' + (x + bw / 2) + '" y="' + (y + bh - 7) + '" text-anchor="middle" class="mu">H ' + f(a.HT) + '</text><text x="' + (x + bw - 8) + '" y="' + (y + bh - 7) + '" text-anchor="end" class="mu">' + f(a.LF) + "</text>"; });
-  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Red del proyecto" style="min-width:' + Math.min(W, 640) + 'px">' + g + '</svg></div><figcaption>Red del proyecto (actividad en el nodo). Arriba: inicio temprano · duración · término temprano. Abajo: inicio tardío · holgura · término tardío. En cobre, la ruta crítica.</figcaption></figure>';
+    g += '<g class="cpm-n' + (a.crit ? " crit" : "") + '" data-n="' + esc(id) + '" data-tip="' + esc(id + ": duración " + f(a.te) + " · inicio " + f(a.ES) + "–" + f(a.LS) + " · holgura " + f(a.HT) + (a.crit ? " · crítica" : "")) + '"><rect x="' + x + '" y="' + y + '" width="' + bw + '" height="' + bh + '" rx="10" class="cpm-b"/><path d="M' + x + "," + (y + 24) + "h" + bw + "M" + x + "," + (y + bh - 24) + "h" + bw + '" class="cpm-l"/>' +
+      '<text x="' + (x + 10) + '" y="' + (y + 17) + '" class="mu">' + f(a.ES) + '</text><text x="' + (x + bw / 2) + '" y="' + (y + 17) + '" text-anchor="middle" class="mu">' + f(a.te) + '</text><text x="' + (x + bw - 10) + '" y="' + (y + 17) + '" text-anchor="end" class="mu">' + f(a.EF) + "</text>" +
+      '<text x="' + (x + bw / 2) + '" y="' + (y + bh / 2 + 6) + '" text-anchor="middle" class="cpm-id">' + esc(id) + "</text>" +
+      '<text x="' + (x + 10) + '" y="' + (y + bh - 8) + '" class="mu">' + f(a.LS) + '</text><text x="' + (x + bw / 2) + '" y="' + (y + bh - 8) + '" text-anchor="middle" class="mu">H ' + f(a.HT) + '</text><text x="' + (x + bw - 10) + '" y="' + (y + bh - 8) + '" text-anchor="end" class="mu">' + f(a.LF) + "</text></g>"; });
+  return '<figure class="ch dg cpmnet"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Red del proyecto">' + g + '</svg></div><figcaption>Red del proyecto (actividad en el nodo). Arriba: inicio temprano · duración · término temprano. Abajo: inicio tardío · holgura · término tardío. En cobre, la ruta crítica.</figcaption></figure>';
 }
 
 /* ---------- Región factible: deslizador de la recta del objetivo ---------- */
@@ -66,7 +65,7 @@ function liveRes(id){
   S.v[id] = collect(id); S.done[id] = Date.now(); S.snap[id] = JSON.stringify(S.v[id]); save();
   const t = document.createElement("template"); t.innerHTML = mFill(calcPage(id)); const nr = t.content.querySelector("#res"), or = document.getElementById("res"); if (!nr || !or) return;
   const det = or.querySelector("details.usados"); if (det && det.open) { const d2 = nr.querySelector("details.usados"); if (d2) d2.open = true; }
-  or.replaceWith(nr); try { abbrify(nr); } catch (e) {} try { calloutCap(document.getElementById("app")); } catch (e) {} try { wrapWide(nr); katexMotor(nr); } catch (e) {} try { nr.querySelectorAll(".qsl").forEach(eoqSlUpd); } catch (e) {}
+  or.replaceWith(nr); try { abbrify(nr); } catch (e) {} try { calloutCap(document.getElementById("app")); } catch (e) {} try { diagramsAfter(nr); svgA11y(nr); } catch (e) {} try { wrapWide(nr); katexMotor(nr); } catch (e) {} try { nr.querySelectorAll(".qsl").forEach(eoqSlUpd); } catch (e) {}
 }
 document.addEventListener("input", e => { const el = e.target; if (!el.dataset || !el.dataset.c || !el.dataset.k || LIVE_SKIP.has(el.dataset.c) || !liveOn()) return; clearTimeout(liveT); const id = el.dataset.c; liveT = setTimeout(() => liveRes(id), 650); });
 document.addEventListener("change", e => { const el = e.target; if (el.matches && el.matches("[data-live-toggle]")) { try { localStorage.setItem(KEY + "-live", el.checked ? "1" : "0"); } catch (er) {} toast(el.checked ? "El resultado se actualizará mientras escribes" : "El resultado se actualizará al presionar Calcular"); return; }

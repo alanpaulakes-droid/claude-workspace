@@ -41,6 +41,7 @@ async function svgToImage(svg){
 }
 
 async function toModel(root){
+  try { if (typeof diagramsAfter === "function") diagramsAfter(root); } catch (e) {}  /* VSM y rótulos del SIPOC se dibujan al mostrar */
   const B = [], prevTheme = document.documentElement.getAttribute("data-theme");
   document.documentElement.setAttribute("data-theme", "light");
   let lastH = "";
