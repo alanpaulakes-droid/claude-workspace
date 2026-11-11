@@ -120,8 +120,8 @@ nav.tabs button.on{color:var(--acc)}
 #tmr .ring i{display:block;height:100%;background:#fff}
 /* sheet */
 #sheet{position:fixed;inset:0;z-index:40;background:rgba(5,8,14,.55);display:flex;align-items:flex-end;justify-content:center}
-#sheet .sh{background:var(--bg);width:100%;max-width:720px;max-height:92%;overflow:auto;border-radius:20px 20px 0 0;padding:16px max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px}
-#sheet .grab{width:44px;height:5px;border-radius:5px;background:var(--line);margin:0 auto}
+#sheet .sh{padding-top:16px!important;background:var(--bg);width:100%;max-width:720px;max-height:92%;overflow:auto;border-radius:20px 20px 0 0;padding:16px max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px}
+#sheet .shbar{position:sticky;top:-16px;z-index:2;background:var(--bg);margin:-16px 0 0;padding:12px 0 8px;display:flex;border-bottom:1px solid var(--line)}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav) + 18px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:700;max-width:90vw;text-align:center}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.92rem}.kv dt{color:var(--mute);font-weight:600}.kv dd{margin:0}
 ul.dots{margin:0;padding-left:18px}ul.dots li{margin:3px 0}
@@ -1377,10 +1377,10 @@ demoLoop=function(now){for(const cv of DEMO){if(!cv.isConnected){DEMO.delete(cv)
 /* ===================== TEMPORIZADOR A PANTALLA COMPLETA ===================== */
 const TM={on:false,q:[],cur:null,h:null,mode:'',rounds:0,up:0,laps:[]};
 function tmEl(){let t=$('#tmr');if(!t){t=document.createElement('div');t.id='tmr';t.setAttribute('role','timer');t.setAttribute('aria-live','polite');document.body.appendChild(t)}return t}
-function tmRun(segs,opt={}){audioOn();TM.on=true;TM.q=segs.slice();TM.opt=opt;TM.mode=opt.mode||'seq';TM.rounds=0;TM.laps=[];wakeOn();tmNext()}
+function tmRun(segs,opt={}){audioOn();if(!TM.on)try{history.pushState({gcTimer:1},'');TM.hist=true}catch(e){}TM.on=true;TM.q=segs.slice();TM.opt=opt;TM.mode=opt.mode||'seq';TM.rounds=0;TM.laps=[];wakeOn();tmNext()}
 function tmNext(){const c=TM.q.shift();if(!c){tmFinish();return}TM.cur=Object.assign({},c,{end:Date.now()+c.secs*1000,warn:{},paused:false});if(c.kind==='work')beep(660,.12);tmPaint(true);if(!TM.h)TM.h=setInterval(tmTick,150);tmTick()}
 function tmFinish(){const cb=TM.opt&&TM.opt.onAll;tmClose(true);bigBeep();vib([300,120,300]);if(cb)cb()}
-function tmClose(silent){TM.on=false;clearInterval(TM.h);TM.h=null;TM.cur=null;const t=$('#tmr');if(t)t.remove();if(!ST.prefs.active)wakeOff();if(!silent&&TM.opt&&TM.opt.onClose)TM.opt.onClose()}
+function tmClose(silent,fromPop){const hadH=TM.hist;TM.hist=false;if(hadH&&!fromPop&&typeof histBack==='function')histBack();TM.on=false;clearInterval(TM.h);TM.h=null;TM.cur=null;const t=$('#tmr');if(t)t.remove();if(!ST.prefs.active)wakeOff();if(!silent&&TM.opt&&TM.opt.onClose)TM.opt.onClose()}
 function tmPaint(full){const t=tmEl(),c=TM.cur;if(!c)return;if(full){t.className=c.kind||'rest';
  const extra=TM.mode==='amrap'?`<button data-t="round">+1 ronda</button>`:TM.mode==='watch'?`<button data-t="lap">Vuelta</button>`:'';
  t.innerHTML=`<div class="tl">${esc(c.label)}</div><div class="tn num" id="tmN">0:00</div><div class="ring"><i id="tmR"></i></div><div class="ts" id="tmS">${esc(c.sub||'')}</div><div class="tnext">${esc(c.next||'')}</div>
@@ -1408,7 +1408,7 @@ const TF={
  amrap:(min)=>[{label:'Prepárate',secs:10,kind:'prep'},{label:'AMRAP: máximas rondas',secs:min*60,kind:'work',sub:'Rondas: 0'}],
  countdown:(s,l='Temporizador')=>[{label:l,secs:s,kind:'work'}]
 };
-function tmWatch(){audioOn();TM.on=true;TM.mode='watch';TM.opt={};TM.up=0;TM.laps=[];wakeOn();TM.cur={label:'Cronómetro',secs:1,kind:'rest',start0:Date.now(),paused:false};tmPaint(true);
+function tmWatch(){audioOn();if(!TM.on)try{history.pushState({gcTimer:1},'');TM.hist=true}catch(e){}TM.on=true;TM.mode='watch';TM.opt={};TM.up=0;TM.laps=[];wakeOn();TM.cur={label:'Cronómetro',secs:1,kind:'rest',start0:Date.now(),paused:false};tmPaint(true);
  const P=$('#tmP');P.onclick=()=>{const c=TM.cur;if(c.paused){c.start0=Date.now()-TM.up*1000;c.paused=false;P.textContent='Pausa'}else{c.paused=true;P.textContent='Seguir'}};
  ['-15','+15','skip'].forEach(k=>{const b=$('#tmr [data-t="'+k+'"]');if(b)b.hidden=true});if(!TM.h)TM.h=setInterval(tmTick,150)}
 
@@ -1632,8 +1632,12 @@ async function exportText(name,text){try{const dl=await claude.use('downloads');
  try{await navigator.clipboard.writeText(text);toast('Resumen copiado al portapapeles')}catch(e){openSheet(`<div class="row between"><h2>Resumen</h2><button class="iconbtn" data-act="closesheet" aria-label="Cerrar">✕</button></div><textarea class="inp" rows="16" readonly>${esc(text)}</textarea><p class="small mute">Selecciona y copia el texto.</p>`)}}
 
 /* ===================== HOJAS, AJUSTES, ACCIONES Y ARRANQUE ===================== */
-function openSheet(html){closeSheet();const d=document.createElement('div');d.id='sheet';d.innerHTML=`<div class="sh" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;d.addEventListener('click',e=>{if(e.target===d)closeSheet()});document.body.appendChild(d);mountDemos(d)}
-function closeSheet(){const s=$('#sheet');if(s)s.remove()}
+let SH_H=false;
+function openSheet(html){const old=$('#sheet');if(old)old.remove();const d=document.createElement('div');d.id='sheet';d.innerHTML=`<div class="sh" role="dialog" aria-modal="true"><div class="shbar"><button class="btn sm" data-act="closesheet">◀ Volver</button></div>${html}</div>`;d.addEventListener('click',e=>{if(e.target===d)closeSheet()});document.body.appendChild(d);mountDemos(d);if(!SH_H){SH_H=true;try{history.pushState({gcSheet:1},'')}catch(e){}}}
+let IGNP=0,ATH_H=false;
+function histBack(){IGNP++;try{history.back()}catch(e){IGNP--}}
+function closeSheet(fromPop){const s=$('#sheet');if(s)s.remove();if(SH_H){SH_H=false;if(!fromPop)histBack()}}
+window.addEventListener('popstate',()=>{if(IGNP){IGNP--;return}if(TM.hist||$('#tmr')){tmClose(false,true);return}if(SH_H||$('#sheet')){closeSheet(true);return}if(ATH_H){ATH_H=false;UI.ath.sel=null;render()}});
 function settingsSheet(){const th=LS.get('gc.theme','');const p=ST.prefs;return `<div class="row between"><h2>Ajustes</h2><button class="iconbtn" data-act="closesheet" aria-label="Cerrar">✕</button></div>
  <div><label class="lbl">Tema</label><div class="seg">${[['','Sistema'],['light','Claro'],['dark','Oscuro']].map(([k,n])=>`<button class="${th===k?'on':''}" data-act="theme" data-k="${k}">${n}</button>`).join('')}</div></div>
  <div class="row between"><span>Sonido de los avisos</span><button class="chip ${p.sound?'on':''}" data-act="sound">${p.sound?'Activado':'Desactivado'}</button></div>
@@ -1659,7 +1663,7 @@ function setDone(j){const s=sess(),it=s.items[s.cur],z=it.sets[j];audioOn();
  else{finishSet();if(rest.length)tmRun(rest,{onAll:advance});else advance()}}
 const ACT={
  go:b=>{UI.view=b.dataset.v;location.hash=UI.view;render();window.scrollTo(0,0)},
- nav:b=>{UI.view=b.dataset.v;location.hash=UI.view;if(UI.view==='atletas')UI.ath.sel=null;render();window.scrollTo(0,0)},
+ nav:b=>{UI.view=b.dataset.v;location.hash=UI.view;if(UI.view==='atletas'){UI.ath.sel=null;ATH_H=false}render();window.scrollTo(0,0)},
  place:b=>{savePrefs({place:b.dataset.k,focus:null});UI.preview=null;render()},
  eq:b=>{const pl=ST.prefs.place,k=b.dataset.k;const by=Object.assign({},ST.prefs.eqBy||{});let L=placeEq(pl).slice();L=L.includes(k)?L.filter(x=>x!==k):L.concat(k);by[pl]=L;savePrefs({eqBy:by});UI.preview=null;render()},
  eqadd:()=>{const v=($('#eqNew').value||'').trim();if(!v)return;const pl=ST.prefs.place;const c=Object.assign({},ST.prefs.eqCustom||{});c[pl]=[...new Set([...(c[pl]||[]),v])];savePrefs({eqCustom:c});render()},
@@ -1705,12 +1709,12 @@ const ACT={
  cstep:()=>{const c=UI.coach.cls,s=c.steps[UI.coach.step];if(s.stations)tmRun(rotationSegs(s,c.groups),{});else if(s.tabata)tmRun(TF.tabata(s.tabata),{});else tmRun([{label:s.t,secs:s.min*60,kind:'work',sub:s.items.join(' · ')}],{})},
  cgroup:()=>{const c=UI.coach.cls;const s=c.steps.find(x=>x.stations);if(s)tmRun(rotationSegs(s,c.groups),{})},
  skill:(b,e)=>{e&&e.preventDefault();openSheet(skillSheet(b.dataset.k))},
- athnew:()=>{const a={id:rid(),name:'Atleta '+(ST.athletes.length+1),year:'',disc:'mag',lvl:1,notes:'',skills:{},evals:[]};saveAthlete(a);UI.ath.sel=a.id;UI.ath.tab='ficha';render()},
- athopen:b=>{UI.ath.sel=b.dataset.k;UI.ath.tab='ficha';render();window.scrollTo(0,0)},
- athback:()=>{UI.ath.sel=null;render()},
+ athnew:()=>{if(!ATH_H){ATH_H=true;try{history.pushState({gcAth:1},'')}catch(e){}}const a={id:rid(),name:'Atleta '+(ST.athletes.length+1),year:'',disc:'mag',lvl:1,notes:'',skills:{},evals:[]};saveAthlete(a);UI.ath.sel=a.id;UI.ath.tab='ficha';render()},
+ athopen:b=>{if(!ATH_H){ATH_H=true;try{history.pushState({gcAth:1},'')}catch(e){}}UI.ath.sel=b.dataset.k;UI.ath.tab='ficha';render();window.scrollTo(0,0)},
+ athback:()=>{UI.ath.sel=null;if(ATH_H){ATH_H=false;histBack()}render()},
  athtab:b=>{UI.ath.tab=b.dataset.k;render()},
  athdel:()=>openSheet(`<h2>¿Eliminar la ficha?</h2><p>Se borran sus habilidades y evaluaciones.</p><div class="grid2"><button class="btn" data-act="closesheet">Cancelar</button><button class="btn hot" data-act="doathdel">Eliminar</button></div>`),
- doathdel:()=>{closeSheet();delAthlete(UI.ath.sel);UI.ath.sel=null;render()},
+ doathdel:()=>{closeSheet();delAthlete(UI.ath.sel);UI.ath.sel=null;if(ATH_H){ATH_H=false;histBack()}render()},
  evsave:()=>{const a=curAth();const tests={};for(const T of TESTS){const v=$('#ev_'+T.k).value;if(v!=='')tests[T.k]=+v}if(!Object.keys(tests).length){toast('Ingresa al menos un resultado');return}const d=$('#evDate').value||today();a.evals=(a.evals||[]).filter(e=>e.date!==d).concat({date:d,tests});saveAthlete(a);toast('Evaluación guardada');render()},
  evdel:b=>{const a=curAth();a.evals=(a.evals||[]).filter(e=>e.date!==b.dataset.k);saveAthlete(a);render()},
  athexport:()=>{const a=curAth();exportText('resumen-'+a.name.toLowerCase().replace(/[^a-z0-9áéíóúñ]+/gi,'-')+'.md',athSummary(a))},
