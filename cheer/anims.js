@@ -197,6 +197,44 @@ AN.goodMorning.bar={t:'back',g:24};AN.goodMorning.grip=1;
 for(const k of ['squat','squatPause','frontSquat','clean','rdl','row','ohp','pushPress','lockout','hipThrust','dbBench','farmer','calf','bulgarian','pressZ','pullup','hangHollow','dips','invRow','wheel','facePull','pallof','extRot','heelStretch','mbThrow'])AN[k].grip=1;
 for(const k of ['phSupport','phPendulum','phScissors'])AN[k].cam=[0.7,0.5,0.5];
 AN.copenhagen.cam=[0.8,0.38,0.46];AN.sidePlank.cam=[0.8,0.32,0.5];AN.hipThrust.cam=[0.12,0.6,0.79];AN.handstandWall.cam=[0.05,0.22,1];AN.facePull.cam=[0.55,0.25,0.8];
+/* ---- animaciones de la biblioteca: máquinas, kettlebell, movilidad y estiramientos ---- */
+Object.assign(AN,{
+ goblet:{p:[{k:'db1'}],fr:[[{...am(30,160),...lg(0,0)},700,250],[{t:150,h:160,...am(60,170),...lg(90,-30)},900,250]]},
+ kbSwing:{p:[{k:'kb'}],fr:[[{t:130,h:145,...lg(25,-12),...am(-25,-25)},450,50],[{t:182,h:180,...lg(0,0),...am(95,95)},450,200]]},
+ thruster:{p:[{k:'plate',at:'W1',dy:3}],fr:[[{...am(100,265)},500,150],[{t:155,h:170,...am(78,243),...lg(90,-30)},700,100],[{...am(100,265)},400,0],[{h:175,...UP},350,400]]},
+ burpee:{reset:1,fr:[[{...DN},250,100],[{t:120,h:140,...lg(100,-40),...am(20,20)},300,0],[{...PU_T},250,100],[{t:120,h:140,...lg(100,-40),...am(20,20)},250,0],[{y:30,...UP,...lg(-2,-2),f1:30,f2:28},300,0],[{...DN},250,300]]},
+ jumpRope:{p:[{k:'jrope'}],fr:[[{...am(25,60),f1:35,f2:33},180,0],[{...am(25,60),y:9,f1:15,f2:13},180,0]]},
+ latRaise:{v:'f',p:[{k:'db'}],fr:[[{...fa(6,6),...fl(3,3)},700,200],[{...fa(85,85),...fl(3,3)},700,400]]},
+ curl:{p:[{k:'db'}],fr:[[{...am(2,2)},700,150],[{...am(4,150)},600,400]]},
+ triExt:{p:[{k:'db1'}],fr:[[{a1:175,e1:330,a2:173,e2:328},700,150],[{...am(176,178)},600,400]]},
+ pullApart:{v:'f',p:[{k:'bandH'}],fr:[[{...fa(90,90),...fl(3,3),a1:90,e1:90,a2:-90,e2:-90,ez:6},600,100],[{...fa(90,90),...fl(3,3)},600,500]]},
+ armCircles:{v:'f',fr:[[{...fa(90,90),...fl(3,3)},300,0],[{...fa(110,110),...fl(3,3)},300,0],[{...fa(90,90),...fl(3,3)},300,0],[{...fa(70,70),...fl(3,3)},300,0]]},
+ inchworm:{reset:1,fr:[[{...DN},300,200],[{t:20,h:10,...am(5,5),...lg(-5,-5)},700,100],[{t:60,h:50,...am(30,30),...lg(-30,-30)},400,0],[{...PU_T},500,500]]},
+ catCow:{fr:[[{t:96,sp:16,h:120,...am(0,0),l1:0,k1:-90,l2:-2,k2:-92,f1:-90,f2:-92},900,300],[{t:96,sp:-18,h:80,...am(0,0),l1:0,k1:-90,l2:-2,k2:-92,f1:-90,f2:-92},900,300]]},
+ childPose:{fr:[[{t:96,h:110,...am(0,0),l1:0,k1:-90,l2:-2,k2:-92,f1:-90,f2:-92},900,200],[{t:72,h:62,...am(88,88),l1:68,k1:-90,l2:66,k2:-92,f1:-90,f2:-92},1200,1200]]},
+ quadStretch:{fr:[[{...am(-20,-20),l1:0,k1:0,l2:-5,k2:-150,a2:-30,e2:-20},900,1400],[{...am(-20,-20),l1:0,k1:0,l2:-8,k2:-160,a2:-35,e2:-22},900,1400]]},
+ hipFlexor:{fr:[[{l1:85,k1:0,l2:-30,k2:-95,f2:-90,...am(170,170)},900,300],[{x:6,l1:95,k1:-10,l2:-38,k2:-95,f2:-90,...am(175,175),t:184,sp:8},900,1400]]},
+ legPress:{p:[{k:'sled'},{k:'bench',of:['H','M'],ext:[-30,4]}],fr:[[{t:-128,h:-135,...am(40,40),l1:130,k1:130,l2:128,k2:128,f1:200,f2:198},800,200],[{t:-128,h:-135,...am(40,40),l1:170,k1:70,l2:168,k2:68,f1:140,f2:138},800,300]]},
+ latPull:{p:[{k:'seat'},{k:'cable',at:'W1',to:[120,-260]}],fr:[[{t:176,h:178,...UP,l1:90,k1:0,l2:88,k2:-2},700,150],[{t:170,h:178,a1:20,e1:172,a2:18,e2:170,l1:90,k1:0,l2:88,k2:-2},700,400]]},
+ cableRow:{p:[{k:'cable',at:'W1',to:[250,120]}],fr:[[{t:160,h:165,...am(88,88),l1:88,k1:80,l2:86,k2:78},700,150],[{t:176,h:176,a1:-60,e1:88,a2:-62,e2:86,l1:88,k1:80,l2:86,k2:78},700,400]]},
+ hamCurl:{p:[{k:'pad',at:'A1'}],fr:[[{t:96,h:100,a1:30,e1:80,a2:28,e2:78,...lg(-84,-84)},700,150],[{t:96,h:100,a1:30,e1:80,a2:28,e2:78,l1:-84,k1:-184,l2:-84,k2:-186},700,300]]},
+ sideLunge:{v:'f',fr:[[{...fa(40,100),...fl(22,22)},700,200],[{x:-12,...fa(40,100),l1:34,k1:30,l2:-14,k2:-14},800,300],[{...fa(40,100),...fl(22,22)},700,200],[{x:12,...fa(40,100),l1:14,k1:14,l2:-34,k2:-30},800,300]]},
+});
+Object.assign(ANAME,{'Sentadilla goblet':'goblet','Swing con kettlebell':'kbSwing','Thruster':'thruster','Burpees':'burpee','Saltar la cuerda':'jumpRope','Elevaciones laterales':'latRaise','Curl de bíceps con mancuernas':'curl','Extensión de tríceps sobre la cabeza':'triExt','Separación de banda (pull-apart)':'pullApart','Círculos de brazos':'armCircles','Gusano (inchworm)':'inchworm','Gato–vaca':'catCow','Postura del niño':'childPose','Estiramiento de cuádriceps de pie':'quadStretch','Estiramiento de flexor de cadera':'hipFlexor','Prensa de piernas':'legPress','Jalón al pecho en polea':'latPull','Remo sentado en polea':'cableRow','Curl femoral en máquina':'hamCurl','Zancada lateral':'sideLunge'});
+for(const k of ['goblet','kbSwing','thruster','curl','triExt','latPull','cableRow','pullApart'])AN[k].grip=1;
+AN.latPull.cam=[0.55,0.25,0.8];AN.legPress.cam=[0.2,0.35,0.92];
+
+Object.assign(AN,{
+ airSquat:{fr:[[{...am(90,90),...lg(0,0)},700,250],[{t:145,h:158,...am(95,95),...lg(90,-30)},900,250]]},
+ deadlift:{p:[{k:'plate',at:'W1'}],fr:[[{t:125,h:140,...am(2,2),...lg(55,-25)},900,250],[{...am(2,2),...lg(0,0)},800,500]]},
+ wallSit:{p:[{k:'wall',x:96}],fr:[[{x:-5,t:178,h:178,...am(4,4),l1:90,k1:0,l2:88,k2:-2},1200,600],[{x:-5,t:178,h:178,...am(4,4),l1:91,k1:0,l2:89,k2:-2},1200,600]]},
+ barBench:{p:[{k:'bench',of:['N','H'],ext:[-6,1],d:17},{k:'plate',at:'W1'}],fr:[[{t:-90,h:-90,l1:70,k1:0,l2:67,k2:-3,...am(180,180)},800,250],[{t:-90,h:-90,l1:70,k1:0,l2:67,k2:-3,...am(30,170)},900,250]]},
+ hspu:{pt:1,p:[{k:'wall',x:132}],fr:[[{t:0,h:0,...am(0,0),...lg(180,180)},800,300],[{t:0,h:0,a1:-55,e1:40,a2:-57,e2:38,...lg(180,180)},900,250]]},
+ motions:{v:'f',fr:[[{...fa(140,140),...fl(4,4)},250,500],[{...fa(90,90),...fl(4,4)},250,500],[{...fa(40,40),...fl(4,4)},250,500],[{...fa(178,178),...fl(4,4)},250,500],[{a1:20,e1:160,a2:-20,e2:-160,...fl(4,4)},250,500]]}
+});
+AN.barBench.bar={t:'hands',g:22,push:'up'};AN.barBench.grip=1;AN.deadlift.bar={t:'hands',g:21};AN.deadlift.grip=1;
+for(const k of ['barBench','deadlift'])AN[k].z3={E:17,W:21};
+
 /* preparar frames */
 for(const k in AN){const an=AN[k];an.fr=an.fr.map(([p,mv,hd])=>{const q=Object.assign({},PB,p);
  if(q.h==null)q.h=q.t;
@@ -244,6 +282,7 @@ const MU={};
  [['bridge','toBridge','scorpion'],'b d','Espalda · hombros · cadera',1],
  [['run','jog','shuttle','jacks'],'q c','Resistencia · velocidad'],[['liberty','balanceRelevé','heelArab'],'c b','Equilibrio · tobillo · core'],
  [['rdlSingle','goodMorning'],'q g','Isquiotibiales · glúteos'],[['walkLunge','stepUp'],'q g','Cuádriceps · glúteos'],[['deadbug','mountain','legRaiseHang','hFrontLever','rFrontLever'],'b','Core · dorsales'],[['dbRow','ropeClimb','rMuscleUp','hKip','hSwing','rSwing','hHipCircle'],'a b','Espalda · bíceps · agarre'],[['planche','rPlanche','rCross','rSupport','rBackLever','pSupport','pSwing','pHandstand','phSupport','phPendulum','phScissors','phCircles','phMushroom','phFlair','hCast','hCastHS','hGiant','hGiantF','hStalder','hHandstand','pUpperArm','pShoulderStand','flair'],'a d b','Hombros · core · tríceps'],[['rLsit','pLsit'],'b','Core · flexores de cadera'],[['vRun','vHandspring'],'q c d','Potencia de piernas · bloqueo de hombros'],[['pancake'],'q','Aductores · isquios',1],[['rSkin'],'d','Hombros (movilidad)',1],[['wrists'],'f','Muñecas y antebrazos'],
+ [['goblet','thruster','legPress','sideLunge'],'q g','Cuádriceps · glúteos'],[['kbSwing','hamCurl'],'q g','Isquiotibiales · glúteos'],[['burpee','jumpRope'],'q c','Resistencia'],[['latRaise','armCircles','pullApart'],'d','Hombros'],[['curl'],'a','Bíceps'],[['triExt'],'a','Tríceps'],[['latPull','cableRow'],'a b','Espalda · bíceps'],[['inchworm','catCow','childPose'],'b','Columna · cadera',1],[['quadStretch','hipFlexor'],'q','Cuádriceps · flexores de cadera',1],
  [['rolls','rollFwd','cartwheel','backWalk','frontWalk','bhs','frontHs','backTuck','frontTuck'],'a b','Técnica de tumbling']
 ].forEach(([ks,c,l,st])=>ks.forEach(k=>MU[k]={c:c.split(' '),l,st:!!st}));
 function demoHTML(n,ak){const k=ak||animKey(n);if(!k||!AN[k])return '';const m=MU[k];
@@ -318,6 +357,12 @@ function drawDemo(cv,key,ms){
  ctx.lineCap='round';ctx.lineJoin='round';
  const props=an.p||[];const P=(at,dx=0,dy=0)=>Array.isArray(at)?[at[0],at[1]]:[J[at][0]+dx,J[at][1]+dy];
  for(const q of props){
+  if(q.k==='kb'){const [x,y]=J.WM;ctx.globalAlpha=1;ctx.fillStyle=C.equip;ctx.beginPath();ctx.arc(x,y+6,6,0,7);ctx.fill()}
+  if(q.k==='jrope'){ctx.globalAlpha=1;ctx.strokeStyle=C.far;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(J.W1[0],J.W1[1]);ctx.quadraticCurveTo(J.H[0]+10,GY+2,J.W2[0],J.W2[1]);ctx.stroke()}
+  if(q.k==='bandH'){ctx.globalAlpha=1;ctx.strokeStyle=C.acc;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(J.W1[0],J.W1[1]);ctx.lineTo(J.W2[0],J.W2[1]);ctx.stroke()}
+  if(q.k==='sled'){const [x,y]=J.T1;ctx.fillRect(x-2,y-14,5,24)}
+  if(q.k==='seat'){const [x,y]=J.H;ctx.fillRect(x-12,y+6,24,4);ctx.fillRect(x-2,y+10,4,GY-y-10)}
+  if(q.k==='cable'){const a=P(q.at),b=P(q.to);ctx.globalAlpha=1;ctx.strokeStyle=C.far;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke()}
   if(q.k==='rings'){for(const k of ['W1','W2']){const [x,y]=J[k];ctx.globalAlpha=1;ctx.strokeStyle=C.far;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x,y-5);ctx.lineTo(x,-400);ctx.stroke();ctx.strokeStyle=C.acc2;ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(x,y,5,0,7);ctx.stroke()}}
   if(q.k==='pommel'){const [x,y]=J.WM;ctx.fillRect(x-14,y+10,40,14);ctx.fillRect(x-4,y+2,8,9);ctx.fillRect(x-2,y+24,4,GY-y-24)}
   if(q.k==='mush'){const [x,y]=J.WM;ctx.beginPath();ctx.ellipse(x,y+4,22,6,0,0,7);ctx.fill();ctx.fillRect(x-4,y+4,8,GY-y-4)}
