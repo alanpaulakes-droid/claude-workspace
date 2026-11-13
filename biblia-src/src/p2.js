@@ -1,6 +1,8 @@
 <script>
 (function(){
 "use strict";
+/* Referencia a un ícono del sprite (el sprite se arma al iniciar, en w5.js · icoSprite) */
+const icoUse = id => '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-' + id + '"/></svg>';
 /* ============ ESTADO ============ */
 const KEY = "biblia-ii-v1";
 let S = { v:{}, snap:{}, done:{}, proj:{ nombre:"", autor:"", empresa:"", fecha:"" }, quiz:{}, last:null };
@@ -186,8 +188,13 @@ function niceTicks(lo, hi, cnt){
 }
 function tickLbl(v){ const a = Math.abs(v); if (a >= 1e9) return nf(v / 1e9, 1) + " MM"; if (a >= 1e6) return nf(v / 1e6, a >= 1e7 ? 0 : 1) + " M"; if (a >= 1e4) return nf(v / 1e3, 0) + " k"; if (a >= 100 || Number.isInteger(v)) return nf(v, 0); return nf(v, a < 1 ? 2 : 1); }
 /* o: {series:[{pts,cls,dot,lbl}], h:[{y,cls,lbl}], v:[{x,cls,lbl}], xlab, ylab, ymin, ymax, xmin, xmax, bars:[{x,y,cls,lbl}], bw, poly:[{pts,cls}], xcat:[labels]} */
+/* ---------- Gráficos (F4) ----------
+   Se dibujan al ancho real del contenedor (las etiquetas miden 12 px en pantalla), con grilla suave, ejes,
+   líneas de referencia rotuladas con halo y puntos que muestran su valor (el tooltip se agrega al mostrar la página).
+   El texto de los ejes y rótulos se mantiene igual y en el mismo orden: las pruebas lo comparan. */
+function chartW(){ const a = typeof document !== "undefined" && document.getElementById("app"), w = a && a.clientWidth ? a.clientWidth - (a.clientWidth < 600 ? 34 : 46) : 760; return Math.max(280, Math.min(760, Math.round(w))); }  /* descuenta el relleno de la tarjeta de resultados */
 function chart(o){
-  const W = 760, H = o.h0 || 300, L = 62, Rr = 18, T = 16, Bm = o.xcat ? 56 : 42;
+  const W = chartW(), narrow = W < 520, H = o.h0 || (narrow ? 260 : 300), Rr = narrow ? 10 : 18, T = 18, Bm = o.xcat ? 56 : 44;
   let xs = [], ys = [];
   (o.series || []).forEach(s => s.pts.forEach(p => { xs.push(p[0]); ys.push(p[1]); }));
   (o.bars || []).forEach(b => { xs.push(b.x); ys.push(b.y); ys.push(0); });
@@ -200,31 +207,33 @@ function chart(o){
   if (x0 === x1) { x0 -= 1; x1 += 1; }
   const yt = niceTicks(y0, y1, 5); if (o.ymin == null) y0 = Math.min(y0, yt[0]); if (o.ymax == null) y1 = Math.max(y1, yt[yt.length - 1]);
   if (y0 === y1) { y0 -= 1; y1 += 1; }
-  const X = x => L + (x - x0) / (x1 - x0) * (W - L - Rr), Y = y => T + (1 - (y - y0) / (y1 - y0)) * (H - T - Bm);
-  let g = "";
-  yt.filter(t => t >= y0 - 1e-9 && t <= y1 + 1e-9).forEach(t => { g += '<line class="gr" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(t) + '" y2="' + Y(t) + '"/><text class="mu" x="' + (L - 6) + '" y="' + (Y(t) + 4) + '" text-anchor="end">' + tickLbl(t) + "</text>"; });
-  if (o.xcat) o.xcat.forEach((c, i) => { const xx = X(i + 1); g += '<text class="mu" x="' + xx + '" y="' + (H - Bm + 16) + '" text-anchor="middle">' + esc(String(c).slice(0, 12)) + "</text>"; });
-  else niceTicks(x0, x1, 8).filter(t => t >= x0 - 1e-9 && t <= x1 + 1e-9).forEach(t => { g += '<text class="mu" x="' + X(t) + '" y="' + (H - Bm + 16) + '" text-anchor="middle">' + tickLbl(t) + "</text>"; });
-  g += '<line class="ax" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(Math.max(y0, Math.min(y1, 0))) + '" y2="' + Y(Math.max(y0, Math.min(y1, 0))) + '"/><line class="ax" x1="' + L + '" x2="' + L + '" y1="' + T + '" y2="' + (H - Bm) + '"/>';
-  (o.poly || []).forEach(p => { g += '<polygon class="' + (p.cls || "reg") + '" points="' + p.pts.map(q => X(q[0]) + "," + Y(q[1])).join(" ") + '"/>'; });
-  const bw = o.bars && o.bars.length ? Math.max(4, Math.min(60, (W - L - Rr) / ((x1 - x0) || 1) * (o.bw || 0.7))) : 0;
-  (o.bars || []).forEach(b => { const ya = Y(Math.max(0, b.y)), yb = Y(Math.min(0, b.y)); g += '<rect class="' + (b.cls || "bar1") + '" x="' + (X(b.x) - bw / 2) + '" y="' + ya + '" width="' + bw + '" height="' + Math.max(0.5, yb - ya) + '" rx="2"/>' + (b.lbl ? '<text x="' + X(b.x) + '" y="' + (ya - 4) + '" text-anchor="middle" class="mu">' + b.lbl + "</text>" : ""); });
-  (o.h || []).forEach(h => { if (h.y < y0 || h.y > y1) return; g += '<line class="' + (h.cls || "sb") + '" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(h.y) + '" y2="' + Y(h.y) + '"/>' + (h.lbl ? '<text class="lg" x="' + (W - Rr - 4) + '" y="' + (Y(h.y) - 4) + '" text-anchor="end">' + h.lbl + "</text>" : ""); });
-  (o.v || []).forEach(v => { g += '<line class="' + (v.cls || "sm") + '" x1="' + X(v.x) + '" x2="' + X(v.x) + '" y1="' + T + '" y2="' + (H - Bm) + '"/>' + (v.lbl ? '<text class="lg" x="' + (X(v.x) + 4) + '" y="' + (T + 12) + '">' + v.lbl + "</text>" : ""); });
+  const ytl = yt.filter(t => t >= y0 - 1e-9 && t <= y1 + 1e-9), L = Math.max(44, 18 + 7.2 * Math.max.apply(null, ytl.map(t => String(tickLbl(t)).length).concat([3])) + (o.ylab ? 16 : 0));
+  const X = x => L + (x - x0) / (x1 - x0) * (W - L - Rr), Y = y => T + (1 - (y - y0) / (y1 - y0)) * (H - T - Bm), f1 = v => +v.toFixed(1);
+  let g = '<rect class="pa" x="' + L + '" y="' + T + '" width="' + (W - L - Rr) + '" height="' + (H - T - Bm) + '"/>';
+  ytl.forEach(t => { g += '<line class="gr" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + f1(Y(t)) + '" y2="' + f1(Y(t)) + '"/><text class="mu tk" x="' + (L - 8) + '" y="' + f1(Y(t) + 4) + '" text-anchor="end">' + tickLbl(t) + "</text>"; });
+  if (o.xcat) { const step = Math.max(1, Math.ceil(o.xcat.length * 64 / (W - L - Rr))); o.xcat.forEach((c, i) => { const xx = X(i + 1); g += '<text class="mu tk' + (i % step ? " thin" : "") + '" x="' + f1(xx) + '" y="' + (H - Bm + 18) + '" text-anchor="middle">' + esc(String(c).slice(0, 12)) + "</text>"; }); }
+  else niceTicks(x0, x1, narrow ? 5 : 8).filter(t => t >= x0 - 1e-9 && t <= x1 + 1e-9).forEach(t => { g += '<line class="gr gv" x1="' + f1(X(t)) + '" x2="' + f1(X(t)) + '" y1="' + T + '" y2="' + (H - Bm) + '"/><text class="mu tk" x="' + f1(X(t)) + '" y="' + (H - Bm + 18) + '" text-anchor="middle">' + tickLbl(t) + "</text>"; });
+  g += '<line class="ax" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + f1(Y(Math.max(y0, Math.min(y1, 0)))) + '" y2="' + f1(Y(Math.max(y0, Math.min(y1, 0)))) + '"/><line class="ax" x1="' + L + '" x2="' + L + '" y1="' + T + '" y2="' + (H - Bm) + '"/>';
+  (o.poly || []).forEach(p => { g += '<polygon class="' + (p.cls || "reg") + '" points="' + p.pts.map(q => f1(X(q[0])) + "," + f1(Y(q[1]))).join(" ") + '"/>'; });
+  const bw = o.bars && o.bars.length ? Math.max(4, Math.min(56, (W - L - Rr) / ((x1 - x0) || 1) * (o.bw || 0.62))) : 0;
+  (o.bars || []).forEach(b => { const ya = Y(Math.max(0, b.y)), yb = Y(Math.min(0, b.y)); g += '<rect class="' + (b.cls || "bar1") + '" x="' + f1(X(b.x) - bw / 2) + '" y="' + f1(ya) + '" width="' + f1(bw) + '" height="' + f1(Math.max(0.5, yb - ya)) + '" rx="3" data-tip="' + esc(String(b.y)) + '"/>' + (b.lbl ? '<text x="' + f1(X(b.x)) + '" y="' + f1(ya - 6) + '" text-anchor="middle" class="mu vl">' + b.lbl + "</text>" : ""); });
+  (o.h || []).forEach(h => { if (h.y < y0 || h.y > y1) return; g += '<line class="' + (h.cls || "sb") + '" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + f1(Y(h.y)) + '" y2="' + f1(Y(h.y)) + '"/>' + (h.lbl ? '<text class="lg halo" x="' + (W - Rr - 4) + '" y="' + f1(Y(h.y) - 5) + '" text-anchor="end">' + h.lbl + "</text>" : ""); });
+  (o.v || []).forEach(v => { g += '<line class="' + (v.cls || "sm") + '" x1="' + f1(X(v.x)) + '" x2="' + f1(X(v.x)) + '" y1="' + T + '" y2="' + (H - Bm) + '"/>' + (v.lbl ? '<text class="lg halo" x="' + f1(X(v.x) + 5) + '" y="' + (T + 14) + '">' + v.lbl + "</text>" : ""); });
   (o.series || []).forEach(s => { const pts = s.pts.filter(p => fin(p[0]) && fin(p[1]));
-    if (!s.only) g += '<polyline class="' + (s.cls || "s1") + '" points="' + pts.map(p => X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1)).join(" ") + '"' + (s.dash ? ' stroke-dasharray="6 4"' : "") + "/>";
-    if (s.dot) pts.forEach((p, i) => { const bad = s.badIdx && s.badIdx.includes(i); g += '<circle class="' + (bad ? "db" : s.dot) + '" cx="' + X(p[0]) + '" cy="' + Y(p[1]) + '" r="' + (bad ? 5 : (s.r || 3.5)) + '"/>' + (s.tags && s.tags[i] ? '<text x="' + (X(p[0]) + 7) + '" y="' + (Y(p[1]) - 6) + '">' + esc(s.tags[i]) + "</text>" : ""); }); });
-  if (o.xlab) g += '<text class="mu" x="' + ((W + L) / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + o.xlab + "</text>";
-  if (o.ylab) g += '<text class="mu" x="14" y="' + ((H - Bm + T) / 2) + '" text-anchor="middle" transform="rotate(-90 14 ' + ((H - Bm + T) / 2) + ')">' + o.ylab + "</text>";
+    if (!s.only) g += '<polyline class="' + (s.cls || "s1") + '" points="' + pts.map(p => f1(X(p[0])) + "," + f1(Y(p[1]))).join(" ") + '"' + (s.dash ? ' stroke-dasharray="6 4"' : "") + "/>";
+    if (s.dot) pts.forEach((p, i) => { const bad = s.badIdx && s.badIdx.includes(i), tip = esc((o.xcat ? o.xcat[i] || p[0] : p[0]) + " → " + (typeof nf === "function" ? nf(p[1], 3) : p[1]) + (bad ? " (fuera de control)" : ""));
+      g += (bad ? '<circle class="ring" cx="' + f1(X(p[0])) + '" cy="' + f1(Y(p[1])) + '" r="9"/>' : "") + '<circle class="pt ' + (bad ? "db" : s.dot) + '" cx="' + f1(X(p[0])) + '" cy="' + f1(Y(p[1])) + '" r="' + (bad ? 5.5 : (s.r || 4)) + '" data-tip="' + tip + '"/>' + (s.tags && s.tags[i] ? '<text class="halo" x="' + f1(X(p[0]) + 8) + '" y="' + f1(Y(p[1]) - 8) + '">' + esc(s.tags[i]) + "</text>" : ""); }); });
+  if (o.xlab) g += '<text class="mu" x="' + f1((W + L) / 2) + '" y="' + (H - 8) + '" text-anchor="middle">' + o.xlab + "</text>";
+  if (o.ylab) g += '<text class="mu" x="14" y="' + f1((H - Bm + T) / 2) + '" text-anchor="middle" transform="rotate(-90 14 ' + f1((H - Bm + T) / 2) + ')">' + o.ylab + "</text>";
   const lg = (o.legend || []).map(l => '<span><i style="background:var(' + l[0] + ')"></i>' + l[1] + "</span>").join("");
-  return '<figure class="ch"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(o.title || "Gráfico") + '">' + g + "</svg></div>" + (lg ? '<div class="legend">' + lg + "</div>" : "") + (o.cap ? "<figcaption>" + o.cap + "</figcaption>" : "") + "</figure>";
+  return '<figure class="ch"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" width="' + W + '" role="img" aria-label="' + esc(o.title || "Gráfico") + '" data-w="' + W + '">' + g + "</svg></div>" + (lg ? '<div class="legend">' + lg + "</div>" : "") + (o.cap ? "<figcaption>" + o.cap + "</figcaption>" : "") + "</figure>";
 }
 function gantt(items, o){
-  o = o || {}; const W = 760, rowH = 26, L = 110, T = 22, end = Math.max.apply(null, items.map(i => i.s + i.d).concat([1]));
-  const H = T + items.length * rowH + 24, X = x => L + x / end * (W - L - 16);
-  let g = ""; niceTicks(0, end, 10).filter(t => t <= end + 1e-9).forEach(t => { g += '<line class="gr" x1="' + X(t) + '" x2="' + X(t) + '" y1="' + (T - 4) + '" y2="' + (H - 20) + '"/><text class="mu" x="' + X(t) + '" y="' + (H - 6) + '" text-anchor="middle">' + tickLbl(t) + "</text>"; });
-  items.forEach((it, i) => { const y = T + i * rowH; g += '<text x="' + (L - 8) + '" y="' + (y + 16) + '" text-anchor="end">' + esc(it.id) + "</text>";
-    if (it.slack > 0) g += '<rect class="barm" x="' + X(it.s + it.d) + '" y="' + (y + 9) + '" width="' + (X(it.s + it.d + it.slack) - X(it.s + it.d)) + '" height="6" rx="3"/>';
-    g += '<rect class="' + (it.crit ? "bar2" : "bar1") + '" x="' + X(it.s) + '" y="' + (y + 4) + '" width="' + Math.max(1, X(it.s + it.d) - X(it.s)) + '" height="16" rx="3"/>'; });
-  return '<figure class="ch"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Carta Gantt">' + g + '</svg></div><div class="legend">' + (o.leg || '<span><i style="background:var(--copper)"></i>Ruta crítica</span><span><i style="background:var(--blue)"></i>Actividad con holgura</span><span><i style="background:var(--line)"></i>Holgura total</span>') + "</div></figure>";
+  o = o || {}; const W = chartW(), rowH = 30, L = Math.min(150, Math.max(64, 14 + 7.4 * Math.max.apply(null, items.map(i => String(i.id).length).concat([3])))), T = 24, end = Math.max.apply(null, items.map(i => i.s + i.d).concat([1]));
+  const H = T + items.length * rowH + 26, X = x => L + x / end * (W - L - 16), f1 = v => +v.toFixed(1);
+  let g = ""; niceTicks(0, end, W < 520 ? 6 : 10).filter(t => t <= end + 1e-9).forEach(t => { g += '<line class="gr" x1="' + f1(X(t)) + '" x2="' + f1(X(t)) + '" y1="' + (T - 6) + '" y2="' + (H - 22) + '"/><text class="mu tk" x="' + f1(X(t)) + '" y="' + (H - 6) + '" text-anchor="middle">' + tickLbl(t) + "</text>"; });
+  items.forEach((it, i) => { const y = T + i * rowH; g += (i % 2 ? '<rect class="row" x="0" y="' + y + '" width="' + W + '" height="' + rowH + '"/>' : "") + '<text x="' + (L - 10) + '" y="' + (y + 19) + '" text-anchor="end">' + esc(it.id) + "</text>";
+    if (it.slack > 0) g += '<rect class="barm" x="' + f1(X(it.s + it.d)) + '" y="' + (y + 12) + '" width="' + f1(X(it.s + it.d + it.slack) - X(it.s + it.d)) + '" height="6" rx="3"/>';
+    g += '<rect class="' + (it.crit ? "bar2" : "bar1") + '" x="' + f1(X(it.s)) + '" y="' + (y + 6) + '" width="' + f1(Math.max(1, X(it.s + it.d) - X(it.s))) + '" height="18" rx="4" data-tip="' + esc(it.id + ": inicio " + it.s + ", duración " + it.d + (it.crit ? " (crítica)" : ", holgura " + it.slack)) + '"/>'; });
+  return '<figure class="ch"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" width="' + W + '" role="img" aria-label="Carta Gantt" data-w="' + W + '">' + g + '</svg></div><div class="legend">' + (o.leg || '<span><i style="background:var(--copper)"></i>Ruta crítica</span><span><i style="background:var(--blue)"></i>Actividad con holgura</span><span><i style="background:var(--line)"></i>Holgura total</span>') + "</div></figure>";
 }

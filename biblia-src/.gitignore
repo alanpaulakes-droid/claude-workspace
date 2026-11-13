@@ -7,3 +7,5 @@ tests/node_modules/
 tests/*.out
 alltext.json
 tests/package-lock.json
+tools/node_modules/
+tools/package-lock.json

@@ -25,12 +25,27 @@ Object.keys(GROUPS).forEach(g => {
 PAGES.push({ id:"reportes", g:"rep", t:"Memoria de cálculo", d:"Todos tus resultados en un documento descargable", ico:"⎙", r:pgReportes });
 Object.keys(C).forEach(id => { if (!PAGES.find(p => p.id === id)) PAGES.push({ id, g:C[id].g, t:C[id].t, d:C[id].d, ico:C[id].ico, r:() => calcPage(id), calc:true }); });
 if (typeof areaPages === "function") areaPages(PAGES);
+if (typeof extraPages === "function") extraPages(PAGES);
+/* F6: el contenido pesado (guías, ejemplos, apuntes, bloques T2) se evalúa una sola vez, cuando hace falta */
+let __lazyI = 0;
+function ensureContent(){ while (__lazyI < __LAZY.length) __LAZY[__lazyI++](); }
+/* carga en tiempo ocioso, de a un módulo, sin bloquear la pantalla (cada porción deja al menos 4 ms libres) */
+function lazyIdle(dl){ while (__lazyI < __LAZY.length && (!dl || dl.didTimeout || dl.timeRemaining() > 4)) { __LAZY[__lazyI++](); if (!dl || dl.didTimeout) break; }
+  if (__lazyI < __LAZY.length) (window.requestIdleCallback || (f => setTimeout(f, 16)))(lazyIdle, { timeout:400 }); }
 const pageOf = id => PAGES.find(p => p.id === id) || PAGES[0];
 const PARENT = { malla:"mi-malla", carrera:"carrera", ind:"industrias", eco:"herramientas", ops:"herramientas", trab:"herramientas", cal:"herramientas", io:"herramientas", seg:"herramientas", ges:"gestion", inf:"informes", learn:"aprender", sab:"saberes", des:"desarrollo", ofi:"ofimatica", rep:"informes", hub:"inicio", sim:"simuladores", area:"por-area" };
-const TABS = [["inicio", "⌂", "Inicio"], ["mi-malla", "★", "Malla"], ["herramientas", "ƒ", "Cálculos"], ["por-area", "◫", "Áreas"], ["informes", "✎", "Informes"], ["aprender", "§", "Aprender"], ["carrera", "▣", "Carrera"]];
-const tabOf = id => { const p = pageOf(id); if (id === "inicio") return "inicio"; if (p.g === "area" || ["por-area", "gestion", "por-trimestre", "favoritos"].includes(id) || p.g === "ges") return id === "por-trimestre" ? "mi-malla" : "por-area"; if (p.g === "hub") return id; if (p.g === "malla") return "mi-malla"; if (p.g === "ind" || p.g === "sim" || id === "simuladores") return "carrera"; if (p.g === "sab" || id === "saberes" || p.g === "des" || id === "desarrollo" || p.g === "ofi" || id === "ofimatica") return "aprender"; return PARENT[p.g] || "inicio"; };
+const TABS = [["inicio", "inicio", "Inicio"], ["por-area", "temas", "Temas"], ["herramientas", "calcular", "Calcular"], ["mi-malla", "malla", "Malla"], ["_more", "mas", "Más"]];
+/* Barra inferior: 5 destinos. «Más» abre el panel con todas las secciones (informes, carrera, simuladores, ajustes). */
+const tabOf = id => { const p = pageOf(id), g = p.g;
+  if (id === "inicio") return "inicio";
+  if (g === "malla" || id === "mi-malla" || id === "por-trimestre") return "mi-malla";
+  if (p.calc || ["eco", "ops", "trab", "cal", "io", "seg", "ges"].includes(g) || ["herramientas", "gestion"].includes(id)) return "herramientas";
+  if (["area", "learn", "sab", "des", "ofi"].includes(g) || ["por-area", "aprender", "saberes", "desarrollo", "ofimatica", "favoritos"].includes(id)) return "por-area";
+  return "_more"; };
 
-function tile(p){ return '<button class="tile' + (S.done[p.id] ? " done" : "") + '" type="button" data-go="' + p.id + '"><span class="ti">' + esc(p.ico || "·") + '</span><span class="tt">' + p.t + (S.done[p.id] ? " ✓" : "") + '</span><span class="td">' + (p.d || "") + "</span></button>"; }
+/* Mosaico de una página: ícono y color del área a la que pertenece */
+function tile(p){ const a = typeof areaOf === "function" ? areaOf(p.id) : null, k = a ? a[0] : "ref";
+  return '<button class="tile' + (S.done[p.id] ? " done" : "") + '" type="button" data-go="' + p.id + '" style="--ac:var(--a-' + k + ')"><span class="ti">' + icoUse(S.done[p.id] ? "check" : "a-" + k) + '</span><span class="tt">' + p.t + '</span><span class="td">' + (p.d || "") + (S.done[p.id] ? ' <span class="pill ok">Usada</span>' : "") + "</span></button>"; }
 function pgHub(h){
   const H = HUBS[h];
   return '<p class="eyebrow">Biblia del Ingeniero Industrial</p><h1>' + H[0] + '</h1><p class="lead">' + H[3] + "</p>" + H[2].map(g => (H[2].length > 1 ? '<h2 class="sh">' + GROUPS[g] + "</h2>" : "") + '<div class="tiles">' + PAGES.filter(p => p.g === g).map(tile).join("") + "</div>").join("");
@@ -41,12 +56,26 @@ function pgHome(){
   const M = [["por-area", "◫", "Estudiar por área", "10 áreas de la carrera + carrera y habilidades + referencia"], ["por-trimestre", "★", "Estudiar por trimestre", "Ramos de cada trimestre con sus calculadoras y áreas"]].concat(S.fav && S.fav.length ? [["favoritos", "★", "Mis favoritos", S.fav.length + " página" + (S.fav.length === 1 ? "" : "s") + " guardada" + (S.fav.length === 1 ? "" : "s")]] : []).concat([["mi-malla", "★", "Mi malla UNAB", COURSES.length + " ramos con apuntes por unidad · " + nOk + " aprobados"], ["herramientas", "ƒ", "Herramientas de cálculo", nCalc + " calculadoras con guía de estudio completa"], ["gestion", "◫", "Gestión y mejora", "FODA, Ishikawa, SIPOC, RACI, Lean, DMAIC, KPI"], ["informes", "✎", "Informes en Word y PDF", "Generador, plantillas, APA y memoria de cálculo" + (nDone ? " (" + nDone + " resultados)" : "")], ["industrias", "▣", "Industrias", "Minería, banca, retail, manufactura, alimentos, energía y más"], ["ofimatica", "▦", "Excel y Word profesional", "Cursos básico, avanzado y profesional con ejercicios interactivos"], ["simuladores", "▶", "Simuladores de software", "Proyectos, estadística, procesos, ERP, optimización, BI, SQL y layout, con instructivo"], ["desarrollo", "◎", "Desarrollo personal y profesional", "Vida cotidiana, hábitos, relaciones, bienestar, habilidades blandas, oratoria, libros y experiencias"], ["saberes", "⚙", "Saberes de otras áreas", "Electricidad, mecánica, mantenimiento, comercio exterior, datos e IA, casos integrados, ruta pro"], ["aprender", "§", "Aprender desde cero", "11 lecciones desde cero, historia, pensadores, formulario, glosario, tablas, normas, quiz"]]);
   const top = ["van-tir", "flujo-caja", "eoq", "pronosticos", "control-xr", "capacidad", "programacion-lineal", "cpm", "balanceo", "smed", "iper", "pareto"];
   const flow = [["sipoc", "Definir"], ["descriptiva", "Medir"], ["pareto", "Priorizar"], ["ishikawa", "Analizar causas"], ["smed", "Mejorar"], ["flujo-caja", "Evaluar"], ["generador-informe", "Informar"]];
-  return '<p class="eyebrow">Ingeniería Industrial · Chile</p><h1>Biblia del Ingeniero Industrial</h1><p class="lead">Estudiar, calcular, decidir y documentar en un solo lugar: tu malla con apuntes por ramo, herramientas con desarrollo paso a paso y guías de estudio, métodos de gestión, informes descargables en Word y PDF, y el conocimiento de cada industria.</p>' +
-    '<div class="mob-search gsw"><input type="search" id="gsearch2" placeholder="Buscar ramo, herramienta, tema o término…" aria-label="Buscar en la app" autocomplete="off"><div id="gsres2"></div></div>' +
-    (typeof resumeHTML === "function" ? resumeHTML() : lp ? '<button class="resume" type="button" data-go="' + lp.id + '">↻ Continuar: <b>' + esc(lp.t) + "</b></button>" : "") +
-    '<div class="mods">' + M.map(m => '<button class="mod" type="button" data-go="' + m[0] + '"><span class="mi">' + (typeof svgIco === "function" && svgIco(m[0]) || m[1]) + '</span><span class="mt">' + m[2] + '</span><span class="md">' + m[3] + "</span></button>").join("") + "</div>" +
-    '<h2 class="sh">Flujo de un proyecto de mejora</h2><ol class="flow">' + flow.map((f, i) => '<li><button type="button" data-go="' + f[0] + '"><span>' + (i + 1) + "</span>" + f[1] + "</button></li>").join("") + "</ol>" +
-    '<h2 class="sh">Más usadas</h2><div class="tiles">' + top.map(id => tile(pageOf(id))).join("") + "</div>" +
+  const seen = S.seen || {}, bar = (n, t, lab) => '<span class="bar" role="progressbar" aria-label="' + esc(lab) + '" aria-valuemin="0" aria-valuemax="' + t + '" aria-valuenow="' + n + '"><i style="width:' + (t ? Math.round(n / t * 100) : 0) + '%"></i></span>';
+  const rec = (S.recent || []).map(id => PAGES.find(p => p.id === id)).filter(p => p && p.id !== "inicio" && p.g !== "hub").slice(0, 4);
+  const fav = (S.fav || []).map(id => PAGES.find(p => p.id === id)).filter(Boolean);
+  const ar = CAREAS.map(a => { const ids = a[3].filter(id => PAGES.some(p => p.id === id)); return [a, ids.filter(id => seen[id]).length, ids.length]; });
+  const row = p => '<button class="lrow" type="button" data-go="' + p.id + '"><span class="lrow-t">' + esc(p.t) + '</span><small class="lrow-d">' + esc(GROUPS[p.g] || "") + "</small>" + icoUse("chev-r") + "</button>";
+  return '<header class="home-h"><p class="eyebrow">Ingeniería Industrial · Chile</p><h1>Biblia del Ingeniero Industrial</h1><p class="lead">Estudiar, calcular, decidir y documentar en un solo lugar: tu malla con apuntes por ramo, herramientas con desarrollo paso a paso y guías de estudio, métodos de gestión, informes descargables en Word y PDF, y el conocimiento de cada industria.</p></header>' +
+    '<div class="mob-search gsw"><input type="search" id="gsearch2" placeholder="Buscar ramo, herramienta, tema o término…" aria-label="Buscar en la app" autocomplete="off"><div id="gsres2" class="hits"></div></div>' +
+    '<div class="home-grid">' +
+      '<section class="panel" aria-labelledby="h-cont"><h2 class="panel-h" id="h-cont">' + icoUse("reloj") + 'Continuar</h2>' +
+        ((typeof resumeHTML === "function" ? resumeHTML() : "") || '<p class="hint">Todavía no abres ningún tema. Un buen comienzo: <button class="linkb" type="button" data-go="empieza-aqui">la ruta de aprendizaje</button>.</p>') +
+        (rec.length ? '<div class="lrows">' + rec.map(row).join("") + "</div>" : "") + "</section>" +
+      '<section class="panel" aria-labelledby="h-prog"><h2 class="panel-h" id="h-prog">' + icoUse("a-eco") + 'Tu progreso</h2>' +
+        '<div class="prog"><div class="prog-r"><button class="linkb" type="button" data-go="mi-malla">Ramos aprobados</button><b>' + nOk + " de " + COURSES.length + "</b></div>" + bar(nOk, COURSES.length, "Ramos aprobados") + "</div>" +
+        '<div class="prog"><div class="prog-r"><button class="linkb" type="button" data-go="herramientas">Calculadoras usadas</button><b>' + nDone + " de " + nCalc + "</b></div>" + bar(nDone, nCalc, "Calculadoras usadas") + "</div>" +
+        '<h3 class="panel-sub">Temas vistos por área</h3><div class="aprog">' + ar.map(x => '<button class="aprog-r" type="button" data-go="' + AREA_ID(x[0]) + '" style="--ac:var(--a-' + x[0][0] + ')"><span class="aprog-i">' + icoUse("a-" + x[0][0]) + '</span><span class="aprog-t">' + esc(x[0][1]) + '</span><span class="aprog-n">' + x[1] + "/" + x[2] + "</span>" + bar(x[1], x[2], x[0][1] + ": temas vistos") + "</button>").join("") + "</div></section>" +
+    "</div>" +
+    (fav.length ? '<section aria-labelledby="h-fav"><h2 class="sh" id="h-fav">Favoritos</h2><div class="quick">' + fav.map(p => '<button class="chip" type="button" data-go="' + p.id + '">' + icoUse("estrella-on") + " " + esc(p.t) + "</button>").join("") + "</div></section>" : "") +
+    '<section aria-labelledby="h-top"><h2 class="sh" id="h-top">Calculadoras más usadas</h2><div class="tiles">' + top.map(id => tile(pageOf(id))).join("") + "</div></section>" +
+    '<section aria-labelledby="h-exp"><h2 class="sh" id="h-exp">Explorar</h2><div class="mods">' + M.map(m => '<button class="mod" type="button" data-go="' + m[0] + '"><span class="mi">' + (svgIco(m[0]) || icoUse("temas")) + '</span><span class="mt">' + m[2] + '</span><span class="md">' + m[3] + "</span></button>").join("") + "</div></section>" +
+    '<section aria-labelledby="h-flow"><h2 class="sh" id="h-flow">Flujo de un proyecto de mejora</h2><ol class="flow">' + flow.map((f, i) => '<li><button type="button" data-go="' + f[0] + '"><span>' + (i + 1) + "</span>" + f[1] + "</button></li>").join("") + "</ol></section>" +
     note("Cada herramienta abre con un ejemplo resuelto y una guía de estudio desplegable. Reemplaza los datos por los tuyos y presiona <b>Calcular</b>; los resultados se guardan en este navegador y se pueden descargar en Word o PDF.", "info");
 }
 
@@ -123,6 +152,7 @@ function pgReportes(){
 /* ============ EXPORTACIÓN: QUÉ SE EXPORTA ============ */
 function tmpEl(html){ const d = document.createElement("div"); d.className = "doc"; d.style.cssText = "position:absolute;left:-10000px;top:0;width:900px"; d.innerHTML = html; document.body.appendChild(d); return d; }
 async function doExport(kind, fmt, id){
+  ensureContent();
   const P = S.proj, who = [["Autor", P.autor], ["Organización", P.empresa], ["Fecha", P.fecha]].filter(x => x[1]);
   if (kind === "formulario" || kind === "glosario") return exportRef(kind, fmt);
   if ((kind === "pagina" || kind === "ramo" || kind === "saber" || kind === "guia") && id === cur && document.querySelector("#app .t8")) return exportPage(fmt, id);
@@ -144,6 +174,7 @@ async function doExport(kind, fmt, id){
 /* ============ RENDER ============ */
 let cur = "inicio";
 function searchHits(q){
+  ensureContent();
   const nz = t => String(t || "").replace(/<[^>]+>/g, "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); q = nz(q).trim(); if (q.length < 2) return [];
   const H = []; PAGES.forEach(p => { if (p.id !== "inicio" && nz(p.t + " " + (p.d || "") + " " + (C[p.id] ? C[p.id].ey : "")).includes(q)) H.push({ go:p.id, t:p.t, k:GROUPS[p.g] || "Sección" }); });
   COURSES.forEach(c => c.u.forEach(u => { if (nz(u[0]).includes(q) || (q.length > 3 && nz(u[1]).includes(q))) H.push({ go:c.id, t:c.t + " · " + u[0].replace(/^\d+\.\s*/, ""), k:"Ramo" }); }));
@@ -155,20 +186,20 @@ function searchHits(q){
   if (q.length > 3) searchHits.ix.forEach(e => { if (H.length < 24 && !e[3].includes(q) && e[4].includes(q) && !H.some(h => h.go === e[0] && h.t.endsWith(e[2]))) H.push({ go:e[0], t:e[1] + " · " + e[2], k:(kx[gx(e[0])] || "Saberes") + " (en el texto)" }); });
   return H.slice(0, 24);
 }
-const hitsHTML = (H, q) => H.map(x => '<button type="button" data-go="' + x.go + '"><span class="k">›</span>' + esc(x.t) + ' <small class="hint">' + esc(x.k) + "</small></button>").join("") || (q.trim().length >= 2 ? '<p class="hint" style="padding:4px 8px;margin:0">Sin resultados</p>' : "");
+const hitsHTML = (H, q) => H.map(x => '<button type="button" class="hit" data-go="' + x.go + '"><span class="hit-t">' + esc(x.t) + '</span><small class="hit-k">' + esc(x.k) + "</small>" + icoUse("chev-r") + "</button>").join("") || (q.trim().length >= 2 ? '<p class="hint" style="padding:4px 8px;margin:0">Sin resultados</p>' : "");
 function renderSide(){
   let closed = null; try { closed = JSON.parse(localStorage.getItem(KEY + "-side2") || "null"); } catch (e) {}
   if (!closed) closed = Object.keys(GROUPS).filter(g => g !== "malla");
   const cg = pageOf(cur).g;
-  let h = '<div class="gsw"><input type="search" id="gsearch" placeholder="Buscar ramo, herramienta o término…" aria-label="Buscar en la app" autocomplete="off"><div id="gsres"></div></div><button type="button" data-go="inicio" aria-current="' + (cur === "inicio") + '"><span class="k">⌂</span>Inicio</button>' + (typeof sideTopHTML === "function" ? sideTopHTML() : "");
+  let h = '<div class="gsw"><input type="search" id="gsearch" placeholder="Buscar ramo, herramienta o término…" aria-label="Buscar en la app" autocomplete="off"><div id="gsres"></div></div><button type="button" data-go="inicio" aria-current="' + (cur === "inicio") + '"><span class="k">' + icoUse("inicio") + "</span>Inicio</button>" + (typeof sideTopHTML === "function" ? sideTopHTML() : "");
   Object.keys(GROUPS).forEach(g => { const ps = PAGES.filter(p => p.g === g); const op = g === cg || !closed.includes(g);
-    h += '<details class="sgp" data-sgp="' + g + '"' + (op ? " open" : "") + "><summary>" + GROUPS[g] + "</summary>" + ps.map(p => '<button type="button" data-go="' + p.id + '" aria-current="' + (p.id === cur) + '"><span class="k">' + (p.calc ? "ƒ" : p.tri ? "T" + p.tri : "·") + "</span>" + p.t + (S.done[p.id] || (S.malla && S.malla[p.id]) ? '<span class="done">✓</span>' : "") + "</button>").join("") + "</details>"; });
+    h += '<details class="sgp" data-sgp="' + g + '"' + (op ? " open" : "") + "><summary>" + GROUPS[g] + "</summary>" + ps.map(p => '<button type="button" data-go="' + p.id + '" aria-current="' + (p.id === cur) + '"><span class="k">' + (p.tri ? "T" + p.tri : "") + "</span>" + p.t + (S.done[p.id] || (S.malla && S.malla[p.id]) ? '<span class="done" aria-label="completado">' + icoUse("check") + "</span>" : "") + "</button>").join("") + "</details>"; });
   document.getElementById("side").innerHTML = h;
   const p = pageOf(cur);
   document.getElementById("crumb").innerHTML = cur === "inicio" ? "" : typeof crumbHTML === "function" ? crumbHTML(cur) : esc((GROUPS[p.g] ? GROUPS[p.g] + " › " : "") + p.t);
   document.getElementById("backBtn").hidden = cur === "inicio" && !NAV.length;
   const tb = tabOf(cur);
-  document.getElementById("tabbar").innerHTML = TABS.map(t => '<button type="button" data-go="' + t[0] + '" aria-current="' + (t[0] === tb) + '"><span class="ic">' + (typeof svgIco === "function" && svgIco(t[0]) || t[1]) + "</span><span>" + t[2] + "</span></button>").join("");
+  document.getElementById("tabbar").innerHTML = TABS.map(t => '<button type="button" ' + (t[0] === "_more" ? 'data-more="1" aria-haspopup="dialog"' : 'data-go="' + t[0] + '"') + ' aria-current="' + (t[0] === tb) + '"><span class="ic">' + icoUse(t[1]) + "</span><span>" + t[2] + "</span></button>").join("");
 }
 function goBack(){
   const sn = NAV.pop();
@@ -179,6 +210,7 @@ function goBack(){
   if (sn) { const ds = document.querySelectorAll("#app details"); sn.open.forEach((o, i) => { if (ds[i]) ds[i].open = o; }); requestAnimationFrame(() => window.scrollTo(0, sn.y)); }
 }
 function render(keepScroll){
+  if (cur !== "inicio") ensureContent();
   const p = pageOf(cur); let html;
   try { html = p.r(); } catch (e) { html = note("Error al mostrar esta sección: " + esc(e.message), "bad"); }
   try { if (typeof expandHTML === "function") html = expandHTML(cur, html); } catch (e) { console.error(e); }
@@ -197,7 +229,7 @@ function navSnap(fromApp){ const app = document.getElementById("app"); return { 
 function go(id, fromApp){
   if (!PAGES.find(p => p.id === id)) id = "inicio";
   if (id !== cur) { NAV.push(navSnap(fromApp)); if (NAV.length > 60) NAV.shift(); }
-  cur = id; if (pageOf(id).g !== "hub" && id !== "inicio") { S.last = id; save(); }
+  cur = id; if (pageOf(id).g !== "hub" && id !== "inicio") { S.last = id; S.seen = S.seen || {}; S.seen[id] = 1; S.recent = [id].concat((S.recent || []).filter(x => x !== id)).slice(0, 6); save(); }
   try { if (location.hash.slice(1) !== id) history.replaceState(null, "", "#" + id); } catch (e) {}
   render();
 }
@@ -235,7 +267,7 @@ document.addEventListener("click", async e => {
 });
 document.addEventListener("input", e => {
   const el = e.target;
-  if (el.id === "gsearch" || el.id === "gsearch2") { const box = document.getElementById(el.id === "gsearch" ? "gsres" : "gsres2"); if (box) box.innerHTML = hitsHTML(searchHits(el.value), el.value); return; }
+  if (el.id === "gsearch" || el.id === "gsearch2" || el.id === "gsearch3") { const box = document.getElementById({ gsearch:"gsres", gsearch2:"gsres2", gsearch3:"gsres3" }[el.id]); if (box) box.innerHTML = hitsHTML(searchHits(el.value), el.value); return; }
   if (el.id === "glf") { const q = el.value.toLowerCase().trim(); document.querySelectorAll("#gll dt,#gll dd").forEach(x => { const k = x.dataset.k, dd = x.tagName === "DD" ? x.textContent.toLowerCase() : (x.nextElementSibling ? x.nextElementSibling.textContent.toLowerCase() : ""); x.hidden = q && !(k.includes(q) || dd.includes(q)); }); return; }
   if (el.id === "tfi" || el.id === "tfn") { tfTable(); return; }
   if (el.dataset.malla) return;
@@ -250,6 +282,8 @@ document.addEventListener("toggle", e => { const d = e.target; if (!d.dataset ||
 document.getElementById("backBtn").addEventListener("click", goBack);
 
 /* ============ INICIO ============ */
-(function(){ const h = location.hash.slice(1); cur = h && PAGES.find(p => p.id === h) ? h : "inicio"; render(); })();
+(function(){ try { icoSprite(); } catch (e) {} const h = location.hash.slice(1); cur = h && PAGES.find(p => p.id === h) ? h : "inicio"; render();
+  /* el contenido diferido se carga en tiempo ocioso, apenas se muestra la primera pantalla */
+  (window.requestIdleCallback || (f => setTimeout(f, 30)))(lazyIdle, { timeout:400 }); })();
 })();
 </script>

@@ -282,6 +282,8 @@ def("vsm", "ops", {
       { t:"Lead time (por ley de Little)", f:"Días de inventario = Inventario ÷ Demanda diaria   ·   LT = Σ días", s:"LT = " + n0(sum(P.map(p => p.inv))) + " ÷ " + n0(dd) + " = " + nf(LTd, 2) + " días", r:nf(LTd, 1) + " días", why:"una pieza que entra hoy debe esperar a que salgan todas las que están delante." },
       { t:"Eficiencia del ciclo del proceso", f:"PCE = Tiempo de valor agregado ÷ Lead time", s:"PCE = " + n0(VA) + " s ÷ " + n0(LTs) + " s = " + pc(PCE, 4), r:pc(PCE, 3), c:PCE > 0.25 ? "ok" : "warn", why:"en procesos tradicionales suele ser menor a 1 %. Reducir inventarios (supermercados, FIFO, flujo continuo) baja el lead time sin trabajar más rápido." }
     ]);
+    /* F4: mapa de flujo de valor. Solo datos en el atributo; el dibujo y sus rótulos se generan al mostrar la página (wd8.js · drawVsm) */
+    h += '<figure class="ch dg vsm-map" data-vsm="' + esc(JSON.stringify({ takt, dd, P:P.map(p => [p.nm, p.tc, p.inv, p.op]) })) + '"><div class="sv"></div></figure>';
     h += chart({ title:"Ciclo por proceso vs takt", bars:P.map((p, k) => ({ x:k + 1, y:p.tc, cls:p.tc > takt ? "bar2" : "bar1" })), h:[{ y:takt, cls:"sb", lbl:"Takt" }], xcat:P.map(p => p.nm), ymin:0, ylab:"Segundos" });
     return h;
   },

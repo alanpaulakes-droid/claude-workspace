@@ -47,12 +47,12 @@ const KINDS = [["ramo", "Ramos de tu malla"], ["teo", "Teoría, lecciones y mét
 function areaTiles(ids){ const ps = ids.map(id => PAGES.find(p => p.id === id)).filter(Boolean);
   return KINDS.map(k => { const g = ps.filter(p => kindOf(p) === k[0]); return g.length ? '<h2 class="sh">' + k[1] + ' <span class="cnt">' + g.length + "</span></h2>" + '<div class="tiles">' + g.map(tile).join("") + "</div>" : ""; }).join(""); }
 function pgArea(k){ const a = CAREAS.find(x => x[0] === k), i = CAREAS.indexOf(a), pr = CAREAS[i - 1], nx = CAREAS[i + 1];
-  return '<p class="eyebrow">Estudiar por área · ' + (i + 1) + " de " + CAREAS.length + "</p><h1>" + a[1] + '</h1><p class="lead">' + a[2] + "</p>" + areaTiles(a[3]) +
+  return '<div class="area-head"><div><p class="eyebrow">Estudiar por área · ' + (i + 1) + " de " + CAREAS.length + "</p><h1>" + a[1] + '</h1><p class="lead">' + a[2] + "</p></div>" + (typeof areaArt === "function" ? areaArt(a[0], a[1]) : "") + "</div>" + areaTiles(a[3]) +
     '<div class="pager">' + (pr ? '<button class="btn ghost" type="button" data-go="' + AREA_ID(pr) + '">← ' + pr[1] + "</button>" : "<span></span>") + (nx ? '<button class="btn ghost" type="button" data-go="' + AREA_ID(nx) + '">' + nx[1] + " →</button>" : "") + "</div>"; }
 function pgPorArea(){
   return '<p class="eyebrow">Navegación</p><h1>Estudiar por área</h1><p class="lead">Cada área reúne los ramos de tu malla, la teoría, las calculadoras y los simuladores del mismo tema. Un tema puede aparecer en más de un área cuando se usa en ambas.</p>' +
     '<div class="areas">' + CAREAS.map((a, i) => { const ps = a[3].map(id => PAGES.find(p => p.id === id)).filter(Boolean), c = k => ps.filter(p => kindOf(p) === k).length;
-      return '<button class="area-c" type="button" data-go="' + AREA_ID(a) + '"><span class="area-n">' + String.fromCharCode(97 + i) + '</span><span class="area-t">' + a[1] + '</span><span class="area-d">' + a[2] + '</span><span class="area-m">' + [[c("ramo"), "ramos"], [c("teo"), "temas"], [c("calc"), "calculadoras"], [c("sim"), "simuladores"]].filter(x => x[0]).map(x => x[0] + " " + x[1]).join(" · ") + "</span></button>"; }).join("") + "</div>"; }
+      return '<button class="area-c" type="button" data-go="' + AREA_ID(a) + '"><span class="area-n" style="--ac:var(--a-' + a[0] + ')">' + icoUse("a-" + a[0]) + '</span><span class="area-t">' + a[1] + '</span><span class="area-d">' + a[2] + '</span><span class="area-m">' + [[c("ramo"), "ramos"], [c("teo"), "temas"], [c("calc"), "calculadoras"], [c("sim"), "simuladores"]].filter(x => x[0]).map(x => x[0] + " " + x[1]).join(" · ") + "</span></button>"; }).join("") + "</div>"; }
 function pgPorTrimestre(){
   S.malla = S.malla || {}; let t = +(S.triSel || 1); if (!(t >= 1 && t <= 8)) t = 1;
   const cs = COURSES.filter(c => inTri(c, t));
@@ -64,8 +64,8 @@ function pgPorTrimestre(){
     '<p class="hint">Para marcar ramos aprobados usa ' + '<button class="linkb" type="button" data-go="mi-malla">Mi malla</button>.</p>'; }
 function pgFavoritos(){
   const ps = S.fav.map(id => PAGES.find(p => p.id === id)).filter(Boolean);
-  return '<p class="eyebrow">Mis cosas</p><h1>Mis favoritos</h1><p class="lead">Marca cualquier página con la estrella ☆ junto a su título para tenerla aquí y en el menú.</p>' +
-    (ps.length ? '<div class="tiles">' + ps.map(tile).join("") + "</div>" : '<div class="empty">Aún no tienes favoritos. Abre una página y toca ☆ junto al título.</div>'); }
+  return '<p class="eyebrow">Mis cosas</p><h1>Mis favoritos</h1><p class="lead">Marca cualquier página con la estrella junto a su título para tenerla aquí y en el menú.</p>' +
+    (ps.length ? '<div class="tiles">' + ps.map(tile).join("") + "</div>" : '<div class="empty">Aún no tienes favoritos. Abre una página y toca la estrella junto al título.</div>'); }
 
 /* ---------- Migas de pan ---------- */
 function crumbs(id){
@@ -88,9 +88,9 @@ function crossHTML(id){
     '<p class="hint" style="margin:6px 0 0">' + ar.map((a, i) => (i ? " · " : "Áreas: ") + '<button class="linkb" type="button" data-go="' + AREA_ID(a) + '">' + a[1] + "</button>").join("") + "</p></section>"; }
 
 /* ---------- Favoritos y «seguir donde quedé» ---------- */
-function favBtn(id){ const on = S.fav.includes(id); return '<button class="favb no-print" type="button" data-fav="' + id + '" aria-pressed="' + on + '" title="' + (on ? "Quitar de favoritos" : "Agregar a favoritos") + '" aria-label="' + (on ? "Quitar de favoritos" : "Agregar a favoritos") + '">' + (on ? "★" : "☆") + "</button>"; }
+function favBtn(id){ const on = S.fav.includes(id); return '<button class="favb no-print" type="button" data-fav="' + id + '" aria-pressed="' + on + '" title="' + (on ? "Quitar de favoritos" : "Agregar a favoritos") + '" aria-label="' + (on ? "Quitar de favoritos" : "Agregar a favoritos") + '">' + svgIco(on ? "estrella-on" : "estrella") + "</button>"; }
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-fav]"); if (!b) return; const id = b.dataset.fav, i = S.fav.indexOf(id);
-  if (i >= 0) S.fav.splice(i, 1); else S.fav.unshift(id); save(); const on = i < 0; b.setAttribute("aria-pressed", on); b.textContent = on ? "★" : "☆"; b.title = on ? "Quitar de favoritos" : "Agregar a favoritos"; b.setAttribute("aria-label", b.title); toast(on ? "Agregado a favoritos" : "Quitado de favoritos"); try { renderSide(); } catch (er) {} });
+  if (i >= 0) S.fav.splice(i, 1); else S.fav.unshift(id); save(); const on = i < 0; b.setAttribute("aria-pressed", on); b.innerHTML = svgIco(on ? "estrella-on" : "estrella"); b.title = on ? "Quitar de favoritos" : "Agregar a favoritos"; b.setAttribute("aria-label", b.title); toast(on ? "Agregado a favoritos" : "Quitado de favoritos"); try { renderSide(); } catch (er) {} });
 document.addEventListener("toggle", e => { const d = e.target; if (!d.matches || !d.matches("#app details.item, #app details.learn") || !d.open) return; const s = d.querySelector(":scope > summary"); if (!s) return;
   S.lastSec = { id:cur, s:s.textContent.trim().slice(0, 160) }; save(); }, true);
 function resumeHTML(){
@@ -104,17 +104,18 @@ document.addEventListener("click", e => { const b = e.target.closest && e.target
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-tri]"); if (!b) return; S.triSel = +b.dataset.tri; save(); render(true); });
 
 /* ---------- Tema claro / oscuro / automático ---------- */
-const THEMES = [["auto", "Tema automático (según el sistema)", '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>'], ["light", "Tema claro", '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>'], ["dark", "Tema oscuro", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>']];
+const THEMES = [["auto", "Tema automático (según el sistema)", "auto"], ["light", "Tema claro", "sol"], ["dark", "Tema oscuro", "luna"]];
 function themeGet(){ try { return localStorage.getItem(KEY + "-theme") || "auto"; } catch (e) { return "auto"; } }
 function themeApply(t){ const r = document.documentElement; if (t === "light" || t === "dark") r.setAttribute("data-theme", t); else r.removeAttribute("data-theme");
-  const b = document.getElementById("themeBtn"), m = THEMES.find(x => x[0] === t) || THEMES[0]; if (b) { b.innerHTML = m[2]; b.title = m[1] + " · tocar para cambiar"; b.setAttribute("aria-label", m[1] + ". Tocar para cambiar"); } }
+  const b = document.getElementById("themeBtn"), m = THEMES.find(x => x[0] === t) || THEMES[0]; if (b) { b.innerHTML = svgIco(m[2]); b.title = m[1] + " · tocar para cambiar"; b.setAttribute("aria-label", m[1] + ". Tocar para cambiar"); } }
 document.addEventListener("click", e => { if (!e.target.closest || !e.target.closest("#themeBtn")) return; const i = THEMES.findIndex(x => x[0] === themeGet()), n = THEMES[(i + 1) % THEMES.length][0];
   try { localStorage.setItem(KEY + "-theme", n); } catch (er) {} themeApply(n); toast(THEMES.find(x => x[0] === n)[1]); });
 
 /* ---------- Menú lateral colapsable en móvil ---------- */
 function navOpen(on){ document.body.classList.toggle("nav-open", on); const b = document.getElementById("menuBtn"); if (b) b.setAttribute("aria-expanded", on); if (on) { const s = document.querySelector("#side input, #side button"); if (s) try { s.focus({ preventScroll:true }); } catch (e) {} } }
 document.addEventListener("click", e => { if (!e.target.closest) return;
-  if (e.target.closest("#menuBtn")) { navOpen(!document.body.classList.contains("nav-open")); return; }
+  if (e.target.closest("#menuBtn")) { if (window.matchMedia("(min-width:901px)").matches) { sideCollapse(!document.body.classList.contains("side-off")); return; } navOpen(!document.body.classList.contains("nav-open")); return; }
+  if (e.target.closest("[data-more]")) { navOpen(true); return; }
   if (e.target.closest("#navScrim")) { navOpen(false); return; }
   if (document.body.classList.contains("nav-open") && e.target.closest("#side [data-go]")) navOpen(false); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) { navOpen(false); const b = document.getElementById("menuBtn"); if (b) b.focus(); } });
@@ -123,17 +124,17 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && document.b
 function sideTopHTML(){
   const fav = S.fav.map(id => PAGES.find(p => p.id === id)).filter(Boolean), ca = areaOf(cur), cp = pageOf(cur);
   let h = "";
-  if (fav.length) h += '<details class="sgp" data-sgp="_fav" open><summary>Favoritos</summary>' + fav.map(p => '<button type="button" data-go="' + p.id + '" aria-current="' + (p.id === cur) + '"><span class="k">★</span>' + p.t + "</button>").join("") + "</details>";
-  h += '<details class="sgp" data-sgp="_area"' + (sideOpen("_area") ? " open" : "") + '><summary>Por área</summary>' + CAREAS.map((a, i) => '<button type="button" data-go="' + AREA_ID(a) + '" aria-current="' + (cur === AREA_ID(a) || (ca === a && cp.g !== "area")) + '"><span class="k">' + String.fromCharCode(97 + i) + "</span>" + a[1] + "</button>").join("") + "</details>";
+  if (fav.length) h += '<details class="sgp" data-sgp="_fav" open><summary>Favoritos</summary>' + fav.map(p => '<button type="button" data-go="' + p.id + '" aria-current="' + (p.id === cur) + '"><span class="k" style="color:var(--star)">' + icoUse("estrella-on") + "</span>" + p.t + "</button>").join("") + "</details>";
+  h += '<details class="sgp" data-sgp="_area"' + (sideOpen("_area") ? " open" : "") + '><summary>Por área</summary>' + CAREAS.map((a, i) => '<button type="button" data-go="' + AREA_ID(a) + '" aria-current="' + (cur === AREA_ID(a) || (ca === a && cp.g !== "area")) + '"><span class="k" style="color:var(--a-' + a[0] + ')">' + icoUse("a-" + a[0]) + "</span>" + a[1] + "</button>").join("") + "</details>";
   h += '<details class="sgp" data-sgp="_tri"' + (sideOpen("_tri") ? " open" : "") + '><summary>Por trimestre</summary><div class="tri-row">' + [1, 2, 3, 4, 5, 6, 7, 8].map(n => '<button type="button" data-go="por-trimestre" data-tri="' + n + '" aria-current="' + (cur === "por-trimestre" && +(S.triSel || 1) === n || (cp.g === "malla" && cp.tri === n)) + '">' + n + "°</button>").join("") + "</div></details>";
   return h; }
 function sideOpen(k){ try { const c = JSON.parse(localStorage.getItem(KEY + "-side2") || "null"); return !c || !c.includes(k); } catch (e) { return true; } }
 
-/* ---------- KaTeX (cdnjs) con respaldo: si no carga, se muestra la fórmula con el motor propio ---------- */
+/* ---------- Fórmulas: motor propio M() (sin descargas, funciona sin conexión) ----------
+   KaTeX ya no se carga desde internet. Si la página tuviera window.katex (por ejemplo, en pruebas),
+   se usa; si no, cada fórmula muestra su versión del motor propio, que ya viene en el HTML. */
 let KX = null;
-function katexLoad(){ if (window.katex) return Promise.resolve(window.katex); if (KX) return KX;
-  KX = new Promise((ok, ko) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"; s.async = true; s.onload = () => window.katex ? ok(window.katex) : ko(); s.onerror = () => ko(); document.head.appendChild(s); setTimeout(() => ko(), 9000); }).catch(() => null);
-  return KX; }
+function katexLoad(){ if (window.katex) return Promise.resolve(window.katex); return KX || (KX = Promise.resolve(null)); }
 /* TX(tex, alt, bloque): tex en LaTeX; alt en la notación del motor propio (M) para el respaldo */
 function TX(tex, alt, blk){ if (blk && /\\qquad/.test(tex)) { const parts = tex.split(/,?\s*\\qquad\s*/).filter(x => x.trim()); if (parts.length > 1) return '<div class="tx tx-b tx-multi" data-tex="' + esc(tex) + '"' + (alt ? ' data-alt="' + esc(alt) + '"' : "") + ' data-parts="' + esc(JSON.stringify(parts)) + '">' + (alt ? M(alt) : "<code>" + esc(tex) + "</code>") + "</div>"; } return (blk ? '<div class="tx tx-b"' : '<span class="tx"') + ' data-tex="' + esc(tex) + '"' + (alt ? ' data-alt="' + esc(alt) + '"' : "") + '>' + (alt ? (blk ? M(alt) : '<span class="mx">' + esc(alt) + "</span>") : '<code>' + esc(tex) + "</code>") + (blk ? "</div>" : "</span>"); }
 function katexRender(root){ const els = root.querySelectorAll(".tx[data-tex]:not([data-ok])"); if (!els.length) return;
@@ -159,7 +160,7 @@ function pgComponentes(){
     '<h2 class="sh">Ejercicio con pistas</h2>' + UI.ejercicio("<p>Una ferretería vende 2.400 sacos de cemento al año. Pedir cuesta $12.000 y mantener un saco un año cuesta $1.600. ¿Cuántos sacos debe pedir cada vez?</p>", ["Identifica D, S y H con sus unidades.", "Reemplaza en Q* = √(2·D·S ÷ H): 2·2.400·12.000 = 57.600.000."], "<p>Q* = √(57.600.000 ÷ 1.600) = √36.000 ≈ 189,7 → <b>190 sacos</b> por pedido (unos 12,6 pedidos al año).</p>") +
     '<h2 class="sh">Ficha resumen</h2>' + UI.ficha(["EOQ equilibra el costo de pedir con el de mantener.", "Supone demanda constante y reposición instantánea.", "Pequeños errores en S o H cambian poco el costo total (curva plana cerca del óptimo)."]) +
     '<h2 class="sh">Fórmula en línea</h2><p>La utilización de una cola M/M/1 es ' + TX("\\rho=\\lambda/\\mu", "ρ = λ/μ") + " y debe ser menor que 1.</p>" +
-    note("Las fórmulas se dibujan con KaTeX (cargado desde cdnjs). Si no hay conexión, se muestran con el motor propio de la app, igual de legibles.", "info"); }
+    note("Las fórmulas se dibujan con el motor propio de la app, incluido en el archivo: funcionan sin conexión.", "info"); }
 
 /* ---------- Tablas anchas: siempre dentro de un contenedor con desplazamiento propio ---------- */
 function wrapWide(root){ root.querySelectorAll("table").forEach(t => { if (t.closest(".tbl-wrap,.gd-wrap,.xl-wrap,.sw-tbl,.sw-scroll,.wd-page,.malla")) return; const w = document.createElement("div"); w.className = "tbl-wrap"; t.parentNode.insertBefore(w, t); w.appendChild(t); }); }

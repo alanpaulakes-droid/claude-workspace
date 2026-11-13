@@ -22,7 +22,7 @@ function FC(nodes, cap){
     if (n.side) { const s = n.side, sd = dims(s); g += '<line class="dga" x1="' + (CX + d.w / 2) + '" y1="' + cy + '" x2="' + (SX - sd.w / 2 - 2) + '" y2="' + cy + '" marker-end="url(#' + mk + ')"/><text x="' + (CX + d.w / 2 + 8) + '" y="' + (cy - 7) + '" class="mu">' + esc((n.lbl || ["No", "Sí"])[1]) + "</text>" + shape(s, SX, cy, sd) + dgText(SX, cy, sd.L);
       if (s.to != null && out[s.to]) { const tg = out[s.to], tx = CX + tg.d.w / 2 + 2, up = tg.cy < cy, sy = up ? cy - sd.h / 2 : cy + sd.h / 2;
         g += '<polyline class="dga" points="' + SX + "," + sy + " " + SX + "," + tg.cy + " " + tx + "," + tg.cy + '" marker-end="url(#' + mk + ')"/>'; } } });
-  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagrama de flujo" style="min-width:440px">' + dgDefs(mk) + g + '</svg></div><figcaption>' + (cap || "") + ' Símbolos: óvalo = inicio/fin; rectángulo = proceso; paralelogramo = entrada/salida; rombo = decisión.</figcaption></figure>'; }
+  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagrama de flujo">' + dgDefs(mk) + dgGrid("fg" + mk, W, H) + g + '</svg></div><figcaption>' + (cap || "") + ' Símbolos: óvalo = inicio/fin; rectángulo = proceso; paralelogramo = entrada/salida; rombo = decisión.</figcaption></figure>'; }
 
 /* Layout de 2 × 2 áreas: compara dos disposiciones con líneas de flujo de grosor proporcional a los viajes */
 function LAYD(names, flows, a, b, cap){
@@ -36,4 +36,4 @@ function LAYD(names, flows, a, b, cap){
     g += labs;
     g += '<text x="' + (ox + PW / 2) + '" y="' + (34 + 2 * cell + 22) + '" text-anchor="middle" class="mu">Viajes × m = ' + total + "</text>"; return g; };
   const W = 2 * PW + 20, H = 34 + 2 * cell + 34;
-  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Comparación de layouts" style="min-width:420px">' + panel(a[0], 0, a[1], a[2]) + panel(b[0], PW + 20, b[1], b[2]) + "</svg></div><figcaption>" + (cap || "") + "</figcaption></figure>"; }
+  return '<figure class="ch dg"><div class="sv"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Comparación de layouts">' + dgGrid("lg" + (++DGN), W, H) + panel(a[0], 0, a[1], a[2]) + panel(b[0], PW + 20, b[1], b[2]) + "</svg></div><figcaption>" + (cap || "") + "</figcaption></figure>"; }
