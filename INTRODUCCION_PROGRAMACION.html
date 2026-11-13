@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introducción a la Programación – Ingeniería Industrial</title>
+<style>
+  :root {
+    --primary: #6c2eb9;
+    --primary-dark: #4a1a8a;
+    --primary-light: #9b59d1;
+    --accent: #e8d9fc;
+    --bg: #f7f3ff;
+    --white: #ffffff;
+    --text: #2d2d2d;
+    --text-light: #666;
+    --sidebar-width: 260px;
+    --correct: #27ae60;
+    --incorrect: #e74c3c;
+    --border: #ddd;
+    --shadow: 0 2px 8px rgba(108,46,185,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: var(--sidebar-width);
+    background: var(--primary-dark);
+    color: var(--white);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 3px 0 12px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+  }
+  #sidebar .logo {
+    padding: 24px 18px 16px;
+    background: var(--primary);
+    border-bottom: 1px solid var(--primary-light);
+  }
+  #sidebar .logo h1 {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+  }
+  #sidebar .logo p {
+    font-size: 0.75rem;
+    opacity: 0.75;
+    margin-top: 4px;
+  }
+  #sidebar nav { padding: 12px 0; flex: 1; }
+  #sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 20px;
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: background 0.2s, color 0.2s;
+    border-left: 3px solid transparent;
+  }
+  #sidebar nav a:hover,
+  #sidebar nav a.active {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border-left-color: var(--primary-light);
+  }
+  #sidebar nav a .badge {
+    font-size: 0.7rem;
+    background: var(--primary-light);
+    border-radius: 10px;
+    padding: 2px 7px;
+    margin-left: auto;
+  }
+
+  /* MAIN */
+  #main {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    padding: 32px 36px;
+    max-width: 960px;
+  }
+  .page-header {
+    margin-bottom: 36px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--accent);
+  }
+  .page-header h2 {
+    font-size: 2rem;
+    color: var(--primary);
+    font-weight: 800;
+  }
+  .page-header p {
+    color: var(--text-light);
+    margin-top: 6px;
+    font-size: 0.95rem;
+  }
+
+  /* SEMANA SECTION */
+  .semana-section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .semana-section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .semana-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .semana-title .num {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    width: 46px; height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .semana-title h3 {
+    font-size: 1.5rem;
+    color: var(--primary-dark);
+    font-weight: 700;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    border-left: 5px solid var(--primary-light);
+  }
+  .card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h4 .icon {
+    font-size: 1.15rem;
+  }
+  .card p, .card ul, .card ol {
+    font-size: 0.93rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .card ul, .card ol { padding-left: 18px; }
+  .card li { margin-bottom: 5px; }
+
+  .card.reflexion { border-left-color: #9b59b6; }
+  .card.retro { border-left-color: #2980b9; }
+  .card.quiz { border-left-color: #e67e22; }
+
+  /* QUIZ */
+  .quiz-container { }
+  .quiz-q {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    border: 1px solid #e4d9f8;
+  }
+  .quiz-q .q-text {
+    font-weight: 600;
+    font-size: 0.93rem;
+    margin-bottom: 12px;
+    color: var(--primary-dark);
+  }
+  .quiz-q .q-num {
+    font-size: 0.78rem;
+    color: var(--primary-light);
+    font-weight: 700;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn {
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.88rem;
+    color: var(--text);
+    transition: border-color 0.2s, background 0.2s;
+    line-height: 1.5;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--primary-light);
+    background: var(--accent);
+  }
+  .option-btn.correct {
+    border-color: var(--correct);
+    background: #eafaf1;
+    color: #1a6b3c;
+    font-weight: 600;
+  }
+  .option-btn.incorrect {
+    border-color: var(--incorrect);
+    background: #fdf0ef;
+    color: #9b2221;
+  }
+  .option-btn:disabled { cursor: default; }
+  .feedback-box {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    line-height: 1.55;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.ok { background: #eafaf1; color: #1a6b3c; border-left: 4px solid var(--correct); }
+  .feedback-box.fail { background: #fdf0ef; color: #9b2221; border-left: 4px solid var(--incorrect); }
+  .quiz-score {
+    display: none;
+    margin-top: 18px;
+    padding: 16px 20px;
+    background: var(--accent);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    text-align: center;
+  }
+  .quiz-score.show { display: block; }
+  .submit-quiz {
+    margin-top: 16px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 26px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: none;
+  }
+  .submit-quiz:hover { background: var(--primary-dark); }
+  .submit-quiz.show { display: inline-block; }
+  .reset-quiz {
+    margin-top: 10px;
+    margin-left: 10px;
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary-light);
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: none;
+  }
+  .reset-quiz:hover { background: var(--accent); }
+  .reset-quiz.show { display: inline-block; }
+
+  /* HOME */
+  #home {
+    display: block;
+  }
+  .home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+  }
+  .home-card {
+    background: var(--white);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 20px 18px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s, transform 0.18s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .home-card:hover {
+    border-color: var(--primary-light);
+    transform: translateY(-3px);
+  }
+  .home-card .hc-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-light);
+  }
+  .home-card .hc-title {
+    font-size: 0.93rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+  .home-card .hc-sub {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    margin-top: 4px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 750px) {
+    #sidebar { width: 200px; }
+    #main { margin-left: 200px; padding: 20px 14px; }
+    .semana-title h3 { font-size: 1.2rem; }
+  }
+  @media (max-width: 520px) {
+    #sidebar { position: relative; width: 100%; }
+    #main { margin-left: 0; padding: 14px; }
+    body { flex-direction: column; }
+  }
+
+  /* PROGRESS BAR */
+  .quiz-progress {
+    height: 5px;
+    background: var(--accent);
+    border-radius: 10px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .quiz-progress-bar {
+    height: 100%;
+    background: var(--primary-light);
+    transition: width 0.4s;
+    border-radius: 10px;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="logo">
+    <h1>Intro a la Programación</h1>
+    <p>Ingeniería Industrial – 1er Trimestre</p>
+  </div>
+  <nav>
+    <a href="#" onclick="showSection('home')" id="nav-home" class="active">🏠 Inicio</a>
+    <a href="#" onclick="showSection('s00')" id="nav-s00">📄 Semana 0 <span class="badge">1</span></a>
+    <a href="#" onclick="showSection('s01')" id="nav-s01">💻 Semana 1 <span class="badge">4</span></a>
+    <a href="#" onclick="showSection('s03')" id="nav-s03">🔀 Semana 3 <span class="badge">1</span></a>
+    <a href="#" onclick="showSection('s05')" id="nav-s05">⚡ Semana 5 <span class="badge">1</span></a>
+    <a href="#" onclick="showSection('s06')" id="nav-s06">🔁 Semana 6 <span class="badge">1</span></a>
+    <a href="#" onclick="showSection('s08')" id="nav-s08">📦 Semana 8 <span class="badge">3</span></a>
+    <a href="#" onclick="showSection('s10')" id="nav-s10">🧩 Semana 10 <span class="badge">2</span></a>
+  </nav>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+
+  <!-- HOME -->
+  <div id="home">
+    <div class="page-header">
+      <h2>Introducción a la Programación</h2>
+      <p>Material de estudio interactivo · Ingeniería Industrial · Universidad Andrés Bello</p>
+    </div>
+    <p style="color:var(--text-light);font-size:0.95rem;line-height:1.7;">
+      Este recurso reúne los contenidos de cada semana del curso, con resúmenes, reflexiones, retroalimentación y quizzes interactivos para reforzar tu aprendizaje. Selecciona una semana en el menú lateral o haz clic en una tarjeta para comenzar.
+    </p>
+    <div class="home-grid">
+      <a class="home-card" href="#" onclick="showSection('s00')">
+        <div class="hc-num">S0</div>
+        <div class="hc-title">Integridad Académica y Estilo Vancouver</div>
+        <div class="hc-sub">Citas, referencias y ética académica</div>
+      </a>
+      <a class="home-card" href="#" onclick="showSection('s01')">
+        <div class="hc-num">S1</div>
+        <div class="hc-title">Fundamentos de Algoritmia y Arquitectura</div>
+        <div class="hc-sub">Algoritmos, computadores, lenguajes, Google Colab</div>
+      </a>
+      <a class="home-card" href="#" onclick="showSection('s03')">
+        <div class="hc-num">S3</div>
+        <div class="hc-title">Diseño de Algoritmos – Condicionales</div>
+        <div class="hc-sub">Pseudocódigo y diagramas de flujo con decisiones</div>
+      </a>
+      <a class="home-card" href="#" onclick="showSection('s05')">
+        <div class="hc-num">S5</div>
+        <div class="hc-title">Bifurcación en Python</div>
+        <div class="hc-sub">Sentencias if, if-else, if-elif-else</div>
+      </a>
+      <a class="home-card" href="#" onclick="showSection('s06')">
+        <div class="hc-num">S6</div>
+        <div class="hc-title">Repetición en Python</div>
+        <div class="hc-sub">Ciclos while, for, break, continue</div>
+      </a>
+      <a class="home-card" href="#" onclick="showSection('s08')">
+        <div class="hc-num">S8</div>
+        <div class="hc-title">Estructuras de Datos y Funciones</div>
+        <div class="hc-sub">Listas, strings, funciones predefinidas y módulos</div>
+      </a>
+      <a class="home-card" href="#" onclick="showSection('s10')">
+        <div class="hc-num">S10</div>
+        <div class="hc-title">Modularidad y Programación Modular</div>
+        <div class="hc-sub">Funciones propias, encapsulamiento y reutilización</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ======================== SEMANA 0 ======================== -->
+  <div id="s00" class="semana-section">
+    <div class="semana-title">
+      <div class="num">S0</div>
+      <h3>Integridad Académica y Estilo Vancouver</h3>
+    </div>
+
+    <div class="card">
+      <h4><span class="icon">📋</span> Resumen</h4>
+      <ul>
+        <li><strong>Integridad académica</strong>: Compromiso de estudiantes, docentes y colaboradores de actuar con honestidad, ética y transparencia en la vida académica (definición del International Center for Academic Integrity – ICAI).</li>
+        <li><strong>Estilo Vancouver</strong>: Sistema de citación numérica-secuencial adoptado por el International Committee of Medical Journal Editors (ICMJE) en 1978. Los números se asignan en orden de aparición en el texto (entre paréntesis o corchetes).</li>
+        <li><strong>Cita bibliográfica</strong>: Referencia a una idea o texto ajeno para sustentar, complementar o refutar un planteamiento. Evita el plagio y otorga credibilidad al trabajo.</li>
+        <li><strong>Tipos de cita</strong>: Directa textual (cita corta ≤5 líneas entre comillas; cita larga en bloque con sangría) e indirecta o paráfrasis.</li>
+        <li><strong>Aspectos clave</strong>: Precisión, inserción de material, omisión de material (uso de elipsis) y énfasis (uso de cursivas o corchetes con aclaración).</li>
+        <li><strong>Referencias bibliográficas</strong>: Lista final de todas las fuentes citadas, ordenadas numéricamente, con formato estandarizado según el tipo de publicación (libro, artículo, sitio web, etc.).</li>
+      </ul>
+    </div>
+
+    <div class="card reflexion">
+      <h4><span class="icon">💡</span> Reflexión</h4>
+      <p>Para un futuro ingeniero industrial, la integridad académica no es solo una norma universitaria: es el cimiento de la confianza profesional. En el ámbito de la ingeniería, los informes técnicos, las propuestas de proyectos y los estudios de factibilidad deben citar fuentes con precisión, porque las decisiones se toman a partir de datos verificables. Un ingeniero que falsea referencias o copia trabajo ajeno compromete no solo su credibilidad, sino también la seguridad y calidad de los proyectos que lidera. Conocer y aplicar sistemas de citación como Vancouver forma parte del rigor metodológico que distingue a un profesional confiable.</p>
+    </div>
+
+    <div class="card retro">
+      <h4><span class="icon">🎯</span> Retroalimentación</h4>
+      <p>Es importante que practiques identificar con claridad cuándo corresponde una cita directa y cuándo una paráfrasis, ya que muchos estudiantes tienden a citar en exceso sin transformar las ideas. Refuerza también la construcción de la lista de referencias al final del trabajo: practica convertir distintos tipos de fuentes (artículos, libros, sitios web, infografías) al formato Vancouver. Ejercita el uso de corchetes con numeración consecutiva al citar en el cuerpo del texto, verificando que el orden de aparición coincida con el orden en la lista de referencias.</p>
+    </div>
+
+    <div class="card quiz">
+      <h4><span class="icon">❓</span> Quiz – Semana 0</h4>
+      <div class="quiz-container" id="quiz-s00">
+        <div class="quiz-progress"><div class="quiz-progress-bar" id="progress-s00" style="width:0%"></div></div>
+
+        <div class="quiz-q" id="s00-q1">
+          <div class="q-num">Pregunta 1 de 5</div>
+          <div class="q-text">¿Cuál es la principal característica del sistema de citación Vancouver?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s00',1,'a')">a) Usa el apellido del autor y el año entre paréntesis</button>
+            <button class="option-btn" onclick="answer('s00',1,'b')">b) Asigna números consecutivos a las citas según su aparición en el texto</button>
+            <button class="option-btn" onclick="answer('s00',1,'c')">c) Ordena las referencias alfabéticamente al final del documento</button>
+            <button class="option-btn" onclick="answer('s00',1,'d')">d) Solo se aplica a tesis de doctorado</button>
+          </div>
+          <div class="feedback-box" id="s00-fb1"></div>
+        </div>
+
+        <div class="quiz-q" id="s00-q2">
+          <div class="q-num">Pregunta 2 de 5</div>
+          <div class="q-text">¿Qué diferencia a una cita directa corta de una cita directa larga?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s00',2,'a')">a) La cita corta va en cursiva y la larga en negrita</button>
+            <button class="option-btn" onclick="answer('s00',2,'b')">b) La cita corta tiene menos de cinco renglones y va entre comillas dentro del texto; la larga supera cinco renglones y se presenta en bloque aparte con sangría</button>
+            <button class="option-btn" onclick="answer('s00',2,'c')">c) La cita corta no necesita número de referencia</button>
+            <button class="option-btn" onclick="answer('s00',2,'d')">d) La cita larga se usa solo en fuentes digitales</button>
+          </div>
+          <div class="feedback-box" id="s00-fb2"></div>
+        </div>
+
+        <div class="quiz-q" id="s00-q3">
+          <div class="q-num">Pregunta 3 de 5</div>
+          <div class="q-text">Según el ICAI, ¿quiénes conforman la comunidad educativa que debe demostrar integridad académica?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s00',3,'a')">a) Solo los estudiantes</button>
+            <button class="option-btn" onclick="answer('s00',3,'b')">b) Los directivos de la institución</button>
+            <button class="option-btn" onclick="answer('s00',3,'c')">c) Estudiantes, docentes y colaboradores</button>
+            <button class="option-btn" onclick="answer('s00',3,'d')">d) El Ministerio de Educación</button>
+          </div>
+          <div class="feedback-box" id="s00-fb3"></div>
+        </div>
+
+        <div class="quiz-q" id="s00-q4">
+          <div class="q-num">Pregunta 4 de 5</div>
+          <div class="q-text">¿Qué es una cita indirecta o paráfrasis?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s00',4,'a')">a) Copiar textualmente el fragmento entre comillas</button>
+            <button class="option-btn" onclick="answer('s00',4,'b')">b) Resumir o reformular con palabras propias las ideas de un autor, acreditando la fuente</button>
+            <button class="option-btn" onclick="answer('s00',4,'c')">c) Inventar datos apoyándose en el nombre de un autor conocido</button>
+            <button class="option-btn" onclick="answer('s00',4,'d')">d) Una nota al pie de página sin número de referencia</button>
+          </div>
+          <div class="feedback-box" id="s00-fb4"></div>
+        </div>
+
+        <div class="quiz-q" id="s00-q5">
+          <div class="q-num">Pregunta 5 de 5</div>
+          <div class="q-text">¿Por qué es importante citar las fuentes en un trabajo académico o profesional?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s00',5,'a')">a) Para demostrar que el trabajo es muy largo</button>
+            <button class="option-btn" onclick="answer('s00',5,'b')">b) Para evitar el plagio, dar crédito a los autores y otorgar credibilidad y rigor científico al trabajo</button>
+            <button class="option-btn" onclick="answer('s00',5,'c')">c) Porque lo exige el formato de fuente Arial 12</button>
+            <button class="option-btn" onclick="answer('s00',5,'d')">d) Solo para cumplir una formalidad administrativa</button>
+          </div>
+          <div class="feedback-box" id="s00-fb5"></div>
+        </div>
+
+        <button class="submit-quiz" id="submit-s00" onclick="submitQuiz('s00')">Ver resultados</button>
+        <button class="reset-quiz" id="reset-s00" onclick="resetQuiz('s00')">Reiniciar quiz</button>
+        <div class="quiz-score" id="score-s00"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SEMANA 1 ======================== -->
+  <div id="s01" class="semana-section">
+    <div class="semana-title">
+      <div class="num">S1</div>
+      <h3>Fundamentos de Algoritmia, Arquitectura y Lenguajes</h3>
+    </div>
+
+    <div class="card">
+      <h4><span class="icon">📋</span> Resumen</h4>
+      <ul>
+        <li><strong>Algoritmo</strong>: Secuencia de pasos definidos, finitos y precisos para resolver un problema o realizar una tarea. Debe ser preciso, definido y finito.</li>
+        <li><strong>Pseudocódigo</strong>: Representación intermedia entre el lenguaje natural y el de programación, sin sintaxis estricta pero con estructura lógica (Inicio/Fin, Declarar, Leer, sentencias de selección).</li>
+        <li><strong>Diagrama de flujo</strong>: Representación gráfica de un algoritmo; incluye elementos como inicio/fin (óvalo), proceso (rectángulo), decisión (rombo) y flujo (flechas).</li>
+        <li><strong>Arquitectura del computador</strong>: Componentes principales: dispositivos de entrada (teclado, mouse, escáner), dispositivos de salida (monitor, impresora), memoria secundaria (disco duro, pendrive), memoria principal (RAM) y CPU (Unidad Central de Procesamiento). Todos se interconectan mediante buses.</li>
+        <li><strong>Lenguajes de programación</strong>: Desde el código máquina (binario) hasta lenguajes de alto nivel. Se clasifican en compilados (C, C++) e interpretados (Python). Los compilados generan un binario ejecutable; los interpretados requieren un intérprete en cada ejecución.</li>
+        <li><strong>Google Colab</strong>: Plataforma cloud gratuita basada en Jupyter Notebook para ejecutar código Python sin instalación local. Soporta CPU, GPU y TPU. Útil para aprendizaje de máquina y práctica de programación.</li>
+        <li><strong>Chatbots en diseño de algoritmos</strong>: Herramienta de soporte para recolectar requisitos, prototipar interacciones, entrenar modelos y depurar algoritmos conversacionales.</li>
+      </ul>
+    </div>
+
+    <div class="card reflexion">
+      <h4><span class="icon">💡</span> Reflexión</h4>
+      <p>Un ingeniero industrial gestiona procesos complejos: líneas de producción, cadenas de suministro, sistemas de calidad. Comprender la algoritmia desde sus bases le permite descomponer cualquier proceso productivo en pasos claros, identificar cuellos de botella y proponer mejoras sistémicas. Conocer la arquitectura del computador, por su parte, le da criterio para evaluar qué herramientas de software son adecuadas para cada necesidad y comunicarse efectivamente con los equipos de tecnología. En la industria 4.0, donde la automatización y los datos son protagonistas, el ingeniero que sabe diseñar un algoritmo tiene una ventaja competitiva real.</p>
+    </div>
+
+    <div class="card retro">
+      <h4><span class="icon">🎯</span> Retroalimentación</h4>
+      <p>Asegúrate de practicar la construcción de pseudocódigo y diagramas de flujo para problemas cotidianos antes de escribir código. Un error frecuente es saltar directamente a codificar sin diseñar el algoritmo previamente, lo que genera programas desorganizados. Refuerza también la distinción entre lenguajes compilados e interpretados, ya que Python (interpretado) tiene características particulares de ejecución que influyen en su uso. Experimenta con Google Colab creando tus primeros notebooks y ejecutando celdas básicas de Python para familiarizarte con el entorno antes de abordar ejercicios más complejos.</p>
+    </div>
+
+    <div class="card quiz">
+      <h4><span class="icon">❓</span> Quiz – Semana 1</h4>
+      <div class="quiz-container" id="quiz-s01">
+        <div class="quiz-progress"><div class="quiz-progress-bar" id="progress-s01" style="width:0%"></div></div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 1 de 5</div>
+          <div class="q-text">¿Cuáles son las tres características fundamentales que debe tener un algoritmo?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s01',1,'a')">a) Rápido, visual y creativo</button>
+            <button class="option-btn" onclick="answer('s01',1,'b')">b) Preciso, definido y finito</button>
+            <button class="option-btn" onclick="answer('s01',1,'c')">c) Compilado, interpretado y ejecutable</button>
+            <button class="option-btn" onclick="answer('s01',1,'d')">d) Gráfico, textual y binario</button>
+          </div>
+          <div class="feedback-box" id="s01-fb1"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 2 de 5</div>
+          <div class="q-text">¿Cuál es la función principal de los dispositivos de entrada de un computador?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s01',2,'a')">a) Almacenar permanentemente la información</button>
+            <button class="option-btn" onclick="answer('s01',2,'b')">b) Mostrar la información al usuario</button>
+            <button class="option-btn" onclick="answer('s01',2,'c')">c) Ingresar información del mundo real al computador y traducirla a un formato que este entienda</button>
+            <button class="option-btn" onclick="answer('s01',2,'d')">d) Ejecutar instrucciones aritméticas</button>
+          </div>
+          <div class="feedback-box" id="s01-fb2"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 3 de 5</div>
+          <div class="q-text">¿Qué diferencia a un lenguaje compilado de uno interpretado?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s01',3,'a')">a) El lenguaje compilado usa pseudocódigo y el interpretado usa diagramas de flujo</button>
+            <button class="option-btn" onclick="answer('s01',3,'b')">b) El lenguaje compilado traduce todo el código fuente a binario antes de ejecutarlo; el interpretado requiere un intérprete en cada ejecución</button>
+            <button class="option-btn" onclick="answer('s01',3,'c')">c) Solo los lenguajes interpretados pueden ejecutarse en computadores</button>
+            <button class="option-btn" onclick="answer('s01',3,'d')">d) Los lenguajes compilados son siempre de alto nivel</button>
+          </div>
+          <div class="feedback-box" id="s01-fb3"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 4 de 5</div>
+          <div class="q-text">¿Qué ventaja ofrece Google Colab para aprender programación en Python?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s01',4,'a')">a) Solo funciona con lenguaje C++</button>
+            <button class="option-btn" onclick="answer('s01',4,'b')">b) Requiere instalación obligatoria de un compilador local</button>
+            <button class="option-btn" onclick="answer('s01',4,'c')">c) Permite ejecutar código Python en la nube sin instalación local, con acceso a GPU y TPU gratuitas</button>
+            <button class="option-btn" onclick="answer('s01',4,'d')">d) Solo permite ejecutar código una vez al día</button>
+          </div>
+          <div class="feedback-box" id="s01-fb4"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 5 de 5</div>
+          <div class="q-text">¿Qué es el pseudocódigo y para qué se utiliza?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s01',5,'a')">a) Un lenguaje de programación oficial como Python o C</button>
+            <button class="option-btn" onclick="answer('s01',5,'b')">b) Una representación intermedia entre el lenguaje natural y el de programación, usada para describir algoritmos de forma estructurada sin sintaxis estricta</button>
+            <button class="option-btn" onclick="answer('s01',5,'c')">c) Un programa que convierte diagramas de flujo a código binario</button>
+            <button class="option-btn" onclick="answer('s01',5,'d')">d) Un tipo de comentario dentro del código Python</button>
+          </div>
+          <div class="feedback-box" id="s01-fb5"></div>
+        </div>
+
+        <button class="submit-quiz" id="submit-s01" onclick="submitQuiz('s01')">Ver resultados</button>
+        <button class="reset-quiz" id="reset-s01" onclick="resetQuiz('s01')">Reiniciar quiz</button>
+        <div class="quiz-score" id="score-s01"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SEMANA 3 ======================== -->
+  <div id="s03" class="semana-section">
+    <div class="semana-title">
+      <div class="num">S3</div>
+      <h3>Diseño de Algoritmos con Estructuras Condicionales</h3>
+    </div>
+
+    <div class="card">
+      <h4><span class="icon">📋</span> Resumen</h4>
+      <ul>
+        <li><strong>Guía práctica de algoritmia</strong>: Esta semana se centra en el diseño de algoritmos mediante pseudocódigo y diagramas de flujo para problemas que requieren toma de decisiones.</li>
+        <li><strong>Estructuras condicionales</strong>: Los algoritmos deben contemplar múltiples caminos según la entrada del usuario (número del día, tipo de letra, comparación de magnitudes).</li>
+        <li><strong>Validación de rangos</strong>: Los algoritmos robustos incluyen mensajes de error cuando la entrada no cumple las condiciones esperadas (ej. número fuera del rango 1–7, letra con tilde).</li>
+        <li><strong>Cálculo con escalas</strong>: Algoritmos de pago con incentivos por horas trabajadas, incluyendo sueldo base y redondeo al entero más cercano.</li>
+        <li><strong>Sistema de evaluaciones</strong>: Algoritmo de decisión multi-nivel (promedio de pruebas, examen, condiciones de aprobación automática y reprobación automática).</li>
+        <li><strong>Cálculo de impuestos</strong>: Algoritmo con múltiples condiciones: renta bruta, gastos presuntos, renta afecta, impuesto nominal y devolución o pago efectivo.</li>
+        <li><strong>Cobro por tiempo y día</strong>: Algoritmo con tarifas variables según duración de llamada, día de la semana y jornada (diurna/vespertina), aplicando porcentajes de impuesto diferenciados.</li>
+      </ul>
+    </div>
+
+    <div class="card reflexion">
+      <h4><span class="icon">💡</span> Reflexión</h4>
+      <p>El diseño de algoritmos con estructuras condicionales es esencial en Ingeniería Industrial porque los procesos productivos rara vez siguen un único camino lineal. Un sistema de control de calidad, por ejemplo, debe tomar decisiones distintas según si una pieza cumple o no las tolerancias. Un modelo de costeo debe contemplar diferentes tarifas según volumen, turno o tipo de producto. Aprender a modelar estas decisiones en pseudocódigo y diagramas de flujo antes de programarlos entrena el pensamiento lógico-formal que luego se aplica en la optimización de procesos, la automatización y el análisis de datos industriales.</p>
+    </div>
+
+    <div class="card retro">
+      <h4><span class="icon">🎯</span> Retroalimentación</h4>
+      <p>Un punto crítico a reforzar es la correcta definición de las condiciones de borde: ¿qué ocurre cuando el valor está exactamente en el límite del rango? ¿Se incluye o excluye? Muchos errores de programación ocurren precisamente en esos casos. Practica construir el pseudocódigo completo antes de dibujar el diagrama de flujo, y luego verifica que ambas representaciones sean equivalentes. Trabaja especialmente los problemas de múltiples condiciones anidadas (como el sistema de evaluaciones o el cálculo de impuestos), trazando manualmente los valores por los distintos caminos posibles para validar tu lógica.</p>
+    </div>
+
+    <div class="card quiz">
+      <h4><span class="icon">❓</span> Quiz – Semana 3</h4>
+      <div class="quiz-container" id="quiz-s03">
+        <div class="quiz-progress"><div class="quiz-progress-bar" id="progress-s03" style="width:0%"></div></div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 1 de 5</div>
+          <div class="q-text">Si un algoritmo pide un número del 1 al 7 y devuelve el día de la semana, ¿qué debe hacer si el usuario ingresa el número 9?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s03',1,'a')">a) Devolver "Domingo" porque 9 > 7</button>
+            <button class="option-btn" onclick="answer('s03',1,'b')">b) No hacer nada y terminar</button>
+            <button class="option-btn" onclick="answer('s03',1,'c')">c) Indicar un mensaje de error porque el número está fuera del rango válido</button>
+            <button class="option-btn" onclick="answer('s03',1,'d')">d) Reiniciar el programa automáticamente</button>
+          </div>
+          <div class="feedback-box" id="s03-fb1"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 2 de 5</div>
+          <div class="q-text">¿Qué propósito cumple incluir validación de rango en un algoritmo?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s03',2,'a')">a) Hacer el programa más lento</button>
+            <button class="option-btn" onclick="answer('s03',2,'b')">b) Garantizar que el programa maneje correctamente entradas inválidas sin colapsar ni generar resultados erróneos</button>
+            <button class="option-btn" onclick="answer('s03',2,'c')">c) Reducir el número de pasos del algoritmo</button>
+            <button class="option-btn" onclick="answer('s03',2,'d')">d) Convertir automáticamente los valores fuera de rango al valor más cercano</button>
+          </div>
+          <div class="feedback-box" id="s03-fb2"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 3 de 5</div>
+          <div class="q-text">En el sistema de evaluaciones universitarias descrito, ¿cuándo un alumno queda automáticamente reprobado sin rendir la tercera prueba?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s03',3,'a')">a) Cuando el promedio final es menor a 4.0</button>
+            <button class="option-btn" onclick="answer('s03',3,'b')">b) Cuando obtiene menos de 2.2 en las dos primeras pruebas</button>
+            <button class="option-btn" onclick="answer('s03',3,'c')">c) Cuando no asiste al examen</button>
+            <button class="option-btn" onclick="answer('s03',3,'d')">d) Cuando el promedio de las tres pruebas es menor a 2.8</button>
+          </div>
+          <div class="feedback-box" id="s03-fb3"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 4 de 5</div>
+          <div class="q-text">¿Qué elemento gráfico se usa en un diagrama de flujo para representar una decisión o bifurcación?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s03',4,'a')">a) Un rectángulo</button>
+            <button class="option-btn" onclick="answer('s03',4,'b')">b) Un óvalo o elipse</button>
+            <button class="option-btn" onclick="answer('s03',4,'c')">c) Un rombo</button>
+            <button class="option-btn" onclick="answer('s03',4,'d')">d) Un círculo</button>
+          </div>
+          <div class="feedback-box" id="s03-fb4"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 5 de 5</div>
+          <div class="q-text">En el algoritmo de llamadas telefónicas, ¿qué porcentaje de impuesto se aplica si la llamada se realiza un sábado?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s03',5,'a')">a) 15%</button>
+            <button class="option-btn" onclick="answer('s03',5,'b')">b) 10%</button>
+            <button class="option-btn" onclick="answer('s03',5,'c')">c) 3%</button>
+            <button class="option-btn" onclick="answer('s03',5,'d')">d) 0% (los fines de semana están exentos)</button>
+          </div>
+          <div class="feedback-box" id="s03-fb5"></div>
+        </div>
+
+        <button class="submit-quiz" id="submit-s03" onclick="submitQuiz('s03')">Ver resultados</button>
+        <button class="reset-quiz" id="reset-s03" onclick="resetQuiz('s03')">Reiniciar quiz</button>
+        <div class="quiz-score" id="score-s03"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SEMANA 5 ======================== -->
+  <div id="s05" class="semana-section">
+    <div class="semana-title">
+      <div class="num">S5</div>
+      <h3>Bifurcación en Python</h3>
+    </div>
+
+    <div class="card">
+      <h4><span class="icon">📋</span> Resumen</h4>
+      <ul>
+        <li><strong>Sentencias de control</strong>: Permiten alterar el flujo secuencial de un programa. Se dividen en condicionales (bifurcación) y ciclos (repetición).</li>
+        <li><strong>Indentación</strong>: En Python, las sentencias contenidas dentro de un bloque de control se escriben con una sangría hacia la derecha (4 espacios por convención). Es obligatoria para definir el alcance de cada bloque.</li>
+        <li><strong>Sentencia <code>if</code></strong>: Ejecuta un bloque solo si la condición es verdadera. Si es falsa, el programa continúa sin ejecutar el bloque.</li>
+        <li><strong>Sentencia <code>if-else</code></strong>: Bifurca en dos caminos: uno si la condición es verdadera y otro si es falsa.</li>
+        <li><strong>Sentencia <code>if-elif-else</code></strong>: Evalúa múltiples condiciones en orden; ejecuta el bloque de la primera condición verdadera. El bloque <code>else</code> es opcional y se ejecuta si ninguna condición anterior fue verdadera.</li>
+        <li><strong>Uso práctico</strong>: Cálculo de áreas según figura geométrica elegida por el usuario; verificación de aprobación de ramo; clasificación par/impar con operaciones distintas en cada caso.</li>
+        <li><strong>Importante</strong>: En un <code>if-elif-else</code> siempre se ejecuta exactamente uno de los bloques; tan pronto una condición es verdadera, las demás no se evalúan.</li>
+      </ul>
+    </div>
+
+    <div class="card reflexion">
+      <h4><span class="icon">💡</span> Reflexión</h4>
+      <p>Las estructuras de bifurcación en Python materializan en código lo que en la industria se denomina lógica de negocio: las reglas que definen cómo debe comportarse un sistema ante diferentes situaciones. Un ingeniero industrial que programa sistemas de control de inventario, clasificación de productos o cálculo de incentivos salariales necesita dominar las sentencias condicionales para que el software refleje fielmente las políticas de la empresa. Más aún, la habilidad de traducir una regla compleja (como el sistema de evaluaciones de la semana anterior) a un conjunto correcto de <code>if-elif-else</code> es lo que distingue a un programador funcional de uno eficiente.</p>
+    </div>
+
+    <div class="card retro">
+      <h4><span class="icon">🎯</span> Retroalimentación</h4>
+      <p>Practica especialmente el uso de <code>if-elif-else</code> con tres o más condiciones, verificando que el orden de evaluación importa: si intercambias condiciones puedes obtener resultados incorrectos. Un ejercicio clave es reescribir algoritmos de la guía de la semana 3 directamente en Python usando estas sentencias. Recuerda también que Python es sensible a la indentación: un error de sangría no produce un resultado incorrecto silencioso, sino un error de sintaxis que impide ejecutar el programa. Ejecuta cada ejemplo en Google Colab probando distintos valores de entrada para verificar todos los caminos posibles del algoritmo.</p>
+    </div>
+
+    <div class="card quiz">
+      <h4><span class="icon">❓</span> Quiz – Semana 5</h4>
+      <div class="quiz-container" id="quiz-s05">
+        <div class="quiz-progress"><div class="quiz-progress-bar" id="progress-s05" style="width:0%"></div></div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 1 de 5</div>
+          <div class="q-text">¿Qué ocurre si la condición de una sentencia <code>if</code> es falsa y no hay bloque <code>else</code>?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s05',1,'a')">a) El programa genera un error y se detiene</button>
+            <button class="option-btn" onclick="answer('s05',1,'b')">b) El bloque del <code>if</code> se ejecuta de todos modos</button>
+            <button class="option-btn" onclick="answer('s05',1,'c')">c) El programa continúa su flujo sin ejecutar el bloque del <code>if</code></button>
+            <button class="option-btn" onclick="answer('s05',1,'d')">d) Python solicita al usuario ingresar un nuevo valor</button>
+          </div>
+          <div class="feedback-box" id="s05-fb1"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 2 de 5</div>
+          <div class="q-text">En una sentencia <code>if-elif-else</code>, ¿cuántos bloques pueden ejecutarse como máximo?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s05',2,'a')">a) Todos los bloques cuyas condiciones sean verdaderas</button>
+            <button class="option-btn" onclick="answer('s05',2,'b')">b) Exactamente uno: el bloque de la primera condición verdadera (o el else si ninguna es verdadera)</button>
+            <button class="option-btn" onclick="answer('s05',2,'c')">c) Ninguno, a menos que el usuario lo confirme</button>
+            <button class="option-btn" onclick="answer('s05',2,'d')">d) Dos bloques como máximo</button>
+          </div>
+          <div class="feedback-box" id="s05-fb2"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 3 de 5</div>
+          <div class="q-text">¿Cuál es la función de la indentación en Python?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s05',3,'a')">a) Solo mejorar la estética del código</button>
+            <button class="option-btn" onclick="answer('s05',3,'b')">b) Definir el alcance de los bloques de código; sin indentación correcta el programa produce error de sintaxis</button>
+            <button class="option-btn" onclick="answer('s05',3,'c')">c) Indicar que una línea es un comentario</button>
+            <button class="option-btn" onclick="answer('s05',3,'d')">d) Aumentar la velocidad de ejecución del programa</button>
+          </div>
+          <div class="feedback-box" id="s05-fb3"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 4 de 5</div>
+          <div class="q-text">¿Cuál es la sintaxis correcta de una sentencia <code>if-else</code> en Python?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s05',4,'a')">a) <code>if (condicion) { sentencias } else { sentencias }</code></button>
+            <button class="option-btn" onclick="answer('s05',4,'b')">b) <code>if condicion: / sentencias / else: / sentencias</code></button>
+            <button class="option-btn" onclick="answer('s05',4,'c')">c) <code>IF condicion THEN sentencias ELSE sentencias END</code></button>
+            <button class="option-btn" onclick="answer('s05',4,'d')">d) <code>cuando condicion: / sino:</code></button>
+          </div>
+          <div class="feedback-box" id="s05-fb4"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 5 de 5</div>
+          <div class="q-text">En el ejemplo de cálculo de área de figuras geométricas con <code>if-elif-else</code>, ¿qué ocurre si el usuario ingresa una figura no contemplada (ej. "S")?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s05',5,'a')">a) Se calcula el área del triángulo por defecto</button>
+            <button class="option-btn" onclick="answer('s05',5,'b')">b) El programa se detiene con error crítico</button>
+            <button class="option-btn" onclick="answer('s05',5,'c')">c) Se ejecuta el bloque <code>else</code> que muestra un mensaje de "Figura no válida"</button>
+            <button class="option-btn" onclick="answer('s05',5,'d')">d) Se le pide al usuario ingresar nuevamente</button>
+          </div>
+          <div class="feedback-box" id="s05-fb5"></div>
+        </div>
+
+        <button class="submit-quiz" id="submit-s05" onclick="submitQuiz('s05')">Ver resultados</button>
+        <button class="reset-quiz" id="reset-s05" onclick="resetQuiz('s05')">Reiniciar quiz</button>
+        <div class="quiz-score" id="score-s05"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SEMANA 6 ======================== -->
+  <div id="s06" class="semana-section">
+    <div class="semana-title">
+      <div class="num">S6</div>
+      <h3>Repetición en Python</h3>
+    </div>
+
+    <div class="card">
+      <h4><span class="icon">📋</span> Resumen</h4>
+      <ul>
+        <li><strong>Ciclo <code>while</code></strong>: Ejecuta un bloque de instrucciones mientras una condición sea verdadera. Si la condición es falsa al inicio, el ciclo no se ejecuta ninguna vez. Cada ejecución del bloque se denomina iteración.</li>
+        <li><strong>Ciclo <code>for</code> con rango</strong>: Ejecuta un bloque una cantidad fija de veces usando <code>range()</code>. Formas: <code>range(fin)</code>, <code>range(inicio, fin)</code>, <code>range(inicio, fin, incremento)</code>. El valor inicial se incluye; el valor final no.</li>
+        <li><strong>Sentencia <code>break</code></strong>: Termina un ciclo prematuramente en mitad de una iteración. Siempre aparece dentro de un <code>if</code>.</li>
+        <li><strong>Sentencia <code>continue</code></strong>: Salta al inicio de la siguiente iteración sin completar la actual.</li>
+        <li><strong>Ejemplos clave</strong>: Multiplicación sin usar el operador <code>*</code> (suma repetida con <code>while</code>); cubos del 0 al 10 con <code>for</code>; detección de número primo con <code>break</code>; cálculo de cuadrados y cubos saltando múltiplos de 4 con <code>continue</code>.</li>
+        <li><strong>Criterio de elección</strong>: <code>for</code> cuando el número de iteraciones se conoce antes de entrar al ciclo; <code>while</code> cuando la condición de término depende del proceso.</li>
+      </ul>
+    </div>
+
+    <div class="card reflexion">
+      <h4><span class="icon">💡</span> Reflexión</h4>
+      <p>La repetición es uno de los pilares de la automatización industrial. Un proceso que se repite en una línea de producción, un algoritmo que evalúa miles de registros de datos o una rutina que monitorea un sensor cada cierto tiempo, todos se modelan con ciclos. Para un ingeniero industrial, comprender cuándo usar <code>while</code> y cuándo usar <code>for</code> es fundamental: el <code>for</code> es ideal para procesar lotes de datos de tamaño conocido (producción diaria, inventario de artículos), mientras que el <code>while</code> es adecuado para procesos que deben continuar hasta que se cumpla una condición de calidad o límite (control de temperatura, espera de confirmación de pago).</p>
+    </div>
+
+    <div class="card retro">
+      <h4><span class="icon">🎯</span> Retroalimentación</h4>
+      <p>El error más común con ciclos es crear un bucle infinito: cuando la condición del <code>while</code> nunca se vuelve falsa porque la variable de control no se actualiza dentro del bloque. Asegúrate de que en todo ciclo <code>while</code> exista alguna instrucción que eventualmente haga falsa la condición. Practica también la comprensión del funcionamiento de <code>range()</code>: recuerda que el valor final nunca se incluye. Diseña algoritmos que usen <code>break</code> para detener una búsqueda cuando se encuentra el primer resultado válido (como en la prueba de primalidad), ya que eso mejora significativamente el rendimiento.</p>
+    </div>
+
+    <div class="card quiz">
+      <h4><span class="icon">❓</span> Quiz – Semana 6</h4>
+      <div class="quiz-container" id="quiz-s06">
+        <div class="quiz-progress"><div class="quiz-progress-bar" id="progress-s06" style="width:0%"></div></div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 1 de 5</div>
+          <div class="q-text">¿Qué valores genera <code>range(3, 13, 2)</code>?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s06',1,'a')">a) 3, 4, 5, 6, 7, 8, 9, 10, 11, 12</button>
+            <button class="option-btn" onclick="answer('s06',1,'b')">b) 3, 5, 7, 9, 11</button>
+            <button class="option-btn" onclick="answer('s06',1,'c')">c) 2, 4, 6, 8, 10, 12</button>
+            <button class="option-btn" onclick="answer('s06',1,'d')">d) 3, 6, 9, 12</button>
+          </div>
+          <div class="feedback-box" id="s06-fb1"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 2 de 5</div>
+          <div class="q-text">¿Cuántas veces se ejecuta el bloque de un ciclo <code>while</code> si su condición es falsa desde el inicio?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s06',2,'a')">a) Una vez</button>
+            <button class="option-btn" onclick="answer('s06',2,'b')">b) Infinitas veces</button>
+            <button class="option-btn" onclick="answer('s06',2,'c')">c) Ninguna vez</button>
+            <button class="option-btn" onclick="answer('s06',2,'d')">d) El programa genera un error</button>
+          </div>
+          <div class="feedback-box" id="s06-fb2"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 3 de 5</div>
+          <div class="q-text">¿Qué hace la sentencia <code>break</code> dentro de un ciclo?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s06',3,'a')">a) Salta a la siguiente iteración sin terminar la actual</button>
+            <button class="option-btn" onclick="answer('s06',3,'b')">b) Termina el ciclo inmediatamente y continúa con el código posterior al ciclo</button>
+            <button class="option-btn" onclick="answer('s06',3,'c')">c) Repite la iteración actual desde el inicio</button>
+            <button class="option-btn" onclick="answer('s06',3,'d')">d) Elimina la variable de control del ciclo</button>
+          </div>
+          <div class="feedback-box" id="s06-fb3"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 4 de 5</div>
+          <div class="q-text">¿Cuándo es más apropiado usar un ciclo <code>for</code> en lugar de un <code>while</code>?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s06',4,'a')">a) Cuando la condición de término depende de la entrada del usuario en tiempo real</button>
+            <button class="option-btn" onclick="answer('s06',4,'b')">b) Cuando se desconoce cuántas veces se repetirá el ciclo</button>
+            <button class="option-btn" onclick="answer('s06',4,'c')">c) Cuando el número de iteraciones es conocido antes de entrar al ciclo</button>
+            <button class="option-btn" onclick="answer('s06',4,'d')">d) Cuando se necesita salir del ciclo con <code>break</code></button>
+          </div>
+          <div class="feedback-box" id="s06-fb4"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 5 de 5</div>
+          <div class="q-text">¿Qué hace la sentencia <code>continue</code> dentro de un ciclo <code>for</code>?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s06',5,'a')">a) Termina el ciclo completamente</button>
+            <button class="option-btn" onclick="answer('s06',5,'b')">b) Salta el resto de las instrucciones de la iteración actual y pasa a la siguiente iteración</button>
+            <button class="option-btn" onclick="answer('s06',5,'c')">c) Reinicia el ciclo desde la primera iteración</button>
+            <button class="option-btn" onclick="answer('s06',5,'d')">d) Hace una pausa hasta que el usuario presione Enter</button>
+          </div>
+          <div class="feedback-box" id="s06-fb5"></div>
+        </div>
+
+        <button class="submit-quiz" id="submit-s06" onclick="submitQuiz('s06')">Ver resultados</button>
+        <button class="reset-quiz" id="reset-s06" onclick="resetQuiz('s06')">Reiniciar quiz</button>
+        <div class="quiz-score" id="score-s06"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SEMANA 8 ======================== -->
+  <div id="s08" class="semana-section">
+    <div class="semana-title">
+      <div class="num">S8</div>
+      <h3>Estructuras de Datos: Listas, Strings y Funciones</h3>
+    </div>
+
+    <div class="card">
+      <h4><span class="icon">📋</span> Resumen</h4>
+      <ul>
+        <li><strong>Listas en Python</strong>: Colecciones ordenadas de valores de cualquier tipo. Se crean con corchetes (<code>[1, 2, 3]</code>) o con <code>list(iterable)</code>. Son heterogéneas y mutables.</li>
+        <li><strong>Operaciones sobre listas</strong>: <code>len(l)</code>, <code>l[i]</code> (acceso por índice, desde 0), <code>l[-1]</code> (índice negativo desde el final), <code>l.append(x)</code>, <code>sum(l)</code>, <code>l1 + l2</code> (concatenación), <code>l * n</code> (repetición), <code>x in l</code> (pertenencia), <code>l[i:j]</code> (rebanado), <code>l.count(x)</code>, <code>l.index(x)</code>, <code>l.remove(x)</code>, <code>del l[i]</code>, <code>l.reverse()</code>, <code>l.sort()</code>.</li>
+        <li><strong>Recorrido de listas</strong>: Con <code>for elemento in lista</code>, la variable de control toma el valor de cada elemento.</li>
+        <li><strong>Strings (cadenas)</strong>: Tipo <code>str</code>. Se pueden indexar, rebanar, recorrer, dividir con <code>split()</code> y aplicar métodos de transformación.</li>
+        <li><strong>Funciones predefinidas</strong>: <code>abs(x)</code>, <code>min()</code>, <code>max()</code>, <code>round()</code>, <code>input()</code>, <code>print()</code>.</li>
+        <li><strong>Módulos</strong>: Conjuntos de funciones adicionales que deben importarse. El módulo <code>math</code> provee funciones trigonométricas, logaritmos y la constante π. Formas de importar: <code>import math</code> o <code>from math import sin, cos</code>.</li>
+      </ul>
+    </div>
+
+    <div class="card reflexion">
+      <h4><span class="icon">💡</span> Reflexión</h4>
+      <p>Las listas y los strings son las estructuras de datos más frecuentes en el análisis de datos industriales. Un listado de tiempos de ciclo, un conjunto de lecturas de sensores, una serie de códigos de producto: todo eso se representa naturalmente como listas en Python. Dominar sus operaciones permite filtrar datos, calcular estadísticas básicas (suma, mínimo, máximo) y transformar información sin necesitar herramientas externas complejas. La comprensión de los módulos, por su parte, abre la puerta a librerías como NumPy, Pandas y Matplotlib, que son fundamentales en la ingeniería de datos y la Industria 4.0.</p>
+    </div>
+
+    <div class="card retro">
+      <h4><span class="icon">🎯</span> Retroalimentación</h4>
+      <p>Practica el acceso a listas usando índices positivos y negativos, ya que confundirlos genera errores difíciles de detectar. Asegúrate de entender bien la diferencia entre <code>l.remove(x)</code> (elimina por valor) y <code>del l[i]</code> (elimina por posición). Con los strings, ejercita la operación <code>split()</code> para dividir textos en palabras o campos, ya que es muy útil al procesar archivos de datos. Respecto a los módulos, practica las dos formas de importar y evalúa cuál conviene según el número de funciones que necesites: importar el módulo completo con alias (<code>import math as m</code>) es una buena práctica para evitar conflictos de nombres.</p>
+    </div>
+
+    <div class="card quiz">
+      <h4><span class="icon">❓</span> Quiz – Semana 8</h4>
+      <div class="quiz-container" id="quiz-s08">
+        <div class="quiz-progress"><div class="quiz-progress-bar" id="progress-s08" style="width:0%"></div></div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 1 de 5</div>
+          <div class="q-text">Dada la lista <code>l = [10, 20, 30, 40, 50]</code>, ¿qué devuelve <code>l[-1]</code>?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s08',1,'a')">a) 10</button>
+            <button class="option-btn" onclick="answer('s08',1,'b')">b) -1</button>
+            <button class="option-btn" onclick="answer('s08',1,'c')">c) Error de índice</button>
+            <button class="option-btn" onclick="answer('s08',1,'d')">d) 50</button>
+          </div>
+          <div class="feedback-box" id="s08-fb1"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 2 de 5</div>
+          <div class="q-text">¿Cuál es la diferencia entre <code>l.remove(x)</code> y <code>del l[i]</code>?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s08',2,'a')">a) Ambas eliminan elementos por índice</button>
+            <button class="option-btn" onclick="answer('s08',2,'b')">b) <code>remove(x)</code> elimina el primer elemento con valor x; <code>del l[i]</code> elimina el elemento en la posición i</button>
+            <button class="option-btn" onclick="answer('s08',2,'c')">c) <code>del l[i]</code> elimina la lista completa</button>
+            <button class="option-btn" onclick="answer('s08',2,'d')">d) Son exactamente equivalentes</button>
+          </div>
+          <div class="feedback-box" id="s08-fb2"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 3 de 5</div>
+          <div class="q-text">¿Para qué se usa el módulo <code>math</code> en Python?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s08',3,'a')">a) Para crear gráficos y visualizaciones</button>
+            <button class="option-btn" onclick="answer('s08',3,'b')">b) Para acceder a funciones matemáticas avanzadas como seno, coseno, logaritmos y la constante π que no están predefinidas</button>
+            <button class="option-btn" onclick="answer('s08',3,'c')">c) Para conectarse a bases de datos</button>
+            <button class="option-btn" onclick="answer('s08',3,'d')">d) Para leer y escribir archivos de texto</button>
+          </div>
+          <div class="feedback-box" id="s08-fb3"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 4 de 5</div>
+          <div class="q-text">Dada la lista <code>l = [5, 3, 8, 1]</code>, ¿qué devuelve <code>l[1:3]</code>?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s08',4,'a')">a) [5, 3]</button>
+            <button class="option-btn" onclick="answer('s08',4,'b')">b) [3, 8, 1]</button>
+            <button class="option-btn" onclick="answer('s08',4,'c')">c) [3, 8]</button>
+            <button class="option-btn" onclick="answer('s08',4,'d')">d) [5, 3, 8]</button>
+          </div>
+          <div class="feedback-box" id="s08-fb4"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 5 de 5</div>
+          <div class="q-text">¿Cómo se agrega el valor 99 al final de una lista llamada <code>datos</code>?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s08',5,'a')">a) <code>datos.add(99)</code></button>
+            <button class="option-btn" onclick="answer('s08',5,'b')">b) <code>datos.insert(99)</code></button>
+            <button class="option-btn" onclick="answer('s08',5,'c')">c) <code>datos.append(99)</code></button>
+            <button class="option-btn" onclick="answer('s08',5,'d')">d) <code>datos[end] = 99</code></button>
+          </div>
+          <div class="feedback-box" id="s08-fb5"></div>
+        </div>
+
+        <button class="submit-quiz" id="submit-s08" onclick="submitQuiz('s08')">Ver resultados</button>
+        <button class="reset-quiz" id="reset-s08" onclick="resetQuiz('s08')">Reiniciar quiz</button>
+        <div class="quiz-score" id="score-s08"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SEMANA 10 ======================== -->
+  <div id="s10" class="semana-section">
+    <div class="semana-title">
+      <div class="num">S10</div>
+      <h3>Modularidad y Programación Modular</h3>
+    </div>
+
+    <div class="card">
+      <h4><span class="icon">📋</span> Resumen</h4>
+      <ul>
+        <li><strong>Función</strong>: Conjunto de código con un nombre, que recibe cero o más argumentos, ejecuta instrucciones y devuelve un valor o realiza una tarea. En Python se define con <code>def nombre(parámetros):</code>.</li>
+        <li><strong>Ventajas de las funciones</strong>: Modularización (dividir el programa en partes manejables) y Reutilización (usar la misma función varias veces sin repetir código).</li>
+        <li><strong>Sentencia <code>return</code></strong>: Devuelve el resultado de la función al punto donde fue llamada.</li>
+        <li><strong>Tipos de argumentos</strong>: Por posición (orden definido en la firma), por nombre (se especifica el parámetro al llamar) y con valores por defecto (permite llamar sin ciertos argumentos).</li>
+        <li><strong>Modularidad</strong>: Principio de diseño que divide un sistema en módulos independientes. Conceptos clave: encapsulamiento, abstracción, reutilización, desarrollo concurrente y facilidad de mantenimiento.</li>
+        <li><strong>Descomposición funcional</strong>: Estrategia de dividir y conquistar. Identificar las piezas del problema, sus dependencias y diseñar cada función de forma independiente. Facilita la detección de errores.</li>
+        <li><strong>Variables locales</strong>: Las variables declaradas dentro de una función solo existen en su alcance (scope) y no afectan a las variables del programa principal.</li>
+      </ul>
+    </div>
+
+    <div class="card reflexion">
+      <h4><span class="icon">💡</span> Reflexión</h4>
+      <p>La programación modular refleja exactamente cómo trabaja la ingeniería industrial: dividiendo sistemas complejos en subsistemas independientes y bien definidos. Un sistema de gestión de producción no se diseña como un bloque monolítico, sino como módulos de planificación, control de inventario, seguimiento de órdenes y reporte de indicadores. Cada módulo tiene una interfaz clara y puede mejorarse o reemplazarse sin afectar a los demás. Aplicar este principio desde el primer curso de programación forma el hábito mental de la ingeniería de sistemas: pensar en interfaces, contratos y responsabilidades antes de escribir una sola línea de código.</p>
+    </div>
+
+    <div class="card retro">
+      <h4><span class="icon">🎯</span> Retroalimentación</h4>
+      <p>Practica escribir funciones pequeñas con una sola responsabilidad: una función que calcula el factorial, otra que calcula el combinatorio usando la anterior. Este ejercicio refuerza el concepto de composición de funciones. Refuerza también el manejo de variables locales: un error frecuente es asumir que una variable creada dentro de una función está disponible fuera de ella. Ejercita la descomposición funcional tomando un problema complejo (como el cálculo de la varianza de una lista de datos) y dividiéndolo en funciones: <code>calcular_promedio(datos)</code>, <code>calcular_varianza(datos)</code>. Finalmente, practica las tres formas de pasar argumentos para elegir la más legible según el contexto.</p>
+    </div>
+
+    <div class="card quiz">
+      <h4><span class="icon">❓</span> Quiz – Semana 10</h4>
+      <div class="quiz-container" id="quiz-s10">
+        <div class="quiz-progress"><div class="quiz-progress-bar" id="progress-s10" style="width:0%"></div></div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 1 de 5</div>
+          <div class="q-text">¿Cuál es la principal ventaja de definir funciones en un programa?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s10',1,'a')">a) Hace que el programa sea más lento pero más seguro</button>
+            <button class="option-btn" onclick="answer('s10',1,'b')">b) Permite modularizar y reutilizar código, evitando repetir las mismas instrucciones</button>
+            <button class="option-btn" onclick="answer('s10',1,'c')">c) Obliga al programa a usar variables globales</button>
+            <button class="option-btn" onclick="answer('s10',1,'d')">d) Elimina la necesidad de usar ciclos</button>
+          </div>
+          <div class="feedback-box" id="s10-fb1"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 2 de 5</div>
+          <div class="q-text">¿Qué hace la sentencia <code>return</code> en una función de Python?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s10',2,'a')">a) Imprime el resultado en pantalla</button>
+            <button class="option-btn" onclick="answer('s10',2,'b')">b) Termina el programa completo</button>
+            <button class="option-btn" onclick="answer('s10',2,'c')">c) Devuelve un valor al punto del programa donde la función fue llamada y termina la ejecución de la función</button>
+            <button class="option-btn" onclick="answer('s10',2,'d')">d) Reinicia los parámetros de la función a sus valores por defecto</button>
+          </div>
+          <div class="feedback-box" id="s10-fb2"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 3 de 5</div>
+          <div class="q-text">¿Qué significa el principio de encapsulamiento en la modularidad?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s10',3,'a')">a) Guardar todo el código en un único archivo</button>
+            <button class="option-btn" onclick="answer('s10',3,'b')">b) Cada módulo oculta los detalles de su implementación interna y expone solo una interfaz clara para interactuar con otros módulos</button>
+            <button class="option-btn" onclick="answer('s10',3,'c')">c) Cifrar el código fuente para protegerlo</button>
+            <button class="option-btn" onclick="answer('s10',3,'d')">d) Dividir el equipo de desarrollo en grupos pequeños</button>
+          </div>
+          <div class="feedback-box" id="s10-fb3"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 4 de 5</div>
+          <div class="q-text">Si se define la función <code>def saludo(nombre="invitado"):</code>, ¿qué ocurre si se llama como <code>saludo()</code> sin argumentos?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s10',4,'a')">a) Genera un error TypeError porque falta el argumento</button>
+            <button class="option-btn" onclick="answer('s10',4,'b')">b) La función usa el valor por defecto "invitado" para el parámetro nombre</button>
+            <button class="option-btn" onclick="answer('s10',4,'c')">c) La función se llama pero no ejecuta ninguna instrucción</button>
+            <button class="option-btn" onclick="answer('s10',4,'d')">d) El programa solicita al usuario ingresar el nombre</button>
+          </div>
+          <div class="feedback-box" id="s10-fb4"></div>
+        </div>
+
+        <div class="quiz-q">
+          <div class="q-num">Pregunta 5 de 5</div>
+          <div class="q-text">¿Qué es una variable local en el contexto de las funciones?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answer('s10',5,'a')">a) Una variable disponible en todo el programa</button>
+            <button class="option-btn" onclick="answer('s10',5,'b')">b) Una variable declarada dentro de una función que solo existe durante la ejecución de esa función y no es accesible desde fuera de ella</button>
+            <button class="option-btn" onclick="answer('s10',5,'c')">c) Una variable que guarda su valor entre distintas llamadas a la función</button>
+            <button class="option-btn" onclick="answer('s10',5,'d')">d) Una variable que se comparte entre todas las funciones del programa</button>
+          </div>
+          <div class="feedback-box" id="s10-fb5"></div>
+        </div>
+
+        <button class="submit-quiz" id="submit-s10" onclick="submitQuiz('s10')">Ver resultados</button>
+        <button class="reset-quiz" id="reset-s10" onclick="resetQuiz('s10')">Reiniciar quiz</button>
+        <div class="quiz-score" id="score-s10"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ==================== QUIZ DATA ====================
+const quizData = {
+  s00: {
+    answers: { 1:'b', 2:'b', 3:'c', 4:'b', 5:'b' },
+    feedback: {
+      1: { ok: '¡Correcto! Vancouver usa numeración consecutiva por orden de aparición en el texto.', fail: 'Incorrecto. Eso describe el estilo APA (autor-año). Vancouver usa números consecutivos asignados según el orden de aparición en el texto.' },
+      2: { ok: '¡Correcto! La longitud del fragmento define si va entre comillas en el texto (≤5 renglones) o en bloque con sangría (>5 renglones).', fail: 'Incorrecto. La diferencia es la extensión: cita corta ≤5 renglones entre comillas en el texto; cita larga >5 renglones en bloque independiente con sangría de 1.27 cm.' },
+      3: { ok: '¡Correcto! El ICAI define la integridad académica como compromiso de todos: estudiantes, docentes y colaboradores.', fail: 'Incorrecto. El ICAI incluye a estudiantes, docentes y colaboradores (todos los miembros de la comunidad educativa).' },
+      4: { ok: '¡Correcto! La paráfrasis reformula con palabras propias las ideas ajenas, siempre acreditando la fuente.', fail: 'Incorrecto. Una cita indirecta o paráfrasis consiste en reformular con palabras propias las ideas del autor, acreditando la fuente con el número de referencia correspondiente.' },
+      5: { ok: '¡Correcto! Citar evita el plagio, da crédito a los autores y otorga rigor y credibilidad al trabajo.', fail: 'Incorrecto. Citar es fundamental para evitar el plagio, acreditar a los autores originales y dar mayor rigor científico y credibilidad al trabajo académico o profesional.' }
+    }
+  },
+  s01: {
+    answers: { 1:'b', 2:'c', 3:'b', 4:'c', 5:'b' },
+    feedback: {
+      1: { ok: '¡Correcto! Un algoritmo debe ser preciso (indica el orden de cada paso), definido (produce el mismo resultado siempre) y finito (termina en algún momento).', fail: 'Incorrecto. Las tres características de un algoritmo son: preciso (indica el orden de cada paso), definido (mismo resultado siempre) y finito (termina en algún momento).' },
+      2: { ok: '¡Correcto! Los dispositivos de entrada ingresan información del mundo real al computador y la traducen al formato que la máquina entiende.', fail: 'Incorrecto. Los dispositivos de entrada son los responsables de ingresar información del mundo real al computador, traduciendo los datos a un formato que la máquina pueda procesar.' },
+      3: { ok: '¡Correcto! El compilado genera un binario autónomo; el interpretado requiere un intérprete en cada ejecución, pero es más flexible.', fail: 'Incorrecto. Un lenguaje compilado traduce todo el código fuente a código máquina (binario) antes de ejecutarse; un interpretado necesita un programa intérprete en cada ejecución.' },
+      4: { ok: '¡Correcto! Google Colab permite ejecutar Python en la nube sin instalación, con acceso gratuito a GPU y TPU para tareas de mayor cómputo.', fail: 'Incorrecto. Google Colab es una plataforma cloud gratuita que permite ejecutar Python sin instalación local, con acceso a GPU y TPU gratuitas para aprendizaje de máquina.' },
+      5: { ok: '¡Correcto! El pseudocódigo es una representación intermedia, más estructurada que el lenguaje natural pero sin la sintaxis estricta de un lenguaje de programación.', fail: 'Incorrecto. El pseudocódigo es una representación intermedia entre lenguaje natural y lenguaje de programación, que permite describir algoritmos de forma estructurada sin seguir una sintaxis estricta.' }
+    }
+  },
+  s03: {
+    answers: { 1:'c', 2:'b', 3:'b', 4:'c', 5:'c' },
+    feedback: {
+      1: { ok: '¡Correcto! El algoritmo debe validar el rango e indicar el error cuando la entrada no cumple las condiciones (en este caso, número fuera de 1–7).', fail: 'Incorrecto. Un algoritmo robusto debe indicar un mensaje de error cuando la entrada está fuera del rango válido (1 al 7). El 9 no corresponde a ningún día.' },
+      2: { ok: '¡Correcto! La validación de rango garantiza que el programa maneje entradas inválidas sin colapsar ni producir resultados erróneos.', fail: 'Incorrecto. La validación de rango sirve para garantizar que el programa maneje correctamente entradas inválidas, mostrando un mensaje de error en lugar de colapsar o generar resultados incorrectos.' },
+      3: { ok: '¡Correcto! Los alumnos que obtienen menos de 2.2 en las dos primeras pruebas están automáticamente reprobados sin rendir la tercera.', fail: 'Incorrecto. Según el reglamento, los alumnos que obtienen menos de 2.2 en las dos primeras pruebas están automáticamente reprobados sin rendir la tercera prueba.' },
+      4: { ok: '¡Correcto! En los diagramas de flujo, el rombo (diamante) representa una decisión o bifurcación con dos o más salidas (sí/no, verdadero/falso).', fail: 'Incorrecto. El rombo (o diamante) es el símbolo que representa una decisión en un diagrama de flujo. El rectángulo es para procesos y el óvalo para inicio/fin.' },
+      5: { ok: '¡Correcto! Los sábados y domingos tienen un impuesto de 3%, independiente de la jornada.', fail: 'Incorrecto. El algoritmo de llamadas define un 3% de impuesto para sábados y domingos (fines de semana), sin importar la jornada. El 15% es para días hábiles en jornada diurna y el 10% para jornada vespertina.' }
+    }
+  },
+  s05: {
+    answers: { 1:'c', 2:'b', 3:'b', 4:'b', 5:'c' },
+    feedback: {
+      1: { ok: '¡Correcto! Sin bloque else, si la condición es falsa simplemente se omite el bloque del if y el programa continúa con las instrucciones siguientes.', fail: 'Incorrecto. Si la condición del if es falsa y no hay else, el programa simplemente omite el bloque y continúa ejecutando las instrucciones que siguen al if.' },
+      2: { ok: '¡Correcto! En un if-elif-else siempre se ejecuta exactamente un bloque: el de la primera condición verdadera, o el else si ninguna lo fue.', fail: 'Incorrecto. En un if-elif-else siempre se ejecuta exactamente un bloque. En cuanto una condición es verdadera, las demás no se evalúan y solo ese bloque se ejecuta.' },
+      3: { ok: '¡Correcto! La indentación en Python no es opcional: define el alcance de los bloques y un error de sangría produce un error de sintaxis.', fail: 'Incorrecto. La indentación en Python es obligatoria y funcional: define el alcance de cada bloque de código. Sin la indentación correcta, el intérprete genera un error de sintaxis.' },
+      4: { ok: '¡Correcto! En Python la sintaxis es: if condicion: (con dos puntos), luego las sentencias indentadas, y else: (con dos puntos) seguido de sus sentencias indentadas.', fail: 'Incorrecto. Python usa dos puntos (:) después de la condición y de else, sin llaves. La sintaxis correcta es: if condicion: / sentencias indentadas / else: / sentencias indentadas.' },
+      5: { ok: '¡Correcto! Cuando ninguna condición del if-elif es verdadera, se ejecuta el bloque else, que en este caso muestra "Figura no válida".', fail: 'Incorrecto. Cuando ninguna de las condiciones del if-elif es verdadera (ninguna figura conocida fue ingresada), se ejecuta el bloque else que muestra "Figura no válida".' }
+    }
+  },
+  s06: {
+    answers: { 1:'b', 2:'c', 3:'b', 4:'c', 5:'b' },
+    feedback: {
+      1: { ok: '¡Correcto! range(3, 13, 2) genera: 3, 5, 7, 9, 11 (empieza en 3, termina antes de 13, incremento de 2).', fail: 'Incorrecto. range(3, 13, 2) empieza en 3, incrementa de 2 en 2 y termina antes de 13. Los valores son: 3, 5, 7, 9, 11.' },
+      2: { ok: '¡Correcto! Si la condición del while es falsa desde el inicio, el bloque nunca se ejecuta (cero iteraciones).', fail: 'Incorrecto. Si la condición es falsa al inicio, el ciclo while no ejecuta su bloque ninguna vez. La condición se evalúa antes de cada iteración, incluyendo la primera.' },
+      3: { ok: '¡Correcto! break termina el ciclo inmediatamente y la ejecución continúa con el código que viene después del ciclo.', fail: 'Incorrecto. break termina el ciclo inmediatamente (interrumpe la iteración en curso y sale del ciclo), continuando con el código que hay después del ciclo. continue es quien salta a la siguiente iteración.' },
+      4: { ok: '¡Correcto! El for es ideal cuando el número de iteraciones es conocido de antemano (tamaño del rango, cantidad de elementos a procesar).', fail: 'Incorrecto. El ciclo for es más apropiado cuando el número de iteraciones es conocido antes de entrar al ciclo. Para condiciones que dependen del proceso en ejecución, se usa while.' },
+      5: { ok: '¡Correcto! continue salta el resto de las instrucciones de la iteración actual y pasa directamente a la siguiente, sin salir del ciclo.', fail: 'Incorrecto. continue salta el resto de las instrucciones de la iteración actual y pasa a la siguiente iteración del ciclo (no lo termina). Para terminar el ciclo se usa break.' }
+    }
+  },
+  s08: {
+    answers: { 1:'d', 2:'b', 3:'b', 4:'c', 5:'c' },
+    feedback: {
+      1: { ok: '¡Correcto! El índice -1 accede al último elemento de la lista. En [10, 20, 30, 40, 50], el último elemento es 50.', fail: 'Incorrecto. En Python, los índices negativos cuentan desde el final: l[-1] es el último elemento. En [10, 20, 30, 40, 50], l[-1] es 50.' },
+      2: { ok: '¡Correcto! remove(x) busca y elimina el primer elemento con ese valor; del l[i] elimina el elemento en la posición indicada.', fail: 'Incorrecto. l.remove(x) elimina el primer elemento cuyo valor es x. del l[i] elimina el elemento en la posición i. Son mecanismos distintos (por valor vs. por índice).' },
+      3: { ok: '¡Correcto! El módulo math provee funciones como sin(), cos(), log(), sqrt() y la constante pi, que no están disponibles directamente en Python.', fail: 'Incorrecto. El módulo math se usa para acceder a funciones matemáticas avanzadas (trigonometría, logaritmos, raíz cuadrada, constante π) que no están predefinidas en Python.' },
+      4: { ok: '¡Correcto! l[1:3] devuelve los elementos desde la posición 1 (inclusive) hasta la posición 3 (exclusive): elementos en posición 1 y 2, es decir, [3, 8].', fail: 'Incorrecto. El rebanado l[i:j] incluye el elemento en posición i pero excluye el de posición j. Para l = [5, 3, 8, 1], l[1:3] devuelve [3, 8] (posiciones 1 y 2).' },
+      5: { ok: '¡Correcto! l.append(x) agrega el elemento x al final de la lista. Es el método estándar para añadir elementos.', fail: 'Incorrecto. El método correcto es l.append(x), que agrega el elemento x al final de la lista. add() no existe en listas Python; insert() requiere también un índice.' }
+    }
+  },
+  s10: {
+    answers: { 1:'b', 2:'c', 3:'b', 4:'b', 5:'b' },
+    feedback: {
+      1: { ok: '¡Correcto! Las funciones permiten modularizar el programa (dividirlo en partes manejables) y reutilizar código sin repetirlo.', fail: 'Incorrecto. La principal ventaja de las funciones es la modularización y reutilización del código: se escribe una vez y se puede usar muchas veces desde distintos puntos del programa.' },
+      2: { ok: '¡Correcto! return devuelve el valor calculado al punto donde se llamó la función y termina su ejecución.', fail: 'Incorrecto. return devuelve un valor al punto del programa donde se llamó la función y termina la ejecución de esa función. No imprime en pantalla (eso lo hace print).' },
+      3: { ok: '¡Correcto! El encapsulamiento oculta los detalles internos de cada módulo y expone solo la interfaz necesaria, reduciendo la complejidad del sistema.', fail: 'Incorrecto. El encapsulamiento significa que cada módulo oculta los detalles de su implementación interna y expone solo una interfaz clara, permitiendo modificar el interior sin afectar al resto del sistema.' },
+      4: { ok: '¡Correcto! Los parámetros con valor por defecto permiten llamar a la función sin proporcionar ese argumento; en ese caso se usa el valor predefinido.', fail: 'Incorrecto. Un parámetro con valor por defecto permite llamar a la función sin proporcionar ese argumento. En este caso, nombre toma el valor "invitado" si no se pasa ningún argumento.' },
+      5: { ok: '¡Correcto! Una variable local existe solo dentro de la función durante su ejecución; no es accesible desde fuera de ella.', fail: 'Incorrecto. Una variable local se declara dentro de una función y solo existe durante la ejecución de esa función. No puede accederse desde fuera de ella.' }
+    }
+  }
+};
+
+// ==================== QUIZ STATE ====================
+const quizState = {};
+
+function initQuizState(quizId) {
+  if (!quizState[quizId]) {
+    quizState[quizId] = { answered: {}, submitted: false };
+  }
+}
+
+function answer(quizId, qNum, selected) {
+  initQuizState(quizId);
+  const state = quizState[quizId];
+  if (state.answered[qNum] || state.submitted) return;
+
+  const data = quizData[quizId];
+  const correct = data.answers[qNum];
+  const fb = data.feedback[qNum];
+
+  state.answered[qNum] = selected;
+
+  // Update buttons
+  const qEl = document.getElementById(quizId + '-q' + qNum) ||
+    document.querySelectorAll('#quiz-' + quizId + ' .quiz-q')[qNum - 1];
+  const buttons = qEl.querySelectorAll('.option-btn');
+  const letters = ['a','b','c','d'];
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (letters[i] === correct) btn.classList.add('correct');
+    else if (letters[i] === selected && selected !== correct) btn.classList.add('incorrect');
+  });
+
+  // Show feedback
+  const fbEl = document.getElementById(quizId + '-fb' + qNum);
+  if (fbEl) {
+    fbEl.textContent = (selected === correct) ? '✅ ' + fb.ok : '❌ ' + fb.fail;
+    fbEl.className = 'feedback-box show ' + (selected === correct ? 'ok' : 'fail');
+  }
+
+  // Update progress bar
+  const totalQ = Object.keys(data.answers).length;
+  const answered = Object.keys(state.answered).length;
+  const prog = document.getElementById('progress-' + quizId);
+  if (prog) prog.style.width = (answered / totalQ * 100) + '%';
+
+  // Show submit button if all answered
+  if (answered === totalQ) {
+    const submitBtn = document.getElementById('submit-' + quizId);
+    if (submitBtn) submitBtn.classList.add('show');
+  }
+}
+
+function submitQuiz(quizId) {
+  initQuizState(quizId);
+  const state = quizState[quizId];
+  if (state.submitted) return;
+  state.submitted = true;
+
+  const data = quizData[quizId];
+  const total = Object.keys(data.answers).length;
+  let correct = 0;
+  for (const q in data.answers) {
+    if (state.answered[q] === data.answers[q]) correct++;
+  }
+
+  const scoreEl = document.getElementById('score-' + quizId);
+  const pct = Math.round(correct / total * 100);
+  let emoji = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : '📚';
+  let msg = pct >= 80 ? 'Excelente desempeño. ¡Dominas este contenido!' :
+            pct >= 60 ? 'Buen resultado. Repasa los ítems incorrectos.' :
+            'Necesitas reforzar este tema. Vuelve a leer el resumen.';
+  scoreEl.innerHTML = `${emoji} Obtuviste <strong>${correct} de ${total}</strong> respuestas correctas (${pct}%). ${msg}`;
+  scoreEl.classList.add('show');
+
+  const submitBtn = document.getElementById('submit-' + quizId);
+  if (submitBtn) submitBtn.style.display = 'none';
+
+  const resetBtn = document.getElementById('reset-' + quizId);
+  if (resetBtn) resetBtn.classList.add('show');
+}
+
+function resetQuiz(quizId) {
+  quizState[quizId] = { answered: {}, submitted: false };
+
+  const container = document.getElementById('quiz-' + quizId);
+  container.querySelectorAll('.option-btn').forEach(btn => {
+    btn.disabled = false;
+    btn.classList.remove('correct', 'incorrect');
+  });
+  container.querySelectorAll('.feedback-box').forEach(fb => {
+    fb.className = 'feedback-box';
+    fb.textContent = '';
+  });
+
+  const prog = document.getElementById('progress-' + quizId);
+  if (prog) prog.style.width = '0%';
+
+  const scoreEl = document.getElementById('score-' + quizId);
+  if (scoreEl) { scoreEl.classList.remove('show'); scoreEl.innerHTML = ''; }
+
+  const submitBtn = document.getElementById('submit-' + quizId);
+  if (submitBtn) { submitBtn.classList.remove('show'); submitBtn.style.display = ''; }
+
+  const resetBtn = document.getElementById('reset-' + quizId);
+  if (resetBtn) resetBtn.classList.remove('show');
+}
+
+// ==================== NAVIGATION ====================
+function showSection(id) {
+  // Hide all
+  document.querySelectorAll('.semana-section, #home').forEach(el => {
+    el.style.display = 'none';
+    if (el.classList) el.classList.remove('active');
+  });
+
+  // Show target
+  const target = document.getElementById(id);
+  if (target) {
+    target.style.display = 'block';
+    target.classList.add('active');
+  }
+
+  // Update nav
+  document.querySelectorAll('#sidebar nav a').forEach(a => a.classList.remove('active'));
+  const navLink = document.getElementById('nav-' + id);
+  if (navLink) navLink.classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  return false;
+}
+
+// Init: show home
+document.addEventListener('DOMContentLoaded', () => {
+  showSection('home');
+});
+</script>
+</body>
+</html>

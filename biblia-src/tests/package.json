@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "description": "Pruebas de la Biblia (requiere Playwright con Chromium)",
+  "devDependencies": { "axe-core": "4.10.2", "pdfmake": "0.2.7" }
+}

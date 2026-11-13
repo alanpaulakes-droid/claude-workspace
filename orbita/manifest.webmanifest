@@ -1,0 +1,19 @@
+{
+  "id": "orbita-organizador-personal",
+  "name": "Órbita · Organizador Personal",
+  "short_name": "Órbita",
+  "description": "Tu organizador: tareas, guardias, universidad, inglés e inspección de armamento.",
+  "start_url": "ORGANIZADOR_PERSONAL.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "es",
+  "background_color": "#0e1524",
+  "theme_color": "#0e1524",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

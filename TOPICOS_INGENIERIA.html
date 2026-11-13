@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tópicos de Ingeniería – ATDF101</title>
+<style>
+  :root {
+    --naranja: #E65C00;
+    --naranja-claro: #FF8C42;
+    --naranja-oscuro: #B84500;
+    --blanco: #FFFFFF;
+    --gris-claro: #F5F5F5;
+    --gris-medio: #E0E0E0;
+    --gris-texto: #333333;
+    --gris-sub: #666666;
+    --verde: #2E7D32;
+    --rojo: #C62828;
+    --sidebar-w: 260px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--gris-claro);
+    color: var(--gris-texto);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    background: linear-gradient(180deg, var(--naranja-oscuro) 0%, var(--naranja) 100%);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 3px 0 12px rgba(0,0,0,0.18);
+  }
+
+  #sidebar-header {
+    padding: 28px 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+
+  #sidebar-header h1 {
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+  }
+
+  #sidebar-header p {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.75rem;
+    margin-top: 6px;
+  }
+
+  #sidebar nav ul {
+    list-style: none;
+    padding: 12px 0;
+  }
+
+  #sidebar nav ul li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 22px;
+    color: rgba(255,255,255,0.88);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: background 0.2s, color 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  #sidebar nav ul li a:hover,
+  #sidebar nav ul li a.active {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border-left-color: #fff;
+  }
+
+  #sidebar nav ul li a .badge {
+    background: rgba(255,255,255,0.25);
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: auto;
+  }
+
+  /* ── MAIN ── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 40px 36px;
+    max-width: 1100px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, var(--naranja) 0%, var(--naranja-oscuro) 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 40px 44px;
+    margin-bottom: 48px;
+    box-shadow: 0 4px 20px rgba(230,92,0,0.3);
+  }
+
+  .hero h2 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+  .hero p  { font-size: 1rem; opacity: 0.9; max-width: 620px; line-height: 1.6; }
+
+  .hero .chips {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px;
+  }
+  .hero .chip {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  /* ── WEEK SECTION ── */
+  .week-section {
+    margin-bottom: 60px;
+    scroll-margin-top: 20px;
+  }
+
+  .week-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .week-badge {
+    background: var(--naranja);
+    color: #fff;
+    border-radius: 12px;
+    padding: 8px 18px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .week-header h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--naranja-oscuro);
+    line-height: 1.2;
+  }
+
+  .week-divider {
+    border: none;
+    border-top: 2px solid var(--naranja-claro);
+    margin-bottom: 24px;
+    opacity: 0.3;
+  }
+
+  /* ── CARDS ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  @media (max-width: 820px) {
+    .card-grid { grid-template-columns: 1fr; }
+    #main { padding: 20px 16px; }
+    #sidebar { width: 200px; }
+    #main { margin-left: 200px; }
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px 26px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    border-top: 4px solid var(--naranja);
+  }
+
+  .card.reflexion { border-top-color: #FF8C42; }
+  .card.retro     { border-top-color: #B84500; }
+
+  .card h4 {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--naranja);
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .card.reflexion h4 { color: #E65C00; }
+  .card.retro h4     { color: var(--naranja-oscuro); }
+
+  .card p, .card ul {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--gris-sub);
+  }
+
+  .card ul { padding-left: 18px; }
+  .card ul li { margin-bottom: 5px; }
+
+  /* ── QUIZ ── */
+  .quiz-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    border-top: 4px solid #222;
+  }
+
+  .quiz-card h4 {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #444;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .quiz-question {
+    margin-bottom: 22px;
+  }
+
+  .quiz-question p {
+    font-size: 0.93rem;
+    font-weight: 600;
+    color: var(--gris-texto);
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+  .quiz-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 2px solid var(--gris-medio);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--gris-texto);
+    background: var(--gris-claro);
+    transition: border-color 0.15s, background 0.15s;
+    user-select: none;
+    line-height: 1.4;
+  }
+
+  .quiz-option:hover { border-color: var(--naranja-claro); background: #FFF3EB; }
+
+  .quiz-option.correct {
+    border-color: var(--verde);
+    background: #E8F5E9;
+    color: var(--verde);
+    font-weight: 600;
+  }
+
+  .quiz-option.incorrect {
+    border-color: var(--rojo);
+    background: #FFEBEE;
+    color: var(--rojo);
+    font-weight: 600;
+  }
+
+  .quiz-option.disabled { cursor: default; pointer-events: none; }
+
+  .quiz-option .icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .quiz-feedback {
+    font-size: 0.82rem;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: none;
+    line-height: 1.5;
+  }
+
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok  { background: #E8F5E9; color: var(--verde); }
+  .quiz-feedback.err { background: #FFEBEE; color: var(--rojo); }
+
+  .quiz-score {
+    margin-top: 18px;
+    padding: 14px 18px;
+    background: var(--gris-claro);
+    border-radius: 10px;
+    font-size: 0.88rem;
+    color: var(--gris-sub);
+    text-align: center;
+    display: none;
+  }
+
+  .quiz-score.show { display: block; }
+  .quiz-score strong { color: var(--naranja); font-size: 1.1rem; }
+
+  .btn-reset {
+    margin-top: 10px;
+    padding: 8px 20px;
+    background: var(--naranja);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .btn-reset:hover { background: var(--naranja-oscuro); }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 60px;
+    padding: 28px;
+    text-align: center;
+    color: var(--gris-sub);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--gris-medio);
+  }
+
+  /* ── SCROLLBAR ── */
+  #sidebar::-webkit-scrollbar { width: 5px; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ SIDEBAR ════════════════════════ -->
+<aside id="sidebar">
+  <div id="sidebar-header">
+    <h1>Tópicos de Ingeniería</h1>
+    <p>ATDF101 · 1er Trimestre<br>Ing. Industrial – UNAB</p>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="#s00" onclick="setActive(this)">📄 Sem. 0 – APA y Citas <span class="badge">S0</span></a></li>
+      <li><a href="#s01" onclick="setActive(this)">🏗 Sem. 1 – Aspectos Introductores <span class="badge">S1</span></a></li>
+      <li><a href="#s04" onclick="setActive(this)">🧠 Sem. 4 – Personalidad MBTI <span class="badge">S4</span></a></li>
+      <li><a href="#s06" onclick="setActive(this)">🗺 Sem. 6 – Empatía y CJM <span class="badge">S6</span></a></li>
+      <li><a href="#s07" onclick="setActive(this)">⚖️ Sem. 7 – Scoring <span class="badge">S7</span></a></li>
+      <li><a href="#s08" onclick="setActive(this)">💡 Sem. 8 – Ideación <span class="badge">S8</span></a></li>
+      <li><a href="#s09" onclick="setActive(this)">🔧 Sem. 9 – Prototipado <span class="badge">S9</span></a></li>
+      <li><a href="#s10" onclick="setActive(this)">🚀 Sem. 10 – MVP Canvas <span class="badge">S10</span></a></li>
+      <li><a href="#s11" onclick="setActive(this)">📝 Sem. 11 – Proyecto Final <span class="badge">S11</span></a></li>
+      <li><a href="#s13" onclick="setActive(this)">🎤 Sem. 13 – Examen Oral <span class="badge">S13</span></a></li>
+    </ul>
+  </nav>
+</aside>
+
+<!-- ════════════════════════ MAIN ════════════════════════ -->
+<main id="main">
+
+  <!-- HERO -->
+  <section class="hero">
+    <h2>Tópicos de Ingeniería</h2>
+    <p>Material de estudio interactivo para la asignatura ATDF101 – Ingeniería Industrial, 1er trimestre. Incluye resúmenes, reflexiones, retroalimentación y quizzes para cada semana.</p>
+    <div class="chips">
+      <span class="chip">ATDF101</span>
+      <span class="chip">Design Thinking</span>
+      <span class="chip">Proyecto Ingenieril</span>
+      <span class="chip">ODS – Agenda 2030</span>
+      <span class="chip">Universidad Andrés Bello</span>
+    </div>
+  </section>
+
+  <!-- ══════════════ SEMANA 0 ══════════════ -->
+  <section class="week-section" id="s00">
+    <div class="week-header">
+      <span class="week-badge">Semana 0</span>
+      <h3>Estilo APA: Citas y Referencias Bibliográficas</h3>
+    </div>
+    <hr class="week-divider">
+    <div class="card-grid">
+      <div class="card">
+        <h4>📋 Resumen</h4>
+        <ul>
+          <li>El <strong>estilo APA</strong> (7.ª edición) es un conjunto de pautas editoriales para redacción académica y científica.</li>
+          <li>Una <strong>cita bibliográfica</strong> puede ser directa (textual) o indirecta (paráfrasis); siempre se acredita la fuente.</li>
+          <li>Existen dos formas de citar: <strong>narrativa</strong> (el autor es parte de la frase) y <strong>parentética</strong> (autor y año al final).</li>
+          <li>Citas cortas (&lt;40 palabras) van entre comillas dentro del texto; citas largas (≥40 palabras) forman un bloque independiente con sangría.</li>
+          <li>Cada referencia citada en el texto debe aparecer en la lista de referencias y viceversa.</li>
+          <li>Se deben preferir fuentes primarias y usar fuentes secundarias con moderación.</li>
+          <li>Citar correctamente evita el plagio, da credibilidad y permite al lector localizar las fuentes.</li>
+        </ul>
+      </div>
+      <div class="card reflexion">
+        <h4>🔎 Reflexión</h4>
+        <p>El manejo del estilo APA no es un simple trámite administrativo: es la base de la integridad intelectual en ingeniería. Un ingeniero que cita correctamente demuestra que sus argumentos están respaldados por evidencia verificable, construye credibilidad ante clientes, colegas y tomadores de decisiones, y contribuye al ecosistema del conocimiento técnico-científico. Aprender a citar desde el inicio de la carrera forma el hábito del rigor que distingue a los profesionales de excelencia.</p>
+      </div>
+      <div class="card retro">
+        <h4>💬 Retroalimentación</h4>
+        <p>Practica identificando el tipo de cita antes de redactarla: ¿es textual o paráfrasis? ¿es narrativa o parentética? Elabora una lista de referencias APA con al menos 5 fuentes distintas (libro, artículo, página web, infografía, video) para afianzar el formato de cada tipo. Un error frecuente es no incluir el número de página en citas directas: ¡siempre añádelo! Revisa también que los apellidos y fechas en el texto coincidan exactamente con la lista de referencias.</p>
+      </div>
+    </div>
+
+    <!-- QUIZ S0 -->
+    <div class="quiz-card" id="quiz-s00">
+      <h4>🧩 Quiz Interactivo – Semana 0</h4>
+
+      <div class="quiz-question" data-q="0">
+        <p>1. ¿Cuántas palabras mínimas debe tener una cita para clasificarse como "cita larga" en APA?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>20 palabras</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>30 palabras</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>40 palabras</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>50 palabras</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. Las citas de 40 o más palabras forman un bloque independiente con sangría de 1,27 cm, sin comillas.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El límite es 40 palabras. Con 40 o más, la cita pasa a bloque independiente con sangría.</div>
+      </div>
+
+      <div class="quiz-question" data-q="1">
+        <p>2. En una cita narrativa, ¿dónde aparece el nombre del autor?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Solo al final, entre paréntesis con el año</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Como parte de la frase u oración, integrado al texto</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>En nota al pie de página</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Solo en la lista de referencias, no en el texto</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. En la cita narrativa el autor forma parte del enunciado, por ejemplo: "Robbins et al. (2003) sugirieron que…"</div>
+        <div class="quiz-feedback err">❌ Incorrecto. En la cita narrativa el autor es parte de la oración. La cita parentética es la que lo coloca al final entre paréntesis.</div>
+      </div>
+
+      <div class="quiz-question" data-q="2">
+        <p>3. ¿Cuál es el principal propósito de citar correctamente en trabajos académicos?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Hacer el documento más largo</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Evitar el plagio, dar credibilidad y facilitar al lector localizar las fuentes</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Cumplir un requisito formal sin importancia ética</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Mostrar que el autor leyó muchos libros</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. Citar asegura rigor científico, credibilidad, reconocimiento a los autores originales y permite al lector verificar las fuentes.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Citar tiene un propósito ético y académico fundamental: evitar plagio, dar credibilidad y permitir rastrear la información.</div>
+      </div>
+
+      <div class="quiz-question" data-q="3">
+        <p>4. ¿Qué pasa si una referencia aparece en el texto pero NO en la lista de referencias?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>No pasa nada, es opcional incluirla en la lista</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Se considera una cita secundaria válida</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Viola la norma APA: toda cita en el texto debe aparecer en la lista de referencias y viceversa</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Se puede añadir en nota al pie en vez de la lista</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. APA exige consistencia total: texto y lista de referencias deben espejarse exactamente.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. APA requiere que cada referencia citada en el texto figure en la lista, y viceversa.</div>
+      </div>
+
+      <div class="quiz-question" data-q="4">
+        <p>5. ¿En qué edición del Manual APA se basa este material de la asignatura?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>5.ª edición</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>6.ª edición</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>7.ª edición</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>8.ª edición</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El material está basado en la 7.ª edición en inglés del Manual de Publicaciones de la APA.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El apunte explícitamente indica que se basa en la 7.ª edición del Manual APA.</div>
+      </div>
+
+      <div class="quiz-score" id="score-s00"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════ SEMANA 1 ══════════════ -->
+  <section class="week-section" id="s01">
+    <div class="week-header">
+      <span class="week-badge">Semana 1</span>
+      <h3>Aspectos Introductorios a la Ingeniería</h3>
+    </div>
+    <hr class="week-divider">
+    <div class="card-grid">
+      <div class="card">
+        <h4>📋 Resumen</h4>
+        <ul>
+          <li>Los ingenieros transforman la naturaleza para mejorar la calidad de vida: obras civiles, salud, tecnología, comunicaciones.</li>
+          <li>Habilidades clave del ingeniero: <strong>creatividad</strong>, <strong>habilidad analítica</strong>, <strong>sentido práctico</strong>, <strong>resolución de problemas</strong> y <strong>conciencia social y ética</strong>.</li>
+          <li>El ingeniero busca la <em>mejor solución</em> bajo restricciones de tiempo y costo, a diferencia del científico que busca la verdad.</li>
+          <li>La primera escuela de ingeniería fue la <strong>École Polytechnique de París (1794)</strong>, fundada bajo Napoleón Bonaparte.</li>
+          <li>La práctica de la ingeniería se basa en ciencias naturales y exactas, y en la aplicación de la tecnología.</li>
+          <li>Campos de trabajo: diseño, mantenimiento, investigación, dirección de proyectos; todos requieren combinar habilidades técnicas y administrativas.</li>
+          <li>El factor social y ético es fundamental al elegir una solución técnica.</li>
+        </ul>
+      </div>
+      <div class="card reflexion">
+        <h4>🔎 Reflexión</h4>
+        <p>La ingeniería no es solo matemáticas o tecnología: es la profesión que media entre el conocimiento científico y las necesidades humanas reales. Comprender esto desde el primer trimestre ayuda al estudiante a cultivar una mentalidad integral: técnica sí, pero también empática, ética y creativa. El ingeniero del siglo XXI debe ser capaz de diseñar soluciones que funcionen no solo en papel, sino que sean viables en un mundo con recursos limitados, diversidad social y urgencias ambientales.</p>
+      </div>
+      <div class="card retro">
+        <h4>💬 Retroalimentación</h4>
+        <p>Reflexiona sobre cuál de las cinco habilidades del ingeniero (creatividad, análisis, sentido práctico, resolución de problemas, ética) sientes que dominas menos. Esa es tu área de desarrollo prioritaria. Practica el pensamiento analítico descomponiendo problemas cotidianos en partes. Investiga la historia de la ingeniería en Chile: ¿qué ingenieros han marcado el desarrollo del país? Conectar la teoría con el contexto local fortalece la identidad profesional desde el inicio.</p>
+      </div>
+    </div>
+
+    <div class="quiz-card" id="quiz-s01">
+      <h4>🧩 Quiz Interactivo – Semana 1</h4>
+
+      <div class="quiz-question" data-q="0">
+        <p>1. ¿Cuál fue la primera escuela de ingeniería fundada en el mundo?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>MIT – Massachusetts Institute of Technology</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>École Polytechnique de París (1794)</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Universidad de Berlín (1810)</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Real Academia de Ingeniería de Londres (1760)</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. La École Polytechnique fue fundada por Napoleón Bonaparte en 1794 y sirvió de modelo para las demás escuelas del mundo.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. La primera escuela de ingeniería fue la École Polytechnique de París, fundada en 1794 durante el gobierno de Napoleón.</div>
+      </div>
+
+      <div class="quiz-question" data-q="1">
+        <p>2. ¿Cuál es la diferencia fundamental entre el enfoque del ingeniero y el del científico?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El ingeniero trabaja solo en laboratorio; el científico trabaja en campo</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>El científico busca la verdad; el ingeniero busca la mejor solución bajo restricciones de tiempo y costo</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El ingeniero inventa; el científico solo teoriza</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>No hay diferencia, ambos hacen lo mismo</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El ingeniero opera en el mundo real con restricciones, mientras el científico busca la verdad sin necesariamente considerar factibilidad económica inmediata.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El ingeniero busca la mejor solución bajo restricciones reales (tiempo, costo), mientras el científico busca la verdad.</div>
+      </div>
+
+      <div class="quiz-question" data-q="2">
+        <p>3. ¿Cuál de las siguientes NO es una habilidad característica del ingeniero según el apunte?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Creatividad</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Habilidad analítica</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Memorización de fórmulas sin comprensión</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Conciencia ética y social</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El apunte no menciona la memorización como habilidad; enfatiza creatividad, análisis, sentido práctico, resolución de problemas y conciencia ética.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Las habilidades del ingeniero son: creatividad, análisis, sentido práctico, resolución de problemas y conciencia ética. La mera memorización no está entre ellas.</div>
+      </div>
+
+      <div class="quiz-question" data-q="3">
+        <p>4. Según el texto, ¿por qué es importante considerar los factores sociales en una solución de ingeniería?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Porque los factores sociales aumentan el costo de la solución</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>No son importantes; lo técnico es lo único que importa</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Porque una solución técnica excelente puede no ser la más aconsejable si impacta negativamente a grupos vulnerables</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Solo para cumplir con regulaciones del gobierno</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El ingeniero tiene normas éticas que muchas veces están por encima de los reglamentos; debe proteger a los grupos más vulnerables.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Los factores sociales son clave: una solución técnicamente perfecta puede ser inapropiada si daña a grupos vulnerables de la sociedad.</div>
+      </div>
+
+      <div class="quiz-question" data-q="4">
+        <p>5. ¿Cómo se llama la habilidad de descomponer un todo en sus partes y establecer relaciones entre ellas?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Creatividad</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Sentido práctico</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Habilidad analítica</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Intuición ingenieril</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. La habilidad analítica consiste en descomponer un todo en partes y establecer relaciones entre ellas; es uno de los "activos fijos" del ingeniero.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Esa es la habilidad analítica: descomponer un todo en sus partes y establecer relaciones entre ellas.</div>
+      </div>
+
+      <div class="quiz-score" id="score-s01"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════ SEMANA 4 ══════════════ -->
+  <section class="week-section" id="s04">
+    <div class="week-header">
+      <span class="week-badge">Semana 4</span>
+      <h3>Tipos de Personalidad – MBTI</h3>
+    </div>
+    <hr class="week-divider">
+    <div class="card-grid">
+      <div class="card">
+        <h4>📋 Resumen</h4>
+        <ul>
+          <li>El <strong>MBTI</strong> (Myers-Briggs Type Indicator) clasifica la personalidad en 4 dimensiones: E/I, S/N, T/F, J/P.</li>
+          <li>La combinación de las 4 dimensiones genera <strong>16 tipos de personalidad</strong> (ej. INTJ, ENFP, ISTJ).</li>
+          <li>Dimensiones: <strong>Extrovertido–Introvertido</strong> (fuente de energía), <strong>Sensorial–Intuitivo</strong> (percepción), <strong>Pensamiento–Sentimiento</strong> (toma de decisiones), <strong>Juicio–Percepción</strong> (estilo de vida).</li>
+          <li>Cada tipo tiene fortalezas: los INTJ son analíticos y visionarios; los ENFP son entusiastas y empáticos; los ISTJ son prácticos y organizados.</li>
+          <li>El MBTI es uno de muchos modelos de personalidad: cada persona es única y puede no encajar perfectamente en un solo tipo.</li>
+          <li>Conocer el propio tipo ayuda a trabajar mejor en equipo y a identificar áreas de desarrollo profesional.</li>
+        </ul>
+      </div>
+      <div class="card reflexion">
+        <h4>🔎 Reflexión</h4>
+        <p>Conocer el propio tipo de personalidad es una herramienta poderosa para el futuro ingeniero, especialmente en entornos de trabajo en equipo. Un proyecto de ingeniería rara vez lo realiza una sola persona: los equipos más efectivos combinan perfiles analíticos, creativos, comunicativos y ejecutores. Saber dónde están tus fortalezas y limitaciones naturales permite asignar roles más eficazmente, gestionar conflictos con mayor madurez y desarrollar conscientemente las habilidades que el mercado laboral demanda.</p>
+      </div>
+      <div class="card retro">
+        <h4>💬 Retroalimentación</h4>
+        <p>Realiza el test MBTI en línea (16personalities.com) y analiza si la descripción de tu tipo coincide con cómo te ves a ti mismo y cómo te ven tus compañeros. Recuerda que el modelo tiene limitaciones: no etiquetes a las personas ni uses el MBTI como justificación para no mejorar en áreas donde eres débil. El objetivo es la autoconciencia, no la resignación. Practica adaptarte a distintos estilos de trabajo colaborando con personas de tipos opuestos al tuyo.</p>
+      </div>
+    </div>
+
+    <div class="quiz-card" id="quiz-s04">
+      <h4>🧩 Quiz Interactivo – Semana 4</h4>
+
+      <div class="quiz-question" data-q="0">
+        <p>1. ¿Cuántos tipos de personalidad define el indicador MBTI?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>8</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>12</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>16</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>24</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. La combinación de 4 dimensiones con 2 polos cada una genera 2⁴ = 16 tipos de personalidad.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Son 16 tipos: la combinación de las 4 dimensiones (con 2 opciones cada una) da 2⁴ = 16 combinaciones posibles.</div>
+      </div>
+
+      <div class="quiz-question" data-q="1">
+        <p>2. Un estudiante que prefiere seguir reglas, es organizado y práctico probablemente corresponde al tipo:</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>ISTJ</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>ENFP</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>ENTP</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>INFP</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El ISTJ (Introvertido, Sensorial, Pensamiento, Juicio) es práctico, organizado y leal, y le gusta seguir reglas y tener estructura.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Esa descripción corresponde al ISTJ: personas prácticas, organizadas y leales que disfrutan de la estructura y las reglas.</div>
+      </div>
+
+      <div class="quiz-question" data-q="2">
+        <p>3. ¿Qué letra en el MBTI indica que una persona toma decisiones basándose en la lógica y el análisis objetivo?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>S (Sensorial)</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>N (Intuitivo)</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>T (Pensamiento / Thinking)</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>J (Juicio)</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. La dimensión T (Pensamiento/Thinking) indica que la persona prefiere la lógica y el análisis objetivo para tomar decisiones, a diferencia de F (Sentimiento).</div>
+        <div class="quiz-feedback err">❌ Incorrecto. La letra T (Pensamiento) es la que indica decisiones basadas en lógica y análisis. La F (Sentimiento) toma decisiones basadas en valores y emociones.</div>
+      </div>
+
+      <div class="quiz-question" data-q="3">
+        <p>4. ¿Cuál es la principal limitación del MBTI mencionada en el material?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Solo funciona para personas mayores de 25 años</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Es solo uno de los muchos modelos de personalidad; cada persona es única y puede no encajar perfectamente</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Fue creado sin base científica alguna</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>No distingue entre introvertidos y extrovertidos</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El material destaca que el MBTI es solo uno de muchos modelos y que cada persona es única, pudiendo presentar características mixtas.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. La limitación señalada es que el MBTI es uno de muchos modelos y no captura toda la complejidad de la personalidad humana.</div>
+      </div>
+
+      <div class="quiz-question" data-q="4">
+        <p>5. ¿Qué tipo MBTI corresponde a personas carismáticas, empáticas y comprometidas que disfrutan liderar y ayudar a otros a alcanzar sus metas?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>ENTJ</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>ESTP</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>ENFJ</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>ESFP</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El ENFJ (Extrovertido, Intuitivo, Sentimiento, Juicio) es carismático, empático y comprometido; disfruta liderar y ayudar a otros.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Esa descripción es el ENFJ: personas carismáticas, empáticas y comprometidas que disfrutan del liderazgo y ayudar a los demás.</div>
+      </div>
+
+      <div class="quiz-score" id="score-s04"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════ SEMANA 6 ══════════════ -->
+  <section class="week-section" id="s06">
+    <div class="week-header">
+      <span class="week-badge">Semana 6</span>
+      <h3>Mapa de Empatía y Customer Journey Map (CJM)</h3>
+    </div>
+    <hr class="week-divider">
+    <div class="card-grid">
+      <div class="card">
+        <h4>📋 Resumen</h4>
+        <ul>
+          <li>El <strong>Mapa de Empatía</strong> explora 6 dimensiones del usuario: qué piensa y siente, qué oye, qué dice y hace, qué ve, sus esfuerzos (miedos, frustraciones, obstáculos) y sus resultados (deseos, medida del éxito).</li>
+          <li>El <strong>Customer Journey Map (CJM)</strong> mapea cada etapa, interacción y canal por el que pasa un cliente durante el ciclo de compra o uso de un servicio.</li>
+          <li>Para crear un CJM: (1) Identificar puntos de contacto, (2) Definir el objetivo, (3) Recopilar información sobre la experiencia en cada punto, (4) Organizar en mapa visual con puntos positivos, negativos, neutros y críticos ("stop").</li>
+          <li>Los puntos críticos determinan si el cliente compra o abandona el producto/servicio.</li>
+          <li>El análisis del CJM permite identificar causas raíz de las experiencias negativas y diseñar estrategias de mejora.</li>
+        </ul>
+      </div>
+      <div class="card reflexion">
+        <h4>🔎 Reflexión</h4>
+        <p>El mapa de empatía y el CJM son herramientas que colocan al usuario en el centro del proceso de diseño, algo que históricamente la ingeniería ha relegado a un segundo plano frente a la eficiencia técnica. Para el futuro ingeniero industrial, dominar estas herramientas representa una ventaja competitiva real: los productos y servicios que entienden profundamente al usuario generan mayor valor, fidelización y sostenibilidad en el tiempo. La empatía, más que un valor sentimental, es aquí una metodología rigurosa de levantamiento de información.</p>
+      </div>
+      <div class="card retro">
+        <h4>💬 Retroalimentación</h4>
+        <p>Practica construyendo un CJM de una experiencia cotidiana: ir al médico, comprar en el supermercado, usar el transporte público. Identifica los puntos de contacto, evalúa cada uno (positivo/negativo/neutro) y detecta el "punto crítico" donde la experiencia se define. Con el mapa de empatía, entrevista a un potencial usuario de tu proyecto y completa las 6 dimensiones con información real, no suposiciones. La diferencia entre un mapa bien construido y uno superficial radica precisamente en eso: datos reales vs. intuiciones del equipo.</p>
+      </div>
+    </div>
+
+    <div class="quiz-card" id="quiz-s06">
+      <h4>🧩 Quiz Interactivo – Semana 6</h4>
+
+      <div class="quiz-question" data-q="0">
+        <p>1. ¿Qué sección del Mapa de Empatía corresponde a las frustraciones y obstáculos del usuario?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Resultados</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Esfuerzos</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>¿Qué Ve?</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>¿Qué Oye?</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. La sección "Esfuerzos" del Mapa de Empatía incluye miedos, frustraciones y obstáculos que enfrenta el usuario.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. La sección de miedos, frustraciones y obstáculos se llama "Esfuerzos" en el Mapa de Empatía.</div>
+      </div>
+
+      <div class="quiz-question" data-q="1">
+        <p>2. En el ejemplo del viaje en avión del CJM, ¿cuáles fueron los dos puntos críticos identificados?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El vuelo y el desembarque</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El check-in y el embarque</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>La reserva y la facturación de equipaje</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Los controles de seguridad y la espera en sala</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. La reserva tuvo evaluación negativa (página difícil de usar) y la facturación de equipaje fue un punto crítico positivo.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Los puntos críticos del ejemplo fueron la reserva (evaluación negativa) y la facturación de equipaje.</div>
+      </div>
+
+      <div class="quiz-question" data-q="2">
+        <p>3. ¿Cuál es el objetivo principal de construir un Customer Journey Map?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Calcular el costo total del producto</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Identificar cómo se siente el cliente en cada etapa y elevar el valor de su experiencia desarrollando estrategias de mejora</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Diseñar el logo y la imagen de marca del producto</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Determinar el precio de venta del servicio</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El CJM busca entender la experiencia emocional del cliente en cada etapa para identificar áreas de mejora y elevar el valor entregado.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El CJM sirve para determinar cómo se sienten los clientes en las etapas clave y desarrollar estrategias para mejorar su experiencia.</div>
+      </div>
+
+      <div class="quiz-question" data-q="3">
+        <p>4. ¿Qué se entiende por "puntos críticos" o "stop" en un CJM?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Momentos donde el proceso es más costoso económicamente</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Momentos de la experiencia que pueden determinar si el cliente compra o abandona el producto/servicio</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Los pasos donde el cliente espera más tiempo</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Los momentos más aburridos para el cliente</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. Los puntos críticos son aquellos que pueden determinar la decisión de compra o el abandono del servicio/producto.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Los puntos críticos (stop) son los que determinan si el cliente sigue adelante con la compra o abandona el proceso.</div>
+      </div>
+
+      <div class="quiz-question" data-q="4">
+        <p>5. ¿Cuántos pasos se proponen para crear un CJM en el material de la semana 6?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>2 pasos</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>3 pasos</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>4 pasos</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>6 pasos</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. Los 4 pasos son: (1) Identificar puntos de contacto, (2) Definir objetivo, (3) Recopilar información, (4) Organizar en mapa visual.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Son 4 pasos: identificar puntos de contacto, definir objetivo, recopilar información y organizar en mapa visual.</div>
+      </div>
+
+      <div class="quiz-score" id="score-s06"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════ SEMANA 7 ══════════════ -->
+  <section class="week-section" id="s07">
+    <div class="week-header">
+      <span class="week-badge">Semana 7</span>
+      <h3>Método Scoring – Elección por Factores Ponderados</h3>
+    </div>
+    <hr class="week-divider">
+    <div class="card-grid">
+      <div class="card">
+        <h4>📋 Resumen</h4>
+        <ul>
+          <li>El <strong>scoring</strong> es un método cuantitativo para comparar alternativas cuando existen múltiples criterios de decisión.</li>
+          <li><strong>7 pasos:</strong> (1) Identificar la meta, (2) Identificar alternativas, (3) Definir criterios, (4) Asignar ponderación (%), (5) Evaluar criterios en alternativas (escala 1–5 o 1–10), (6) Calcular score (suma ponderada), (7) Seleccionar la alternativa con mejor score.</li>
+          <li>La ponderación refleja la importancia relativa de cada criterio y la suma total debe ser 100%.</li>
+          <li>Mayor puntaje se asigna a lo que representa una mejor opción para cada criterio específico.</li>
+          <li>Ejemplo: selección de ubicación de planta evaluando costo de mano de obra (25%), materia prima (20%), transporte (20%), accesibilidad a clientes (15%), energía (10%), impacto ambiental (10%).</li>
+          <li>Al menos se recomiendan 4 criterios para un análisis robusto.</li>
+        </ul>
+      </div>
+      <div class="card reflexion">
+        <h4>🔎 Reflexión</h4>
+        <p>El método scoring transforma decisiones complejas y subjetivas en procesos transparentes y replicables: una de las competencias más valoradas en la práctica de la ingeniería industrial. En la vida laboral, constantemente se deben tomar decisiones sobre proveedores, ubicaciones, tecnologías o procesos donde coexisten múltiples criterios con distinta importancia. Dominar esta herramienta no solo mejora la calidad de las decisiones, sino que también facilita la comunicación y justificación de esas decisiones ante equipos directivos y clientes.</p>
+      </div>
+      <div class="card retro">
+        <h4>💬 Retroalimentación</h4>
+        <p>El error más común en el scoring es asignar ponderaciones sin justificarlas. Practica primero establecer claramente por qué un criterio vale más que otro (razón de negocio, impacto en el cliente, restricción legal). Asegúrate que la suma de ponderaciones sea exactamente 100%. Al evaluar criterios, define explícitamente qué puntaje corresponde a cada nivel de desempeño (tabla de escala) antes de calificar; de lo contrario, la evaluación será inconsistente entre miembros del equipo.</p>
+      </div>
+    </div>
+
+    <div class="quiz-card" id="quiz-s07">
+      <h4>🧩 Quiz Interactivo – Semana 7</h4>
+
+      <div class="quiz-question" data-q="0">
+        <p>1. ¿Cuántos pasos tiene el método scoring según la guía de la semana 7?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>4</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>5</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>6</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>7</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. Los 7 pasos son: meta → alternativas → criterios → ponderación → evaluación → cálculo → selección.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El método tiene 7 pasos: identificar meta, alternativas, criterios, asignar ponderación, evaluar, calcular score y seleccionar.</div>
+      </div>
+
+      <div class="quiz-question" data-q="1">
+        <p>2. En la empresa ABC del ejemplo, ¿cuál criterio tiene la mayor ponderación?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Accesibilidad a los clientes (15%)</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Costo de transporte (20%)</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Costo de mano de obra (25%)</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Impacto medioambiental (10%)</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El costo de mano de obra tiene la mayor ponderación con un 25% en el ejemplo de la empresa ABC.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El criterio con mayor ponderación es el costo de mano de obra (25%) en el ejemplo de la empresa ABC.</div>
+      </div>
+
+      <div class="quiz-question" data-q="2">
+        <p>3. Si el criterio es "tiempo de implementación", ¿qué puntaje se le asigna a la alternativa que se demora más tiempo en implementar?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>El puntaje más bajo (1), porque más tiempo es peor</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El puntaje más alto (5), porque más tiempo significa más calidad</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El puntaje promedio (3) siempre</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>No se puede evaluar el tiempo con scoring</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. Siempre se asigna mayor puntaje a lo que representa una mejor opción; tardar más tiempo es peor, por lo tanto recibe el menor puntaje.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. En scoring, el mayor puntaje corresponde a la mejor opción. Si tardar más es peor, esa alternativa recibe puntaje 1 (el más bajo).</div>
+      </div>
+
+      <div class="quiz-question" data-q="3">
+        <p>4. ¿Cuántos criterios mínimos se recomiendan para un análisis de scoring robusto?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>1 criterio</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>2 criterios</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>3 criterios</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Al menos 4 criterios</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. La guía recomienda al menos 4 criterios para asegurar un análisis suficientemente completo y equilibrado.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Se recomienda usar al menos 4 criterios para que el análisis tenga suficiente robustez y no sea sesgado.</div>
+      </div>
+
+      <div class="quiz-question" data-q="4">
+        <p>5. ¿Cuál es el resultado final que entrega el método scoring?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Un diagrama de flujo del proceso</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El costo exacto de cada alternativa</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>La alternativa con el mayor score ponderado, que es la que se selecciona</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Una lista de riesgos asociados a cada alternativa</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El scoring entrega una puntuación total (suma ponderada) por alternativa y se selecciona la que obtiene el mayor score.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El resultado es la alternativa con mayor score (suma ponderada), que es la seleccionada como la mejor opción.</div>
+      </div>
+
+      <div class="quiz-score" id="score-s07"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════ SEMANA 8 ══════════════ -->
+  <section class="week-section" id="s08">
+    <div class="week-header">
+      <span class="week-badge">Semana 8</span>
+      <h3>Proceso de Ideación y Revisión de Propuestas</h3>
+    </div>
+    <hr class="week-divider">
+    <div class="card-grid">
+      <div class="card">
+        <h4>📋 Resumen</h4>
+        <ul>
+          <li>La <strong>ideación</strong> busca encontrar soluciones preliminares a los problemas del segmento de usuarios detectados en etapas previas.</li>
+          <li><strong>4 pasos del proceso de ideación:</strong> (1) Encontrar soluciones preliminares (Brainstorming, Benchmarking), (2) Realizar bosquejos generales, (3) Compartir y retroalimentar, (4) Seleccionar la mejor idea (pensamiento convergente).</li>
+          <li>El <strong>Brainstorming</strong> busca generar la mayor cantidad de ideas posibles; ninguna idea es descartada en esta etapa (pensamiento divergente).</li>
+          <li>El <strong>Benchmarking</strong> identifica soluciones existentes en otros contextos que pueden extrapolarse.</li>
+          <li>La <strong>herramienta de revisión</strong> (semana 8) lista 10 ítems para asegurar que la propuesta esté vinculada al problema, sea original, incorpore tecnología, identifique el ODS correspondiente y justifique la selección con scoring.</li>
+        </ul>
+      </div>
+      <div class="card reflexion">
+        <h4>🔎 Reflexión</h4>
+        <p>La ideación es la etapa más creativa del proceso ingenieril y la que más estudiantes subestiman. El error habitual es ir demasiado rápido a la "solución obvia" sin explorar el espacio de posibilidades. Un ingeniero industrial que domina el pensamiento divergente antes de converger hacia una solución toma mejores decisiones, descubre enfoques disruptivos y genera valor diferencial. La calidad de la solución final depende directamente de la riqueza del proceso de ideación previo.</p>
+      </div>
+      <div class="card retro">
+        <h4>💬 Retroalimentación</h4>
+        <p>Verifica tu propuesta contra los 10 ítems de la herramienta de revisión de la semana 8. Los más frecuentemente descuidados son: la incorporación explícita de tecnología (¿qué hardware o software se usa?) y la justificación del ODS vinculado. También revisa que la propuesta describa el proceso, componentes y funcionalidad esperada con detalle suficiente, y que haya una descripción clara del usuario principal y su contexto específico.</p>
+      </div>
+    </div>
+
+    <div class="quiz-card" id="quiz-s08">
+      <h4>🧩 Quiz Interactivo – Semana 8</h4>
+
+      <div class="quiz-question" data-q="0">
+        <p>1. ¿Qué técnica del proceso de ideación busca generar la mayor cantidad de ideas posibles sin descartar ninguna?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Benchmarking</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Brainstorming</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Role Playing</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Storyboard</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El Brainstorming (tormenta de ideas) se basa en el pensamiento divergente: generar la mayor cantidad posible de ideas sin juzgarlas.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Esa es la descripción del Brainstorming: generar ideas sin filtros ni juicios (pensamiento divergente).</div>
+      </div>
+
+      <div class="quiz-question" data-q="1">
+        <p>2. ¿Qué tipo de pensamiento se aplica al SELECCIONAR la mejor idea entre todas las generadas?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Pensamiento divergente</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Pensamiento convergente</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Pensamiento lateral</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Pensamiento abstracto</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El pensamiento convergente es el que permite reducir y filtrar las opciones hasta seleccionar la mejor solución.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Al seleccionar la mejor idea se aplica el pensamiento convergente (reducir opciones), mientras que al generar ideas se usa el divergente.</div>
+      </div>
+
+      <div class="quiz-question" data-q="2">
+        <p>3. Según la herramienta de revisión de propuestas (semana 8), ¿cuántos ítems se deben verificar?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>5</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>7</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>10</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>12</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. La herramienta de revisión lista 10 ítems para asegurar que la propuesta cumpla los estándares de la asignatura.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. La herramienta de revisión de propuestas de la semana 8 contiene exactamente 10 ítems a verificar.</div>
+      </div>
+
+      <div class="quiz-question" data-q="3">
+        <p>4. ¿Qué hace el Benchmarking en el proceso de ideación?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Evalúa cuál alternativa es la más barata</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Identifica soluciones existentes en otros contextos que podrían extrapolarse al problema actual</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Elimina las ideas que no son originales</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Calcula el tiempo de implementación de cada idea</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El Benchmarking busca qué soluciones ya existen en otros contextos o naturalezas que puedan adaptarse al problema en estudio.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El Benchmarking identifica soluciones ya existentes en otros ámbitos que podrían extrapolarse o adaptarse al problema actual.</div>
+      </div>
+
+      <div class="quiz-question" data-q="4">
+        <p>5. ¿Cuál es el propósito de la etapa "Compartir y Retroalimentar" dentro del proceso de ideación?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Presentar la solución final al docente</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Revisar las ideas con el grupo, generar discusión e iteración para mejorarlas, combinarlas o eliminar elementos</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Escribir el informe final del proyecto</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Calcular el costo de implementación de cada idea</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. Esta etapa genera discusión grupal para refinar las ideas: qué gustó, qué agregar, qué combinar, qué eliminar.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. La etapa de compartir y retroalimentar sirve para que el grupo discuta, itere y mejore las ideas antes de seleccionar la mejor.</div>
+      </div>
+
+      <div class="quiz-score" id="score-s08"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════ SEMANA 9 ══════════════ -->
+  <section class="week-section" id="s09">
+    <div class="week-header">
+      <span class="week-badge">Semana 9</span>
+      <h3>Guía para Desarrollar el Prototipo</h3>
+    </div>
+    <hr class="week-divider">
+    <div class="card-grid">
+      <div class="card">
+        <h4>📋 Resumen</h4>
+        <ul>
+          <li>Un <strong>prototipo</strong> es una representación concreta (total o parcial) de la solución, con bajo costo, para obtener retroalimentación temprana.</li>
+          <li><strong>4 pasos del prototipado:</strong> (1) Investigar (conocer al usuario), (2) Conceptualizar (construir la versión reducida), (3) Compartir y retroalimentar con usuarios, (4) Desechar si no funciona.</li>
+          <li>Tipos de prototipo: <strong>Dibujo</strong> (pantallas en papel), <strong>Maqueta</strong> (materiales a mano: cartón, plastilina, LEGO), <strong>Storyboard</strong> (viñetas del flujo del usuario), <strong>Role Playing</strong> (simulación de uso), <strong>Storytelling</strong> (relato del funcionamiento).</li>
+          <li>Un buen prototipo permite testear ideas, entender la relación con el usuario y mejorar la experiencia.</li>
+          <li>La validación con usuarios reales es fundamental; el prototipo se construye para aprender, no para conservar.</li>
+        </ul>
+      </div>
+      <div class="card reflexion">
+        <h4>🔎 Reflexión</h4>
+        <p>El prototipado es la materialización del pensamiento ingenieril: pasa de lo abstracto a lo concreto de forma rápida y económica. La clave es entender que un prototipo no es el producto final, sino una herramienta de aprendizaje. Esto implica un cambio de mentalidad importante: el ingeniero debe estar dispuesto a desechar lo que construyó si los usuarios lo rechazan. Esta actitud de "falla rápido, aprende rápido" es la que permite llegar a soluciones robustas y relevantes en el tiempo y presupuesto correctos.</p>
+      </div>
+      <div class="card retro">
+        <h4>💬 Retroalimentación</h4>
+        <p>Antes de construir tu prototipo, define claramente con el Canvas de Prototipo Experimental: cómo lo pones en marcha (diseño), qué hipótesis responde y cómo medirás los resultados. Al compartir el prototipo con usuarios, prioriza escuchar sobre defender: si el usuario no entiende cómo usarlo sin explicación, el diseño necesita mejoras. Documenta cada comentario recibido; esa información es la materia prima para la siguiente versión del prototipo.</p>
+      </div>
+    </div>
+
+    <div class="quiz-card" id="quiz-s09">
+      <h4>🧩 Quiz Interactivo – Semana 9</h4>
+
+      <div class="quiz-question" data-q="0">
+        <p>1. ¿Cuál es el propósito principal de construir un prototipo?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Presentar el producto terminado al cliente</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Obtener retroalimentación temprana, testear ideas y mejorar la solución antes de la implementación final</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Calcular el precio final del producto</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Reemplazar el proceso de ideación</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El prototipo es una herramienta de aprendizaje: permite obtener retroalimentación de usuarios y mejorar la solución antes de invertir en la implementación final.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El prototipo sirve para aprender y mejorar: testear ideas, obtener retroalimentación y validar la solución con usuarios reales.</div>
+      </div>
+
+      <div class="quiz-question" data-q="1">
+        <p>2. ¿Qué técnica de prototipado usa "viñetas" para representar los pasos que seguirá el cliente desde que le surge el problema hasta que usa el producto?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Role Playing</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Maqueta</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Storyboard</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Storytelling</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El Storyboard representa mediante viñetas el flujo del usuario desde el problema hasta el uso del producto, permitiendo identificar dificultades de interacción.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El Storyboard usa viñetas para representar paso a paso el flujo del usuario. El Role Playing es una simulación y el Storytelling usa narración.</div>
+      </div>
+
+      <div class="quiz-question" data-q="2">
+        <p>3. ¿Por qué la guía dice que es importante "salir a la calle" con el prototipo?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Para mostrar el producto a posibles inversores</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Para validar el prototipo con usuarios reales; sin esa validación, el prototipo no tiene sentido</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Para cumplir con los requisitos de la asignatura</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Para fotografiar el prototipo en distintos ambientes</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. Sin validación con usuarios reales el prototipo no cumple su función; se construye para aprender de las personas, no para confirmarse a uno mismo.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. La validación con usuarios reales es imprescindible: un prototipo sin esa validación no sirve, porque no confirma si la solución realmente resuelve el problema.</div>
+      </div>
+
+      <div class="quiz-question" data-q="3">
+        <p>4. ¿Cuál es el 4.º paso del proceso de prototipado según la guía?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Investigar al usuario</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Conceptualizar el prototipo</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Compartir y retroalimentar</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Desechar</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El 4.º paso es desechar el prototipo una vez usado para aprender. No tiene sentido conservar algo que se construyó solo para aprender y reflexionar.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Los 4 pasos son: Investigar → Conceptualizar → Compartir y retroalimentar → Desechar. El último paso es desechar, porque el prototipo se construye para aprender.</div>
+      </div>
+
+      <div class="quiz-question" data-q="4">
+        <p>5. ¿Cuál técnica de prototipado consiste en asignar roles y recrear el uso del producto o servicio como si fuera una simulación?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Storyboard</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Storytelling</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Maqueta</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Role Playing</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El Role Playing asigna roles a los participantes y simula el uso del producto o servicio, permitiendo identificar problemas de interacción de forma vivencial.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El Role Playing es la simulación donde se asignan roles y se recrea el uso del producto/servicio.</div>
+      </div>
+
+      <div class="quiz-score" id="score-s09"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════ SEMANA 10 ══════════════ -->
+  <section class="week-section" id="s10">
+    <div class="week-header">
+      <span class="week-badge">Semana 10</span>
+      <h3>Lienzo MVP (Minimum Viable Product)</h3>
+    </div>
+    <hr class="week-divider">
+    <div class="card-grid">
+      <div class="card">
+        <h4>📋 Resumen</h4>
+        <ul>
+          <li>El <strong>MVP</strong> (Producto Mínimo Viable) es la versión más básica de una solución que permite validar hipótesis de negocio con el mínimo esfuerzo y costo.</li>
+          <li>El <strong>Canvas MVP</strong> organiza 6 elementos: Segmentos de personas, Propuesta/visión del MVP esperado, Funcionalidades, Viajes de usuario, Métricas para validación de hipótesis de negocio, y Costo y cronograma.</li>
+          <li>El propósito central: <em>"No pierda tiempo, dinero y esfuerzo creando el producto incorrecto. ¡Valide pronto su idea y construya su MVP!"</em></li>
+          <li>El MVP se diferencia del prototipo en que ya es una versión funcional (aunque mínima) que puede ser usada por usuarios reales.</li>
+          <li>Las métricas de validación permiten decidir si la solución funciona o si se debe pivotar.</li>
+        </ul>
+      </div>
+      <div class="card reflexion">
+        <h4>🔎 Reflexión</h4>
+        <p>El concepto de MVP es quizás uno de los aportes más importantes del pensamiento Lean al mundo de la ingeniería y los negocios. Para un futuro ingeniero industrial, entender que no siempre es necesario (ni recomendable) construir la solución completa antes de validar el concepto puede significar la diferencia entre un proyecto exitoso y uno que fracasa tras años de inversión. El MVP enseña humildad metodológica: el mercado y los usuarios son los jueces finales, no el equipo que diseñó la solución.</p>
+      </div>
+      <div class="card retro">
+        <h4>💬 Retroalimentación</h4>
+        <p>Al completar el Canvas MVP, el desafío mayor suele ser definir las <em>funcionalidades mínimas</em>: ¿cuál es el núcleo irrenunciable de la solución? Practica eliminando funcionalidades hasta llegar a lo esencial que resuelve el problema central. Define métricas SMART (específicas, medibles, alcanzables, relevantes, temporales) para cada hipótesis de negocio. Sin métricas claras, no sabrás si el MVP fue exitoso o no.</p>
+      </div>
+    </div>
+
+    <div class="quiz-card" id="quiz-s10">
+      <h4>🧩 Quiz Interactivo – Semana 10</h4>
+
+      <div class="quiz-question" data-q="0">
+        <p>1. ¿Qué significa MVP en el contexto del Canvas de la semana 10?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Máximo Valor del Proyecto</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Minimum Viable Product (Producto Mínimo Viable)</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Modelo de Validación de Productos</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Mapa Visual del Proyecto</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. MVP es Minimum Viable Product: la versión más básica que permite validar hipótesis de negocio con el menor costo y esfuerzo.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. MVP significa Minimum Viable Product (Producto Mínimo Viable): la versión más básica para validar una hipótesis de negocio.</div>
+      </div>
+
+      <div class="quiz-question" data-q="1">
+        <p>2. ¿Cuántos elementos principales incluye el Canvas MVP?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>4</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>5</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>6</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>9</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El Canvas MVP tiene 6 elementos: Segmentos, Propuesta/visión, Funcionalidades, Viajes de usuario, Métricas y Costo/cronograma.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El Canvas MVP incluye 6 elementos: Segmentos de personas, Propuesta del MVP, Funcionalidades, Viajes de usuario, Métricas y Costo/cronograma.</div>
+      </div>
+
+      <div class="quiz-question" data-q="2">
+        <p>3. ¿Cuál es el propósito central del MVP según el material de la semana 10?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Lanzar el producto completo al mercado lo antes posible</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Validar la idea pronto para no perder tiempo, dinero y esfuerzo creando el producto incorrecto</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Convencer a inversionistas con una presentación visual</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Reemplazar el proceso de ideación y prototipado</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El lema del Canvas MVP lo dice claramente: "No pierda tiempo, dinero y esfuerzo creando el producto incorrecto. ¡Valide pronto su idea!"</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El MVP busca validar pronto la idea para evitar desperdiciar recursos construyendo algo que nadie necesita o quiere.</div>
+      </div>
+
+      <div class="quiz-question" data-q="3">
+        <p>4. ¿En qué se diferencia principalmente un MVP de un prototipo?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El MVP es más costoso y tardado de hacer</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>El MVP es una versión funcional (aunque mínima) que puede usarse en el mundo real; el prototipo es una representación para aprender</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>No hay diferencia, son exactamente lo mismo</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El prototipo es funcional y el MVP es solo un dibujo</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El MVP ya es una versión funcional mínima que puede entregarse a usuarios reales, mientras que el prototipo es una representación para obtener retroalimentación y aprender.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El MVP es funcional (mínimo pero real), mientras que el prototipo es principalmente una herramienta de aprendizaje y validación conceptual.</div>
+      </div>
+
+      <div class="quiz-question" data-q="4">
+        <p>5. ¿Qué elemento del Canvas MVP permite decidir si la solución funciona o si se debe cambiar de estrategia?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Costo y cronograma</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Segmentos de personas</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Métricas para la validación de hipótesis de negocio</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Funcionalidades</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. Las métricas de validación son las que indican si las hipótesis de negocio se cumplen o si hay que pivotar la estrategia.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Las métricas de validación de hipótesis son las que permiten evaluar si el MVP funciona y decidir si continuar o cambiar de dirección.</div>
+      </div>
+
+      <div class="quiz-score" id="score-s10"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════ SEMANA 11 ══════════════ -->
+  <section class="week-section" id="s11">
+    <div class="week-header">
+      <span class="week-badge">Semana 11</span>
+      <h3>Proyecto Final de Ingeniería – Informe Escrito</h3>
+    </div>
+    <hr class="week-divider">
+    <div class="card-grid">
+      <div class="card">
+        <h4>📋 Resumen</h4>
+        <ul>
+          <li>El Proyecto Final integra todas las etapas del <strong>Design Thinking</strong>: Empatizar, Definir, Idear, Prototipar, Testear.</li>
+          <li>El informe debe abordar: Portada, Índice, Introducción, Objetivos (1 general + 3 específicos), Contexto del problema, Causas, Empatizar (Mapa de empatía + CJM), Definir, Idear (scoring), Prototipar, Testear, MVP Canvas y Conclusión.</li>
+          <li>El problema debe vincularse a un <strong>ODS de la Agenda 2030</strong> con justificación correcta.</li>
+          <li>Etapa de <strong>Testeo</strong>: usa técnicas como N.U.F. (Novedad, Utilidad, Factibilidad) y pruebas de usabilidad para evaluar la solución con usuarios reales.</li>
+          <li>Todas las fuentes deben citarse en <strong>norma APA</strong>; las imágenes y figuras deben tener referencia y fuente.</li>
+          <li>Pesa un 30% de la nota de presentación.</li>
+        </ul>
+      </div>
+      <div class="card reflexion">
+        <h4>🔎 Reflexión</h4>
+        <p>El Proyecto Final representa la síntesis completa del trimestre: integrar pensamiento analítico, empatía con el usuario, creatividad en la ideación, rigor en la selección de alternativas y capacidad de comunicación escrita. Para el ingeniero en formación, este ejercicio simula exactamente lo que enfrentará en su vida profesional: resolver un problema real, con restricciones, en equipo, con evidencia y con impacto social medible. El nivel de detalle y profundidad del informe refleja directamente el nivel de madurez del equipo como futuros ingenieros.</p>
+      </div>
+      <div class="card retro">
+        <h4>💬 Retroalimentación</h4>
+        <p>Revisa que tu informe incluya datos cuantitativos en el contexto del problema (estadísticas, cifras reales de fuentes confiables). El área más frecuentemente débil es la etapa de Testeo: no basta con describir el prototipo; se debe mostrar claramente qué feedback se recibió, cómo cambió la segunda versión y cuáles problemas se corrigieron. Usa la técnica N.U.F. para evaluar numéricamente tus alternativas de solución y documenta los resultados de las pruebas de usabilidad con tus usuarios.</p>
+      </div>
+    </div>
+
+    <div class="quiz-card" id="quiz-s11">
+      <h4>🧩 Quiz Interactivo – Semana 11</h4>
+
+      <div class="quiz-question" data-q="0">
+        <p>1. ¿Cuánto pondera el Proyecto Final en la nota de presentación de la asignatura?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>20%</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>30%</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>40%</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>50%</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El Proyecto Final (Sumativa 6, semana 11) pondera un 30% de la nota de presentación.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. El Proyecto Final pondera un 30% de la nota de presentación de la asignatura.</div>
+      </div>
+
+      <div class="quiz-question" data-q="1">
+        <p>2. ¿Cuántos objetivos específicos debe incluir el informe del Proyecto Final?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>1</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>2</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>3</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>5</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El informe debe incluir 1 objetivo general y 3 objetivos específicos que tributen a él.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. Son 3 objetivos específicos que deben tributar al objetivo general del proyecto.</div>
+      </div>
+
+      <div class="quiz-question" data-q="2">
+        <p>3. ¿Qué significa N.U.F. en la técnica de evaluación de ideas del testeo?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Necesidad, Urgencia, Fidelidad</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Novedad, Utilidad, Factibilidad</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Número, Usuario, Funcionalidad</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Negocio, Usabilidad, Funcionalidad</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. N.U.F. evalúa: Novedad (¿qué tan nueva es la idea?), Utilidad (¿qué tan útil?) y Factibilidad (¿es posible implementarla?).</div>
+        <div class="quiz-feedback err">❌ Incorrecto. N.U.F. significa Novedad, Utilidad, Factibilidad: los tres parámetros para evaluar ideas durante la etapa de testeo.</div>
+      </div>
+
+      <div class="quiz-question" data-q="3">
+        <p>4. ¿A qué documento internacional debe vincularse la problemática del proyecto?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El Índice de Desarrollo Humano del PNUD</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Los ODS de la Agenda 2030 de la ONU</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El Acuerdo de París sobre cambio climático</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El Plan Nacional de Desarrollo de Chile</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El proyecto debe vincularse a uno de los 17 Objetivos de Desarrollo Sostenible (ODS) de la Agenda 2030 de la ONU.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. La problemática debe vincularse a los ODS de la Agenda 2030, aprobada por la ONU, que plantea 17 objetivos para transformar el mundo.</div>
+      </div>
+
+      <div class="quiz-question" data-q="4">
+        <p>5. ¿Qué elementos debe incluir la sección "Testar" del informe final?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Solo la descripción del prototipo original</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El listado de referencias APA</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Los comentarios del testeo con usuarios, los cambios realizados y la nueva versión del prototipo</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>La portada y el índice del informe</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. La sección de Testeo debe mostrar el feedback de los usuarios, qué cambios se hicieron y cómo quedó la segunda versión del prototipo.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. La sección Testar debe incluir los comentarios obtenidos del testeo con usuarios y la segunda versión del prototipo con los cambios aplicados.</div>
+      </div>
+
+      <div class="quiz-score" id="score-s11"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════ SEMANA 13 ══════════════ -->
+  <section class="week-section" id="s13">
+    <div class="week-header">
+      <span class="week-badge">Semana 13</span>
+      <h3>Examen – Presentación Oral del Proyecto Final</h3>
+    </div>
+    <hr class="week-divider">
+    <div class="card-grid">
+      <div class="card">
+        <h4>📋 Resumen</h4>
+        <ul>
+          <li>La presentación oral corresponde al <strong>Examen (Sumativa 7)</strong> y pondera el 30% de la nota final de la asignatura. No hay eximición.</li>
+          <li><strong>Estructura de la presentación:</strong> Portada → Introducción (contexto + ODS) → Objetivos → Etapas del Design Thinking (Empatizar, Definir, Idear, Prototipar, Testear) → Lienzo MVP → Conclusiones → Referencias.</li>
+          <li>En la etapa <strong>Definir</strong> se presenta el Diagrama de Ishikawa para identificar causas raíz del problema.</li>
+          <li>En <strong>Idear</strong> se muestran todas las alternativas y el scoring completo con todas sus etapas.</li>
+          <li>En <strong>Testear</strong> se muestran los comentarios del testeo y la segunda versión del prototipo explicando todos los cambios realizados.</li>
+          <li>El material audiovisual debe ser claro, visual y autoexplicativo.</li>
+        </ul>
+      </div>
+      <div class="card reflexion">
+        <h4>🔎 Reflexión</h4>
+        <p>La presentación oral es el momento en que el ingeniero demuestra no solo lo que sabe, sino cómo lo comunica. La capacidad de sintetizar meses de trabajo en una presentación clara, bien argumentada y visualmente efectiva es una de las competencias más demandadas en el mercado laboral de la ingeniería. Los mejores ingenieros no solo resuelven problemas: los comunican de forma que otros puedan entenderlos, apoyarlos e implementarlos. Este examen es el primer gran entrenamiento de esa habilidad profesional.</p>
+      </div>
+      <div class="card retro">
+        <h4>💬 Retroalimentación</h4>
+        <p>Practica la presentación al menos dos veces antes del examen, cronometrando el tiempo. Los errores más comunes son: leer las diapositivas en vez de explicarlas, no tener un hilo conductor claro entre las etapas del Design Thinking, y mostrar el prototipo sin explicar cómo cambió entre la primera y segunda versión. Asegúrate de que cada integrante del grupo domine todas las secciones, no solo la que le tocó presentar; el docente puede preguntar a cualquiera sobre cualquier parte del proyecto.</p>
+      </div>
+    </div>
+
+    <div class="quiz-card" id="quiz-s13">
+      <h4>🧩 Quiz Interactivo – Semana 13</h4>
+
+      <div class="quiz-question" data-q="0">
+        <p>1. ¿Cuánto pondera la presentación oral (Examen – Sumativa 7) en la nota final de la asignatura?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>20%</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>30%</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>40%</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>50%</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. La presentación oral (examen) pondera un 30% de la nota final de la asignatura.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. La presentación oral pondera un 30% de la nota final. No hay eximición; todos deben presentarse.</div>
+      </div>
+
+      <div class="quiz-question" data-q="1">
+        <p>2. ¿Qué herramienta se usa en la etapa "Definir" de la presentación para identificar las causas raíz del problema?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Customer Journey Map</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Canvas MVP</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Diagrama de Ishikawa</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Mapa de Empatía</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El Diagrama de Ishikawa (o espina de pescado) es la herramienta para identificar y visualizar las causas raíz del problema en la etapa Definir.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. En la etapa Definir se usa el Diagrama de Ishikawa para identificar las causas raíz del problema a abordar.</div>
+      </div>
+
+      <div class="quiz-question" data-q="2">
+        <p>3. ¿Qué debe mostrarse en la etapa "Testear" de la presentación oral?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Solo el prototipo original sin cambios</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Los comentarios del testeo y la segunda versión del prototipo describiendo todos los cambios realizados</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El listado de fuentes APA</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>El Canvas MVP solamente</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. En Testear se muestran los comentarios obtenidos del testeo con usuarios y la segunda versión del prototipo con todos los cambios aplicados explicados en detalle.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. En Testear deben mostrarse los comentarios del testeo con usuarios y la segunda versión del prototipo describiendo todos los cambios realizados.</div>
+      </div>
+
+      <div class="quiz-question" data-q="3">
+        <p>4. ¿Qué ocurre con los estudiantes que no se presentan al examen oral?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Quedan eximidos y se promedian las otras notas</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Tienen una semana adicional para presentar</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Reciben nota mínima (1,0) en el examen</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Presentan individualmente en otra fecha</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. No hay eximición en esta asignatura. La no presentación al examen oral implica nota mínima (1,0).</div>
+        <div class="quiz-feedback err">❌ Incorrecto. No hay eximición; todo estudiante debe presentarse al examen. La no presentación aplica nota mínima de 1,0.</div>
+      </div>
+
+      <div class="quiz-question" data-q="4">
+        <p>5. ¿En qué semana se entregó la primera entrega del proyecto durante el trimestre?</p>
+        <div class="quiz-options">
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Semana 3</div>
+          <div class="quiz-option" data-correct="true"  onclick="answer(this)"><span class="icon"></span>Semana 5</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Semana 7</div>
+          <div class="quiz-option" data-correct="false" onclick="answer(this)"><span class="icon"></span>Semana 9</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correcto. El documento de la semana 13 menciona explícitamente que hubo dos entregas previas: la primera en semana 5 y la segunda (Proyecto Final) en semana 11.</div>
+        <div class="quiz-feedback err">❌ Incorrecto. La primera entrega del proyecto fue en la semana 5. La segunda fue el Proyecto Final en la semana 11, y el examen oral es en la semana 13.</div>
+      </div>
+
+      <div class="quiz-score" id="score-s13"></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Tópicos de Ingeniería – ATDF101 · Universidad Andrés Bello · 1er Trimestre</p>
+    <p style="margin-top:6px;">Material de estudio generado con fines académicos · Todos los contenidos provienen de los apuntes oficiales de la asignatura</p>
+  </footer>
+
+</main>
+
+<!-- ════════════════════════ JAVASCRIPT ════════════════════════ -->
+<script>
+  // ── Active sidebar link ──
+  function setActive(el) {
+    document.querySelectorAll('#sidebar nav a').forEach(a => a.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ── Intersection Observer for sidebar highlight ──
+  const sections = document.querySelectorAll('.week-section');
+  const navLinks = document.querySelectorAll('#sidebar nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => {
+          a.classList.remove('active');
+          if (a.getAttribute('href') === '#' + entry.target.id) {
+            a.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // ── Quiz logic ──
+  function answer(optionEl) {
+    const questionEl = optionEl.closest('.quiz-question');
+    if (questionEl.dataset.answered) return;
+    questionEl.dataset.answered = 'true';
+
+    const isCorrect = optionEl.dataset.correct === 'true';
+    const options = questionEl.querySelectorAll('.quiz-option');
+    const feedbacks = questionEl.querySelectorAll('.quiz-feedback');
+
+    options.forEach(opt => {
+      opt.classList.add('disabled');
+      if (opt.dataset.correct === 'true') {
+        opt.classList.add('correct');
+        opt.querySelector('.icon').textContent = '✅';
+      }
+    });
+
+    if (!isCorrect) {
+      optionEl.classList.add('incorrect');
+      optionEl.querySelector('.icon').textContent = '❌';
+      feedbacks[1].classList.add('show');
+    } else {
+      feedbacks[0].classList.add('show');
+    }
+
+    // Check if all questions in this quiz are answered
+    const quizCard = questionEl.closest('.quiz-card');
+    const allQuestions = quizCard.querySelectorAll('.quiz-question');
+    const answeredCount = quizCard.querySelectorAll('.quiz-question[data-answered]').length;
+
+    if (answeredCount === allQuestions.length) {
+      showScore(quizCard);
+    }
+  }
+
+  function showScore(quizCard) {
+    const correct = quizCard.querySelectorAll('.quiz-option.correct:not(.incorrect)').length;
+    const total = quizCard.querySelectorAll('.quiz-question').length;
+    const scoreEl = quizCard.querySelector('.quiz-score');
+
+    let msg = '';
+    if (correct === total) msg = '🏆 ¡Perfecto! Dominaste todos los conceptos de esta semana.';
+    else if (correct >= total * 0.8) msg = '👏 ¡Muy bien! Tienes un sólido manejo del tema.';
+    else if (correct >= total * 0.6) msg = '📚 Bien, pero hay conceptos que vale la pena repasar.';
+    else msg = '🔄 Revisa nuevamente el contenido de esta semana antes de continuar.';
+
+    scoreEl.innerHTML = `<strong>${correct}/${total}</strong> respuestas correctas &nbsp;|&nbsp; ${msg}
+      <br><button class="btn-reset" onclick="resetQuiz(this)">Reintentar quiz</button>`;
+    scoreEl.classList.add('show');
+  }
+
+  function resetQuiz(btn) {
+    const quizCard = btn.closest('.quiz-card');
+    quizCard.querySelectorAll('.quiz-question').forEach(q => {
+      delete q.dataset.answered;
+      q.querySelectorAll('.quiz-option').forEach(opt => {
+        opt.classList.remove('correct', 'incorrect', 'disabled');
+        opt.querySelector('.icon').textContent = '';
+      });
+      q.querySelectorAll('.quiz-feedback').forEach(f => f.classList.remove('show'));
+    });
+    const scoreEl = quizCard.querySelector('.quiz-score');
+    scoreEl.classList.remove('show');
+    scoreEl.innerHTML = '';
+  }
+</script>
+</body>
+</html>
