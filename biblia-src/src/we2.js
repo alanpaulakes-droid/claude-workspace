@@ -112,12 +112,12 @@
   { title:"9. Repaso para la prueba: mapa de indicadores y preguntas tipo",
     res:"<p>Mapa de indicadores de logro con la unidad donde se estudia cada uno, y preguntas de selección con su pauta.</p>",
     z:{ s:tb(["Indicador", "Qué te piden", "Dónde estudiarlo"], [
-          ["1.1", "Reconocer elementos del desarrollo de la ingeniería y conceptos", "Unidad 5"],
-          ["1.2", "Distinguir ideas de negocio con herramientas de ingeniería", "Unidad 6"],
-          ["1.3", "Objetivos SMART e indicadores", "Unidad 7"],
-          ["2.1", "Elementos de un modelo de programación lineal", "Unidades 1 y 8"],
-          ["2.2", "Representar modelos lineales de sistemas productivos y de servicios", "Unidades 1, 2 y 8"],
-          ["2.3", "Representar modelos para distintos problemas de las organizaciones", "Unidades 4 y 8"]]) +
+          ["1.1", "Reconocer elementos del desarrollo de la ingeniería y conceptos", "Unidad 1"],
+          ["1.2", "Distinguir ideas de negocio con herramientas de ingeniería", "Unidad 2"],
+          ["1.3", "Objetivos SMART e indicadores", "Unidad 3"],
+          ["2.1", "Elementos de un modelo de programación lineal", "Unidades 4 y 7"],
+          ["2.2", "Representar modelos lineales de sistemas productivos y de servicios", "Unidades 4, 5, 6 y 7"],
+          ["2.3", "Representar modelos para distintos problemas de las organizaciones", "Unidades 7 y 8"]]) +
         "<p><b>Cómo responder una prueba de selección de modelación:</b> (1) lee el enunciado y marca qué se decide, qué se busca y qué limita; (2) antes de mirar las alternativas, escribe tú la variable, el objetivo y una restricción; (3) descarta alternativas con unidades que no calzan o con el signo de desigualdad equivocado; (4) si piden el óptimo de dos variables, evalúa Z en todos los vértices.</p>",
       q:[mc("Una fábrica gana $ 40 por unidad de A y $ 30 por unidad de B. A usa 2 h de máquina y B usa 1 h; hay 100 h. La función objetivo es:", ["mín Z = 2x<sub>A</sub> + x<sub>B</sub>", "máx Z = 40x<sub>A</sub> + 30x<sub>B</sub>", "máx Z = 2x<sub>A</sub> + x<sub>B</sub>", "máx Z = 40 + 30"], 1, "Se maximiza la utilidad: ganancia unitaria × cantidad."),
          mc("En el mismo problema, la restricción de máquina es:", ["2x<sub>A</sub> + x<sub>B</sub> ≥ 100", "40x<sub>A</sub> + 30x<sub>B</sub> ≤ 100", "2x<sub>A</sub> + x<sub>B</sub> ≤ 100", "x<sub>A</sub> + x<sub>B</sub> ≤ 100"], 2, "Horas usadas ≤ horas disponibles."),
@@ -309,16 +309,16 @@
   { title:"14. Repaso para la prueba: mapa de indicadores y preguntas tipo",
     res:"<p>Mapa de indicadores de logro con la unidad donde se estudia cada uno, y preguntas integradas con su pauta.</p>",
     z:{ s:tb(["Indicador", "Qué te piden", "Dónde estudiarlo"], [
-          ["1.1", "Balancear ecuaciones (masa y carga)", "Unidades 1 y 5"],
-          ["1.2", "Pesos atómicos y moleculares", "Unidad 6"],
-          ["1.3", "Cantidades de reactivos y productos", "Unidades 1 y 7"],
-          ["2.1", "Características de los gases ideales en problemas ambientales", "Unidad 8"],
-          ["2.2", "Presión, volumen y temperatura (leyes de los gases)", "Unidad 8"],
-          ["2.3", "Atmósfera y cambio climático", "Unidad 9"],
-          ["2.4", "Contaminantes, control y normativa", "Unidades 2 y 10"],
-          ["3.1", "Intercambios de energía en reacciones", "Unidad 11"],
-          ["3.2", "Fuentes de energía y termodinámica", "Unidad 12"],
-          ["3.3", "Huella de carbono", "Unidades 2 y 13"]]) +
+          ["1.1", "Balancear ecuaciones (masa y carga)", "Unidades 1 y 2"],
+          ["1.2", "Pesos atómicos y moleculares", "Unidad 3"],
+          ["1.3", "Cantidades de reactivos y productos", "Unidades 1 y 4"],
+          ["2.1", "Características de los gases ideales en problemas ambientales", "Unidad 5"],
+          ["2.2", "Presión, volumen y temperatura (leyes de los gases)", "Unidad 5"],
+          ["2.3", "Atmósfera y cambio climático", "Unidad 6"],
+          ["2.4", "Contaminantes, control y normativa", "Unidades 7 y 8"],
+          ["3.1", "Intercambios de energía en reacciones", "Unidad 9"],
+          ["3.2", "Fuentes de energía y termodinámica", "Unidad 10"],
+          ["3.3", "Huella de carbono", "Unidades 8 y 11"]]) +
         "<p><b>Cadena que une todo el ramo:</b> ecuación balanceada → masas molares → moles → masa de CO₂ (estequiometría) → volumen del gas (PV = nRT) → energía liberada (ΔH) → huella de carbono (t CO₂e) → norma o meta que hay que cumplir.</p>",
       e:"<p><b>Problema integrado:</b> una caldera quema 100 kg de propano al día (C₃H₈ + 5 O₂ → 3 CO₂ + 4 H₂O; ΔH = −2.220 kJ/mol).</p><ul><li>Moles de propano = 100.000 ÷ 44,09 = 2.268 mol.</li><li>CO₂ = 3 × 2.268 = 6.804 mol × 44,01 = 299,4 kg ≈ <b>0,30 t CO₂ al día</b> (≈ 3,0 kg de CO₂ por kg de propano).</li><li>Volumen de CO₂ a 25 °C y 1 atm = 6.804 × 24,45 L = 166.360 L ≈ <b>166 m³</b>.</li><li>Energía liberada = 2.268 × 2.220 = 5.035.000 kJ ≈ <b>5.035 MJ</b> al día.</li><li>O₂ necesario = 5 × 2.268 = 11.340 mol × 32,00 = <b>363 kg</b>; como el aire tiene 21 % de O₂, el volumen de aire teórico es 11.340 ÷ 0,21 × 24,45 L ≈ 1.320 m³.</li><li>Huella anual (alcance 1, 365 días) ≈ 0,30 × 365 = <b>109 t CO₂</b>.</li></ul>",
       q:[mc("Al quemar 1 mol de C₃H₈ se forman:", ["1 mol de CO₂", "3 mol de CO₂ y 4 mol de H₂O", "5 mol de CO₂", "3 mol de CO₂ y 8 mol de H₂O"], 1, "C₃H₈ + 5 O₂ → 3 CO₂ + 4 H₂O."),
@@ -327,4 +327,11 @@
          mc("Para controlar SO₂ de una fundición se usa:", ["Ciclón", "Desulfurización con caliza o planta de ácido", "Filtro de mangas", "Convertidor catalítico de tres vías"], 1, "El SO₂ es un gas: se absorbe o se convierte en ácido sulfúrico."),
          mc("¿Cuál par está bien relacionado?", ["Boyle: V y T a P constante", "Charles: P y V a T constante", "Gay-Lussac: P y T a V constante", "Dalton: V y n a P constante"], 2, "Gay-Lussac relaciona presión y temperatura con volumen constante.")] } }
   ]);
+  /* Orden de estudio = orden de los indicadores de logro: reordena unidades (y sus explicaciones y figuras) y renumera */
+  const order = (id, ix, tag) => { const c = COURSES.find(x => x.id === id); if (!c || c.u.length !== ix.length || c._ord) return; c._ord = 1;
+    const u = c.u.slice(), z = (UZ[id] || []).slice(), x = (UX[id] || []).slice();
+    c.u = ix.map((k, n) => [(n + 1) + ". " + u[k][0].replace(/^\d+\.\s*/, "") + (tag[k] ? " (" + tag[k] + ")" : ""), u[k][1]]);
+    UZ[id] = ix.map(k => z[k]); if (UX[id]) UX[id] = ix.map(k => x[k]); };
+  order("ramo-intro-optimizacion", [4, 5, 6, 0, 1, 2, 7, 3, 8], { 0:"indicadores 2.1 y 2.2", 1:"indicador 2.2", 2:"indicador 2.2", 3:"indicador 2.3" });
+  order("ramo-quimica-ambiente", [0, 4, 5, 6, 7, 8, 9, 1, 10, 11, 12, 2, 3, 13], { 0:"indicadores 1.1 y 1.3", 1:"indicadores 2.4 y 3.3", 2:"complementaria", 3:"complementaria" });
 })();
