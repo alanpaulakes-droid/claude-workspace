@@ -98,7 +98,7 @@ function tpl8HTML(id, html){ if (window.__noT8) return html;
   const rd = host.id === "ramodoc";
   if (rd) {
     const card = kid1(host, "section.card"); if (card) { const h = card.querySelector("h2"); const d = document.createElement("details"); d.className = "item"; d.open = true; d.innerHTML = "<summary>" + (h ? h.textContent : "Por qué es importante") + '</summary><div class="body prose"></div>'; if (h) h.remove(); [...card.childNodes].forEach(x => d.querySelector(".body").appendChild(x)); card.remove(); B.def.push(d); }
-    kids(host, "figure").forEach(f => { const d = document.createElement("details"); d.className = "item"; d.innerHTML = '<summary>Esquema visual del ramo</summary><div class="body"></div>'; d.querySelector(".body").appendChild(f); B.con.push(d); });
+    { const fg = kids(host, "figure"); if (fg.length) { const d = document.createElement("details"); d.className = "item"; d.innerHTML = '<summary>Esquema visual del ramo</summary><div class="body"></div>'; fg.forEach(f => d.querySelector(".body").appendChild(f)); B.con.push(d); } }
     const hs = kids(host, "h2.sh");
     hs.forEach(h => { const t = t8n(h.textContent);
       if (/bibliografia/.test(t)) { const ul = h.nextElementSibling; const d = document.createElement("details"); d.className = "item"; d.innerHTML = "<summary>Bibliografía recomendada</summary><div class=\"body prose\"></div>"; if (ul && ul.tagName === "UL") d.querySelector(".body").appendChild(ul); h.remove(); B.fic.push(d); }
