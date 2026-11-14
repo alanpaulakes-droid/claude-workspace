@@ -1,9 +1,9 @@
 /* Biblia del Ingeniero Industrial — Service Worker (funciona sin conexión)
    Ubicado en /biblia/ → su alcance es solo /biblia/, aislado de las otras apps del repositorio.
    Todas las apps comparten el mismo dominio y su almacenamiento de caché: este SW solo crea y borra cachés que empiezan con «biblia-».
-   - La app (HTML): red primero, para recibir actualizaciones; sin conexión usa la copia guardada.
+   - La app (HTML): red primero y sin caché HTTP del navegador (así cada apertura trae la última versión); sin conexión usa la copia guardada.
    - Todo funciona sin conexión desde la primera visita; solo el generador de PDF (pdfmake) es externo y se guarda la primera vez que se usa. */
-const CACHE = 'biblia-v2';
+const CACHE = 'biblia-v3';
 const CDN = 'biblia-cdn-v1';
 const ASSETS = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 const EXT = [];   /* la app no depende de recursos externos; pdfmake se guarda la primera vez que se descarga un PDF */
@@ -29,7 +29,7 @@ self.addEventListener('fetch', e => {
 
   if (url.origin === self.location.origin) {
     if (req.mode === 'navigate' || url.pathname.endsWith('/biblia/') || url.pathname.endsWith('/biblia/index.html')) {
-      e.respondWith(fetch(req)
+      e.respondWith(fetch(req, { cache: 'no-store' })
         .then(res => { const c = res.clone(); caches.open(CACHE).then(x => x.put('index.html', c)); return res; })
         .catch(() => caches.match('index.html').then(m => m || caches.match('./'))));
       return;
