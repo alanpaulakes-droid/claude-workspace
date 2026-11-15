@@ -12,7 +12,7 @@ bash biblia-src/build.sh --test   # además genera tests/test.html y tests/testx
 El script une los módulos en un orden fijo, valida la sintaxis con `node --check` y antepone `head.html`.
 
 **Rendimiento (F6).**
-- **Contenido diferido.** 45 módulos que solo cargan contenido (guías `g2–g5`, ejemplos `e2–e5`, apuntes `c2–c3`, `z1–z9`, `u2–u5`, `y1–y3`, expansiones `w1–w4`, bloques T2 `wa1–wa8`, `wd1–wd4`, `q3`, `we1` a `we4`) se envuelven, cada uno en una función, dentro de `__LAZY` (lista `LAZY` de `build.sh`). Se ejecutan en tiempo ocioso después del primer render, o de inmediato con `ensureContent()`, que se llama antes de mostrar cualquier página que no sea el inicio, al buscar y al exportar. Un módulo que se agregue a esa lista no puede declarar nombres que usen otros módulos.
+- **Contenido diferido.** 45 módulos que solo cargan contenido (guías `g2–g5`, ejemplos `e2–e5`, apuntes `c2–c3`, `z1–z9`, `u2–u5`, `y1–y3`, expansiones `w1–w4`, bloques T2 `wa1–wa8`, `wd1–wd4`, `q3`, `we1` a `we5`) se envuelven, cada uno en una función, dentro de `__LAZY` (lista `LAZY` de `build.sh`). Se ejecutan en tiempo ocioso después del primer render, o de inmediato con `ensureContent()`, que se llama antes de mostrar cualquier página que no sea el inicio, al buscar y al exportar. Un módulo que se agregue a esa lista no puede declarar nombres que usen otros módulos.
 - **Minificación.** Si existe `biblia-src/tools/node_modules` (`npm install` en `tools/`), el script se minifica con esbuild (espacios y sintaxis; no renombra identificadores ni cambia textos).
 Todo el código corre dentro de una sola función `(() => { … })();`: los nombres `const` de nivel superior deben ser únicos entre todos los módulos.
 
@@ -48,6 +48,7 @@ Todo el código corre dentro de una sola función `(() => { … })();`: los nomb
 | `we2.js` | Unidades nuevas de Introducción a los métodos de optimización (5 a 9) y Química y ambiente (5 a 14), alineadas con los indicadores de logro de la prueba; cada una con ejemplos resueltos y preguntas de selección con pauta |
 | `we3.js` | Explicaciones a fondo y fórmulas con el significado de cada letra (Optimización y Química y ambiente) |
 | `we4.js` | Certamen de práctica de Optimización (15 preguntas) y Química y ambiente (20): casos y problemas con números al azar, corrección con nota de 1,0 a 7,0, logro por indicador y desarrollo de cada respuesta |
+| `we5.js` | Ejemplos explicados desde cero (datos y su significado, qué se pide, pasos con su porqué, respuesta, comprobación y error típico) y «Matemática mínima» al inicio de Optimización y Química y ambiente |
 | `p8.js` | Páginas, navegación, eventos y `render()` (va al final) |
 
 ## Pruebas (`tests/`)
