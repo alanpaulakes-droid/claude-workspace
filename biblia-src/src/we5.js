@@ -2,13 +2,15 @@
    Para quien no sabe nada del tema: qué significa cada dato, qué se pide, cada paso con su porqué,
    la respuesta, cómo comprobarla y el error típico. El ejemplo anterior queda como «Versión resumida». */
 (function(){
+  /* cada frase o cálculo en su propia línea: es más fácil de seguir que una línea larga con «;» */
+  const L = h => '<span class="x-l">' + String(h).replace(/(?<!\d);\s+/g, '</span><span class="x-l">').replace(/\.\s+(?=[A-ZÁÉÍÓÚÑ¿«(0-9])/g, '.</span><span class="x-l">').replace(/:\s+(?=[^.<]{0,70}=)/g, ':</span><span class="x-l x-calc">') + "</span>";
   const X = o => '<p class="x-case">' + o.t + "</p>" +
     '<p class="x-h">Lo que te dan (y qué significa cada dato)</p><dl class="deep-dl">' + o.d.map(v => "<dt>" + v[0] + "</dt><dd>" + v[1] + "</dd>").join("") + "</dl>" +
     '<p class="x-h">Lo que te piden</p><p>' + o.p + "</p>" +
-    '<p class="x-h">Paso a paso</p><ol class="x-steps">' + o.s.map(v => "<li><b>" + v[0] + "</b><br>" + v[1] + "</li>").join("") + "</ol>" +
-    '<p class="x-r"><b>Respuesta:</b> ' + o.r + "</p>" +
-    (o.c ? '<p class="x-h">Compruébalo</p><p>' + o.c + "</p>" : "") +
-    (o.o ? '<p class="x-h">Ojo con este error</p><p>' + o.o + "</p>" : "");
+    '<p class="x-h">Paso a paso</p><ol class="x-steps">' + o.s.map(v => "<li><b>" + v[0] + "</b>" + L(v[1]) + "</li>").join("") + "</ol>" +
+    '<p class="x-r"><b>Respuesta:</b>' + L(o.r) + "</p>" +
+    (o.c ? '<p class="x-h">Compruébalo</p><p>' + L(o.c) + "</p>" : "") +
+    (o.o ? '<p class="x-h">Ojo con este error</p><p>' + L(o.o) + "</p>" : "");
   const set = (id, key, html) => { const c = COURSES.find(x => x.id === id); if (!c) return; const i = c.u.findIndex(u => u[0].indexOf(key) >= 0); if (i < 0) return; UZ[id] = UZ[id] || []; (UZ[id][i] = UZ[id][i] || {}).e0 = html; };
   const OP = "ramo-intro-optimizacion", QA = "ramo-quimica-ambiente";
 
@@ -254,27 +256,33 @@
     c:"Después del tratamiento: 800 × (1 − 0,625) = 300 mg/L, justo el límite ✔.",
     o:"Dividir por la norma (500 ÷ 300) en vez de por la concentración inicial (500 ÷ 800)." }));
 
-  /* ======================= MATEMÁTICA MÍNIMA (al inicio de cada ramo) ======================= */
-  const mm = (t, items) => '<details class="mm"><summary>' + t + "</summary><dl class=\"deep-dl\">" + items.map(v => "<dt>" + v[0] + "</dt><dd>" + v[1] + "</dd>").join("") + "</dl></details>";
+  /* ======================= MATEMÁTICA MÍNIMA (al inicio de cada ramo) =======================
+     Cada idea es una ficha: título, una frase que la explica y los ejemplos uno por línea. */
+  const mm = (t, items) => '<details class="mm"><summary>' + t + '</summary><div class="mm-g">' + items.map(v => '<div class="mm-i"><p class="mm-t">' + v[0] + "</p><p>" + v[1] + "</p>" + (v[2] ? '<ul class="mm-ex">' + v[2].map(e => "<li>" + e + "</li>").join("") + "</ul>" : "") + "</div>").join("") + "</div></details>";
   if (typeof CG !== "undefined") {
     CG[OP] = (CG[OP] || "") + mm("Matemática mínima que necesitas para este ramo (léela si te cuesta)", [
-      ["Porcentaje a decimal", "Divide por 100: 9 % = 0,09; 20 % = 0,20; 75,5 % = 0,755. Al revés, multiplica por 100: 0,889 = 88,9 %."],
-      ["Leer ≤ y ≥", "≤ es «menor o igual que» (no puede pasar de): x ≤ 200 significa «200 o menos». ≥ es «mayor o igual que» (al menos): x ≥ 0 significa «0 o más»."],
-      ["Número pegado a una letra", "300x₁ significa 300 × x₁. Si x₁ = 10, entonces 300x₁ = 3.000."],
-      ["Despejar", "Para dejar sola una letra, haz lo mismo a ambos lados. 4x = 120 → divide ambos lados por 4 → x = 30. 0,35s ≥ 0,11 → divide por 0,35 → s ≥ 0,314."],
-      ["Cortes de una recta con los ejes", "En a·x₁ + b·x₂ = c: con x₂ = 0 queda x₁ = c ÷ a; con x₁ = 0 queda x₂ = c ÷ b. Con esos dos puntos dibujas la recta."],
-      ["Resolver dos ecuaciones juntas (reducción)", "Multiplica una ecuación para que una letra tenga el mismo número en ambas y réstalas: esa letra desaparece. Despeja la otra y reemplázala en cualquiera de las dos."],
-      ["Variación porcentual", "(valor nuevo − valor anterior) ÷ valor anterior × 100. Si da negativo, bajó."],
-      ["Punto porcentual", "Diferencia entre dos porcentajes: de 8 % a 6 % se bajan 2 puntos porcentuales."]]);
+      ["De porcentaje a decimal", "Para pasar un porcentaje a número decimal, se divide por 100.", ["9 % → 0,09", "20 % → 0,20", "75,5 % → 0,755"]],
+      ["De decimal a porcentaje", "Es al revés: se multiplica por 100.", ["0,889 → 88,9 %", "0,06 → 6 %"]],
+      ["El signo ≤", "Se lee «menor o igual que». Significa «no puede pasar de».", ["x ≤ 200 significa: x puede valer 200 o menos, pero nunca más de 200."]],
+      ["El signo ≥", "Se lee «mayor o igual que». Significa «al menos».", ["x ≥ 0 significa: x puede valer 0 o más, pero nunca un número negativo."]],
+      ["Un número pegado a una letra", "Significa que se multiplican.", ["300x₁ es lo mismo que 300 × x₁.", "Si x₁ vale 10, entonces 300x₁ vale 3.000."]],
+      ["Despejar", "Es dejar sola una letra. Para lograrlo, se hace la misma operación a ambos lados del signo.", ["4x = 120", "Divide ambos lados por 4.", "Resultado: x = 30."]],
+      ["Despejar con decimales", "Funciona igual que con números enteros.", ["0,35s ≥ 0,11", "Divide ambos lados por 0,35.", "Resultado: s ≥ 0,314."]],
+      ["Dónde corta una recta a los ejes", "Sirve para dibujar una restricción. Se busca un punto en cada eje.", ["Ecuación de ejemplo: 4x₁ + 2x₂ = 120.", "Corte con el eje horizontal: pon x₂ = 0. Queda 4x₁ = 120, entonces x₁ = 30.", "Corte con el eje vertical: pon x₁ = 0. Queda 2x₂ = 120, entonces x₂ = 60.", "Une los puntos (30, 0) y (0, 60) con una recta."]],
+      ["Resolver dos ecuaciones juntas", "Se busca el punto donde se cruzan dos rectas. El método más simple es la reducción.", ["Paso 1: multiplica una ecuación para que una letra tenga el mismo número en las dos.", "Paso 2: resta las ecuaciones. Esa letra desaparece.", "Paso 3: despeja la letra que quedó.", "Paso 4: reemplaza ese valor en cualquiera de las dos ecuaciones para encontrar la otra letra."]],
+      ["Variación porcentual", "Dice cuánto cambió algo, en porcentaje.", ["Fórmula: (valor nuevo − valor anterior) ÷ valor anterior × 100.", "Si el resultado es negativo, el valor bajó."]],
+      ["Punto porcentual", "Es la resta entre dos porcentajes. No es lo mismo que un porcentaje de cambio.", ["Si la merma baja de 8 % a 6 %, bajó 2 puntos porcentuales."]]]);
     CG[QA] = (CG[QA] || "") + mm("Matemática y notación mínima que necesitas para este ramo (léela si te cuesta)", [
-      ["Subíndice", "El número chico de una fórmula: dice cuántos átomos hay de ese elemento. En H₂O hay 2 H y 1 O (si no hay número, es 1)."],
-      ["Coeficiente", "El número grande delante de una fórmula: cuántas moléculas. 3 CO₂ son 3 moléculas: 3 C y 6 O."],
-      ["Porcentaje a decimal", "Divide por 100: 80 % = 0,80; 0,5 % = 0,005."],
-      ["Unidades que más se usan", "1 kg = 1.000 g; 1 t = 1.000 kg; 1 m³ = 1.000 L; 1 MJ = 1.000 kJ; 1 MW = 1.000 kW = 1.000.000 W."],
-      ["Kelvin", "K = °C + 273,15. En gases y en Carnot la temperatura siempre va en kelvin."],
-      ["Notación científica", "6,022 × 10²³ significa 6,022 seguido de correr la coma 23 lugares: un número enorme."],
-      ["Restar un negativo", "Restar un número negativo es sumarlo: −965,1 − (−74,8) = −965,1 + 74,8 = −890,3."],
-      ["Despejar en una proporción", "Si V₁ ÷ T₁ = V₂ ÷ T₂ y quieres V₂, multiplica ambos lados por T₂: V₂ = V₁ × T₂ ÷ T₁."],
-      ["Regla de tres en química", "Si 1 mol da 2 mol, entonces 3 mol dan 3 × 2 = 6 mol. La ecuación balanceada es la «receta» de la proporción."]]);
+      ["Subíndice", "Es el número chico dentro de una fórmula. Dice cuántos átomos hay de ese elemento. Si no hay número, hay 1.", ["H₂O tiene 2 átomos de hidrógeno (H) y 1 de oxígeno (O)."]],
+      ["Coeficiente", "Es el número grande delante de una fórmula. Dice cuántas moléculas hay.", ["3 CO₂ son 3 moléculas de CO₂.", "En total tienen 3 carbonos y 6 oxígenos."]],
+      ["De porcentaje a decimal", "Se divide por 100.", ["80 % → 0,80", "0,5 % → 0,005"]],
+      ["Unidades de masa", "Cada unidad es 1.000 veces la anterior.", ["1 kg = 1.000 g", "1 t (tonelada) = 1.000 kg"]],
+      ["Unidades de volumen", "Un metro cúbico tiene mil litros.", ["1 m³ = 1.000 L"]],
+      ["Unidades de energía y potencia", "El prefijo «M» (mega) significa un millón y «k» (kilo) significa mil.", ["1 MJ = 1.000 kJ", "1 MW = 1.000 kW = 1.000.000 W"]],
+      ["Kelvin", "Es otra escala de temperatura. En las leyes de los gases y en Carnot siempre se usa kelvin.", ["Fórmula: K = °C + 273,15.", "Ejemplo: 27 °C = 300,15 K (se puede redondear a 300 K)."]],
+      ["Notación científica", "Sirve para escribir números enormes o muy pequeños.", ["6,022 × 10²³ significa: correr la coma 23 lugares a la derecha.", "Es un número gigante: 602.200 trillones."]],
+      ["Restar un número negativo", "Restar un negativo es lo mismo que sumarlo.", ["−965,1 − (−74,8)", "es lo mismo que −965,1 + 74,8", "= −890,3"]],
+      ["Despejar en una proporción", "Si la letra que buscas está dividida, multiplica ambos lados por lo que la divide.", ["V₁ ÷ T₁ = V₂ ÷ T₂", "Multiplica ambos lados por T₂.", "Resultado: V₂ = V₁ × T₂ ÷ T₁."]],
+      ["La ecuación como receta", "Los coeficientes de una ecuación balanceada son proporciones, como en una receta.", ["N₂ + 3 H₂ → 2 NH₃", "Si 1 mol de N₂ da 2 mol de NH₃,", "entonces 3 mol de N₂ dan 3 × 2 = 6 mol de NH₃."]]]);
   }
 })();

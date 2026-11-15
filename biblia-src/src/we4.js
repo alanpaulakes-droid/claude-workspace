@@ -419,7 +419,7 @@
     S.qs.forEach((q, i) => { const fs = box.querySelector('.cq[data-i="' + i + '"]'), r = fs.querySelector("input:checked"), v = r ? +r.value : -1, good = v === q.ok; if (good) ok++;
       byInd[q.ind] = byInd[q.ind] || [0, 0]; byInd[q.ind][1]++; if (good) byInd[q.ind][0]++;
       fs.classList.remove("ok", "bad"); fs.classList.add(good ? "ok" : "bad"); fs.querySelectorAll(".cq-o").forEach((l, j) => { l.classList.toggle("is-ok", j === q.ok); l.classList.toggle("is-bad", j === v && !good); });
-      const s = fs.querySelector(".cq-sol"); s.hidden = false; s.innerHTML = "<p><b>" + (good ? "Correcta." : v < 0 ? "Sin responder." : "Incorrecta.") + " Respuesta: " + "abcd"[q.ok] + ").</b></p><p class=\"cq-dh\">Desarrollo</p>" + q.sol; });
+      const s = fs.querySelector(".cq-sol"); s.hidden = false; s.innerHTML = "<p><b>" + (good ? "Correcta." : v < 0 ? "Sin responder." : "Incorrecta.") + " Respuesta: " + "abcd"[q.ok] + ").</b></p><p class=\"cq-dh\">Desarrollo</p>" + q.sol.replace(/(?<!\d);\s+/g, "<br>").replace(/\.\s+(?=[A-ZÁÉÍÓÚÑ¿«(0-9])/g, ".<br>"); });
     const p = ok / S.qs.length, n = nota(p);
     box.querySelector(".cert-res").innerHTML = '<div class="cert-sum"><p class="cert-big">Nota ' + n.toFixed(1).replace(".", ",") + "</p><p>" + ok + " de " + S.qs.length + " correctas (" + Math.round(p * 100) + " %). Escala de 1,0 a 7,0 con 60 % de exigencia: el 4,0 se logra con el 60 %.</p>" +
       tbl(Object.keys(byInd).sort().map(k => [k, byInd[k][0] + " de " + byInd[k][1], byInd[k][0] === byInd[k][1] ? "Logrado" : byInd[k][0] / byInd[k][1] >= 0.5 ? "Parcial: repasa la unidad" : "No logrado: estudia la unidad y practica este indicador"])) +
