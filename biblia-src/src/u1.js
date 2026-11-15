@@ -11,7 +11,7 @@ const uSplitEj = h => { if (!h || h.indexOf('class="ejr"') < 0 || typeof documen
   [...t.content.children].forEach(n => { if (n.classList.contains("ejr")) { ej += n.outerHTML; n.remove(); } });
   return [t.innerHTML, ej]; };
 const uBlk = (t, h, cls) => h ? '<div class="deep-b' + (cls ? " " + cls : "") + '"><h4>' + t + "</h4>" + h + "</div>" : "";
-const uPh = (n, t, body) => body ? '<h4 class="deep-ph"><span>' + n + "</span>" + t + "</h4>" + body : "";
+const uPh = (n, t, body) => body ? '<details class="deep-pd p' + n + '"' + (n === 1 ? " open" : "") + '><summary class="deep-ph"><span>' + n + "</span>" + t + '</summary><div class="deep-pb">' + body + "</div></details>" : "";
 const unitsOf = c => c.u.map((u, i) => { const e = UX[c.id] && UX[c.id][i], z = (typeof UZ !== "undefined" && UZ[c.id] && UZ[c.id][i]) || {};
   const figs = e && e.f ? e.f.map(fn => { try { return fn(); } catch (x) { return ""; } }).join("") : "";
   const [comp, ejx] = uSplitEj(e ? e.h : "");
