@@ -128,8 +128,21 @@ function tpl8HTML(id, html){ if (window.__noT8) return html;
   if (isCalc) { const hint = kid1(host, "p.hint"); if (hint) hint.textContent = "Primero las fórmulas y el método; después un ejemplo resuelto, los errores más comunes y ejercicios para practicar."; }
   /* subsecciones: las principales quedan abiertas y se leen como texto con subtítulo; el material de consulta queda plegado */
   wrap.querySelectorAll("details.item").forEach(d => { const sm = d.querySelector(":scope > summary"), t = t8n(sm ? sm.textContent : "");
-    const sec2 = T8_FOLD.test(t); d.classList.add(sec2 ? "fold" : "sub"); d.open = !sec2; });
+    const sec2 = T8_FOLD.test(t); d.classList.add(sec2 ? "fold" : "sub"); d.open = !sec2;
+    /* ramos: cada unidad es un desplegable cerrado (acordeón), con número e indicador en la cabecera */
+    if (rd && sm && /^\d+\.\s/.test(sm.textContent.trim())) { d.classList.remove("sub", "fold"); d.classList.add("unit"); d.open = false;
+      const m = sm.textContent.trim().match(/^(\d+)\.\s*(.*?)(?:\s*\(([^)]*)\))?$/);
+      /* el texto del título queda idéntico («N. Título (indicador X)»); solo cambia cómo se ve */
+      if (m) sm.innerHTML = '<span class="u-n">' + m[1] + '</span><span class="u-x">. </span><span class="u-t">' + m[2] + (m[3] ? '<span class="u-x"> (</span><small>' + m[3] + '</small><span class="u-x">)</span>' : "") + "</span>"; } });
+  if (rd) { const u1 = wrap.querySelector("details.item.unit"); if (u1) u1.insertAdjacentHTML("beforebegin", '<div class="u-bar no-print"><p class="hint">Toca una unidad para abrirla. Se abre una a la vez.</p><button type="button" class="btn ghost" data-uall="1">Abrir todas</button><button type="button" class="btn ghost" data-uall="0">Cerrar todas</button></div>'); }
   return T.innerHTML;
 }
+/* acordeón de unidades: al abrir una se cierran las demás y la vista va a su inicio */
+let uAll = false;
+document.addEventListener("toggle", e => { const d = e.target; if (!d.classList || !d.classList.contains("unit") || !d.open || uAll) return;
+  document.querySelectorAll("details.item.unit[open]").forEach(o => { if (o !== d) o.open = false; });
+  requestAnimationFrame(() => { const r = d.getBoundingClientRect(); if (r.top < 120 || r.top > innerHeight * 0.6) d.scrollIntoView({ block:"start", behavior:"smooth" }); }); }, true);
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-uall]"); if (!b) return; uAll = b.dataset.uall === "1";
+  document.querySelectorAll("details.item.unit").forEach(d => { d.open = uAll; d.querySelectorAll("details.deep-pd").forEach(x => { x.open = uAll || x.classList.contains("p1"); }); }); setTimeout(() => { uAll = false; }, 50); });
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-t8ref]"); if (!b) return; const h = document.getElementById(b.dataset.t8ref); if (!h) return; let p = h.parentElement; while (p) { if (p.tagName === "DETAILS") p.open = true; p = p.parentElement; } h.scrollIntoView({ behavior:"smooth", block:"start" }); h.classList.add("t8-flash"); setTimeout(() => h.classList.remove("t8-flash"), 1600); });
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-t8]"); if (!b) return; const s = document.getElementById("t8-" + b.dataset.t8); if (!s) return; const d = s.querySelector("details.item"); if (d) d.open = true; s.scrollIntoView({ behavior:"smooth", block:"start" }); });
