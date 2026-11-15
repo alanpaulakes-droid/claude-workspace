@@ -15,11 +15,12 @@ const uPh = (n, t, body) => body ? '<h4 class="deep-ph"><span>' + n + "</span>" 
 const unitsOf = c => c.u.map((u, i) => { const e = UX[c.id] && UX[c.id][i], z = (typeof UZ !== "undefined" && UZ[c.id] && UZ[c.id][i]) || {};
   const figs = e && e.f ? e.f.map(fn => { try { return fn(); } catch (x) { return ""; } }).join("") : "";
   const [comp, ejx] = uSplitEj(e ? e.h : "");
+  if (u[2] === "raw") return [u[0], u[1]];
   const has = Object.keys(z).length > 0;
   if (!has) return [u[0], '<div class="deep">' + uPh(1, "Entiende la idea", u[1] + figs) + uPh(2, "Profundiza", comp) + uPh(3, "Aplícalo", ejx) + "</div>"];
   const ex = (z.e ? uBlk("Ejemplo resuelto, explicando cada paso", z.e, "ejr") : "") + (z.e2 ? uBlk(z.e ? "Otro ejemplo resuelto" : "Ejemplo resuelto, explicando cada paso", z.e2, "ejr") : "") + (ejx ? uBlk("Más ejemplos", ejx) : "");
   const p1 = uBlk("¿Por qué necesitas esto?", z.p, "why") + uBlk("Explicado desde cero", z.s) + uBlk("Una comparación para entenderlo", z.an ? "<p>" + z.an + "</p>" : "") + uBlk("Visualízalo", figs);
-  const p2 = uBlk("Términos y símbolos que debes conocer", z.t ? '<dl class="deep-dl">' + z.t.map(t => "<dt>" + t[0] + "</dt><dd>" + t[1] + "</dd>").join("") + "</dl>" : "") + uBlk("Más a fondo", z.s2) + uBlk("Complemento técnico", comp);
+  const p2 = uBlk("Términos y símbolos que debes conocer", z.t ? '<dl class="deep-dl">' + z.t.map(t => "<dt>" + t[0] + "</dt><dd>" + t[1] + "</dd>").join("") + "</dl>" : "") + uBlk("Más a fondo", z.s2) + uBlk("Fórmulas de la unidad: qué significa cada letra", z.fx ? z.fx.map(f => '<div class="fx-u"><p class="fx-n">' + f[0] + '</p><p class="fx-f">' + f[1] + "</p>" + (f[2] && f[2].length ? '<dl class="deep-dl">' + f[2].map(v => "<dt>" + v[0] + "</dt><dd>" + v[1] + "</dd>").join("") + "</dl>" : "") + (f[3] ? '<p class="hint">' + f[3] + "</p>" : "") + "</div>").join("") : "") + uBlk("Complemento técnico", comp);
   const p3 = uBlk("Cómo se hace, paso a paso", z.k ? '<ol class="deep-steps">' + z.k.map(k => "<li>" + k + "</li>").join("") + "</ol>" : "") + ex + uBlk("Errores comunes (y cómo evitarlos)", z.x ? "<ul>" + z.x.map(x => "<li>" + x + "</li>").join("") + "</ul>" : "");
   const p4 = uBlk("Resumen técnico de la unidad", u[1]) + uBlk("Cómo practicarlo con este programa", z.u, "use") + uBlk("Ponte a prueba", z.q ? z.q.map(q => '<details class="bg-q"><summary>' + q[0] + "</summary><p>" + q[1] + "</p></details>").join("") : "");
   return [u[0], '<div class="deep">' + uPh(1, "Entiende la idea", p1) + uPh(2, "Profundiza", p2) + uPh(3, "Aplícalo", p3) + uPh(4, "Repasa y practica", p4) + "</div>"]; });
