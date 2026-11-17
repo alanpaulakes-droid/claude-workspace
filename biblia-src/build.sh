@@ -3,12 +3,12 @@
 # Uso: bash biblia-src/build.sh [--test]
 set -e
 D="$(cd "$(dirname "$0")" && pwd)"; cd "$D/src"
-FILES="p1.html p2.js x1.js x2.js x4.js p3.js p4.js p5.js p6.js p6b.js px.js g1.js g2.js g3.js g4.js g5.js $(ls e[0-9].js) p7.js x3.js m1.js m2.js m3.js m4.js $(ls i[0-9].js) $(ls c[0-9].js) z0.js $(ls z[1-9].js 2>/dev/null) $(ls u[0-9].js) $(ls s[0-9].js) $(ls d[0-9].js) $(ls f[0-9].js) $(ls o[0-9].js) $(ls q[0-9].js) $(ls v[0-9].js) $(ls y[0-9].js) $(ls w[0-9].js) $(ls wa[0-9].js 2>/dev/null) $(ls wb[0-9].js 2>/dev/null) $(ls wc[0-9].js 2>/dev/null) $(ls wd[0-9].js 2>/dev/null) $(ls we[0-9].js 2>/dev/null) $(ls wf[0-9].js 2>/dev/null) p8.js"
+FILES="p1.html p2.js x1.js x2.js x4.js p3.js p4.js p5.js p6.js p6b.js px.js g1.js g2.js g3.js g4.js g5.js $(ls e[0-9].js) p7.js x3.js m1.js m2.js m3.js m4.js $(ls i[0-9].js) $(ls c[0-9].js) z0.js $(ls z[1-9].js 2>/dev/null) $(ls u[0-9].js) $(ls s[0-9].js) $(ls d[0-9].js) $(ls f[0-9].js) $(ls o[0-9].js) $(ls q[0-9].js) $(ls v[0-9].js) $(ls y[0-9].js) $(ls w[0-9].js) $(ls wa[0-9].js 2>/dev/null) $(ls wb[0-9].js 2>/dev/null) $(ls wc[0-9].js 2>/dev/null) $(ls wd[0-9].js 2>/dev/null) $(ls we[0-9].js 2>/dev/null) $(ls wf[0-9].js 2>/dev/null) $(ls wg[0-9].js 2>/dev/null) p8.js"
 mkdir -p "$D/build"
 # F6 · Contenido diferido: los módulos que solo cargan guías, ejemplos, apuntes de ramos, expansiones y bloques T2
 # se envuelven en __lazyContent() (en su orden original) y se ejecutan después del primer render o antes de
 # mostrar una página que los necesite (ensureContent en p8.js). Así no se analizan ni ejecutan al iniciar.
-LAZY=" g2.js g3.js g4.js g5.js e2.js e3.js e4.js e5.js c2.js c3.js z1.js z2.js z3.js z4.js z5.js z6.js z7.js z8.js z9.js u2.js u3.js u4.js u5.js q3.js y1.js y2.js y3.js w1.js w2.js w3.js w4.js wa1.js wa2.js wa3.js wa4.js wa5.js wa6.js wa7.js wa8.js wd1.js wd2.js wd3.js wd4.js we1.js we2.js we3.js we4.js we5.js wf2.js wf3.js wf4.js wf5.js wf6.js wf7.js wf8.js wf9.js "
+LAZY=" g2.js g3.js g4.js g5.js e2.js e3.js e4.js e5.js c2.js c3.js z1.js z2.js z3.js z4.js z5.js z6.js z7.js z8.js z9.js u2.js u3.js u4.js u5.js q3.js y1.js y2.js y3.js w1.js w2.js w3.js w4.js wa1.js wa2.js wa3.js wa4.js wa5.js wa6.js wa7.js wa8.js wd1.js wd2.js wd3.js wd4.js we1.js we2.js we3.js we4.js we5.js wf2.js wf3.js wf4.js wf5.js wf6.js wf7.js wf8.js wf9.js wg1.js "
 { for f in $FILES; do [ "$f" = "p8.js" ] && continue; case "$LAZY" in *" $f "*) ;; *) cat "$f";; esac; done
   printf '\n/* ===== F6 · CONTENIDO DIFERIDO: un módulo por función, en su orden original (ensureContent / carga ociosa) ===== */\nconst __LAZY = [\n'
   for f in $FILES; do case "$LAZY" in *" $f "*) printf 'function(){ /* %s */\n' "$f"; cat "$f"; printf '\n},\n';; esac; done
