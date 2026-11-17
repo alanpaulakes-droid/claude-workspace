@@ -58,7 +58,9 @@ function crsHTML(id, html){ if (window.__noT8 || !CRS[id]) return html; const K 
   /* Simulación */
   if (K.sim && CSIM[K.sim]) add("sim", '<div class="csim" data-csim="' + K.sim + '"></div>'); else add("sim", '<p class="hint">La simulación de este tema se agrega en una próxima fase.</p>');
   /* Práctica */
-  if (K.quiz) add("pr", '<section class="crs-s"><h2>Ponte a prueba</h2>' + K.quiz.map((q, i) => '<fieldset class="cq crs-q" data-ok="' + q[2] + '"><legend><span class="cq-n">Pregunta ' + (i + 1) + "</span></legend><div class=\"cq-t\">" + q[0] + "</div>" +
+  add("pr", '<p class="hint crs-qzl" aria-live="polite">' + crsQzLine(id) + "</p>");
+  if (K.sp && (K.sp.params || []).length && crsGen(id)) add("pr", '<section class="crs-s"><h2>Ejercicio con datos nuevos</h2><p class="hint">Cada vez se generan datos distintos para que practiques el procedimiento sin memorizar la respuesta.</p><div id="crs-gbox"></div><p><button type="button" class="btn" data-crs-gen="' + id + '">Generar ejercicio</button></p></section>');
+  if (K.quiz) add("pr", '<section class="crs-s"><h2>Ponte a prueba</h2>' + K.quiz.map(q0 => { const pm = q0[1].map((_, j) => j).sort(() => Math.random() - 0.5); return [q0[0], pm.map(j => q0[1][j]), pm.indexOf(q0[2]), q0[3]]; }).map((q, i) => '<fieldset class="cq crs-q" data-ok="' + q[2] + '"><legend><span class="cq-n">Pregunta ' + (i + 1) + "</span></legend><div class=\"cq-t\">" + q[0] + "</div>" +
     q[1].map((o, j) => '<label class="cq-o"><input type="radio" name="crsq-' + id + "-" + i + '" value="' + j + '"><span><b>' + "abcd"[j] + ")</b> " + o + "</span></label>").join("") + '<div class="cq-sol" hidden><p class="cq-dh">Explicación</p><p>' + q[3] + "</p></div></fieldset>").join("") + "</section>");
   /* la calculadora queda siempre visible bajo las pestañas (para usarla rápido, sin cambiar de pestaña) */
   const calcF = R.querySelector("section.card.form"), calcR = R.querySelector("section#res"), calc = document.createElement("section"); calc.className = "crs-calc"; calc.id = "crs-calc";
@@ -237,3 +239,56 @@ function crsBack(id){ return crsIds().filter(j => j !== id && (CRS[j].rel || [])
 document.addEventListener("input", e => { const t = e.target.closest && e.target.closest("[data-crsf]"); if (!t) return; const box = document.getElementById(t.dataset.crsf); if (!box) return;
   const q = crsNz(t.value).trim(); let k = 0; box.querySelectorAll("[data-k]").forEach(r => { const ok = !q || r.dataset.k.indexOf(q) >= 0; r.hidden = !ok; if (ok) k++; });
   const nf = t.closest("section") && t.closest("section").querySelector(".crs-fn"); if (nf) nf.hidden = k > 0; });
+
+/* ===== Práctica con datos nuevos: ejercicio generado al azar a partir del guion de «Fórmula paso a paso» =====
+   Se varían los datos del guion, se pregunta el resultado de un paso que depende de ellos y las alternativas incorrectas
+   salen de aplicar el mismo procedimiento con un dato mal leído (errores típicos). */
+const CRS_GENCH = { "stock-seguridad.ns":[90, 95, 99], "tasas.m":[1, 2, 4, 12], "muestra.c":[90, 95, 99], "iper.P":[1, 2, 4], "iper.Cc":[1, 2, 4], "pronosticos.m":[2, 3, 4, 5], "pronosticos.a":[0.1, 0.2, 0.3, 0.4, 0.5],
+  "decisiones.pa":[0.2, 0.3, 0.4], "decisiones.pm":[0.3, 0.4, 0.5], "decisiones.al":[0.3, 0.5, 0.6, 0.8], "capacidad.m":[9.95, 10, 10.05, 10.1, 10.15], "capacidad.s":[0.1, 0.12, 0.15, 0.18, 0.2], "capacidad.li":[9.4], "capacidad.ls":[10.6],
+  "ruido.L1":[85, 88, 91, 94, 97, 100], "ruido.h1":[0.5, 1, 1.5, 2, 3], "tiempo-estandar.v":[90, 95, 100, 105, 110, 115], "tiempo-estandar.s":[10, 12, 14, 15, 18, 20], "aprendizaje.r":[75, 80, 85, 90], "aprendizaje.N":[8, 16, 32, 64, 100],
+  "regresion.xp":[20, 35, 45, 60], "amef.d":[2, 3, 4, 5, 6, 7, 8], "pareto.c":[70, 75, 80, 85], "abc.A":[70, 75, 80], "abc.B":[90, 95], "mrp.I0":[40, 60, 80, 100], "mrp.SS":[10, 20, 30], "mrp.LT":[1, 2, 3],
+  "asignacion.af":[6, 8, 10, 12, 14], "cpm.T":[19, 20, 21, 22, 23, 24, 25], "colas.lam":[16, 18, 20, 22], "colas.mu":[8, 9, 10], "colas.s":[3, 4], "muestreo.e":[2, 2.5, 3, 4, 5], "muestreo.p":[10, 15, 18, 20, 25, 30],
+  "niosh.H":[25, 30, 35, 40, 45, 50], "niosh.V":[30, 45, 60, 75, 90, 120], "niosh.P":[8, 10, 12, 15, 18, 20, 23], "balanceo.T":[420, 450, 480], "wacc.b":[0.6, 0.8, 0.9, 1, 1.2, 1.4], "oee.np":[20, 30, 38, 45, 60], "vida-economica.i":[0, 5, 10, 15, 20, 30, 40] };
+const crsDec = v => { const s = String(v); return s.indexOf(".") >= 0 ? s.split(".")[1].length : 0; };
+function crsRandP(id, P){ const v = {}; P.forEach(q => { const ch = CRS_GENCH[id + "." + q.k]; if (ch) { v[q.k] = ch[Math.floor(Math.random() * ch.length)]; return; }
+    let x = q.v * (0.7 + Math.random() * 0.6); const d = crsDec(q.v); if (d) x = +x.toFixed(d); else if (Math.abs(q.v) >= 1000) { const m = Math.pow(10, Math.floor(Math.log10(Math.abs(q.v))) - 1); x = Math.round(x / m) * m; } else x = Math.max(1, Math.round(x)); v[q.k] = x; }); return v; }
+function crsAlt(id, P, v){ /* un dato mal leído: cada parámetro, por turno, con otro valor */
+  return P.map(q => { const w = Object.assign({}, v), ch = CRS_GENCH[id + "." + q.k]; if (ch && ch.length === 1) return w; if (ch) { const o = ch.filter(c => c !== v[q.k]); w[q.k] = o[Math.floor(Math.random() * o.length)]; } else { const d = crsDec(q.v); let x = v[q.k] * (Math.random() < 0.5 ? 0.8 : 1.25); w[q.k] = d ? +x.toFixed(d) : Math.max(1, Math.round(x)); } return w; }); }
+const crsHasNum = s => /\d/.test(s || "") && !/NaN|Infinity|undefined|—/.test(s || "");
+function crsScale(h, f){ /* escala el primer número de un texto en formato chileno, conservando decimales y unidad */
+  return String(h).replace(/−?\d{1,3}(?:\.\d{3})+(?:,\d+)?|−?\d+(?:,\d+)?/, m => { const neg = m[0] === "−", t = m.replace("−", ""), d = (t.split(",")[1] || "").length, x = parseFloat(t.replace(/\./g, "").replace(",", ".")) * f; return (neg ? "−" : "") + crsNum(x, d); }); }
+function crsGen(id){
+  const K = CRS[id]; if (!K || !K.sp || !(K.sp.params || []).length) return null; const P = K.sp.params;
+  for (let tr = 0; tr < 40; tr++) {
+    const v = crsRandP(id, P); let A; try { A = K.sp.script(v); } catch (e) { continue; }
+    const Bs = []; for (let j = 0; j < 4; j++) { try { Bs.push(K.sp.script(crsRandP(id, P))); } catch (e) {} }
+    const pv = P.map(q => crsNum(v[q.k], crsDec(v[q.k]))), triv = h => { const m = String(h).match(/\d[\d.,]*/g) || []; return m.length && m.every(x => pv.indexOf(x.replace(/[.,]$/, "")) >= 0); };
+    const cand = A.map((s, i) => i).filter(i => crsHasNum(A[i].h) && !triv(A[i].h) && Bs.some(B => B[i] && B[i].h !== A[i].h)); if (!cand.length) continue;
+    const i = cand[Math.random() < 0.6 ? cand.length - 1 : Math.floor(Math.random() * cand.length)], ok = A[i].h, ops = new Set([ok]);
+    const num = h => { const m = String(h).replace("−", "-").match(/-?\d{1,3}(?:\.\d{3})+(?:,\d+)?|-?\d+(?:,\d+)?/); return m ? parseFloat(m[0].replace(/\.(?=\d{3})/g, "").replace(",", ".")) : NaN; };
+    const pct = /%/.test(ok) && num(ok) >= 0 && num(ok) <= 100, fine = h => crsHasNum(h) && (!pct || (num(h) >= 0 && num(h) <= 100)) && !(num(ok) >= 0 && num(h) < 0);
+    crsAlt(id, P, v).forEach(w => { try { const h = K.sp.script(w)[i].h; if (ops.size < 4 && fine(h)) ops.add(h); } catch (e) {} });
+    [0.8, 1.2, 0.5, 2, 0.9, 1.1, 0.7, 1.3].forEach(f => { if (ops.size < 4) { const h = crsScale(ok, f); if (fine(h)) ops.add(h); } });
+    if (ops.size < 4) continue;
+    const L = [...ops].slice(0, 4).sort(() => Math.random() - 0.5);
+    const datos = P.map(q => q.l + " = " + crsNum(v[q.k], crsDec(v[q.k])) + (q.u && !/\d a \d/.test(q.u) ? " " + q.u : "")).join(";  ");
+    const e = String(A[i].e), at = e.lastIndexOf(ok), guia = at >= 0 ? crsEsc(e.slice(0, at)) + '<b class="crs-blank">?</b>' + crsEsc(e.slice(at + ok.length)) : "";
+    return { q:"<p><b>Datos:</b> " + crsEsc(datos) + ".</p><p>Aplica el procedimiento de «Fórmula paso a paso». Paso <b>«" + crsEsc(A[i].t) + "»</b>" + (guia ? ':</p><p class="crs-gx">' + guia + "</p><p>¿Qué valor va en el signo de interrogación?</p>" : ". ¿Qué resultado obtienes?</p>"), ops:L, ok:L.indexOf(ok), expl:crsEsc(A[i].e) + (A[i].s ? " — " + A[i].s : ""), steps:A }; }
+  return null; }
+function crsGenHTML(id){ const G = crsGen(id); if (!G) return '<p class="hint">No se pudo generar un ejercicio con estos datos. Intenta otra vez.</p>';
+  return '<fieldset class="cq crs-q crs-gq" data-ok="' + G.ok + '" data-gen="1"><legend><span class="cq-n">Ejercicio con datos nuevos</span></legend><div class="cq-t">' + G.q + "</div>" +
+    G.ops.map((o, j) => '<label class="cq-o"><input type="radio" name="crsg-' + id + "-" + Date.now() + '" value="' + j + '"><span><b>' + "abcd"[j] + ")</b> " + crsEsc(o) + "</span></label>").join("") +
+    '<div class="cq-sol" hidden><p class="cq-dh">Explicación</p><p>' + G.expl + '</p><details><summary>Ver el desarrollo completo</summary><ol class="crs-gsteps">' + G.steps.map(s => "<li><b>" + crsEsc(s.t) + ":</b> " + crsEsc(s.e) + "</li>").join("") + "</ol></details></div></fieldset>"; }
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-crs-gen]"); if (!b) return; const box = document.getElementById("crs-gbox"); if (!box) return; box.innerHTML = crsGenHTML(b.dataset.crsGen); b.textContent = "Otro ejercicio"; const f = box.querySelector("input"); if (f) f.focus(); });
+
+/* ===== Progreso de práctica (solo en este navegador) y repaso sugerido ===== */
+function crsQzRec(id, ok){ try { S.qz = S.qz || {}; const r = S.qz[id] = S.qz[id] || { n:0, ok:0, h:[] }; r.n++; if (ok) r.ok++; r.h = (r.h || []).concat(ok ? 1 : 0).slice(-10); r.t = Date.now(); save(); } catch (e) {} }
+function crsQzLine(id){ const r = S.qz && S.qz[id]; if (!r || !r.n) return "Aún no respondes preguntas de este tema."; const rec = r.h.length ? Math.round(r.h.reduce((a, b) => a + b, 0) / r.h.length * 100) : 0; return "Has respondido " + r.n + " preguntas: " + r.ok + " correctas. Últimas " + r.h.length + ": " + rec + " %."; }
+function crsQzWeak(){ const Q = S.qz || {}; return Object.keys(Q).filter(id => PAGES.some(p => p.id === id) && Q[id].h && Q[id].h.length >= 2).map(id => [id, Q[id].h.reduce((a, b) => a + b, 0) / Q[id].h.length]).filter(x => x[1] < 0.7).sort((a, b) => a[1] - b[1]).slice(0, 5); }
+function crsProgHTML(bar){ const Q = S.qz || {}, ids = Object.keys(Q).filter(id => PAGES.some(p => p.id === id)); if (!ids.length) return "";
+  const n = ids.reduce((a, id) => a + Q[id].n, 0), ok = ids.reduce((a, id) => a + Q[id].ok, 0), dom = ids.filter(id => Q[id].h.length >= 3 && Q[id].h.slice(-3).every(x => x)).length, W = crsQzWeak();
+  return '<div class="prog"><div class="prog-r"><span>Preguntas de práctica correctas</span><b>' + ok + " de " + n + "</b></div>" + bar(ok, n, "Preguntas correctas") + "</div>" +
+    '<p class="hint">Temas practicados: ' + ids.length + " · dominados (3 aciertos seguidos): " + dom + "</p>" +
+    (W.length ? '<h3 class="panel-sub">Repaso sugerido</h3><div class="quick">' + W.map(([id, p]) => '<button type="button" class="chip" data-go="' + id + '/pr">' + crsEsc(pageOf(id).t) + " · " + Math.round(p * 100) + " %</button>").join("") + "</div>" : ""); }
+document.addEventListener("change", e => { const r = e.target; if (!r.matches || !r.matches(".crs-q input[type=radio]")) return; const fs = r.closest(".crs-q"); if (fs.dataset.rec) return; fs.dataset.rec = "1";
+  crsQzRec(cur, +r.value === +fs.dataset.ok); const l = document.querySelector(".crs-qzl"); if (l) l.textContent = crsQzLine(cur); });
