@@ -166,7 +166,8 @@ function simMount(el, def){ if (!def || SIMST.has(el)) return; const p = {}; def
   if (SIMIO) SIMIO.observe(el); else { st.vis = true; simLoop(el); } }
 function simOut(el){ const st = SIMST.get(el); st.def.params.forEach(q => { const o = el.querySelector('[data-o="' + q.k + '"]'); if (o) o.textContent = (q.fmt ? q.fmt(st.p[q.k]) : crsNum(st.p[q.k], (String(q.step).split(".")[1] || "").length)) + (q.u ? " " + q.u : ""); }); }
 function simUi(el, force){ const st = SIMST.get(el), now = performance.now(); if (!force && now - st.uiT < 250) return; st.uiT = now;
-  el.querySelector(".csim-m").innerHTML = st.def.metrics(st.s, st.p).map(m => "<dt>" + m[0] + "</dt><dd>" + m[1] + "</dd>").join("");
+  const mt = st.def.metrics(st.s, st.p); el.querySelector(".csim-m").innerHTML = mt.map(m => "<dt>" + m[0] + "</dt><dd>" + m[1] + "</dd>").join("");
+  { const cv = el.querySelector("canvas"), lab = st.def.title + ". " + mt.map(m => m[0] + ": " + String(m[1]).replace(/<[^>]+>/g, "")).join("; ") + "."; if (cv && cv.getAttribute("aria-label") !== lab) cv.setAttribute("aria-label", lab); }
   const a = st.def.ann ? st.def.ann(st.s, st.p) : ""; const an = el.querySelector(".csim-ann"); if (an.textContent !== a) an.textContent = a;
   el.querySelector(".csim-cc").innerHTML = st.def.concl(st.s, st.p); }
 function simDraw(el){ const st = SIMST.get(el), cv = st.cv, W = Math.max(280, cv.parentNode.clientWidth), H = st.def.h ? st.def.h(W) : Math.round(Math.min(440, Math.max(320, W * 0.66))), dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -300,9 +301,11 @@ function crsQzRec(id, ok){ try { S.qz = S.qz || {}; const r = S.qz[id] = S.qz[id
 function crsQzLine(id){ const r = S.qz && S.qz[id]; if (!r || !r.n) return "Aún no respondes preguntas de este tema."; const rec = r.h.length ? Math.round(r.h.reduce((a, b) => a + b, 0) / r.h.length * 100) : 0; return "Has respondido " + r.n + " preguntas: " + r.ok + " correctas. Últimas " + r.h.length + ": " + rec + " %."; }
 function crsQzWeak(){ const Q = S.qz || {}; return Object.keys(Q).filter(id => PAGES.some(p => p.id === id) && Q[id].h && Q[id].h.length >= 2).map(id => [id, Q[id].h.reduce((a, b) => a + b, 0) / Q[id].h.length]).filter(x => x[1] < 0.7).sort((a, b) => a[1] - b[1]).slice(0, 5); }
 function crsProgHTML(bar){ const Q = S.qz || {}, ids = Object.keys(Q).filter(id => PAGES.some(p => p.id === id)); if (!ids.length) return "";
-  const n = ids.reduce((a, id) => a + Q[id].n, 0), ok = ids.reduce((a, id) => a + Q[id].ok, 0), dom = ids.filter(id => Q[id].h.length >= 3 && Q[id].h.slice(-3).every(x => x)).length, W = crsQzWeak();
+  const n = ids.reduce((a, id) => a + Q[id].n, 0), ok = ids.reduce((a, id) => a + Q[id].ok, 0), dom = ids.filter(id => Q[id].h.length >= 3 && Q[id].h.slice(-3).every(x => x)).length, W = crsQzWeak(),
+    OLD = ids.filter(id => Q[id].t && Date.now() - Q[id].t > 7 * 864e5 && !W.some(w => w[0] === id)).sort((a, b) => Q[a].t - Q[b].t).slice(0, 4);
   return '<div class="prog"><div class="prog-r"><span>Preguntas de práctica correctas</span><b>' + ok + " de " + n + "</b></div>" + bar(ok, n, "Preguntas correctas") + "</div>" +
     '<p class="hint">Temas practicados: ' + ids.length + " · dominados (3 aciertos seguidos): " + dom + "</p>" +
+    (OLD.length ? '<h3 class="panel-sub">Para no olvidar (sin práctica hace más de 7 días)</h3><div class="quick">' + OLD.map(id => '<button type="button" class="chip" data-go="' + id + '/pr">' + crsEsc(pageOf(id).t) + "</button>").join("") + "</div>" : "") +
     (W.length ? '<h3 class="panel-sub">Repaso sugerido</h3><div class="quick">' + W.map(([id, p]) => '<button type="button" class="chip" data-go="' + id + '/pr">' + crsEsc(pageOf(id).t) + " · " + Math.round(p * 100) + " %</button>").join("") + "</div>" : ""); }
 document.addEventListener("change", e => { const r = e.target; if (!r.matches || !r.matches(".crs-q input[type=radio]")) return; const fs = r.closest(".crs-q"); if (fs.dataset.rec) return; fs.dataset.rec = "1";
   crsQzRec(cur, +r.value === +fs.dataset.ok); const l = document.querySelector(".crs-qzl"); if (l) l.textContent = crsQzLine(cur); });
