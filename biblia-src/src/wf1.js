@@ -73,7 +73,8 @@ function crsHTML(id, html){ if (window.__noT8 || !CRS[id]) return html; const K 
       (K.dec ? '<p class="x-h">Qué decisión te permite tomar</p><p>' + K.dec + "</p>" : "") +
       (K.pre && K.pre.length ? '<p class="x-h">Antes de este tema conviene saber</p><div class="quick">' + chips(K.pre) + "</div>" : "") +
       (K.rel && K.rel.length ? '<p class="x-h">Temas relacionados</p><div class="quick">' + chips(K.rel) + "</div>" : "") +
-      (crsBack(id).length ? '<p class="x-h">También se usa en</p><div class="quick">' + chips(crsBack(id)) + "</div>" : "") + "</section>"); }
+      (crsBack(id).length ? '<p class="x-h">También se usa en</p><div class="quick">' + chips(crsBack(id)) + "</div>" : "") +
+      (typeof expBtns === "function" ? '<p class="x-h">Llévate el resumen de esta lección</p><div class="actions">' + expBtns("leccion", ' data-c="' + id + '"') + "</div>" : "") + "</section>"); }
   mv("res", sec("fic"));
   /* lo que quede de la guía (#guia) va al final del Concepto; la navegación antigua por secciones ya no aplica */
   const g = R.querySelector("#guia"); if (g) { g.querySelectorAll(":scope > .sechead, :scope > p.hint").forEach(x => x.remove()); const nav = g.querySelector(".t8-nav"); if (nav) nav.remove(); mv("con", g); }
@@ -277,9 +278,21 @@ function crsGen(id){
   return null; }
 let crsAnyQ = () => null;
 function crsGenHTML(id){ const K = CRS[id]; let G = null; if (K && K.gen) for (let t = 0; t < 6 && !G; t++) { try { const g = K.gen(); if (g && g.ops.length === 4 && g.ok >= 0) G = { q:g.q, ops:g.ops, ok:g.ok, expl:g.expl, steps:null }; } catch (e) {} } if (!G) G = crsGen(id); if (!G) return '<p class="hint">No se pudo generar un ejercicio con estos datos. Intenta otra vez.</p>';
-  return '<fieldset class="cq crs-q crs-gq" data-ok="' + G.ok + '" data-gen="1"><legend><span class="cq-n">Ejercicio con datos nuevos</span></legend><div class="cq-t">' + G.q + "</div>" +
+  const okT = String(G.ops[G.ok]).replace(/<[^>]+>/g, ""), num = crsParseNum(okT), dec = ((okT.match(/\d,(\d+)/) || [])[1] || "").length;
+  const free = isFinite(num) && (okT.match(/\d[\d.,]*/g) || []).length === 1 ? '<div class="crs-free"><label>Escribe tu resultado <input type="text" inputmode="decimal" autocomplete="off" class="crs-fin" aria-describedby="crs-fh-' + id + '"></label> <button type="button" class="btn ghost" data-crs-chk="1">Comprobar</button><p class="hint" id="crs-fh-' + id + '">Solo el número (por ejemplo 1.234,5 o 1234.5). Se acepta una diferencia de 1 % por redondeo. O elige una alternativa:</p></div>' : "";
+  return '<fieldset class="cq crs-q crs-gq" data-ok="' + G.ok + '" data-gen="1"' + (free ? ' data-num="' + num + '" data-dec="' + dec + '"' : "") + '><legend><span class="cq-n">Ejercicio con datos nuevos</span></legend><div class="cq-t">' + G.q + "</div>" + free +
     G.ops.map((o, j) => '<label class="cq-o"><input type="radio" name="crsg-' + id + "-" + Date.now() + '" value="' + j + '"><span><b>' + "abcd"[j] + ")</b> " + crsEsc(o) + "</span></label>").join("") +
     '<div class="cq-sol" hidden><p class="cq-dh">Explicación</p><p>' + G.expl + '</p>' + (G.steps ? '<details><summary>Ver el desarrollo completo</summary><ol class="crs-gsteps">' + G.steps.map(s => "<li><b>" + crsEsc(s.t) + ":</b> " + crsEsc(s.e) + "</li>").join("") + "</ol></details>" : "") + "</div></fieldset>"; }
+/* número escrito por el estudiante: acepta 1.234,5 · 1234,5 · 1234.5 · 1,2 % · $ 3.000 */
+function crsParseNum(t){ let s = String(t || "").replace(/−/g, "-").replace(/[^\d.,-]/g, " ").trim().split(/\s+/).filter(x => /\d/.test(x))[0]; if (!s) return NaN;
+  if (s.indexOf(".") >= 0 && s.indexOf(",") >= 0) s = s.replace(/\./g, "").replace(",", "."); else if (s.indexOf(",") >= 0) s = s.replace(",", "."); else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, ""); return parseFloat(s); }
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-crs-chk]"); if (!b) return; const fs = b.closest(".crs-gq"), inp = fs.querySelector(".crs-fin"), raw = String(inp.value).trim(), v = crsParseNum(raw), alt = /^-?\d+\.\d{3}$/.test(raw) ? parseFloat(raw) : NaN, ok = +fs.dataset.num, d = +fs.dataset.dec || 0;
+  if (!isFinite(v)) { inp.setAttribute("aria-invalid", "true"); inp.focus(); return; } inp.removeAttribute("aria-invalid");
+  const tol = Math.max(Math.abs(ok) * 0.01, 0.6 * Math.pow(10, -d)), good = Math.abs(v - ok) <= tol || Math.abs(alt - ok) <= tol, k = +fs.dataset.ok; /* «10.577» puede ser miles o decimal: se aceptan ambas lecturas */
+  fs.classList.remove("ok", "bad"); fs.classList.add(good ? "ok" : "bad"); fs.querySelectorAll(".cq-o").forEach((l, j) => l.classList.toggle("is-ok", j === k));
+  const sol = fs.querySelector(".cq-sol"); sol.hidden = false; sol.firstElementChild.textContent = good ? "Correcto. Por qué:" : "No es ese valor. El resultado es " + fs.querySelectorAll(".cq-o span")[k].textContent.replace(/^[a-d]\)\s*/, "") + ". Por qué:";
+  if (!fs.dataset.rec) { fs.dataset.rec = "1"; crsQzRec(cur, good); const l = document.querySelector(".crs-qzl"); if (l) l.textContent = crsQzLine(cur); } });
+document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches && e.target.matches(".crs-fin")) { e.preventDefault(); const b = e.target.closest(".crs-free").querySelector("[data-crs-chk]"); if (b) b.click(); } });
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-crs-gen]"); if (!b) return; const box = document.getElementById("crs-gbox"); if (!box) return; box.innerHTML = crsGenHTML(b.dataset.crsGen); b.textContent = "Otro ejercicio"; const f = box.querySelector("input"); if (f) f.focus(); });
 
 /* ===== Progreso de práctica (solo en este navegador) y repaso sugerido ===== */
@@ -293,3 +306,17 @@ function crsProgHTML(bar){ const Q = S.qz || {}, ids = Object.keys(Q).filter(id 
     (W.length ? '<h3 class="panel-sub">Repaso sugerido</h3><div class="quick">' + W.map(([id, p]) => '<button type="button" class="chip" data-go="' + id + '/pr">' + crsEsc(pageOf(id).t) + " · " + Math.round(p * 100) + " %</button>").join("") + "</div>" : ""); }
 document.addEventListener("change", e => { const r = e.target; if (!r.matches || !r.matches(".crs-q input[type=radio]")) return; const fs = r.closest(".crs-q"); if (fs.dataset.rec) return; fs.dataset.rec = "1";
   crsQzRec(cur, +r.value === +fs.dataset.ok); const l = document.querySelector(".crs-qzl"); if (l) l.textContent = crsQzLine(cur); });
+
+/* ===== Resumen descargable de cada lección (Word o PDF) ===== */
+function crsExportHTML(id){ const K = CRS[id]; if (!K) return ""; let h = "", k = 0; const H = t => "<h2>" + (++k) + ". " + t + "</h2>";
+  if (K.ess) h += H("Lo esencial") + "<ul>" + K.ess.pts.map(p => "<li>" + p + "</li>").join("") + "</ul><p><b>Fórmula clave:</b> " + K.ess.fx + "</p>" + (K.ess.when ? "<p><b>Úsala cuando</b> " + K.ess.when + "</p>" : "");
+  if (K.intro) h += H("El problema que resuelve") + K.intro.prob + (K.intro.anal ? "<p><b>Comparación:</b></p>" + K.intro.anal : "") + (K.intro.terms ? "<dl>" + K.intro.terms.map(t => "<dt>" + t[0] + "</dt><dd>" + t[1] + "</dd>").join("") + "</dl>" : "");
+  if (K.sp) { let st = []; try { const v = {}; (K.sp.params || []).forEach(q => v[q.k] = q.v); st = K.sp.script(v); } catch (e) {} if (st.length) h += H(K.sp.title || "Fórmula paso a paso") + "<ol>" + st.map(s => "<li><b>" + crsEsc(s.t) + ":</b> " + crsEsc(s.e) + (s.s ? " — " + s.s : "") + "</li>").join("") + "</ol>"; }
+  if ((K.vars || []).length) h += H("Qué significa cada letra") + "<table><thead><tr><th>Símbolo</th><th>Significado</th><th>Unidad</th><th>Rango típico</th></tr></thead><tbody>" + K.vars.map(v => "<tr><td>" + v.join("</td><td>") + "</td></tr>").join("") + "</tbody></table>";
+  if (K.sup) h += H("Supuestos") + K.sup;
+  if (K.ex) h += H("Ejemplo guiado") + "<p>" + K.ex.t + "</p><table><thead><tr><th>Qué hago</th><th>Por qué</th><th>Qué obtengo</th><th>Cómo lo interpreto</th></tr></thead><tbody>" + K.ex.steps.map(s => "<tr><td>" + s.join("</td><td>") + "</td></tr>").join("") + "</tbody></table><p><b>Resultado:</b> " + K.ex.r + "</p>";
+  if (K.real) h += H("En la práctica") + K.real;
+  if (K.adv) h += H("Nivel avanzado") + K.adv;
+  if (K.dec) h += H("Qué decisión te permite tomar") + "<p>" + K.dec + "</p>";
+  if ((K.quiz || []).length) h += H("Autoevaluación") + "<ol>" + K.quiz.map(q => "<li>" + q[0] + "<br>" + q[1].map((o, j) => "abcd"[j] + ") " + o).join(" · ") + "</li>").join("") + "</ol><p><b>Respuestas:</b> " + K.quiz.map((q, i) => (i + 1) + ") " + "abcd"[q[2]] + " — " + q[3]).join(" ") + "</p>";
+  return h; }

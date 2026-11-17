@@ -156,6 +156,7 @@ async function doExport(kind, fmt, id){
   ensureContent();
   const P = S.proj, who = [["Autor", P.autor], ["Organización", P.empresa], ["Fecha", P.fecha]].filter(x => x[1]);
   if (kind === "formulario" || kind === "glosario") return exportRef(kind, fmt);
+  if (kind === "leccion" && typeof crsExportHTML === "function") { const el = tmpEl(mFill(crsExportHTML(id))); try { await exportDoc(fmt, { kind:"Resumen de lección", title:pageOf(id).t, subtitle:(CRS[id] && CRS[id].dec ? "Para decidir: " + CRS[id].dec.replace(/<[^>]+>/g, "") : ""), lines:[["Fuente", "Biblia del Ingeniero Industrial"]], toc:false }, el); } finally { el.remove(); } return; }
   if ((kind === "pagina" || kind === "ramo" || kind === "saber" || kind === "guia") && id === cur && document.querySelector("#app .t8")) return exportPage(fmt, id);
   if (kind === "calc") { const el = tmpEl("<h2>1. Datos de entrada</h2>" + inputSummary(id) + "<h2>2. Resultados y desarrollo</h2>" + demote(safeCalc(id)));
     try { await exportDoc(fmt, { kind:"Memoria de cálculo", title:C[id].t, subtitle:(P.nombre ? P.nombre + " · " : "") + C[id].ey, lines:who, author:P.autor, toc:false }, el); } finally { el.remove(); } }
