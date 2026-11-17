@@ -298,7 +298,7 @@
     chk(){ const L = IP.map(r => lvl(r[1] * r[2])), c = k => L.filter(x => x === k).length; return [["Intolerables", c("Intolerable"), 1], ["Importantes", c("Importante"), 2], ["Moderados", c("Moderado"), 1], ["Tolerables", c("Tolerable"), 2]]; },
     quiz:[["P = 2 y C = 4 da un riesgo:", ["Tolerable", "Moderado", "Importante", "Intolerable"], 2, "VEP = 8."], ["¿Cuál es el control más eficaz?", ["EPP", "Capacitación", "Eliminar el peligro", "Señalética"], 2, "Primero en la jerarquía."], ["Ante un riesgo intolerable se debe:", ["Entregar EPP y seguir", "Detener la actividad hasta controlarlo", "Informar a fin de mes", "Nada"], 1, "No se trabaja con riesgo intolerable."]],
     dec:"qué riesgos atender primero y con qué tipo de control.",
-    rel:["accidentabilidad", "niosh", "ruido"] };
+    rel:["accidentabilidad", "niosh", "ruido", "huella"] };
 
   CSIM.iper = { title:"Matriz de riesgo: antes y después de los controles",
     goal:"cómo se ubican los peligros en la matriz y cómo los controles los mueven a zonas aceptables.",

@@ -203,7 +203,7 @@ function pgFormulario(){
   const ar = [...new Set(FORM.map(f => f[0]))];
   const card = f => { const e = (typeof FEXP !== "undefined" && FEXP[f[1]]) || null; return '<div class="fcard"><h4>' + f[1] + "</h4>" + (e ? '<p class="fpur">' + e[0] + "</p>" : "") + M(f[2].replace(/(\S)·(\S)/g, "$1 × $2").replace(/\s*\/\s*/g, " ÷ ")) + (e ? '<p class="hint">' + e[1] + "</p>" + (C[e[2]] ? '<button class="chip" type="button" data-go="' + e[2] + '">Practicar: ' + C[e[2]].t + "</button>" : "") : "") + "</div>"; };
   return pg("Aprender · Consulta rápida", "Formulario", "Las fórmulas más usadas en la carrera y en el trabajo, agrupadas por área. Cada una indica para qué sirve, qué significa cada letra y con qué calculadora practicarla. Si una fórmula no se entiende, revisa la lección «desde cero» del área.",
-    (typeof expBar === "function" ? expBar("formulario") : "") + acc(ar.map(a => [a + " (" + FORM.filter(f => f[0] === a).length + ")", '<div class="fgrid">' + FORM.filter(f => f[0] === a).map(card).join("") + "</div>"]), true) + (typeof formularioT2HTML === "function" ? formularioT2HTML() : ""));
+    (typeof expBar === "function" ? expBar("formulario") : "") + acc(ar.map(a => [a + " (" + FORM.filter(f => f[0] === a).length + ")", '<div class="fgrid">' + FORM.filter(f => f[0] === a).map(card).join("") + "</div>"]), true) + (typeof formularioT2HTML === "function" ? formularioT2HTML() : "") + (typeof crsFormHTML === "function" ? crsFormHTML() : ""));
 }
 
 const GLOS = {
@@ -212,7 +212,7 @@ const GLOS = {
 function pgGlosario(){
   const ks = Object.keys(GLOS).sort((a, b) => a.localeCompare(b, "es"));
   return pg("Aprender · Vocabulario", "Glosario", ks.length + " términos y siglas que vas a escuchar en la universidad y en la planta.",
-    (typeof expBar === "function" ? expBar("glosario") : "") + '<input type="search" id="glf" placeholder="Filtrar términos…" aria-label="Filtrar glosario" style="max-width:420px;margin-bottom:14px"><dl class="gl" id="gll">' + ks.map(k => '<dt data-k="' + esc(k.toLowerCase()) + '">' + esc(k) + '</dt><dd data-k="' + esc(k.toLowerCase()) + '">' + esc(GLOS[k]) + "</dd>").join("") + "</dl>");
+    (typeof expBar === "function" ? expBar("glosario") : "") + '<input type="search" id="glf" placeholder="Filtrar términos…" aria-label="Filtrar glosario" style="max-width:420px;margin-bottom:14px"><dl class="gl" id="gll">' + ks.map(k => '<dt data-k="' + esc(k.toLowerCase()) + '">' + esc(k) + '</dt><dd data-k="' + esc(k.toLowerCase()) + '">' + esc(GLOS[k]) + "</dd>").join("") + "</dl>" + (typeof crsGlosHTML === "function" ? crsGlosHTML() : ""));
 }
 
 function pgTablas(){
