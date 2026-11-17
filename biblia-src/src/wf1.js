@@ -59,7 +59,7 @@ function crsHTML(id, html){ if (window.__noT8 || !CRS[id]) return html; const K 
   if (K.sim && CSIM[K.sim]) add("sim", '<div class="csim" data-csim="' + K.sim + '"></div>'); else add("sim", '<p class="hint">La simulación de este tema se agrega en una próxima fase.</p>');
   /* Práctica */
   add("pr", '<p class="hint crs-qzl" aria-live="polite">' + crsQzLine(id) + "</p>");
-  if (K.sp && (K.sp.params || []).length && crsGen(id)) add("pr", '<section class="crs-s"><h2>Ejercicio con datos nuevos</h2><p class="hint">Cada vez se generan datos distintos para que practiques el procedimiento sin memorizar la respuesta.</p><div id="crs-gbox"></div><p><button type="button" class="btn" data-crs-gen="' + id + '">Generar ejercicio</button></p></section>');
+  if (K.gen || (K.sp && (K.sp.params || []).length && crsGen(id))) add("pr", '<section class="crs-s"><h2>Ejercicio con datos nuevos</h2><p class="hint">Cada vez se generan datos distintos para que practiques el procedimiento sin memorizar la respuesta.</p><div id="crs-gbox"></div><p><button type="button" class="btn" data-crs-gen="' + id + '">Generar ejercicio</button></p></section>');
   if (K.quiz) add("pr", '<section class="crs-s"><h2>Ponte a prueba</h2>' + K.quiz.map(q0 => { const pm = q0[1].map((_, j) => j).sort(() => Math.random() - 0.5); return [q0[0], pm.map(j => q0[1][j]), pm.indexOf(q0[2]), q0[3]]; }).map((q, i) => '<fieldset class="cq crs-q" data-ok="' + q[2] + '"><legend><span class="cq-n">Pregunta ' + (i + 1) + "</span></legend><div class=\"cq-t\">" + q[0] + "</div>" +
     q[1].map((o, j) => '<label class="cq-o"><input type="radio" name="crsq-' + id + "-" + i + '" value="' + j + '"><span><b>' + "abcd"[j] + ")</b> " + o + "</span></label>").join("") + '<div class="cq-sol" hidden><p class="cq-dh">Explicación</p><p>' + q[3] + "</p></div></fieldset>").join("") + "</section>");
   /* la calculadora queda siempre visible bajo las pestañas (para usarla rápido, sin cambiar de pestaña) */
@@ -275,10 +275,11 @@ function crsGen(id){
     const e = String(A[i].e), at = e.lastIndexOf(ok), guia = at >= 0 ? crsEsc(e.slice(0, at)) + '<b class="crs-blank">?</b>' + crsEsc(e.slice(at + ok.length)) : "";
     return { q:"<p><b>Datos:</b> " + crsEsc(datos) + ".</p><p>Aplica el procedimiento de «Fórmula paso a paso». Paso <b>«" + crsEsc(A[i].t) + "»</b>" + (guia ? ':</p><p class="crs-gx">' + guia + "</p><p>¿Qué valor va en el signo de interrogación?</p>" : ". ¿Qué resultado obtienes?</p>"), ops:L, ok:L.indexOf(ok), expl:crsEsc(A[i].e) + (A[i].s ? " — " + A[i].s : ""), steps:A }; }
   return null; }
-function crsGenHTML(id){ const G = crsGen(id); if (!G) return '<p class="hint">No se pudo generar un ejercicio con estos datos. Intenta otra vez.</p>';
+let crsAnyQ = () => null;
+function crsGenHTML(id){ const K = CRS[id]; let G = null; if (K && K.gen) for (let t = 0; t < 6 && !G; t++) { try { const g = K.gen(); if (g && g.ops.length === 4 && g.ok >= 0) G = { q:g.q, ops:g.ops, ok:g.ok, expl:g.expl, steps:null }; } catch (e) {} } if (!G) G = crsGen(id); if (!G) return '<p class="hint">No se pudo generar un ejercicio con estos datos. Intenta otra vez.</p>';
   return '<fieldset class="cq crs-q crs-gq" data-ok="' + G.ok + '" data-gen="1"><legend><span class="cq-n">Ejercicio con datos nuevos</span></legend><div class="cq-t">' + G.q + "</div>" +
     G.ops.map((o, j) => '<label class="cq-o"><input type="radio" name="crsg-' + id + "-" + Date.now() + '" value="' + j + '"><span><b>' + "abcd"[j] + ")</b> " + crsEsc(o) + "</span></label>").join("") +
-    '<div class="cq-sol" hidden><p class="cq-dh">Explicación</p><p>' + G.expl + '</p><details><summary>Ver el desarrollo completo</summary><ol class="crs-gsteps">' + G.steps.map(s => "<li><b>" + crsEsc(s.t) + ":</b> " + crsEsc(s.e) + "</li>").join("") + "</ol></details></div></fieldset>"; }
+    '<div class="cq-sol" hidden><p class="cq-dh">Explicación</p><p>' + G.expl + '</p>' + (G.steps ? '<details><summary>Ver el desarrollo completo</summary><ol class="crs-gsteps">' + G.steps.map(s => "<li><b>" + crsEsc(s.t) + ":</b> " + crsEsc(s.e) + "</li>").join("") + "</ol></details>" : "") + "</div></fieldset>"; }
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-crs-gen]"); if (!b) return; const box = document.getElementById("crs-gbox"); if (!box) return; box.innerHTML = crsGenHTML(b.dataset.crsGen); b.textContent = "Otro ejercicio"; const f = box.querySelector("input"); if (f) f.focus(); });
 
 /* ===== Progreso de práctica (solo en este navegador) y repaso sugerido ===== */
