@@ -70,6 +70,7 @@ function pgHome(){
       '<section class="panel" aria-labelledby="h-prog"><h2 class="panel-h" id="h-prog">' + icoUse("a-eco") + 'Tu progreso</h2>' +
         '<div class="prog"><div class="prog-r"><button class="linkb" type="button" data-go="mi-malla">Ramos aprobados</button><b>' + nOk + " de " + COURSES.length + "</b></div>" + bar(nOk, COURSES.length, "Ramos aprobados") + "</div>" +
         '<div class="prog"><div class="prog-r"><button class="linkb" type="button" data-go="herramientas">Calculadoras usadas</button><b>' + nDone + " de " + nCalc + "</b></div>" + bar(nDone, nCalc, "Calculadoras usadas") + "</div>" +
+        (typeof crsProgHTML === "function" ? crsProgHTML(bar) : "") +
         '<h3 class="panel-sub">Temas vistos por área</h3><div class="aprog">' + ar.map(x => '<button class="aprog-r" type="button" data-go="' + AREA_ID(x[0]) + '" style="--ac:var(--a-' + x[0][0] + ')"><span class="aprog-i">' + icoUse("a-" + x[0][0]) + '</span><span class="aprog-t">' + esc(x[0][1]) + '</span><span class="aprog-n">' + x[1] + "/" + x[2] + "</span>" + bar(x[1], x[2], x[0][1] + ": temas vistos") + "</button>").join("") + "</div></section>" +
     "</div>" +
     (fav.length ? '<section aria-labelledby="h-fav"><h2 class="sh" id="h-fav">Favoritos</h2><div class="quick">' + fav.map(p => '<button class="chip" type="button" data-go="' + p.id + '">' + icoUse("estrella-on") + " " + esc(p.t) + "</button>").join("") + "</div></section>" : "") +
