@@ -165,7 +165,7 @@ function simUi(el, force){ const st = SIMST.get(el), now = performance.now(); if
   el.querySelector(".csim-m").innerHTML = st.def.metrics(st.s, st.p).map(m => "<dt>" + m[0] + "</dt><dd>" + m[1] + "</dd>").join("");
   const a = st.def.ann ? st.def.ann(st.s, st.p) : ""; const an = el.querySelector(".csim-ann"); if (an.textContent !== a) an.textContent = a;
   el.querySelector(".csim-cc").innerHTML = st.def.concl(st.s, st.p); }
-function simDraw(el){ const st = SIMST.get(el), cv = st.cv, W = Math.max(280, cv.parentNode.clientWidth), H = st.def.h ? st.def.h(W) : Math.round(Math.min(420, Math.max(260, W * 0.62))), dpr = Math.min(2, window.devicePixelRatio || 1);
+function simDraw(el){ const st = SIMST.get(el), cv = st.cv, W = Math.max(280, cv.parentNode.clientWidth), H = st.def.h ? st.def.h(W) : Math.round(Math.min(440, Math.max(320, W * 0.66))), dpr = Math.min(2, window.devicePixelRatio || 1);
   if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.height = H + "px"; }
   const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H); st.def.draw(g, W, H, st.s, st.p, st.C); }
 function simLoop(el){ const st = SIMST.get(el); if (!st || st.raf || !st.run || !st.vis) return; st.last = performance.now();
