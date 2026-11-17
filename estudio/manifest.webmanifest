@@ -1,0 +1,19 @@
+{
+  "id": "portal-estudio-industrial",
+  "name": "INDUSHUB · Ingeniería Industrial",
+  "short_name": "INDUSHUB",
+  "description": "Sistema personal inteligente de aprendizaje: teoría, práctica, repaso espaciado, exámenes y progreso.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "es",
+  "background_color": "#0F2B48",
+  "theme_color": "#0F2B48",
+  "icons": [
+    { "src": "portal-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "portal-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "portal-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "portal-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

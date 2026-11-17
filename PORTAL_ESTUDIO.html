@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6366f1">
+<title>Portal de Estudio · redirigiendo…</title>
+<style>
+  html,body{height:100%;margin:0}
+  body{display:flex;align-items:center;justify-content:center;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:#0c0f1d;color:#eceef8;text-align:center;padding:24px}
+  .box{max-width:420px}
+  .spin{width:44px;height:44px;margin:0 auto 18px;border-radius:50%;
+    border:3px solid rgba(255,255,255,.2);border-top-color:#6366f1;animation:s 1s linear infinite}
+  @keyframes s{to{transform:rotate(360deg)}}
+  h1{font-size:1.2rem;font-weight:800;margin:0 0 6px}
+  p{color:#9aa1b8;font-size:.9rem;margin:0 0 16px}
+  a{color:#6366f1;font-weight:700;text-decoration:none}
+</style>
+</head>
+<body>
+  <div class="box">
+    <div class="spin"></div>
+    <h1>El Portal se movió a su propia app</h1>
+    <p>Te estamos llevando a la nueva dirección y limpiando la versión anterior. Tu progreso se conserva.</p>
+    <p><a href="estudio/">Entrar al Portal de Estudio ›</a></p>
+  </div>
+<script>
+/* Limpieza puntual: desregistra SOLO el service worker viejo del Portal que
+   estaba en la raíz (el que interfería con Órbita). No toca Órbita ni borra
+   ningún dato guardado (localStorage se conserva a nivel de dominio). */
+(function(){
+  var go=function(){ location.replace('estudio/'); };
+  if(!('serviceWorker' in navigator)){ setTimeout(go,300); return; }
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    var jobs=[];
+    regs.forEach(function(r){
+      var url=(r.active&&r.active.scriptURL)||(r.installing&&r.installing.scriptURL)||(r.waiting&&r.waiting.scriptURL)||'';
+      // sólo el SW del Portal en la raíz (no el de /estudio/, no el de Órbita 'sw.js')
+      if(url.indexOf('portal-sw.js')>-1 && url.indexOf('/estudio/')===-1){
+        jobs.push(r.unregister());
+      }
+    });
+    return Promise.all(jobs);
+  }).catch(function(){}).then(function(){
+    if(window.caches){ return caches.delete('portal-v4-1').catch(function(){}); }
+  }).catch(function(){}).then(function(){ setTimeout(go,400); });
+  // salvaguarda por si algo se cuelga
+  setTimeout(go,2500);
+})();
+</script>
+</body>
+</html>
