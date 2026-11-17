@@ -59,6 +59,8 @@ Todo el código corre dentro de una sola función `(() => { … })();`: los nomb
 | `wf8.js` | Curso: ingeniería económica (VAN/TIR, equivalencias, tasas, amortización, depreciación, equilibrio, costeo, CAUE, vida económica, WACC, flujo de caja, ratios) |
 | `wf9.js` | Curso: estudio del trabajo y ergonomía (tiempo estándar, muestreo, aprendizaje, NIOSH, ruido) |
 | `wg1.js` | Curso: gestión, mejora y seguridad (FODA, Ishikawa, 5 porqués, SIPOC, Canvas, RACI, IPER, accidentabilidad, huella de carbono) |
+| `wg2.js` | Curso: Lean (kanban, push vs pull), mejora continua (PDCA, DMAIC, 8D), 7 herramientas y costos de la calidad, KPI |
+| `wg9.js` | Ejercicios generados para lecciones cualitativas y certamen de práctica por ramo (temas del ramo, nota 1,0–7,0) |
 | | Todos los módulos del curso se cargan de forma diferida; `wf1.js` agrega además la tabla maestra de fórmulas (en «Formulario»), el glosario de lecciones (en «Glosario») y los enlaces de vuelta «También se usa en». |
 | `p8.js` | Páginas, navegación, eventos y `render()` (va al final) |
 
