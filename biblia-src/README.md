@@ -49,6 +49,8 @@ Todo el código corre dentro de una sola función `(() => { … })();`: los nomb
 | `we3.js` | Explicaciones a fondo y fórmulas con el significado de cada letra (Optimización y Química y ambiente) |
 | `we4.js` | Certamen de práctica de Optimización (15 preguntas) y Química y ambiente (20): casos y problemas con números al azar, corrección con nota de 1,0 a 7,0, logro por indicador y desarrollo de cada respuesta |
 | `we5.js` | Ejemplos explicados desde cero (datos y su significado, qué se pide, pasos con su porqué, respuesta, comprobación y error típico) y «Matemática mínima» al inicio de Optimización y Química y ambiente |
+| `wf1.js` | Curso interactivo: vista por pestañas (Concepto, Fórmula paso a paso, Ejemplo, Simulación, Práctica, Resumen), tarjeta «Lo esencial», `StepPlayer` (cálculo animado con controles y «Hazlo tú»), `SimulationFrame` (lienzo, parámetros, métricas en vivo y conclusión) y búsqueda difusa agrupada por tipo. Registros `CRS[id]` y `CSIM[id]` |
+| `wf2.js`… | Temas del curso (contenido `CRS` y simulaciones `CSIM`), un archivo por módulo, cargados de forma diferida |
 | `p8.js` | Páginas, navegación, eventos y `render()` (va al final) |
 
 ## Pruebas (`tests/`)
