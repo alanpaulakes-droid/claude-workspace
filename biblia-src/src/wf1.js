@@ -77,7 +77,7 @@ function crsHTML(id, html){ if (window.__noT8 || !CRS[id]) return html; const K 
   /* tarjeta «Lo esencial» + pestañas, justo después del título */
   const box = document.createElement("div"); box.className = "crs"; box.dataset.crs = id;
   const E = K.ess;
-  box.innerHTML = (E ? '<aside class="crs-ess" aria-label="Lo esencial"><p class="crs-ess-h">Lo esencial</p><ul>' + E.pts.map(p => "<li>" + p + "</li>").join("") + '</ul><p class="crs-ess-fx">' + E.fx + "</p>" + (E.when ? '<p class="crs-ess-w"><b>Cuándo usarla:</b> ' + E.when + "</p>" : "") + ((calcF || calcR) ? '<p class="crs-ess-b no-print"><button type="button" class="btn ghost small" data-crs-calc="1">Calcular con mis datos ↓</button></p>' : "") + "</aside>" : "") +
+  box.innerHTML = (E ? '<aside class="crs-ess" aria-label="Lo esencial"><p class="crs-ess-h">Lo esencial</p><ul>' + E.pts.map(p => "<li>" + p + "</li>").join("") + '</ul><p class="crs-ess-fx" tabindex="0" role="group" aria-label="Fórmula clave">' + E.fx + "</p>" + (E.when ? '<p class="crs-ess-w"><b>Cuándo usarla:</b> ' + E.when + "</p>" : "") + ((calcF || calcR) ? '<p class="crs-ess-b no-print"><button type="button" class="btn ghost small" data-crs-calc="1">Calcular con mis datos ↓</button></p>' : "") + "</aside>" : "") +
     '<div class="crs-tabs no-print" role="tablist" aria-label="Partes del tema">' + CRS_TABS.map(t => '<button type="button" role="tab" id="crs-t-' + t[0] + '" aria-controls="crs-p-' + t[0] + '" data-tab="' + t[0] + '" aria-selected="false" tabindex="-1">' + t[1] + "</button>").join("") + "</div>";
   CRS_TABS.forEach(t => box.appendChild(P[t[0]]));
   if (calc.childNodes.length) box.appendChild(calc);
