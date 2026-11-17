@@ -70,7 +70,8 @@ function crsHTML(id, html){ if (window.__noT8 || !CRS[id]) return html; const K 
     add("res", '<section class="crs-s"><h2>Lo esencial</h2><ul class="crs-pts">' + (K.ess ? K.ess.pts.map(p => "<li>" + p + "</li>").join("") : "") + "</ul>" +
       (K.dec ? '<p class="x-h">Qué decisión te permite tomar</p><p>' + K.dec + "</p>" : "") +
       (K.pre && K.pre.length ? '<p class="x-h">Antes de este tema conviene saber</p><div class="quick">' + chips(K.pre) + "</div>" : "") +
-      (K.rel && K.rel.length ? '<p class="x-h">Temas relacionados</p><div class="quick">' + chips(K.rel) + "</div>" : "") + "</section>"); }
+      (K.rel && K.rel.length ? '<p class="x-h">Temas relacionados</p><div class="quick">' + chips(K.rel) + "</div>" : "") +
+      (crsBack(id).length ? '<p class="x-h">También se usa en</p><div class="quick">' + chips(crsBack(id)) + "</div>" : "") + "</section>"); }
   mv("res", sec("fic"));
   /* lo que quede de la guía (#guia) va al final del Concepto; la navegación antigua por secciones ya no aplica */
   const g = R.querySelector("#guia"); if (g) { g.querySelectorAll(":scope > .sechead, :scope > p.hint").forEach(x => x.remove()); const nav = g.querySelector(".t8-nav"); if (nav) nav.remove(); mv("con", g); }
@@ -210,3 +211,29 @@ function crsSearch(q){ q = crsNz(q).trim(); if (q.length < 1) return []; const H
   const ORDK = { "Tema":0, "Fórmula":1, "Simulación":2, "Glosario":4 };
   const seen = new Set(); return H.sort((a, b) => b.sc - a.sc).filter(h => { const key = h.k + h.go + h.t; if (seen.has(key)) return false; seen.add(key); return true; })
     .slice(0, 30).sort((a, b) => ((ORDK[a.k] == null ? 3 : ORDK[a.k]) - (ORDK[b.k] == null ? 3 : ORDK[b.k])) || b.sc - a.sc).slice(0, 24); }
+
+/* ===== Referencia del curso: tabla maestra de fórmulas y glosario de lecciones (filtrables, con enlace a cada lección) ===== */
+function crsIds(){ return Object.keys(CRS).filter(id => CRS[id] && PAGES.some(p => p.id === id)); }
+function crsArea(id){ const p = pageOf(id); return (typeof GROUPS !== "undefined" && GROUPS[p.g]) || ""; }
+function crsFormHTML(){
+  ensureContent(); const ids = crsIds().filter(id => CRS[id].ess).sort((a, b) => (crsArea(a) + pageOf(a).t).localeCompare(crsArea(b) + pageOf(b).t, "es"));
+  if (!ids.length) return "";
+  const rows = ids.map(id => { const E = CRS[id].ess, t = pageOf(id).t; return '<tr data-k="' + crsEsc(crsNz(crsArea(id) + " " + t + " " + E.fx + " " + E.when + " " + (CRS[id].kw || ""))) + '"><td>' + crsEsc(crsArea(id)) + '</td><td><button type="button" class="linkb" data-go="' + id + '/fx">' + crsEsc(t) + '</button></td><td class="crs-ff">' + E.fx + "</td><td>" + E.when + "</td></tr>"; }).join("");
+  return '<section class="card crs-ref" aria-labelledby="crs-fh"><h2 id="crs-fh">Tabla maestra: fórmulas de las lecciones interactivas</h2><p class="hint">' + ids.length + ' lecciones. Toca el tema para abrir su «Fórmula paso a paso». Puedes filtrar por tema, área, símbolo o palabra clave.</p>' +
+    '<input type="search" data-crsf="crs-ft" placeholder="Filtrar fórmulas (ej.: VAN, σ, inventario)…" aria-label="Filtrar la tabla maestra de fórmulas">' +
+    '<div class="crs-tw" tabindex="0" role="region" aria-label="Tabla maestra de fórmulas"><table id="crs-ft"><thead><tr><th scope="col">Área</th><th scope="col">Tema</th><th scope="col">Fórmula clave</th><th scope="col">Cuándo usarla</th></tr></thead><tbody>' + rows + '</tbody></table></div><p class="hint crs-fn" hidden>Sin resultados para ese filtro.</p></section>';
+}
+function crsGlosHTML(){
+  ensureContent(); const G = {};
+  /* un mismo símbolo puede significar cosas distintas según la lección (n, p, C…): se agrupa por término y definición */
+  crsIds().forEach(id => ((CRS[id].intro && CRS[id].intro.terms) || []).forEach(([k, d]) => { const key = String(k).trim() + "\u0001" + d; (G[key] = G[key] || { t:String(k).trim(), d, ids:[] }).ids.push(id); }));
+  const ks = Object.keys(G).sort((a, b) => crsNz(G[a].t).localeCompare(crsNz(G[b].t), "es") || crsNz(G[a].d).localeCompare(crsNz(G[b].d), "es")); if (!ks.length) return "";
+  return '<section class="card crs-ref" aria-labelledby="crs-gh"><h2 id="crs-gh">Términos de las lecciones interactivas</h2><p class="hint">' + ks.length + ' términos explicados dentro de las lecciones, con enlace a cada una.</p>' +
+    '<input type="search" data-crsf="crs-gl" placeholder="Filtrar términos de las lecciones…" aria-label="Filtrar términos de las lecciones">' +
+    '<dl class="gl" id="crs-gl">' + ks.map(k => '<div class="crs-gi" data-k="' + crsEsc(crsNz(G[k].t + " " + G[k].d)) + '"><dt>' + G[k].t + "</dt><dd>" + G[k].d + ' <span class="crs-gl-l">' + G[k].ids.map(id => '<button type="button" class="linkb" data-go="' + id + '/con">' + crsEsc(pageOf(id).t) + "</button>").join(" · ") + "</span></dd></div>").join("") + '</dl><p class="hint crs-fn" hidden>Sin resultados para ese filtro.</p></section>';
+}
+/* temas que enlazan a este y que él no enlaza: enlace de vuelta automático */
+function crsBack(id){ return crsIds().filter(j => j !== id && (CRS[j].rel || []).indexOf(id) >= 0 && (CRS[id].rel || []).indexOf(j) < 0); }
+document.addEventListener("input", e => { const t = e.target.closest && e.target.closest("[data-crsf]"); if (!t) return; const box = document.getElementById(t.dataset.crsf); if (!box) return;
+  const q = crsNz(t.value).trim(); let k = 0; box.querySelectorAll("[data-k]").forEach(r => { const ok = !q || r.dataset.k.indexOf(q) >= 0; r.hidden = !ok; if (ok) k++; });
+  const nf = t.closest("section") && t.closest("section").querySelector(".crs-fn"); if (nf) nf.hidden = k > 0; });

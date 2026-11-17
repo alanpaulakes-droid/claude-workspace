@@ -578,7 +578,7 @@
       ["Si el costo variable tiene rango asimétrico hacia arriba, el VAN esperado comparado con el VAN del caso más probable es:", ["Mayor", "Menor", "Igual", "Indeterminado"], 1, "El promedio del costo queda sobre su moda: el VAN promedio baja."],
       ["Al aumentar el número de simulaciones:", ["El VAN esperado sube", "Los resultados se estabilizan", "El riesgo desaparece", "La tasa cambia"], 1, "Más iteraciones = estimaciones más estables."]],
     dec:"si invertir, qué variables controlar o asegurar, y cuánto riesgo se asume.",
-    pre:["van-tir"], rel:["van-tir", "decisiones", "flujo-caja"] };
+    pre:["van-tir"], rel:["van-tir", "decisiones", "flujo-caja", "colas"] };
 
   CSIM.mc = { title:"Histograma del VAN que converge con miles de simulaciones",
     goal:"cómo una distribución de resultados muestra el riesgo que oculta el caso base, y cómo los datos inciertos mueven la probabilidad de pérdida.",

@@ -50,7 +50,16 @@ Todo el código corre dentro de una sola función `(() => { … })();`: los nomb
 | `we4.js` | Certamen de práctica de Optimización (15 preguntas) y Química y ambiente (20): casos y problemas con números al azar, corrección con nota de 1,0 a 7,0, logro por indicador y desarrollo de cada respuesta |
 | `we5.js` | Ejemplos explicados desde cero (datos y su significado, qué se pide, pasos con su porqué, respuesta, comprobación y error típico) y «Matemática mínima» al inicio de Optimización y Química y ambiente |
 | `wf1.js` | Curso interactivo: vista por pestañas (Concepto, Fórmula paso a paso, Ejemplo, Simulación, Práctica, Resumen), tarjeta «Lo esencial», `StepPlayer` (cálculo animado con controles y «Hazlo tú»), `SimulationFrame` (lienzo, parámetros, métricas en vivo y conclusión) y búsqueda difusa agrupada por tipo. Registros `CRS[id]` y `CSIM[id]` |
-| `wf2.js`… | Temas del curso (contenido `CRS` y simulaciones `CSIM`), un archivo por módulo, cargados de forma diferida |
+| `wf2.js` | Curso: EOQ (piloto) |
+| `wf3.js` | Curso: inventarios (stock de seguridad, ABC, MRP) |
+| `wf4.js` | Curso: investigación de operaciones (PL, transporte, asignación, CPM, colas, decisiones, ruta corta, localización, factores, Monte Carlo) |
+| `wf5.js` | Curso: producción (pronósticos, balanceo, OEE, SMED, VSM, secuenciación, Johnson, productividad) |
+| `wf6.js` | Curso: calidad (X̄-R, p, capacidad, sigma, Pareto, AMEF) |
+| `wf7.js` | Curso: estadística (descriptiva, tamaño de muestra, regresión) |
+| `wf8.js` | Curso: ingeniería económica (VAN/TIR, equivalencias, tasas, amortización, depreciación, equilibrio, costeo, CAUE, vida económica, WACC, flujo de caja, ratios) |
+| `wf9.js` | Curso: estudio del trabajo y ergonomía (tiempo estándar, muestreo, aprendizaje, NIOSH, ruido) |
+| `wg1.js` | Curso: gestión, mejora y seguridad (FODA, Ishikawa, 5 porqués, SIPOC, Canvas, RACI, IPER, accidentabilidad, huella de carbono) |
+| | Todos los módulos del curso se cargan de forma diferida; `wf1.js` agrega además la tabla maestra de fórmulas (en «Formulario»), el glosario de lecciones (en «Glosario») y los enlaces de vuelta «También se usa en». |
 | `p8.js` | Páginas, navegación, eventos y `render()` (va al final) |
 
 ## Pruebas (`tests/`)
