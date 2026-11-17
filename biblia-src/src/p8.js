@@ -176,7 +176,7 @@ let cur = "inicio";
 function searchHits(q){
   ensureContent();
   const nz = t => String(t || "").replace(/<[^>]+>/g, "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); q = nz(q).trim(); if (q.length < 2) return [];
-  const H = []; PAGES.forEach(p => { if (p.id !== "inicio" && nz(p.t + " " + (p.d || "") + " " + (C[p.id] ? C[p.id].ey : "")).includes(q)) H.push({ go:p.id, t:p.t, k:GROUPS[p.g] || "Sección" }); });
+  const H = typeof crsSearch === "function" ? crsSearch(q) : []; PAGES.forEach(p => { if (H.some(h => h.go === p.id)) return; if (p.id !== "inicio" && nz(p.t + " " + (p.d || "") + " " + (C[p.id] ? C[p.id].ey : "")).includes(q)) H.push({ go:p.id, t:p.t, k:GROUPS[p.g] || "Sección" }); });
   COURSES.forEach(c => c.u.forEach(u => { if (nz(u[0]).includes(q) || (q.length > 3 && nz(u[1]).includes(q))) H.push({ go:c.id, t:c.t + " · " + u[0].replace(/^\d+\.\s*/, ""), k:"Ramo" }); }));
   Object.keys(GUIDE).forEach(id => { if (q.length > 3 && GSEC.some(s => nz(GUIDE[id][s[0]]).includes(q)) && !H.some(x => x.go === id)) H.push({ go:id, t:C[id].t + " (guía)", k:"Guía de estudio" }); });
   Object.keys(GLOS).forEach(g => { if (nz(g + " " + GLOS[g]).includes(q)) H.push({ go:"glosario", t:g + ": " + GLOS[g].slice(0, 50) + "…", k:"Glosario" }); });
@@ -186,7 +186,7 @@ function searchHits(q){
   if (q.length > 3) searchHits.ix.forEach(e => { if (H.length < 24 && !e[3].includes(q) && e[4].includes(q) && !H.some(h => h.go === e[0] && h.t.endsWith(e[2]))) H.push({ go:e[0], t:e[1] + " · " + e[2], k:(kx[gx(e[0])] || "Saberes") + " (en el texto)" }); });
   return H.slice(0, 24);
 }
-const hitsHTML = (H, q) => H.map(x => '<button type="button" class="hit" data-go="' + x.go + '"><span class="hit-t">' + esc(x.t) + '</span><small class="hit-k">' + esc(x.k) + "</small>" + icoUse("chev-r") + "</button>").join("") || (q.trim().length >= 2 ? '<p class="hint" style="padding:4px 8px;margin:0">Sin resultados</p>' : "");
+const hitsHTML = (H, q) => H.map((x, i) => (i === 0 || H[i - 1].k !== x.k ? '<p class="hit-g">' + esc(x.k) + "</p>" : "") + '<button type="button" class="hit" data-go="' + x.go + '"><span class="hit-t">' + esc(x.t) + '</span><small class="hit-k">' + esc(x.k) + "</small>" + icoUse("chev-r") + "</button>").join("") || (q.trim().length >= 2 ? '<p class="hint" style="padding:4px 8px;margin:0">Sin resultados</p>' : "");
 function renderSide(){
   let closed = null; try { closed = JSON.parse(localStorage.getItem(KEY + "-side2") || "null"); } catch (e) {}
   if (!closed) closed = Object.keys(GROUPS).filter(g => g !== "malla");
@@ -215,10 +215,12 @@ function render(keepScroll){
   try { html = p.r(); } catch (e) { html = note("Error al mostrar esta sección: " + esc(e.message), "bad"); }
   try { if (typeof expandHTML === "function") html = expandHTML(cur, html); } catch (e) { console.error(e); }
   try { if (typeof tpl8HTML === "function") html = tpl8HTML(cur, html); } catch (e) { console.error(e); }
+  try { if (typeof crsHTML === "function") html = crsHTML(cur, html); } catch (e) { console.error(e); }
   const tp = NAV[NAV.length - 1]; if (tp && tp.c && tp.id !== cur) html = '<button class="retbar no-print" type="button" data-act="back">← Volver a «' + esc(pageOf(tp.id).t) + '»</button>' + html;
   document.getElementById("app").innerHTML = mFill(html);
   try { abbrify(document.getElementById("app")); } catch (e) {}
   try { if (typeof afterRender === "function") afterRender(document.getElementById("app")); } catch (e) { console.error(e); }
+  try { if (typeof crsAfter === "function") crsAfter(document.getElementById("app")); } catch (e) { console.error(e); }
   renderSide();
   if (cur === "tablas") tfTable();
   document.title = (cur === "inicio" ? "" : p.t + " · ") + "Biblia del Ingeniero Industrial";
@@ -227,13 +229,14 @@ function render(keepScroll){
 const NAV = [];
 function navSnap(fromApp){ const app = document.getElementById("app"); return { id:cur, y:window.scrollY, c:!!fromApp, open:app ? [...app.querySelectorAll("details")].map(d => d.open) : [] }; }
 function go(id, fromApp){
+  { const sp = String(id).split("/"); id = sp[0]; if (sp[1]) { try { S.ctab = S.ctab || {}; S.ctab[id] = sp[1]; } catch (e) {} } }
   if (!PAGES.find(p => p.id === id)) id = "inicio";
   if (id !== cur) { NAV.push(navSnap(fromApp)); if (NAV.length > 60) NAV.shift(); }
   cur = id; if (pageOf(id).g !== "hub" && id !== "inicio") { S.last = id; S.seen = S.seen || {}; S.seen[id] = 1; S.recent = [id].concat((S.recent || []).filter(x => x !== id)).slice(0, 6); save(); }
-  try { if (location.hash.slice(1) !== id) history.replaceState(null, "", "#" + id); } catch (e) {}
+  try { if (location.hash.slice(1).split("/")[0] !== id) history.replaceState(null, "", "#" + id); } catch (e) {}
   render();
 }
-window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (h && h !== cur && PAGES.find(p => p.id === h)) { cur = h; render(); } });
+window.addEventListener("hashchange", () => { const h = location.hash.slice(1).split("/")[0]; if (h && h !== cur && PAGES.find(p => p.id === h)) { cur = h; render(); } });
 
 /* ============ EVENTOS ============ */
 function toast(m){ const t = document.getElementById("toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2600); }
@@ -282,7 +285,7 @@ document.addEventListener("toggle", e => { const d = e.target; if (!d.dataset ||
 document.getElementById("backBtn").addEventListener("click", goBack);
 
 /* ============ INICIO ============ */
-(function(){ try { icoSprite(); } catch (e) {} const h = location.hash.slice(1); cur = h && PAGES.find(p => p.id === h) ? h : "inicio"; render();
+(function(){ try { icoSprite(); } catch (e) {} const h = location.hash.slice(1).split("/")[0]; cur = h && PAGES.find(p => p.id === h) ? h : "inicio"; render();
   /* el contenido diferido se carga en tiempo ocioso, apenas se muestra la primera pantalla */
   (window.requestIdleCallback || (f => setTimeout(f, 30)))(lazyIdle, { timeout:400 }); })();
 })();
