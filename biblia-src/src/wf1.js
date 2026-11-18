@@ -64,8 +64,8 @@ function crsHTML(id, html){ if (window.__noT8 || !CRS[id]) return html; const K 
     q[1].map((o, j) => '<label class="cq-o"><input type="radio" name="crsq-' + id + "-" + i + '" value="' + j + '"><span><b>' + "abcd"[j] + ")</b> " + o + "</span></label>").join("") + '<div class="cq-sol" hidden><p class="cq-dh">Explicación</p><p>' + q[3] + "</p></div></fieldset>").join("") + "</section>");
   /* la calculadora queda siempre visible bajo las pestañas (para usarla rápido, sin cambiar de pestaña) */
   const calcF = R.querySelector("section.card.form"), calcR = R.querySelector("section#res"), calc = document.createElement("section"); calc.className = "crs-calc"; calc.id = "crs-calc";
-  if (calcF || calcR) { calc.innerHTML = '<h2 class="crs-try">Calculadora: hazlo tú con tus datos</h2><p class="hint">Cambia los datos de entrada y presiona «Calcular». El desarrollo paso a paso aparece en el resultado.</p>'; if (calcF) calc.appendChild(take(calcF)); if (calcR) calc.appendChild(take(calcR));
-    add("pr", '<p class="crs-go"><button type="button" class="btn ghost" data-crs-calc="1">Ir a la calculadora con tus propios datos ↓</button></p>'); }
+  if (calcF || calcR) { calc.innerHTML = '<h2 class="crs-try">Calculadora</h2><p class="hint">Cambia los datos y presiona «Calcular». El desarrollo paso a paso aparece en el resultado. Más abajo está la explicación completa del tema.</p>'; if (calcF) calc.appendChild(take(calcF)); if (calcR) calc.appendChild(take(calcR));
+    add("pr", '<p class="crs-go"><button type="button" class="btn ghost" data-crs-calc="1">Ir a la calculadora con tus propios datos ↑</button></p>'); }
   mv("pr", sec("ejer"));
   /* Resumen */
   { const chips = a => (a || []).filter(x => PAGES.some(p => p.id === x)).map(x => '<button type="button" class="chip" data-go="' + x + '">' + crsEsc(pageOf(x).t) + "</button>").join("");
@@ -81,10 +81,12 @@ function crsHTML(id, html){ if (window.__noT8 || !CRS[id]) return html; const K 
   /* tarjeta «Lo esencial» + pestañas, justo después del título */
   const box = document.createElement("div"); box.className = "crs"; box.dataset.crs = id;
   const E = K.ess;
-  box.innerHTML = (E ? '<aside class="crs-ess" aria-label="Lo esencial"><p class="crs-ess-h">Lo esencial</p><ul>' + E.pts.map(p => "<li>" + p + "</li>").join("") + '</ul><p class="crs-ess-fx" tabindex="0" role="group" aria-label="Fórmula clave">' + E.fx + "</p>" + (E.when ? '<p class="crs-ess-w"><b>Cuándo usarla:</b> ' + E.when + "</p>" : "") + ((calcF || calcR) ? '<p class="crs-ess-b no-print"><button type="button" class="btn ghost small" data-crs-calc="1">Calcular con mis datos ↓</button></p>' : "") + "</aside>" : "") +
-    '<div class="crs-tabs no-print" role="tablist" aria-label="Partes del tema">' + CRS_TABS.map(t => '<button type="button" role="tab" id="crs-t-' + t[0] + '" aria-controls="crs-p-' + t[0] + '" data-tab="' + t[0] + '" aria-selected="false" tabindex="-1">' + t[1] + "</button>").join("") + "</div>";
+  /* orden: «Lo esencial» (desplegable) → calculadora → lección en pestañas, para usar la calculadora sin bajar por toda la explicación */
+  const hasC = !!(calcF || calcR), essOpen = !hasC || (S.essOpen === true);
+  box.innerHTML = (E ? '<details class="crs-ess"' + (essOpen ? " open" : "") + '><summary><span class="crs-ess-h">Lo esencial</span> <span class="crs-ess-sfx">' + E.fx + '</span></summary><ul>' + E.pts.map(p => "<li>" + p + "</li>").join("") + '</ul><p class="crs-ess-fx" tabindex="0" role="group" aria-label="Fórmula clave">' + E.fx + "</p>" + (E.when ? '<p class="crs-ess-w"><b>Cuándo usarla:</b> ' + E.when + "</p>" : "") + "</details>" : "");
+  if (hasC) box.appendChild(calc);
+  box.insertAdjacentHTML("beforeend", '<h2 class="crs-learn">' + (hasC ? "Aprende el tema" : "Lección") + '</h2><div class="crs-tabs no-print" role="tablist" aria-label="Partes del tema">' + CRS_TABS.map(t => '<button type="button" role="tab" id="crs-t-' + t[0] + '" aria-controls="crs-p-' + t[0] + '" data-tab="' + t[0] + '" aria-selected="false" tabindex="-1">' + t[1] + "</button>").join("") + "</div>");
   CRS_TABS.forEach(t => box.appendChild(P[t[0]]));
-  if (calc.childNodes.length) box.appendChild(calc);
   const anchor = R.querySelector("p.lead"); const after = anchor && anchor.nextElementSibling && anchor.nextElementSibling.matches("p.hint") ? anchor.nextElementSibling : anchor;
   if (after && after.parentNode) after.parentNode.insertBefore(box, after.nextSibling); else R.prepend(box);
   return T.innerHTML; }
@@ -323,3 +325,6 @@ function crsExportHTML(id){ const K = CRS[id]; if (!K) return ""; let h = "", k 
   if (K.dec) h += H("Qué decisión te permite tomar") + "<p>" + K.dec + "</p>";
   if ((K.quiz || []).length) h += H("Autoevaluación") + "<ol>" + K.quiz.map(q => "<li>" + q[0] + "<br>" + q[1].map((o, j) => "abcd"[j] + ") " + o).join(" · ") + "</li>").join("") + "</ol><p><b>Respuestas:</b> " + K.quiz.map((q, i) => (i + 1) + ") " + "abcd"[q[2]] + " — " + q[3]).join(" ") + "</p>";
   return h; }
+
+/* recordar si el estudiante deja abierto «Lo esencial» en las páginas con calculadora */
+document.addEventListener("toggle", e => { const d = e.target; if (!d.matches || !d.matches("details.crs-ess") || !d.closest(".crs") || !document.getElementById("crs-calc")) return; try { S.essOpen = d.open; save(); } catch (er) {} }, true);
