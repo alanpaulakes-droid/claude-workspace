@@ -127,7 +127,7 @@ input[type=number],input[type=text],select{min-height:44px;border-radius:10px;bo
 label.f{display:block}label.f span{display:block;font-weight:600;font-size:14px;margin-bottom:4px}
 .form{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr))}
 .out{font:600 15px var(--fm);background:var(--surface2);border-radius:10px;padding:12px;border:1px solid var(--line)}
-.formula{font:500 15px var(--fm);background:var(--surface2);padding:10px 12px;border-radius:8px;overflow-x:auto;white-space:nowrap;margin:0 0 10px}
+.formula{font:600 15px/1.5 var(--fb);background:var(--surface2);padding:10px 12px;border-radius:8px;margin:0 0 10px;border-left:4px solid var(--blue)}
 
 /* Figures */
 figure.fig{margin:0 0 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;box-shadow:var(--sh)}
@@ -197,6 +197,20 @@ mark{background:#FDE68A;color:#111;border-radius:3px;padding:0 2px}
 @media (max-width:480px){.bigchoice{grid-template-columns:1fr}.choice{min-height:110px}}
 .ulist{display:grid;gap:8px;margin-top:12px}.urow{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:var(--ink);background:var(--surface2)}
 .urow .un{font:700 13px var(--fm);color:var(--blue-ink);background:var(--blue-soft);border-radius:6px;padding:2px 6px}.urow .ut{flex:1;min-width:0}.urow .us{white-space:nowrap;font-size:14px}
+.calc .form small{display:block;color:var(--muted);font-size:12.5px;margin-top:3px}
+details.adv{grid-column:1/-1;border-style:dashed}
+.result{display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:12px;margin:14px 0 6px;border:2px solid}
+.result span{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.result b{font-size:clamp(18px,4.5vw,22px);line-height:1.3}
+.result.ok{background:var(--ok-bg);border-color:var(--ok)}.result.bad{background:var(--bad-bg);border-color:var(--bad)}
+.result .badge{text-transform:none;letter-spacing:0}.badge{display:inline-block;font-weight:700;font-size:13.5px;padding:2px 8px;border-radius:99px;margin:2px 0}
+.badge.ok{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok)}.badge.bad{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad)}
+.calcsteps{list-style:none;padding:0;margin:8px 0;counter-reset:cs}
+.calcsteps>li{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:var(--surface)}
+.calcsteps>li>b{display:block;margin-bottom:4px}
+.fx{display:block;font-weight:600;background:var(--surface2);border-radius:8px;padding:8px 10px;margin:4px 0;overflow-wrap:anywhere}
+.backlink{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:6px 14px 6px 10px;margin:0 0 6px -4px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--blue-ink);font-weight:700}
+.backbtn[hidden]{display:none}.backbtn{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#fff;font-size:20px;flex:none}
 .cta{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}.btn.big{min-height:52px;font-size:16.5px;padding:10px 18px}
 .tile.big{padding:18px;border-left:4px solid var(--blue)}.tile.big b{font-size:17px;margin-bottom:4px}
 .bnav{display:none}
@@ -228,6 +242,7 @@ footer.foot{border-top:1px solid var(--line);margin-top:30px;padding-top:14px;co
 <a class="skip" href="#main">Saltar al contenido</a>
 <header class="top">
   <div class="in">
+    <button class="backbtn" id="backBtn" type="button" aria-label="Volver atrás" title="Volver" hidden>←</button>
     <button class="menu-btn" id="menuBtn" aria-label="Abrir menú de módulos" aria-expanded="false" aria-controls="side">
       <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>

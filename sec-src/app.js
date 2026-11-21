@@ -48,7 +48,8 @@ scrim.onclick=closeMenu;
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&side.classList.contains("open")){closeMenu();mb.focus()}});
 
 /* ---------- Componentes ---------- */
-const crumbs=list=>`<nav class="crumbs" aria-label="Ruta de navegación"><a href="#/inicio">Inicio</a>${list.map((c,i)=>` › ${i===list.length-1?`<span aria-current="page">${c[0]}</span>`:`<a href="${c[1]}">${c[0]}</a>`}`).join("")}</nav>`;
+let PARENT="inicio";
+const crumbs=list=>{PARENT=list.length>1&&list[list.length-2][1]?list[list.length-2][1].slice(2):"inicio";return `<nav class="crumbs" aria-label="Ruta de navegación"><a href="#/inicio">Inicio</a>${list.map((c,i)=>` › ${i===list.length-1?`<span aria-current="page">${c[0]}</span>`:`<a href="${c[1]}">${c[0]}</a>`}`).join("")}</nav>`};
 const table=t=>`<div class="tw"><table>${t.cap?`<caption>${fmt(t.cap)}</caption>`:""}<thead><tr>${t.cols.map(c=>`<th scope="col">${fmt(c)}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map(c=>`<td>${fmt(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>${t.ref?`<p class="small muted">${fmt(t.ref)}</p>`:""}</div>`;
 const fig=k=>{const f=FIG[k];if(!f)return"";return `<figure class="fig" id="fig-${k}"><div class="sv">${f.svg("ok")}</div><figcaption><b>${esc(f.t)}.</b> ${fmt(f.cap)}<br><span class="ref">${fmtRef(f.ref)}</span></figcaption>
  <div class="row no-print"><button class="btn sm errbtn" data-err="${k}" aria-pressed="false" aria-controls="eb-${k}">⚠ Ver error común</button></div>
@@ -118,45 +119,59 @@ const ftOf=(tc,t)=>{const i=IZ.ft.t.findIndex(x=>t<=x);return IZ.ft[tc][i<0?IZ.f
 const fnOf=n=>IZ.fn.f[IZ.fn.hasta.findIndex(x=>n<=x)];
 const protFor=(P,V,ib,min=6)=>IZ.prot.find(x=>x>=1.1*ib-1e-9&&x>=min&&P<=0.9*V*x+1e-9);
 const dV=(tri,L,I,S,rho=0.018)=>(tri?Math.sqrt(3):2)*rho*L*I/S;
+const OKB=t=>`<span class="badge ok">✓ ${t}</span>`,BADB=t=>`<span class="badge bad">✗ ${t}</span>`;
+const steps=list=>`<ol class="calcsteps">${list.map(([t,body])=>`<li><b>${t}</b><div>${body}</div></li>`).join("")}</ol>`;
+const fx=s=>`<span class="fx">${s}</span>`;
 function calcCaida(el){
-  el.innerHTML=`<div class="card no-print-break"><h3>Calculadora de caída de tensión</h3><div class="form">
-   <label class="f"><span>Sistema</span><select id="cc-s"><option value="m">Monofásico 220 V</option><option value="t">Trifásico 380 V</option></select></label>
-   <label class="f"><span>Largo L (m, solo ida)</span><input id="cc-l" type="number" min="1" value="25" inputmode="decimal"></label>
-   <label class="f"><span>Corriente I (A)</span><input id="cc-i" type="number" min="0.1" step="0.1" value="16" inputmode="decimal"></label>
-   <label class="f"><span>Sección S (mm²)</span><select id="cc-x">${IZ.secc.map(s=>`<option ${s===2.5?"selected":""}>${s}</option>`).join("")}</select></label>
-   <label class="f"><span>Caída previa aguas arriba (%)</span><input id="cc-p" type="number" min="0" step="0.1" value="0" inputmode="decimal"></label></div>
-   <div class="out" id="cc-o" role="status" aria-live="polite" style="margin-top:12px"></div></div>`;
+  el.innerHTML=`<div class="card calc"><h3>🧮 Calculadora: caída de tensión</h3><p class="muted">Te dice cuánto voltaje se «pierde» en el cable y si cumple la norma.</p><div class="form">
+   <label class="f"><span>Sistema</span><select id="cc-s"><option value="m">Monofásico 220 V (vivienda)</option><option value="t">Trifásico 380 V</option></select></label>
+   <label class="f"><span>Largo del cable (m)</span><input id="cc-l" type="number" min="1" value="25" inputmode="decimal"><small>Solo ida, del tablero al punto más lejano</small></label>
+   <label class="f"><span>Corriente (A)</span><input id="cc-i" type="number" min="0.1" step="0.1" value="16" inputmode="decimal"><small>Lo que consume el circuito</small></label>
+   <label class="f"><span>Sección del cable (mm²)</span><select id="cc-x">${IZ.secc.map(s=>`<option value="${s}" ${s===2.5?"selected":""}>${nf(s,s%1?1:0)} mm²</option>`).join("")}</select></label>
+   <label class="f"><span>Caída que ya trae el alimentador (%)</span><input id="cc-p" type="number" min="0" step="0.1" value="0" inputmode="decimal"><small>Déjalo en 0 si no la sabes</small></label></div>
+   <div id="cc-o" role="status" aria-live="polite"></div></div>`;
   const run=()=>{const tri=$("#cc-s").value==="t",V=tri?380:220,L=+$("#cc-l").value,I=+$("#cc-i").value,s=+$("#cc-x").value,pr=+$("#cc-p").value||0;
-    if(!(L>0&&I>0)){$("#cc-o").textContent="Ingresa largo y corriente mayores que cero.";return}
-    const v=dV(tri,L,I,s),p=v/V*100,tot=p+pr;
-    $("#cc-o").innerHTML=`ΔV = ${tri?"√3":"2"} × 0,018 × ${nf(L)} × ${nf(I,1)} ÷ ${nf(s,1)} = <b>${nf(v,2)} V</b> → <b>${nf(p,2)} %</b><br>Tramo: ${p<=3?'<span style="color:var(--ok)">cumple ≤ 3 %</span>':'<span style="color:var(--bad)">supera 3 %: sube la sección</span>'} · Total acumulado ${nf(tot,2)} %: ${tot<=5?'<span style="color:var(--ok)">cumple ≤ 5 %</span>':'<span style="color:var(--bad)">supera 5 %</span>'} <span class="ref">RIC N°03, 5.1.3</span>`};
+    if(!(L>0&&I>0)){$("#cc-o").innerHTML=`<div class="note warn">Ingresa largo y corriente mayores que cero.</div>`;return}
+    const v=dV(tri,L,I,s),p=v/V*100,tot=p+pr,ok1=p<=3,ok2=tot<=5;
+    $("#cc-o").innerHTML=`<div class="result ${ok1&&ok2?"ok":"bad"}"><span>Resultado</span><b>Se pierden ${nf(v,1)} V = ${nf(p,2)} %</b>${ok1&&ok2?OKB("Cumple la norma"):BADB("No cumple: usa un cable más grueso o acorta el recorrido")}</div>
+    <h4>Paso a paso</h4>${steps([
+     ["Fórmula",`${fx(tri?"ΔV = √3 × ρ × L × I ÷ S":"ΔV = 2 × ρ × L × I ÷ S")}<br><span class="muted">${tri?"En trifásico se multiplica por √3 (1,73).":"Se multiplica por 2 porque la corriente va por la fase y vuelve por el neutro."} ρ = 0,018 es la resistividad del cobre.</span>`],
+     ["Reemplazamos los valores",fx(`${tri?"1,73":"2"} × 0,018 × ${nf(L)} m × ${nf(I,1)} A ÷ ${nf(s,1)} mm² = <b>${nf(v,2)} V</b>`)],
+     ["Lo pasamos a porcentaje",fx(`${nf(v,2)} V ÷ ${V} V × 100 = <b>${nf(p,2)} %</b>`)],
+     ["Comparamos con la norma «RIC N°03, 5.1.3»",`Este tramo: ${nf(p,2)} % (máx. 3 %) ${ok1?OKB("cumple"):BADB("no cumple")}<br>Total hasta el punto más lejano: ${nf(pr,2)} + ${nf(p,2)} = ${nf(tot,2)} % (máx. 5 %) ${ok2?OKB("cumple"):BADB("no cumple")}`]].map(([a,b])=>[fmt(a),b]))}`};
   el.querySelectorAll("input,select").forEach(i=>i.oninput=run);run();
 }
 function calcSecc(el){
-  el.innerHTML=`<div class="card"><h3>Dimensionamiento de conductor y protección</h3><div class="form">
-   <label class="f"><span>Potencia P (W)</span><input id="cs-p" type="number" min="1" value="3000" inputmode="decimal"></label>
+  el.innerHTML=`<div class="card calc"><h3>🧮 Calculadora: ¿qué automático y qué cable uso?</h3><p class="muted">Ingresa la potencia del circuito y te dice la protección y la sección del conductor, explicando cada paso.</p><div class="form">
+   <label class="f"><span>Potencia del circuito (W)</span><input id="cs-p" type="number" min="1" value="3000" inputmode="decimal"><small>Suma de todo lo que se conecta</small></label>
+   <label class="f"><span>Tipo de circuito</span><select id="cs-u"><option value="1.5">Iluminación</option><option value="2.5" selected>Enchufes</option><option value="4">Alimentador (del medidor al tablero)</option></select></label>
    <label class="f"><span>Sistema</span><select id="cs-s"><option value="m">Monofásico 220 V</option><option value="t">Trifásico 380 V</option></select></label>
-   <label class="f"><span>cos φ</span><input id="cs-c" type="number" min="0.5" max="1" step="0.01" value="1"></label>
-   <label class="f"><span>Uso</span><select id="cs-u"><option value="1.5">Iluminación (mín. 1,5 mm²)</option><option value="2.5" selected>Enchufes / mixto (mín. 2,5 mm²)</option><option value="4">Alimentador (mín. 4 mm²)</option></select></label>
-   <label class="f"><span>Método</span><select id="cs-m"><option>A1</option><option>B1</option><option>E</option></select></label>
-   <label class="f"><span>Aislación</span><select id="cs-t"><option value="70">70 °C (THWN, H07V…)</option><option value="90">90 °C (THHN, RV-K…)</option></select></label>
-   <label class="f"><span>T° ambiente (°C)</span><input id="cs-a" type="number" value="30" min="10" max="60"></label>
-   <label class="f"><span>Conductores activos en el ducto</span><input id="cs-n" type="number" value="2" min="1" max="60"></label>
-   <label class="f"><span>Largo (m)</span><input id="cs-l" type="number" value="20" min="1"></label></div>
-   <div class="out" id="cs-o" role="status" aria-live="polite" style="margin-top:12px"></div>
-   <p class="small muted">Criterio del curso: Ib ≤ In ≤ Iz × ft × fn; In ≥ 1,1 × Ib y P ≤ 0,9 × V × In «RIC N°10»; sección mínima por uso; ΔV ≤ 3 %. Para motores y cargas especiales aplica además el pliego correspondiente.</p></div>`;
-  el.querySelector("p.small").innerHTML=fmt(el.querySelector("p.small").textContent);
+   <label class="f"><span>Largo (m)</span><input id="cs-l" type="number" value="20" min="1"></label>
+   <details class="adv"><summary>Opciones avanzadas (instalación, temperatura, cos φ)</summary><div class="form">
+   <label class="f"><span>¿Cómo va el cable?</span><select id="cs-m"><option value="A1">Dentro de tubo embutido en muro (A1)</option><option value="B1">Dentro de tubo sobrepuesto en muro (B1)</option><option value="E">Cable multiconductor al aire / bandeja (E)</option></select></label>
+   <label class="f"><span>Tipo de cable</span><select id="cs-t"><option value="70">Normal 70 °C (THWN, H07V…)</option><option value="90">Alta temperatura 90 °C (THHN, RV-K…)</option></select></label>
+   <label class="f"><span>Temperatura del lugar (°C)</span><input id="cs-a" type="number" value="30" min="10" max="60"></label>
+   <label class="f"><span>Cables con corriente en el mismo tubo</span><input id="cs-n" type="number" value="2" min="1" max="60"><small>Monofásico = 2 (fase y neutro). La tierra no cuenta.</small></label>
+   <label class="f"><span>Factor de potencia (cos φ)</span><input id="cs-c" type="number" min="0.5" max="1" step="0.01" value="1"><small>1 para cargas resistivas</small></label></div></details></div>
+   <div id="cs-o" role="status" aria-live="polite"></div></div>`;
   const run=()=>{const P=+$("#cs-p").value,tri=$("#cs-s").value==="t",V=tri?380:220,c=+$("#cs-c").value||1,mn=+$("#cs-u").value,met=$("#cs-m").value,tc=$("#cs-t").value,ta=+$("#cs-a").value,n=+$("#cs-n").value||1,L=+$("#cs-l").value;
     const ib=P/((tri?Math.sqrt(3):1)*V*c),In=IZ.prot.find(x=>x>=1.1*ib-1e-9&&(tri||P<=0.9*V*x*c+1e-9));
-    if(!In){$("#cs-o").textContent="Carga fuera del rango de la tabla del curso (> 125 A).";return}
-    const ft=ftOf(tc,ta),fn=fnOf(n);
-    const s=IZ.secc.find(x=>x>=mn&&izOf(tc,met,x)*ft*fn>=In&&dV(tri,L,ib,x)/V*100<=3);
-    if(!s){$("#cs-o").textContent="Ninguna sección de la tabla cumple: revisa el largo o divide la carga.";return}
-    const iz=izOf(tc,met,s),d=dV(tri,L,ib,s)/V*100;
-    $("#cs-o").innerHTML=`Ib = ${nf(ib,2)} A · In = <b>${In} A</b> (≥ 1,1 × Ib = ${nf(1.1*ib,2)} A)<br>ft = ${nf(ft,2)} · fn = ${nf(fn,2)} → sección <b>${nf(s,1)} mm²</b> (Iz tabla ${iz} A → corregida ${nf(iz*ft*fn,1)} A ≥ ${In} A)<br>ΔV = ${nf(d,2)} % ${d<=3?"≤ 3 % ✓":""} <span class="ref">RIC N°04, Tablas 4.4, 4.6, 4.7</span>`};
+    if(!(P>0)||!In){$("#cs-o").innerHTML=`<div class="note warn">${P>0?"La carga supera 125 A: divide el circuito.":"Ingresa una potencia mayor que cero."}</div>`;return}
+    const ft=ftOf(tc,ta),fn=fnOf(n),cap=x=>izOf(tc,met,x)*ft*fn;
+    const s=IZ.secc.find(x=>x>=mn&&cap(x)>=In&&dV(tri,L,ib,x)/V*100<=3);
+    if(!s){$("#cs-o").innerHTML=`<div class="note warn">Ningún cable de la tabla cumple con ese largo: divide la carga o acorta el recorrido.</div>`;return}
+    const sCap=IZ.secc.find(x=>cap(x)>=In),prev=IZ.secc[IZ.secc.indexOf(s)-1],d=dV(tri,L,ib,s)/V*100,curva=mn===1.5?"B":"C",S2=x=>nf(x,x%1?1:0)+" mm²";
+    const why=s>sCap?(s===mn&&mn>sCap?`El cable de ${S2(sCap)} ya aguantaría la corriente, pero la norma exige mínimo <b>${S2(mn)}</b> para este tipo de circuito.`:`Por capacidad bastaba ${S2(sCap)}, pero se sube a ${S2(s)} para que la caída de tensión no pase del 3 %.`):"";
+    $("#cs-o").innerHTML=`<div class="result ok"><span>Resultado</span><b>Automático ${In} A curva ${curva} + cable de ${S2(s)}</b>${OKB("Cumple capacidad, mínimo por uso y caída de tensión")}</div>
+    <h4>Paso a paso</h4>${steps([
+     ["1. ¿Cuánta corriente consume?",`${fx(`I = P ÷ ${tri?"(1,73 × V × cos φ)":"(V × cos φ)"} = ${nf(P)} W ÷ ${tri?"(1,73 × 380":"(220"} × ${nf(c,2)}) = <b>${nf(ib,1)} A</b>`)}`],
+     ["2. ¿Qué automático va?",`La norma pide un automático de al menos <b>1,1 veces</b> la corriente: ${fx(`${nf(ib,1)} A × 1,1 = ${nf(1.1*ib,1)} A`)} El calibre comercial siguiente es <b>${In} A</b>, curva ${curva} (${curva==="B"?"iluminación":"enchufes y cargas mixtas"}). ${fmt("«RIC N°10, 5.1.4.1 y 5.1.4.2»")}`],
+     ["3. ¿Hay que corregir por calor o por cables juntos?",`Temperatura ${ta} °C → factor <b>${nf(ft,2)}</b> ${ft<1?"(el calor reduce lo que aguanta el cable)":"(sin corrección)"}. ${n} cables con corriente en el tubo → factor <b>${nf(fn,2)}</b> ${fn<1?"(se calientan entre ellos)":"(sin corrección)"}. ${fmt("«RIC N°04, Tablas 4.6 y 4.7»")}`],
+     ["4. ¿Qué cable aguanta ese automático?",`El cable debe aguantar <b>igual o más</b> que el automático (${In} A).${prev&&cap(prev)<In?` ${S2(prev)} aguanta ${nf(cap(prev),1)} A ${BADB("no alcanza")}.`:""} ${S2(s)} aguanta ${izOf(tc,met,s)} A${ft*fn<1?` × ${nf(ft*fn,2)} = ${nf(cap(s),1)} A`:""} ${OKB("sí alcanza")} ${fmt("«RIC N°04, Tabla 4.4»")}${why?`<br>${why}`:""}`],
+     ["5. ¿Cuánto voltaje se pierde?",`${fx(`${tri?"1,73":"2"} × 0,018 × ${L} m × ${nf(ib,1)} A ÷ ${S2(s)} = ${nf(d,2)} %`)} Máximo 3 % ${OKB("cumple")} ${fmt("«RIC N°03, 5.1.3»")}`]])}
+    <p class="small muted">Glosario rápido: <b>corriente</b> = lo que consume (Ib) · <b>automático</b> = protección (In) · <b>capacidad del cable</b> = lo que aguanta sin calentarse (Iz). Regla de oro: consumo ≤ automático ≤ capacidad del cable.</p>`};
   el.querySelectorAll("input,select").forEach(i=>i.oninput=run);run();
 }
-
 /* ---------- Casos prácticos (cálculo) ---------- */
 function resolverCaso(c){
   const fd=P=>Math.min(P,3000)+Math.max(0,Math.min(P,120000)-3000)*.35+Math.max(0,P-120000)*.25;
@@ -328,13 +343,16 @@ $("#q").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$(
 let pendingJump=null,stepFn=null;
 const hashPath=()=>{try{return decodeURIComponent(location.hash.replace(/^#\/?/,""))}catch(e){return ""}};
 let CUR=hashPath()||"inicio";
-function go(path,focus=true){CUR=path;try{history.pushState(null,"","#/"+path)}catch(e){}route(focus)}
+let DEPTH=0;
+function go(path,focus=true){DEPTH++;CUR=path;try{history.pushState(null,"","#/"+path)}catch(e){}route(focus)}
 function route(focus=true){
+  PARENT="inicio";
   activeQuiz&&activeQuiz.stop();activeQuiz=null;
   const h=CUR||"inicio";const [a,b]=h.split("/");
   let html,cur=a;
   if(a==="ric"&&b){html=V.ricN(b);cur="ric/"+b}else if(a==="ucl"&&b){html=V.uclN(+b);cur="ucl/"+b}else if(a==="buscar")html=V.buscar(h.slice(7));else html=(V[a]||V.inicio)();
-  const m=$("#main");m.dataset.ok="1";m.innerHTML=html+`<footer class="foot"><p>${esc(MARCO.aviso)} Datos con ${VF} deben confirmarse en el pliego vigente.</p></footer>`;
+  const m=$("#main");m.dataset.ok="1";m.innerHTML=(a!=="inicio"?`<button class="backlink no-print" type="button" data-back>← Volver</button>`:"")+html+`<footer class="foot"><p>${esc(MARCO.aviso)} Datos con ${VF} deben confirmarse en el pliego vigente.</p></footer>`;
+  $("#backBtn").hidden=a==="inicio";
   renderSide(V[a]||a==="ucl"?cur:"inicio");document.querySelectorAll("#bnav [data-b]").forEach(x=>{const k=x.dataset.b;const grp={estudiar:["estudiar","ucl","ric","certificacion","teoria","diagramas","practica","proyecto","pruebas","casos","recursos"],evaluar:["evaluar","simulador","caso","terreno","banco"]};const on=k===a||(grp[k]||[]).includes(a);if(on)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current")});setProg();closeMenu();
   document.title=(a==="ric"&&b?`RIC N°${b} · `:a==="ucl"&&b?`UCL ${b} · `:"")+"Curso Instalador Clase D";
   after(a,b);
@@ -365,6 +383,7 @@ function after(a,b){
   if(a==="recursos")document.querySelectorAll("[data-chk]").forEach(c=>c.onchange=()=>{S.read["chk:"+c.dataset.chk]=c.checked;save()});
 }
 document.addEventListener("click",e=>{
+  if(e.target.closest("[data-back]")){goBack();return}
   const st=e.target.closest("[data-step]");if(st&&stepFn){stepFn(+st.dataset.step);return}
   const r=e.target.closest("[data-read]");if(r){const k=r.dataset.read;S.read[k]=!S.read[k];save();r.textContent=S.read[k]?"✓ Marcado como leído":"Marcar como leído";r.classList.toggle("pri",!S.read[k]);r.setAttribute("aria-pressed",String(S.read[k]));renderSide(CUR);setProg();return}
   if(e.target.closest("[data-print]")){document.querySelectorAll("details").forEach(d=>d.open=true);window.print();return}
@@ -373,7 +392,9 @@ document.addEventListener("click",e=>{
   const ln=e.target.closest('a[href^="#/"]');if(ln&&!e.ctrlKey&&!e.metaKey){e.preventDefault();go(ln.getAttribute("href").slice(2));return}
   const bm=e.target.closest("[data-menu]");if(bm){mb.click();return}
 });
-window.addEventListener("popstate",()=>{CUR=hashPath()||"inicio";route()});
+window.addEventListener("popstate",()=>{DEPTH=Math.max(0,DEPTH-1);CUR=hashPath()||"inicio";route()});
+const goBack=()=>{if(DEPTH>0){try{history.back();return}catch(e){}}go(PARENT)};
+document.getElementById("backBtn").onclick=goBack;
 window.addEventListener("hashchange",()=>{const h=hashPath()||"inicio";if(h!==CUR){CUR=h;route()}});
 window.addEventListener("beforeprint",()=>document.querySelectorAll("details").forEach(d=>d.open=true));
 route(false);
