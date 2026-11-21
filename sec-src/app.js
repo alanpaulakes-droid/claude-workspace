@@ -12,7 +12,9 @@ const fmtRef=s=>esc(s).replace(/⚠(\s*verificar)?/g,VF);
 const nf=(x,d=0)=>Number(x).toLocaleString("es-CL",{minimumFractionDigits:d,maximumFractionDigits:d});
 const norm=s=>String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-const ricName=n=>n==="GEN"?"Teoría y generales":`RIC N°${n}`;
+const ricName=n=>({GEN:"Teoría y fundamentos",CERT:"Proceso de certificación",CASO:"Análisis de caso"})[n]||`RIC N°${n}`;
+const uclOf=q=>q.u||RIC2UCL[q.ric]||0;
+const uclName=n=>n?`UCL ${n}`:"General";
 
 /* ---------- Estado persistente ---------- */
 const KEY="secric.v2";
@@ -26,20 +28,18 @@ applyTheme();
 $("#themeBtn").onclick=()=>{const dark=S.theme?S.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;S.theme=dark?"light":"dark";applyTheme();save()};
 
 /* ---------- Módulos ---------- */
-const MOD=[
- ["inicio","Inicio","0"],["evaluar","★ Evaluaciones","★"],["ric","Estudio por RIC","1"],["teoria","Teoría eléctrica aplicada","2"],["diagramas","Diagramas técnicos","3"],
- ["practica","Instalación paso a paso","4"],["proyecto","Proceso del proyecto","5"],["pruebas","Pruebas y mediciones","6"],
- ["casos","Casos prácticos","7"],["banco","Banco de preguntas","8"],["simulador","Simulador de examen","9"],["repaso","Repaso de falladas","↻"],["recursos","Recursos","10"]];
-const NOREAD=new Set(["evaluar","banco","simulador","repaso"]);
-const READKEYS=[...RIC.map(r=>"ric"+r.n),"teoria","diagramas","practica","proyecto","pruebas","casos","recursos"];
+const STUDY=[["certificacion","Cómo es tu evaluación","🎯"],["estudiar","Ruta por UCL (5 unidades)","📘"],["ric","Fichas RIC 01–19","📄"],["teoria","Teoría eléctrica","⚡"],["diagramas","Diagramas","🖼"],["practica","Instalación paso a paso","🔧"],["proyecto","Proyecto y TE1","📐"],["pruebas","Pruebas y mediciones","📏"],["casos","Casos resueltos","🏠"],["recursos","Glosario, tablas y checklist","📚"]];
+const TESTS=[["evaluar","Centro de evaluación","★"],["simulador","Prueba de conocimientos","⏱"],["caso","Análisis de caso","💬"],["terreno","Preparar observación en terreno","✅"],["banco","Banco de preguntas","📋"],["repaso","Repaso de falladas","↻"]];
+const MOD=[["inicio","Inicio","⌂"],...STUDY,...TESTS];
+const READKEYS=["certificacion",...UCL.map(u=>"ucl"+u.n),...RIC.filter(r=>r.prio).map(r=>"ric"+r.n),"teoria","diagramas","practica","proyecto","pruebas","casos","recursos"];
 const progress=()=>Math.round(READKEYS.filter(k=>S.read[k]).length/READKEYS.length*100);
 const setProg=()=>{const p=progress();const el=$("#progTop");el.setAttribute("aria-valuenow",p);el.firstElementChild.style.width=p+"%"};
 
 function renderSide(cur){
-  const ricLinks=RIC.filter(r=>r.prio).map(r=>`<a href="#/ric/${r.n}" ${cur==="ric/"+r.n?'aria-current="page"':""}><span class="num">${r.n}</span>${esc(r.t.replace(/ ⚠$/,""))}${S.read["ric"+r.n]?'<span class="done" aria-label="leído">✓</span>':""}</a>`).join("");
-  $("#side").innerHTML=`<h2>Evaluaciones</h2>${[["evaluar","Centro de evaluaciones"],["simulador","Simulador de examen"],["banco","Banco de preguntas"],["repaso","Repaso de falladas ("+Object.keys(S.fails).length+")"]].map(([id,t])=>`<a href="#/${id}" ${cur===id?'aria-current="page"':""}><span class="num">★</span>${t}</a>`).join("")}
-  <h2>Módulos de estudio</h2>${MOD.filter(m=>!NOREAD.has(m[0])).map(([id,t,n])=>`<a href="#/${id}" ${cur===id?'aria-current="page"':""}><span class="num">${n}</span>${t}${S.read[id]?'<span class="done" aria-label="leído">✓</span>':""}</a>`).join("")}
-  <h2>Fichas prioritarias (vivienda)</h2>${ricLinks}<a href="#/ric"><span class="num">…</span>Todas las fichas (01–19)</a>`;
+  const L=(id,t,ic)=>`<a href="#/${id}" ${cur===id?'aria-current="page"':""}><span class="num">${ic}</span>${t}${S.read[id]?'<span class="done" aria-label="leído">✓</span>':""}</a>`;
+  $("#side").innerHTML=`${L("inicio","Inicio","⌂")}
+  <h2>📘 Estudiar</h2>${L(STUDY[0][0],STUDY[0][1],STUDY[0][2])}${UCL.map(u=>`<a href="#/ucl/${u.n}" ${cur==="ucl/"+u.n?'aria-current="page"':""}><span class="num">U${u.n}</span>${esc(u.t.replace(/ en instalaciones.*$/,""))}${S.read["ucl"+u.n]?'<span class="done" aria-label="leído">✓</span>':""}</a>`).join("")}${STUDY.slice(2).map(m=>L(...m)).join("")}
+  <h2>📝 Evaluarme</h2>${TESTS.map(m=>L(m[0],m[1]+(m[0]==="repaso"?` (${Object.keys(S.fails).length})`:""),m[2])).join("")}`;
 }
 const side=$("#side"),scrim=$("#scrim"),mb=$("#menuBtn");
 const closeMenu=()=>{side.classList.remove("open");scrim.hidden=true;mb.setAttribute("aria-expanded","false")};
@@ -68,7 +68,7 @@ function Quiz(el,qs,o={}){
     const q=qs[st.i],a=st.ans[st.i],shown=!exam&&st.done[st.i];
     el.innerHTML=`<div class="card" aria-live="polite">
      <div class="row" style="margin-top:0;justify-content:space-between"><span class="tag">Pregunta ${st.i+1} de ${qs.length}</span>${st.limit?`<span class="timer" role="timer" aria-label="Tiempo restante">--:--</span>`:""}</div>
-     <div class="qmeta" style="margin-top:8px"><span class="tag prio">${ricName(q.ric)}</span><span class="tag">Dificultad ${"●".repeat(q.d)}${"○".repeat(3-q.d)}</span>${q.img?'<span class="tag">Con imagen</span>':""}</div>
+     <div class="qmeta" style="margin-top:8px"><span class="tag prio">${ricName(q.ric)}</span>${uclOf(q)?`<span class="tag">UCL ${uclOf(q)}</span>`:""}<span class="tag">Dificultad ${"●".repeat(q.d)}${"○".repeat(3-q.d)}</span>${q.img?'<span class="tag">Con imagen</span>':""}</div>
      <p class="q" id="qt">${esc(q.q)}</p>${qimg(q)}
      <div class="ops" role="radiogroup" aria-labelledby="qt">${q.o.map((t,i)=>`<button class="op ${shown?(i===q.a?"ok":i===a?"bad":""):(a===i?"sel":"")}" role="radio" aria-checked="${a===i}" data-op="${i}" ${shown?"disabled":""}><span class="ol">${"ABCD"[i]}</span><span>${esc(t)}</span></button>`).join("")}</div>
      ${shown?`<div class="fb ${a===q.a?"ok":"bad"}" tabindex="-1" id="fb"><b>${a===q.a?"✓ Correcto":"✗ Incorrecto · respuesta: "+"ABCD"[q.a]}</b><p style="margin:6px 0">${esc(q.e)}</p><span class="ref">${fmtRef(q.ref)}</span>${q.v?" "+VF:""}</div>`:""}
@@ -84,14 +84,15 @@ function Quiz(el,qs,o={}){
   function choose(i){if(!exam&&st.done[st.i])return;st.ans[st.i]=i;draw();el.querySelector(`[data-op="${i}"]`)?.focus()}
   function check(){if(st.ans[st.i]==null)return;st.done[st.i]=true;record(qs[st.i],st.ans[st.i]===qs[st.i].a);draw("fb")}
   function finish(){if(st.fin)return;st.fin=true;clearInterval(timer);if(exam)qs.forEach((q,i)=>record(q,st.ans[i]===q.a));drawEnd();o.onDone&&o.onDone(res())}
-  function res(){const ok=qs.filter((q,i)=>st.ans[i]===q.a).length;const by={};qs.forEach((q,i)=>{const b=by[q.ric]||(by[q.ric]={n:0,ok:0});b.n++;if(st.ans[i]===q.a)b.ok++});return{ok,n:qs.length,by,min:Math.round((Date.now()-st.t0)/60000)}}
+  function res(){const ok=qs.filter((q,i)=>st.ans[i]===q.a).length;const by={},bu={};qs.forEach((q,i)=>{const b=by[q.ric]||(by[q.ric]={n:0,ok:0});b.n++;const u=bu[uclOf(q)]||(bu[uclOf(q)]={n:0,ok:0});u.n++;if(st.ans[i]===q.a){b.ok++;u.ok++}});return{ok,n:qs.length,by,bu,min:Math.round((Date.now()-st.t0)/60000)}}
   function drawEnd(){
-    const r=res(),p=pct(r.ok,r.n),pass=o.pass?p>=o.pass:null;
-    const weak=Object.entries(r.by).filter(([,b])=>pct(b.ok,b.n)<(o.pass||60)).sort((a,b)=>pct(a[1].ok,a[1].n)-pct(b[1].ok,b[1].n));
+    const r=res(),p=pct(r.ok,r.n),lim=o.pass||75,uw=Object.entries(r.bu).filter(([k])=>k!=="0"),allU=uw.every(([,b])=>pct(b.ok,b.n)>=lim),pass=o.pass?(p>=o.pass&&allU):null;
+    const weak=uw.filter(([,b])=>pct(b.ok,b.n)<lim).sort((a,b)=>pct(a[1].ok,a[1].n)-pct(b[1].ok,b[1].n));
     el.innerHTML=`<div class="card" tabindex="-1" id="endc"><h2>${exam?"Resultado del simulador":"Resultado"}</h2>
-     <div class="kpis"><div class="kpi ${pass===false?"bad":"ok"}"><span>Puntaje</span><b>${p} %</b></div><div class="kpi"><span>Correctas</span><b>${r.ok}/${r.n}</b></div>${pass!=null?`<div class="kpi ${pass?"ok":"bad"}"><span>Estado (mínimo ${o.pass} %)</span><b>${pass?"Aprobado":"Reprobado"}</b></div>`:""}<div class="kpi"><span>Minutos</span><b>${r.min}</b></div></div>
-     <h3>Resultado por pliego</h3>${Object.entries(r.by).sort().map(([k,b])=>`<div class="row" style="margin-top:6px"><span style="min-width:150px">${k==="GEN"?"Teoría y generales":`<a href="#/ric/${k}">RIC N°${k}</a>`}</span><span class="bar" aria-hidden="true"><i style="width:${pct(b.ok,b.n)}%"></i></span><span class="small">${b.ok}/${b.n} (${pct(b.ok,b.n)} %)</span></div>`).join("")}
-     ${weak.length?`<div class="note warn" style="margin-top:14px"><b>Refuerza:</b> ${weak.map(([k])=>k==="GEN"?'<a href="#/teoria">Teoría</a>':`<a href="#/ric/${k}">RIC N°${k} — ${esc(RIC.find(x=>x.n===k)?.t||"")}</a>`).join(" · ")}</div>`:`<div class="note ok" style="margin-top:14px">Sin pliegos débiles en esta sesión.</div>`}
+     <div class="kpis"><div class="kpi ${pass===false?"bad":"ok"}"><span>Puntaje</span><b>${p} %</b></div><div class="kpi"><span>Correctas</span><b>${r.ok}/${r.n}</b></div>${pass!=null?`<div class="kpi ${pass?"ok":"bad"}"><span>Estado (≥ ${o.pass} % global y en cada UCL)</span><b>${pass?"Competente":"Aún no competente"}</b></div>`:""}<div class="kpi"><span>Minutos</span><b>${r.min}</b></div></div>
+     ${uw.length?`<h3>Resultado por UCL (mínimo ${lim} % en cada una)</h3>${uw.sort().map(([k,b])=>`<div class="row" style="margin-top:6px"><span style="min-width:110px"><a href="#/ucl/${k}">UCL ${k}</a></span><span class="bar" aria-hidden="true"><i style="width:${pct(b.ok,b.n)}%;background:${pct(b.ok,b.n)>=lim?"var(--ok)":"var(--bad)"}"></i></span><span class="small">${b.ok}/${b.n} (${pct(b.ok,b.n)} %)</span></div>`).join("")}`:""}
+     ${weak.length?`<div class="note warn" style="margin-top:14px"><b>Refuerza:</b> ${weak.map(([k])=>`<a href="#/ucl/${k}">UCL ${k} — ${esc(UCL[k-1].t)}</a>`).join(" · ")}</div>`:uw.length?`<div class="note ok" style="margin-top:14px">Todas las UCL sobre ${lim} % en esta sesión.</div>`:""}
+     <details><summary>Detalle por pliego RIC</summary>${Object.entries(r.by).sort().map(([k,b])=>`<div class="row" style="margin-top:6px"><span style="min-width:170px">${/^\d/.test(k)?`<a href="#/ric/${k}">RIC N°${k}</a>`:ricName(k)}</span><span class="bar" aria-hidden="true"><i style="width:${pct(b.ok,b.n)}%"></i></span><span class="small">${b.ok}/${b.n}</span></div>`).join("")}</details>
      <details><summary>Revisión de respuestas</summary><ol class="rev">${qs.map((q,i)=>{const ok=st.ans[i]===q.a;return `<li><b>${ok?"✓":"✗"} ${esc(q.q)}</b><br>${ok?"":`<span class="small">Tu respuesta: ${st.ans[i]!=null?esc(q.o[st.ans[i]]):"sin responder"} · </span>`}<span class="small">Correcta: <b>${esc(q.o[q.a])}</b></span><br><span class="small">${esc(q.e)}</span> <span class="ref">${fmtRef(q.ref)}</span>${q.v?" "+VF:""}</li>`}).join("")}</ol></details>
      <div class="row no-print">${o.again?`<button class="btn pri" data-again>Repetir con otras preguntas</button>`:""}<a class="btn" href="#/repaso">Repasar falladas (${Object.keys(S.fails).length})</a></div></div>`;
     el.querySelector("#endc").focus();
@@ -181,21 +182,48 @@ function uniCaso(c,r){
 
 /* ---------- Vistas ---------- */
 const V={};
-V.inicio=()=>{const n=Object.keys(S.ans).length,tot=Object.values(S.ans).reduce((a,b)=>a+b.n,0),ok=Object.values(S.ans).reduce((a,b)=>a+b.ok,0),best=S.sims.reduce((m,s)=>Math.max(m,s.p),0),p=progress();
- return `<span class="eb">Curso de certificación · Instalaciones domiciliarias BT</span><h1>Preparación para la certificación SEC</h1>
- <p class="lead">Estudia los pliegos RIC con citas al numeral, practica con diagramas técnicos y casos resueltos, y mide tu avance con un simulador de examen.</p>
- <div class="cta"><a class="btn pri big" href="#/evaluar">★ Ir a las evaluaciones</a><a class="btn big" href="#/simulador">⏱ Simulador de examen</a><a class="btn big" href="#/ric">📘 Estudiar por RIC</a></div>
- <div class="note warn"><b>Aviso:</b> ${esc(MARCO.aviso)} Los datos que no se pudieron confirmar contra el texto oficial se marcan con ${VF}.</div>
- <section class="card"><h2>Tu progreso global</h2><div class="row" style="margin-top:0"><span class="bar" role="progressbar" aria-label="Progreso global" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></span><b>${p} %</b></div>
- <div class="kpis" style="margin-top:12px"><div class="kpi"><span>Temas leídos</span><b>${READKEYS.filter(k=>S.read[k]).length}/${READKEYS.length}</b></div><div class="kpi"><span>Preguntas distintas</span><b>${n}/${PREGUNTAS.length}</b></div><div class="kpi ${tot&&pct(ok,tot)>=60?"ok":"warn"}"><span>Acierto histórico</span><b>${tot?pct(ok,tot)+" %":"—"}</b></div><div class="kpi ${Object.keys(S.fails).length?"bad":""}"><span>Falladas por repasar</span><b>${Object.keys(S.fails).length}</b></div><div class="kpi"><span>Mejor simulacro</span><b>${S.sims.length?best+" %":"—"}</b></div></div></section>
- <div class="grid2"><section class="card"><h2>Objetivo</h2><p>Dominar los requisitos de seguridad de las instalaciones de consumo en baja tensión aplicables a viviendas, saber calcular y proyectar una instalación domiciliaria completa y rendir con seguridad la evaluación de certificación SEC.</p></section>
- <section class="card"><h2>Alcance y marco normativo</h2><ul><li>${esc(MARCO.ds)}</li><li>${esc(MARCO.res)}</li><li>Énfasis: RIC N°01, 02, 03, 04, 05, 06, 10, 15, 18 y 19. Los demás pliegos, en formato resumido.</li></ul></section></div>
- <section class="card"><h2>Cómo usar la plataforma</h2><ol class="steps"><li><b>Estudia</b> cada ficha RIC: objetivo, definiciones, tablas, errores en terreno y «lo que entra en el examen». <a href="#/ric">Ir a fichas</a></li><li><b>Refuerza</b> con teoría, diagramas, instalación paso a paso, proceso del proyecto y pruebas.</li><li><b>Aplica</b> en los 3 casos prácticos resueltos. <a href="#/casos">Ver casos</a></li><li><b>Practica</b> con el banco de ${PREGUNTAS.length} preguntas filtrando por RIC y dificultad. <a href="#/banco">Banco</a></li><li><b>Mide</b> tu nivel en el simulador cronometrado y repasa las falladas. <a href="#/simulador">Simulador</a></li></ol><p class="small muted">Tu progreso se guarda en este navegador (localStorage). Usa el buscador superior para encontrar cualquier concepto.</p></section>
- <h2>Módulos</h2><div class="grid">${MOD.slice(1).map(([id,t,n])=>`<a class="tile" href="#/${id}"><span class="tag">${n}</span> <b>${t}</b>${S.read[id]?'<span class="tag ok">✓ leído</span>':""}</a>`).join("")}</div>`};
-V.ric=()=>`${crumbs([["Estudio por RIC"]])}<span class="eb">Módulo 1</span><h1>Estudio por pliego RIC</h1><p class="lead">Una ficha por pliego. Las marcadas como prioritarias son las de mayor peso para instalaciones domiciliarias.</p>
+const uclStat=n=>{let t=0,o=0;PREGUNTAS.forEach(q=>{if(uclOf(q)===n){const a=S.ans[q.id];if(a){t+=a.n;o+=a.ok}}});return t?pct(o,t):null};
+V.inicio=()=>{const p=progress(),f=Object.keys(S.fails).length,best=S.sims.reduce((m,s)=>Math.max(m,s.p),0);
+ return `<span class="eb">ChileValora · ECERLAB · SEC</span><h1>Certificación Instalador Eléctrico Clase D</h1>
+ <p class="lead">Todo lo que necesitas para aprobar las 5 unidades de competencia del perfil <b>${PERFIL.codigo}</b>. Dos pasos: estudia y luego evalúate.</p>
+ <div class="bigchoice"><a class="choice study" href="#/estudiar"><span aria-hidden="true">📘</span><b>Estudiar</b><small>5 UCL, fichas RIC, teoría, diagramas, casos</small></a><a class="choice test" href="#/evaluar"><span aria-hidden="true">📝</span><b>Evaluarme</b><small>Prueba de conocimientos, análisis de caso, terreno, repaso</small></a></div>
+ <section class="card"><h2>Tu avance</h2><div class="row" style="margin-top:0"><span class="bar" role="progressbar" aria-label="Temas estudiados" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></span><b>${p} % estudiado</b></div>
+ <div class="ulist">${UCL.map(u=>{const a=uclStat(u.n);return `<a class="urow" href="#/ucl/${u.n}"><span class="un">U${u.n}</span><span class="ut">${esc(u.t.replace(/ en instalaciones.*$/,""))}</span><span class="us">${S.read["ucl"+u.n]?"✓ ":""}${a==null?"—":`<b style="color:${a>=75?"var(--ok)":"var(--bad)"}">${a} %</b>`}</span></a>`}).join("")}</div>
+ <p class="small muted">Meta: 75 % o más en cada UCL. Falladas por repasar: <b>${f}</b> · Mejor prueba simulada: <b>${S.sims.length?best+" %":"—"}</b></p></section>
+ <section class="card"><h2>Cómo te evalúan (resumen)</h2>${PERFIL.instrumentos.map(([n,w])=>`<div style="margin-top:10px"><div class="row" style="margin:0;justify-content:space-between"><span>${esc(n)}</span><b>${w}</b></div><span class="bar" style="display:block;margin-top:4px" aria-hidden="true"><i style="width:${parseInt(w)}%"></i></span></div>`).join("")}<p class="small" style="margin-top:10px">${esc(PERFIL.aprobacion)} <a href="#/certificacion">Ver detalle</a></p></section>
+ <div class="note warn"><b>Aviso:</b> ${esc(MARCO.aviso)} Los datos no confirmados se marcan con ${VF}.</div>`};
+V.estudiar=()=>`${crumbs([["Estudiar"]])}<span class="eb">📘 Estudiar</span><h1>Ruta de estudio</h1><p class="lead">Sigue el orden. Cada UCL reúne lo que te evaluarán, con enlaces a las fichas RIC y una práctica al final.</p>
+ <a class="tile big" href="#/certificacion" style="margin-bottom:12px"><b>🎯 Paso 0 · Cómo es tu evaluación</b><small>Instrumentos, pesos, 75 %, etapas y consejos.</small>${S.read.certificacion?'<span class="tag ok">✓ leído</span>':""}</a>
+ <div class="grid">${UCL.map(u=>{const a=uclStat(u.n);return `<a class="tile big" href="#/ucl/${u.n}"><b>UCL ${u.n} · ${esc(u.t.replace(/ en instalaciones.*$/,""))}</b><small>${u.act.length} actividades clave · RIC ${u.ric.map(x=>+x).join(", ")}</small>${S.read["ucl"+u.n]?'<span class="tag ok">✓ estudiada</span> ':""}${a!=null?`<span class="tag">${a} % acierto</span>`:""}</a>`}).join("")}</div>
+ <h2 style="margin-top:18px">Material de apoyo</h2><div class="grid">${STUDY.slice(2).map(([id,t,ic])=>`<a class="tile" href="#/${id}"><b>${ic} ${t}</b>${S.read[id]?'<span class="tag ok">✓</span>':""}</a>`).join("")}</div>`;
+V.uclN=n=>{const u=UCL[n-1];if(!u)return V.estudiar();
+ return `${crumbs([["Estudiar","#/estudiar"],["UCL "+n]])}<span class="eb">UCL ${n} · ${u.cod}</span><h1>${esc(u.t)}</h1>
+ <div class="row no-print" style="margin:0 0 12px"><a class="btn pri sm" href="#/ucl/${n}" data-jump="uclq">📝 Practicar esta UCL</a><a class="btn sm" href="#/terreno" data-jump="ter-${n}">✅ Qué te pedirán en terreno</a></div>
+ ${u.act.map((a,i)=>`<section class="card"><h2>${i+1}. ${esc(a.t)}</h2><h3>Lo que el evaluador verifica</h3><ul>${a.cri.map(x=>`<li>${fmt(x)}</li>`).join("")}</ul><h3>Lo que debes saber</h3><ul>${a.con.map(x=>`<li>${fmt(x)}</li>`).join("")}</ul></section>`).join("")}
+ <section class="card"><h2>Fichas RIC de esta UCL</h2><div class="grid">${u.ric.map(r=>{const f=RIC.find(x=>x.n===r);return `<a class="tile" href="#/ric/${r}"><b>RIC N°${r}</b><small>${esc(f.t)}</small>${S.read["ric"+r]?'<span class="tag ok">✓ leído</span>':""}</a>`}).join("")}${u.teo?`<a class="tile" href="#/teoria"><b>⚡ Teoría eléctrica</b><small>Ohm, Watt, Kirchhoff, potencias</small></a>`:""}</div></section>
+ <details class="card"><summary>Diagramas de esta UCL (${u.fig.length})</summary>${u.fig.map(fig).join("")}</details>
+ <section class="no-print" id="uclq"><h2>Practica la UCL ${n}</h2><div class="card"><p>Preguntas de esta UCL: <b>${PREGUNTAS.filter(q=>uclOf(q)===n).length}</b>. Meta: 75 %.</p><div class="row"><button class="btn pri" data-uclgo="10">10 preguntas</button><button class="btn" data-uclgo="20">20 preguntas</button></div></div><div id="uclqz"></div></section>
+ ${readBtn("ucl"+n)}
+ <div class="row no-print">${n>1?`<a class="btn" href="#/ucl/${n-1}">← UCL ${n-1}</a>`:""}${n<5?`<a class="btn pri" href="#/ucl/${n+1}">UCL ${n+1} →</a>`:`<a class="btn pri" href="#/evaluar">Ir a evaluarme →</a>`}</div>`};
+V.certificacion=()=>`${crumbs([["Estudiar","#/estudiar"],["Cómo es tu evaluación"]])}<span class="eb">Paso 0</span><h1>Cómo es tu evaluación</h1>
+ <section class="card"><h2>Tu perfil</h2><dl class="defs"><dt>Perfil</dt><dd>${esc(PERFIL.nombre)} · ${PERFIL.codigo}</dd><dt>Nivel</dt><dd>${PERFIL.nivel} · vigente hasta ${PERFIL.vigencia}</dd><dt>Modalidad</dt><dd>${esc(PERFIL.modalidad)}</dd><dt>Centro</dt><dd>${esc(PERFIL.centro)}</dd><dt>Propósito</dt><dd>${esc(PERFIL.proposito)}</dd><dt>Riesgos</dt><dd>${esc(PERFIL.riesgos)}</dd></dl></section>
+ <section class="card"><h2>Qué instalaciones puede declarar la licencia clase D</h2>${table({cols:["Tipo (DS N°92)","Alcance"],rows:PERFIL.ambito})}</section>
+ <section class="card"><h2>Instrumentos de evaluación</h2>${table({cols:["Instrumento","Peso","Qué es"],rows:PERFIL.instrumentos})}<p>${esc(PERFIL.escala)}</p><div class="note ok"><b>Para aprobar:</b> ${esc(PERFIL.aprobacion)}</div></section>
+ <section class="card"><h2>Las 5 UCL</h2><ol>${UCL.map(u=>`<li><a href="#/ucl/${u.n}">${esc(u.t)}</a> <span class="small muted">${u.cod}</span></li>`).join("")}</ol></section>
+ <section class="card"><h2>Etapas del proceso</h2><ol class="steps">${PERFIL.etapas.map(([a,b])=>`<li><b>${a}.</b> ${esc(b)}</li>`).join("")}</ol></section>
+ <section class="card"><h2>Competencias transversales (análisis de caso)</h2><dl class="defs">${PERFIL.transversales.map(([a,b])=>`<dt>${a}</dt><dd>${esc(b)}</dd>`).join("")}</dl><div class="row"><a class="btn pri" href="#/caso">Practicar análisis de caso</a></div></section>
+ <section class="card"><h2>Normativa del perfil</h2><ul>${PERFIL.normativa.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section>
+ <section class="card exam"><h2>Consejos para el día de la evaluación</h2><ul>${PERFIL.consejos.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section>${readBtn("certificacion")}`;
+V.caso=()=>`${crumbs([["Evaluarme","#/evaluar"],["Análisis de caso"]])}<span class="eb">📝 Evaluarme · 10 %</span><h1>Análisis de caso</h1><p class="lead">Situaciones reales de trabajo. Elige la mejor actuación: así se evalúan tus competencias transversales si trabajas de forma independiente.</p><div id="casoq"></div>`;
+V.terreno=()=>{const tot=Object.values(TERRENO).flat().length,done=Object.keys(S.read).filter(k=>k.startsWith("ter:")&&S.read[k]).length;
+ return `${crumbs([["Evaluarme","#/evaluar"],["Observación en terreno"]])}<span class="eb">📝 Evaluarme · 60 %</span><h1>Preparar la observación en terreno</h1><p class="lead">Es el instrumento con más peso. Marca cada tarea cuando ya la domines y puedas hacerla frente al evaluador explicando la norma.</p>
+ <div class="row" style="margin:0 0 14px"><span class="bar"><i style="width:${pct(done,tot)}%"></i></span><b>${done}/${tot}</b></div>
+ ${UCL.map(u=>`<section class="card" id="ter-${u.n}"><h2>UCL ${u.n} · ${esc(u.t.replace(/ en instalaciones.*$/,""))}</h2><ul class="chk">${TERRENO[u.n].map((x,i)=>`<li><label><input type="checkbox" data-ter="${u.n}-${i}" ${S.read["ter:"+u.n+"-"+i]?"checked":""}> <span>${fmt(x)}</span></label></li>`).join("")}</ul></section>`).join("")}
+ <section class="card"><h2>EPP que debes usar</h2><p>Zapatos de seguridad aislantes · casco · guantes multiflex · antiparras · geólogo · guantes dieléctricos clase 00 · protección auditiva · linterna frontal · mascarilla (entretecho con lana de vidrio).</p><p class="small muted">Fuente: ficha de perfil ChileValora Clase D.</p></section>`};
+V.ric=()=>`${crumbs([["Estudiar","#/estudiar"],["Estudio por RIC"]])}<span class="eb">📘 Estudiar</span><h1>Estudio por pliego RIC</h1><p class="lead">Una ficha por pliego. Las marcadas como prioritarias son las de mayor peso para instalaciones domiciliarias.</p>
  <div class="grid">${[...RIC].sort((a,b)=>b.prio-a.prio||a.n.localeCompare(b.n)).map(r=>{const m=S.mini[r.n];return `<a class="tile" href="#/ric/${r.n}"><b>RIC N°${r.n}</b><small>${esc(r.t.replace(" ⚠",""))}</small>${r.prio?'<span class="tag prio">Prioritario vivienda</span> ':'<span class="tag">Resumido</span> '}${S.read["ric"+r.n]?'<span class="tag ok">✓ leído</span> ':""}${m!=null?`<span class="tag">Mini-quiz ${m} %</span>`:""}</a>`}).join("")}</div>`;
 V.ricN=n=>{const r=RIC.find(x=>x.n===n);if(!r)return V.ric();const i=RIC.indexOf(r),prev=RIC[i-1],next=RIC[i+1];
- return `${crumbs([["Estudio por RIC","#/ric"],["RIC N°"+r.n]])}<span class="eb">RIC N°${r.n} · ${r.prio?"Prioritario":"Resumido"}</span><h1>${fmt(r.t)}</h1>
+ return `${crumbs([["Estudiar","#/estudiar"],["Fichas RIC","#/ric"],["RIC N°"+r.n]])}<span class="eb">RIC N°${r.n} · ${r.prio?"Prioritario":"Resumido"}</span><h1>${fmt(r.t)}</h1>
  <div class="row no-print" style="margin:0 0 12px"><a class="btn pri sm" href="#/ric/${r.n}" data-jump="miniq">★ Ir al mini-quiz de esta ficha</a><a class="btn sm" href="#/evaluar">Centro de evaluaciones</a></div>
  <section class="card"><h2>Objetivo</h2><p>${fmt(r.obj)}</p></section>
  <section class="card"><h2>Definiciones clave</h2><dl class="defs">${r.defs.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${fmt(b)}</dd>`).join("")}</dl></section>
@@ -206,40 +234,40 @@ V.ricN=n=>{const r=RIC.find(x=>x.n===n);if(!r)return V.ric();const i=RIC.indexOf
  <section class="no-print" id="miniq"><h2>Mini-quiz (5 preguntas)</h2><div id="mini"></div></section>
  ${readBtn("ric"+r.n)}
  <div class="row no-print">${prev?`<a class="btn" href="#/ric/${prev.n}">← RIC N°${prev.n}</a>`:""}${next?`<a class="btn" href="#/ric/${next.n}">RIC N°${next.n} →</a>`:""}</div>`};
-V.evaluar=()=>{const tot=Object.values(S.ans).reduce((a,b)=>a+b.n,0),ok=Object.values(S.ans).reduce((a,b)=>a+b.ok,0),f=Object.keys(S.fails).length,best=S.sims.reduce((m,x)=>Math.max(m,x.p),0);
- return `${crumbs([["Evaluaciones"]])}<span class="eb">Evaluaciones</span><h1>Centro de evaluaciones</h1><p class="lead">Todas las formas de evaluarte en un solo lugar.</p>
- <div class="kpis"><div class="kpi"><span>Respuestas</span><b>${tot}</b></div><div class="kpi ${tot&&pct(ok,tot)>=60?"ok":"warn"}"><span>Acierto</span><b>${tot?pct(ok,tot)+" %":"—"}</b></div><div class="kpi ${f?"bad":""}"><span>Falladas</span><b>${f}</b></div><div class="kpi"><span>Mejor simulacro</span><b>${S.sims.length?best+" %":"—"}</b></div></div>
+V.evaluar=()=>{const f=Object.keys(S.fails).length,best=S.sims.reduce((m,x)=>Math.max(m,x.p),0);
+ return `${crumbs([["Evaluarme"]])}<span class="eb">📝 Evaluarme</span><h1>Evaluarme</h1><p class="lead">Practica cada parte de la evaluación real. Meta: 75 % en cada UCL.</p>
  <div class="grid ev">
-  <a class="tile big" href="#/simulador"><b>⏱ Simulador de examen</b><small>Cronometrado, preguntas aleatorias, nota mínima y feedback por RIC débil.</small></a>
-  <a class="tile big" href="#/banco"><b>📋 Banco de preguntas</b><small>${PREGUNTAS.length} preguntas filtrables por RIC, dificultad e imagen.</small></a>
+  <a class="tile big" href="#/simulador"><b>⏱ Prueba de conocimientos</b><small>Simulación cronometrada por UCL (vale 20 %).${S.sims.length?` Mejor: ${best} %`:""}</small></a>
+  <a class="tile big" href="#/evaluar" data-jump="porucl"><b>🎯 Práctica por UCL</b><small>10 preguntas de la unidad que elijas.</small></a>
+  <a class="tile big" href="#/caso"><b>💬 Análisis de caso</b><small>${CASOS_T.length} situaciones de competencias transversales (10 %).</small></a>
+  <a class="tile big" href="#/terreno"><b>✅ Observación en terreno</b><small>Checklist de lo que harás frente al evaluador (60 %).</small></a>
   <a class="tile big" href="#/repaso"><b>↻ Repaso de falladas</b><small>${f?f+" preguntas pendientes":"Sin pendientes"}</small></a>
-  <button class="tile big" id="ev-img" style="text-align:left;font:inherit"><b>🖼 Preguntas con imagen</b><small>${PREGUNTAS.filter(q=>q.img).length} preguntas: identifica conexiones y errores.</small></button>
+  <a class="tile big" href="#/banco"><b>📋 Banco completo</b><small>${PREGUNTAS.length} preguntas con explicación y cita.</small></a>
  </div>
- <section class="card" style="margin-top:14px"><h2>Práctica rápida por pliego</h2><div class="form"><label class="f"><span>Pliego</span><select id="ev-r">${[...RIC.map(r=>r.n),"GEN"].map(n=>`<option value="${n}">${n==="GEN"?"Teoría y generales":"RIC N°"+n+" — "+esc(RIC.find(r=>r.n===n).t.replace(" ⚠",""))}</option>`).join("")}</select></label><label class="f"><span>Preguntas</span><select id="ev-n"><option>5</option><option selected>10</option><option>15</option></select></label></div><div class="row"><button class="btn pri" id="ev-go">Comenzar práctica</button></div></section>
- <div id="evq"></div>
- <section class="card"><h2>Mini-quiz de cada ficha</h2><div class="grid">${RIC.map(r=>`<a class="tile" href="#/ric/${r.n}" data-jump="miniq"><b>RIC N°${r.n}</b><small>${S.mini[r.n]!=null?"Último: "+S.mini[r.n]+" %":"Sin rendir"}</small></a>`).join("")}</div></section>`};
-V.teoria=()=>`${crumbs([["Teoría eléctrica aplicada"]])}<span class="eb">Módulo 2</span><h1>Teoría eléctrica aplicada</h1>${TEORIA.map(t=>`<section class="card" id="t-${t.id}"><h2>${t.t}</h2>${fmt(t.html)}</section>${(t.dg||[]).map(fig).join("")}`).join("")}${readBtn("teoria")}`;
-V.diagramas=()=>`${crumbs([["Diagramas técnicos"]])}<span class="eb">Módulo 3</span><h1>Diagramas e imágenes técnicas</h1><p class="lead">Cada diagrama incluye leyenda, referencia normativa y un botón para ver el error común en terreno.</p>
+ <section class="card" id="porucl" style="margin-top:14px"><h2>🎯 Práctica por UCL</h2><div class="form"><label class="f"><span>Unidad</span><select id="ev-u">${UCL.map(u=>`<option value="${u.n}">UCL ${u.n} — ${esc(u.t.replace(/ en instalaciones.*$/,""))}</option>`).join("")}<option value="0">Proceso de certificación</option></select></label><label class="f"><span>Preguntas</span><select id="ev-n"><option>5</option><option selected>10</option><option>20</option></select></label></div><div class="row"><button class="btn pri" id="ev-go">Comenzar</button><button class="btn" id="ev-img">🖼 Solo preguntas con imagen</button></div></section>
+ <div id="evq"></div>`};
+V.teoria=()=>`${crumbs([["Estudiar","#/estudiar"],["Teoría eléctrica aplicada"]])}<span class="eb">📘 Estudiar</span><h1>Teoría eléctrica aplicada</h1>${TEORIA.map(t=>`<section class="card" id="t-${t.id}"><h2>${t.t}</h2>${fmt(t.html)}</section>${(t.dg||[]).map(fig).join("")}`).join("")}${readBtn("teoria")}`;
+V.diagramas=()=>`${crumbs([["Estudiar","#/estudiar"],["Diagramas técnicos"]])}<span class="eb">📘 Estudiar</span><h1>Diagramas e imágenes técnicas</h1><p class="lead">Cada diagrama incluye leyenda, referencia normativa y un botón para ver el error común en terreno.</p>
  <nav class="card no-print" aria-label="Índice de diagramas"><div class="row" style="margin:0">${Object.entries(FIG).map(([k,f])=>`<a class="btn sm" href="#/diagramas" data-jump="fig-${k}">${esc(f.t)}</a>`).join("")}</div></nav>${Object.keys(FIG).map(fig).join("")}${readBtn("diagramas")}`;
-V.practica=()=>`${crumbs([["Instalación paso a paso"]])}<span class="eb">Módulo 4</span><h1>Instalación práctica paso a paso</h1>
+V.practica=()=>`${crumbs([["Estudiar","#/estudiar"],["Instalación paso a paso"]])}<span class="eb">📘 Estudiar</span><h1>Instalación práctica paso a paso</h1>
  <section class="card"><h2>Secuencia de obra</h2><ol class="steps">${PRACTICA.secuencia.map(([a,b])=>`<li><b>${a}.</b> ${fmt(b)}</li>`).join("")}</ol></section>
  <div class="grid2"><section class="card"><h2>Herramientas e instrumentos</h2><ul>${PRACTICA.herramientas.map(x=>`<li>${fmt(x)}</li>`).join("")}</ul></section><section class="card"><h2>Elementos de protección personal</h2><ul>${PRACTICA.epp.map(x=>`<li>${fmt(x)}</li>`).join("")}</ul></section></div>
  <section class="card"><h2>Bloqueo y etiquetado (LOTO)</h2><ol class="steps">${PRACTICA.loto.map(x=>`<li>${fmt(x)}</li>`).join("")}</ol><p class="small">${fmt("Referencia: «RIC N°17» ⚠ numeral · buenas prácticas de trabajo sin tensión (5 reglas de oro).")}</p></section>
  <section class="card"><h2>Verificación de ausencia de tensión</h2><ol class="steps">${PRACTICA.ausencia.map(x=>`<li>${fmt(x)}</li>`).join("")}</ol></section>
  ${["uniones","canalizacion","tablero"].map(fig).join("")}${readBtn("practica")}`;
-V.proyecto=()=>`${crumbs([["Proceso del proyecto"]])}<span class="eb">Módulo 5</span><h1>Proceso del proyecto eléctrico</h1><p class="lead">Selecciona una etapa del flujo para ver responsable, documentos y detalle.</p>
+V.proyecto=()=>`${crumbs([["Estudiar","#/estudiar"],["Proceso del proyecto"]])}<span class="eb">📘 Estudiar</span><h1>Proceso del proyecto eléctrico</h1><p class="lead">Selecciona una etapa del flujo para ver responsable, documentos y detalle.</p>
  <div class="flow" role="group" aria-label="Etapas del proyecto">${PROYECTO.map((p,i)=>`<button data-step="${i}" aria-pressed="${i===0}" aria-controls="stepd">${esc(p.t)}<small>${esc(p.r)}</small></button>`).join("")}</div>
  <section class="card" id="stepd" aria-live="polite" style="margin-top:14px"></section>
  <section class="card"><h2>Tabla resumen</h2>${table({cols:["#","Etapa","Responsable","Documentos"],rows:PROYECTO.map((p,i)=>[String(i+1),p.t,p.r,p.d])})}</section>
  ${fig("unilineal")}${fig("simbologia")}${readBtn("proyecto")}`;
-V.pruebas=()=>`${crumbs([["Pruebas y mediciones"]])}<span class="eb">Módulo 6</span><h1>Pruebas y mediciones</h1>
+V.pruebas=()=>`${crumbs([["Estudiar","#/estudiar"],["Pruebas y mediciones"]])}<span class="eb">📘 Estudiar</span><h1>Pruebas y mediciones</h1>
  ${PRUEBAS.map(p=>`<section class="card"><h2>${esc(p.t)}</h2><dl class="defs"><dt>Instrumento</dt><dd>${fmt(p.inst)}</dd><dt>Método</dt><dd>${fmt(p.met)}</dd><dt>Aceptación</dt><dd><b>${fmt(p.ac)}</b></dd><dt>Cita</dt><dd>${fmt(p.ref)}</dd></dl></section>`).join("")}
  ${fig("telurometro")}
  <section class="card" id="protocolo"><h2>Protocolo de ensayos (imprimible)</h2><p class="small muted">Completa en pantalla o imprime en blanco.</p>
  <div class="form"><label class="f"><span>Dirección</span><input type="text"></label><label class="f"><span>Instalador / licencia</span><input type="text"></label><label class="f"><span>Fecha</span><input type="text"></label></div>
  <div class="tw" style="margin-top:12px"><table><thead><tr><th>Circuito</th><th>Continuidad PE</th><th>Aislación F–N (MΩ)</th><th>F–PE (MΩ)</th><th>N–PE (MΩ)</th><th>DR: I disparo (mA) / t (ms)</th><th>Polaridad</th><th>OK</th></tr></thead><tbody>${["Alimentador","C1","C2","C3","C4","C5","C6"].map(c=>`<tr><td>${c}</td>${"<td><input type='text' aria-label='valor'></td>".repeat(7)}</tr>`).join("")}</tbody></table></div>
  <p>Resistencia de puesta a tierra: ______ Ω (aceptación ${fmt("≤ 20 Ω «RIC N°06, 6.1»")}) · Equipo y n.° de serie: ____________ · Firma: ____________</p><div class="row no-print"><button class="btn pri" data-print>Imprimir protocolo</button></div></section>${readBtn("pruebas")}`;
-V.casos=()=>`${crumbs([["Casos prácticos"]])}<span class="eb">Módulo 7</span><h1>Casos prácticos resueltos</h1><p class="lead">Cálculos con ρ = 0,018 Ω·mm²/m, cos φ = 1, conductores de 70 °C en método ${CASOS[0].met} (embutido) a 30 °C. Los valores se calculan con el mismo código de las calculadoras.</p>
+V.casos=()=>`${crumbs([["Estudiar","#/estudiar"],["Casos prácticos"]])}<span class="eb">📘 Estudiar</span><h1>Casos prácticos resueltos</h1><p class="lead">Cálculos con ρ = 0,018 Ω·mm²/m, cos φ = 1, conductores de 70 °C en método ${CASOS[0].met} (embutido) a 30 °C. Los valores se calculan con el mismo código de las calculadoras.</p>
  ${CASOS.map(c=>{const r=resolverCaso(c);return `<section class="card" id="${c.id}"><h2>${esc(c.t)}</h2><p>${esc(c.desc)}</p>
  <h3>1 · Cuadro de cargas</h3><div class="tw"><table><thead><tr><th>Circ.</th><th>Uso</th>${c.tipo==="tri"?"<th>Fase</th>":""}<th>P (W)</th><th>Ib (A)</th><th>Protección</th><th>Sección</th><th>Iz A1 (A)</th><th>L (m)</th><th>ΔV %</th><th>Diferencial</th></tr></thead><tbody>${r.rows.map(x=>`<tr><td>${x.c}</td><td>${esc(x.u)}</td>${c.tipo==="tri"?`<td>${x.f}</td>`:""}<td>${nf(x.p)}</td><td>${nf(x.ib,2)}</td><td>${x.In} A curva ${x.curva}</td><td>${nf(x.s,1)} mm²</td><td>${x.iz}</td><td>${x.L}</td><td>${nf(x.d,2)}</td><td>${fmt(x.dr)}</td></tr>`).join("")}</tbody></table></div>
  <p class="small">${fmt("Protección: In ≥ 1,1 × Ib y P ≤ 0,9 × 220 × In «RIC N°10, 5.1.4.1 y 5.1.4.4»; mínimo 10 A en alumbrado y 16 A en enchufes/cocina «RIC N°10, 5.2 d)». Sección: Iz ≥ In «RIC N°04, Tabla 4.4» y mínimos «RIC N°04, 5.4».")}</p>
@@ -250,23 +278,23 @@ V.casos=()=>`${crumbs([["Casos prácticos"]])}<span class="eb">Módulo 7</span><
  ${r.IG===25&&izOf("70",c.met,4)<25?`<div class="note">Observa: con 4 mm² en A1 (24 A) no se alcanza a proteger con 25 A; por eso se sube a ${nf(r.sAl,1)} mm² (o se usa canalización B1, donde 4 mm² soporta 28 A).</div>`:""}
  <h3>4 · Diagrama unilineal</h3><figure class="fig"><div class="sv">${uniCaso(c,r)}</div><figcaption>Unilineal calculado. ${fmt("«RIC N°18»")}</figcaption></figure>
  <h3>Notas normativas</h3><ul>${c.notas.map(x=>`<li>${fmt(x)}</li>`).join("")}</ul></section>`}).join("")}${readBtn("casos")}`;
-V.banco=()=>{const rics=["todos",...RIC.map(r=>r.n),"GEN"];return `${crumbs([["Banco de preguntas"]])}<span class="eb">Módulo 8</span><h1>Banco de preguntas tipo examen</h1><p class="lead">${PREGUNTAS.length} preguntas clasificadas por pliego y dificultad, con explicación y cita normativa. ${PREGUNTAS.filter(q=>q.img).length} incluyen imagen.</p>
+V.banco=()=>{const rics=["todos",...RIC.map(r=>r.n),"GEN"];return `${crumbs([["Evaluarme","#/evaluar"],["Banco de preguntas"]])}<span class="eb">📝 Evaluarme</span><h1>Banco de preguntas tipo examen</h1><p class="lead">${PREGUNTAS.length} preguntas clasificadas por pliego y dificultad, con explicación y cita normativa. ${PREGUNTAS.filter(q=>q.img).length} incluyen imagen.</p>
  <section class="card no-print"><div class="form"><label class="f"><span>Pliego</span><select id="bf-r">${rics.map(r=>`<option value="${r}">${r==="todos"?"Todos":r==="GEN"?"Teoría y generales":"RIC N°"+r} (${r==="todos"?PREGUNTAS.length:PREGUNTAS.filter(q=>q.ric===r).length})</option>`).join("")}</select></label>
  <label class="f"><span>Dificultad</span><select id="bf-d"><option value="0">Todas</option><option value="1">● Básica</option><option value="2">●● Media</option><option value="3">●●● Alta</option></select></label>
  <label class="f"><span>Tipo</span><select id="bf-i"><option value="0">Todas</option><option value="1">Solo con imagen</option><option value="2">Solo no respondidas</option></select></label>
  <label class="f"><span>Cantidad para practicar</span><select id="bf-n"><option>10</option><option selected>20</option><option>30</option><option value="999">Todas</option></select></label></div>
  <div class="row"><button class="btn pri" id="bf-go">Practicar selección</button><span id="bf-c" class="small muted" role="status"></span></div></section>
  <div id="bq"></div><details id="blist"><summary>Ver listado de la selección (con respuestas, imprimible)</summary><ol id="bl"></ol></details>`};
-V.simulador=()=>`${crumbs([["Simulador de examen"]])}<span class="eb">Módulo 9</span><h1>Simulador de examen</h1>
- <div class="note warn">Configuración de práctica. Cantidad de preguntas, tiempo y nota mínima del examen oficial: ${VF} con la SEC.</div>
- <section class="card no-print" id="simcfg"><div class="form"><label class="f"><span>Preguntas</span><select id="sm-n"><option>20</option><option selected>40</option><option>60</option></select></label><label class="f"><span>Tiempo (min)</span><select id="sm-t"><option>30</option><option selected>60</option><option>90</option></select></label><label class="f"><span>Aprobación (%)</span><select id="sm-p"><option>50</option><option selected>60</option><option>70</option><option>75</option></select></label><label class="f"><span>Enfoque</span><select id="sm-f"><option value="vivienda">Prioritarios vivienda (80 %) + resto</option><option value="todo">Todo el banco</option></select></label></div><div class="row"><button class="btn pri" id="sm-go">Comenzar simulador</button></div></section>
+V.simulador=()=>`${crumbs([["Evaluarme","#/evaluar"],["Prueba de conocimientos"]])}<span class="eb">📝 Evaluarme · 20 %</span><h1>Prueba de conocimientos (simulación)</h1>
+ <div class="note">Preguntas repartidas entre las 5 UCL. Para ser «competente» necesitas ≥ 75 % en cada UCL. El formato exacto de la prueba oficial (cantidad de preguntas y tiempo) lo informa ECERLAB ${VF}.</div>
+ <section class="card no-print" id="simcfg"><div class="form"><label class="f"><span>Preguntas</span><select id="sm-n"><option>20</option><option selected>40</option><option>60</option></select></label><label class="f"><span>Tiempo (min)</span><select id="sm-t"><option>30</option><option selected>60</option><option>90</option></select></label><label class="f"><span>Aprobación (%)</span><select id="sm-p"><option>60</option><option>70</option><option selected>75</option></select></label><label class="f"><span>Enfoque</span><select id="sm-f"><option value="perfil">Perfil Clase D (equilibrado por UCL)</option><option value="todo">Todo el banco</option></select></label></div><div class="row"><button class="btn pri" id="sm-go">Comenzar simulador</button></div></section>
  <div id="simq"></div>
- ${S.sims.length?`<section class="card"><h2>Historial</h2>${table({cols:["Fecha","Puntaje","Estado","Preguntas"],rows:S.sims.slice(-10).reverse().map(s=>[new Date(s.f).toLocaleString("es-CL"),s.p+" %",s.ok?"Aprobado":"Reprobado",String(s.n)])})}</section>`:""}`;
-V.repaso=()=>{const ids=Object.keys(S.fails);return `${crumbs([["Repaso de falladas"]])}<span class="eb">Repaso</span><h1>Repaso de preguntas falladas</h1>
+ ${S.sims.length?`<section class="card"><h2>Historial</h2>${table({cols:["Fecha","Puntaje","Estado","Preguntas"],rows:S.sims.slice(-10).reverse().map(s=>[new Date(s.f).toLocaleString("es-CL"),s.p+" %",s.ok?"Competente":"Aún no competente",String(s.n)])})}</section>`:""}`;
+V.repaso=()=>{const ids=Object.keys(S.fails);return `${crumbs([["Evaluarme","#/evaluar"],["Repaso de falladas"]])}<span class="eb">Repaso</span><h1>Repaso de preguntas falladas</h1>
  ${ids.length?`<p class="lead">Tienes ${ids.length} preguntas por repasar. Cada acierto la retira de la lista.</p><div class="row"><button class="btn pri" id="rp-go">Repasar ahora (${Math.min(20,ids.length)})</button><button class="btn" id="rp-clr">Vaciar lista</button></div><div id="rpq" style="margin-top:14px"></div>`:`<div class="note ok">No tienes preguntas falladas pendientes.</div>`}
  <section class="card" style="margin-top:14px"><h2>Acierto por pliego (histórico)</h2>${[...RIC.map(r=>r.n),"GEN"].map(k=>{let n=0,o=0;PREGUNTAS.filter(q=>q.ric===k).forEach(q=>{const a=S.ans[q.id];if(a){n+=a.n;o+=a.ok}});return `<div class="row" style="margin-top:6px"><span style="min-width:150px">${k==="GEN"?"Teoría":`<a href="#/ric/${k}">RIC N°${k}</a>`}</span><span class="bar" aria-hidden="true"><i style="width:${pct(o,n)}%"></i></span><span class="small">${n?pct(o,n)+" %":"—"}</span></div>`}).join("")}
  <div class="row"><button class="btn" id="rp-reset">Borrar todo mi progreso</button></div></section>`};
-V.recursos=()=>`${crumbs([["Recursos"]])}<span class="eb">Módulo 10</span><h1>Recursos</h1>
+V.recursos=()=>`${crumbs([["Estudiar","#/estudiar"],["Recursos"]])}<span class="eb">📘 Estudiar</span><h1>Recursos</h1>
  <section class="card"><h2>Glosario normativo</h2><dl class="defs">${GLOSARIO.map(([a,b])=>`<dt id="g-${norm(a).replace(/[^a-z0-9]/g,"")}">${esc(a)}</dt><dd>${fmt(b)}</dd>`).join("")}</dl></section>
  <section class="card"><h2>Fórmulas</h2>${["I = P ÷ (V × cos φ)    [monofásico]","I = P ÷ (√3 × V<sub>L</sub> × cos φ)    [trifásico]","ΔV = 2 × ρ × L × I ÷ S    [mono]    ·    ΔV = √3 × ρ × L × I ÷ S    [tri]","Iz' = Iz × ft × fn    ·    Ib ≤ In ≤ Iz'","Σ P ≤ 0,9 × V × In    ·    In ≥ 1,1 × Ib    (RIC N°10)","Demanda vivienda: 3 kW × 100 % + (P − 3 kW) × 35 % (hasta 120 kW)","R pica ≈ ρ ÷ L    ·    RA × IΔn ≤ UL"].map(f=>`<div class="formula">${f}</div>`).join("")}</section>
  <section class="card"><h2>Tablas resumen</h2>${table({cap:"Valores que más se preguntan",cols:["Tema","Valor","Cita"],rows:[["Caída de tensión","3 % tramo · 5 % total","«RIC N°03, 5.1.3»"],["Secciones mínimas","1,5 ilum. · 2,5 enchufes · 2,5 subalim. · 4 alim. (mm²)","«RIC N°04, 5.4»"],["Colores","L1 azul · L2 negro · L3 rojo · N blanco · PE verde/verde-amarillo","«RIC N°04, 5.32»"],["Llenado de tubo","50 % / 33 % / 60 %","«RIC N°04, Tabla 4.21»"],["Diferencial","≤ 30 mA · máx. 3 circuitos","«RIC N°10, 5.1.3.5 y 5.1.3.7»"],["Tierra de servicio","≤ 20 Ω (80 Ω con 6.2)","«RIC N°06, 6.1 y 6.2»"],["UL","50 V seco · 24 V húmedo","«RIC N°05, 5.8»"],["Tableros IP","41 interior · 44 bajo techo · 54 intemperie · X4 mojado","«RIC N°02, 6.1.21»"],["Altura comandos","0,45 – 2,0 m","«RIC N°02, 6.1.22»"],["Aislación","500 V CC → ≥ 0,5 MΩ","«RIC N°19, Tabla 19.1»"],["Continuidad","4–24 V, ≥ 0,2 A","«RIC N°19, 7.2.1»"]]})}</section>
@@ -285,6 +313,8 @@ function buildIdx(){IDX=[];
  PROYECTO.forEach(p=>IDX.push({t:p.t,s:"Proceso del proyecto",h:"#/proyecto",x:strip(Object.values(p).join(" "))}));
  PRUEBAS.forEach(p=>IDX.push({t:p.t,s:"Pruebas",h:"#/pruebas",x:strip(Object.values(p).join(" "))}));
  PREGUNTAS.forEach(q=>IDX.push({t:q.q,s:"Pregunta · "+ricName(q.ric),h:"#/banco",x:strip(q.q+" "+q.o[q.a]+" "+q.e+" "+q.ref)}));
+ UCL.forEach(u=>IDX.push({t:`UCL ${u.n} — ${u.t}`,s:"Unidad de competencia",h:"#/ucl/"+u.n,x:strip(u.act.map(a=>[a.t,...a.cri,...a.con].join(" ")).join(" "))}));
+ IDX.push({t:"Cómo es tu evaluación (ChileValora / ECERLAB)",s:"Certificación",h:"#/certificacion",x:strip(JSON.stringify(PERFIL))});
  IDX.forEach(e=>e.n=norm(e.t+" "+e.x));}
 V.buscar=q=>{if(!IDX)buildIdx();const ws=norm(q).split(/\s+/).filter(w=>w.length>1);
  const res=ws.length?IDX.map(e=>({e,sc:ws.reduce((a,w)=>a+(e.n.includes(w)?(norm(e.t).includes(w)?3:1):-99),0)})).filter(r=>r.sc>0).sort((a,b)=>b.sc-a.sc).slice(0,60):[];
@@ -303,10 +333,10 @@ function route(focus=true){
   activeQuiz&&activeQuiz.stop();activeQuiz=null;
   const h=CUR||"inicio";const [a,b]=h.split("/");
   let html,cur=a;
-  if(a==="ric"&&b){html=V.ricN(b);cur="ric/"+b}else if(a==="buscar")html=V.buscar(h.slice(7));else html=(V[a]||V.inicio)();
+  if(a==="ric"&&b){html=V.ricN(b);cur="ric/"+b}else if(a==="ucl"&&b){html=V.uclN(+b);cur="ucl/"+b}else if(a==="buscar")html=V.buscar(h.slice(7));else html=(V[a]||V.inicio)();
   const m=$("#main");m.dataset.ok="1";m.innerHTML=html+`<footer class="foot"><p>${esc(MARCO.aviso)} Datos con ${VF} deben confirmarse en el pliego vigente.</p></footer>`;
-  renderSide(V[a]?cur:"inicio");document.querySelectorAll("#bnav [data-b]").forEach(x=>{const k=x.dataset.b;const on=k===a||(k==="ric"&&a==="ric");if(on)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current")});setProg();closeMenu();
-  document.title=(a==="ric"&&b?`RIC N°${b} · `:"")+"Curso SEC RIC";
+  renderSide(V[a]||a==="ucl"?cur:"inicio");document.querySelectorAll("#bnav [data-b]").forEach(x=>{const k=x.dataset.b;const grp={estudiar:["estudiar","ucl","ric","certificacion","teoria","diagramas","practica","proyecto","pruebas","casos","recursos"],evaluar:["evaluar","simulador","caso","terreno","banco"]};const on=k===a||(grp[k]||[]).includes(a);if(on)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current")});setProg();closeMenu();
+  document.title=(a==="ric"&&b?`RIC N°${b} · `:a==="ucl"&&b?`UCL ${b} · `:"")+"Curso Instalador Clase D";
   after(a,b);
   if(pendingJump){const el=document.getElementById(pendingJump);pendingJump=null;if(el){el.scrollIntoView();el.querySelector("button,a")?.focus();return}}
   if(focus){window.scrollTo(0,0);m.focus({preventScroll:true})}
@@ -314,8 +344,11 @@ function route(focus=true){
 function after(a,b){
   stepFn=null;
   if(a==="ric"&&b){const qs=shuffle(PREGUNTAS.filter(q=>q.ric===b)).slice(0,5);if(qs.length)startQuiz($("#mini"),qs,{mode:"practice",onDone:r=>{S.mini[b]=pct(r.ok,r.n);save()},again:()=>after(a,b)})}
-  if(a==="evaluar"){const st=qs=>{startQuiz($("#evq"),qs,{mode:"practice",again:()=>route()});$("#evq").scrollIntoView()};
-   $("#ev-go").onclick=()=>{const r=$("#ev-r").value;st(shuffle(PREGUNTAS.filter(q=>q.ric===r)).slice(0,+$("#ev-n").value))};
+  if(a==="ucl"&&b){$("#uclq").addEventListener("click",e=>{const g=e.target.closest("[data-uclgo]");if(!g)return;startQuiz($("#uclqz"),shuffle(PREGUNTAS.filter(q=>uclOf(q)===+b)).slice(0,+g.dataset.uclgo),{mode:"practice",pass:75,again:()=>g.click()});$("#uclqz").scrollIntoView()})}
+  if(a==="caso")startQuiz($("#casoq"),shuffle(CASOS_T.map((c,i)=>({id:"AC-"+i,ric:"CASO",d:2,q:c.s,o:c.o,a:c.a,e:c.e,ref:"Competencia transversal: "+c.c,img:null,v:false}))),{mode:"practice",again:()=>route()});
+  if(a==="terreno")document.querySelectorAll("[data-ter]").forEach(c=>c.onchange=()=>{S.read["ter:"+c.dataset.ter]=c.checked;save()});
+  if(a==="evaluar"){const st=qs=>{startQuiz($("#evq"),qs,{mode:"practice",pass:75,again:()=>route()});$("#evq").scrollIntoView()};
+   $("#ev-go").onclick=()=>{const u=+$("#ev-u").value;st(shuffle(PREGUNTAS.filter(q=>u?uclOf(q)===u:q.ric==="CERT")).slice(0,+$("#ev-n").value))};
    $("#ev-img").onclick=()=>st(shuffle(PREGUNTAS.filter(q=>q.img)))}
   if(a==="teoria"){calcCaida($("#calcCaida"));calcSecc($("#calcSecc"))}
   if(a==="proyecto"){const show=i=>{const p=PROYECTO[i];$("#stepd").innerHTML=`<h2>${i+1} · ${esc(p.t)}</h2><dl class="defs"><dt>Responsable</dt><dd>${esc(p.r)}</dd><dt>Documentos</dt><dd>${esc(p.d)}</dd><dt>Detalle</dt><dd>${fmt(p.x)}</dd></dl><div class="row">${i>0?`<button class="btn" data-step="${i-1}">← Anterior</button>`:""}${i<PROYECTO.length-1?`<button class="btn pri" data-step="${i+1}">Siguiente etapa →</button>`:""}</div>`;document.querySelectorAll(".flow button").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.step===i)))};show(0);stepFn=show}
@@ -324,7 +357,7 @@ function after(a,b){
    ["#bf-r","#bf-d","#bf-i"].forEach(s=>$(s).onchange=upd);upd();
    $("#bf-go").onclick=()=>{const s=sel();if(!s.length)return;const n=+$("#bf-n").value;startQuiz($("#bq"),shuffle(s).slice(0,n),{mode:"practice",again:()=>$("#bf-go").click()});$("#bq").scrollIntoView()}}
   if(a==="simulador"){$("#sm-go").onclick=()=>{const n=+$("#sm-n").value,t=+$("#sm-t").value,p=+$("#sm-p").value;let qs;
-    if($("#sm-f").value==="vivienda"){const pr=new Set(RIC.filter(r=>r.prio).map(r=>r.n).concat("GEN"));const A=shuffle(PREGUNTAS.filter(q=>pr.has(q.ric))),B=shuffle(PREGUNTAS.filter(q=>!pr.has(q.ric)));const k=Math.round(n*.8);qs=shuffle(A.slice(0,k).concat(B.slice(0,n-k)))}else qs=shuffle(PREGUNTAS).slice(0,n);
+    if($("#sm-f").value==="perfil"){const k=Math.floor(n/5);qs=[];UCL.forEach(u=>qs.push(...shuffle(PREGUNTAS.filter(q=>uclOf(q)===u.n)).slice(0,k)));const rest=shuffle(PREGUNTAS.filter(q=>!qs.includes(q)&&uclOf(q)));qs=shuffle(qs.concat(rest.slice(0,n-qs.length)))}else qs=shuffle(PREGUNTAS).slice(0,n);
     $("#simcfg").hidden=true;startQuiz($("#simq"),qs,{mode:"exam",minutes:t,pass:p,onDone:r=>{const pp=pct(r.ok,r.n);S.sims.push({f:Date.now(),p:pp,ok:pp>=p,n:r.n});save()},again:()=>route()})}}
   if(a==="repaso"){const go=$("#rp-go");if(go)go.onclick=()=>{const qs=shuffle(PREGUNTAS.filter(q=>S.fails[q.id])).slice(0,20);startQuiz($("#rpq"),qs,{mode:"practice",again:()=>route()})};
    const c=$("#rp-clr");if(c)c.onclick=()=>{S.fails={};save();route()};

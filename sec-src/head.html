@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Curso SEC RIC</title>
-<meta name="description" content="Curso de preparación para la certificación SEC en instalaciones eléctricas domiciliarias de baja tensión: DS N°8/2019 y Pliegos Técnicos Normativos RIC N°01 a N°19.">
+<title>Curso Instalador Clase D</title>
+<meta name="description" content="Preparación para la certificación ChileValora Instalador Eléctrico Clase D (ECERLAB): 5 UCL, pliegos RIC, prueba de conocimientos, análisis de caso y observación en terreno.">
 <meta name="theme-color" content="#0B2545">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -189,6 +189,14 @@ svg .hl{fill:none;stroke:var(--bad);stroke-width:2.5;stroke-dasharray:5 3}
 .sres a:hover{background:var(--surface2)}
 .sres small{color:var(--muted)}
 mark{background:#FDE68A;color:#111;border-radius:3px;padding:0 2px}
+.bigchoice{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 16px}
+.choice{display:flex;flex-direction:column;gap:4px;padding:20px;border-radius:16px;text-decoration:none;color:#fff;min-height:140px;justify-content:flex-end;box-shadow:var(--sh)}
+.choice span{font-size:34px;line-height:1}.choice b{font-size:22px}.choice small{opacity:.9;font-size:14px}
+.choice.study{background:linear-gradient(135deg,#1D4ED8,#1E3A8A)}.choice.test{background:linear-gradient(135deg,#B45309,#8A4B00)}
+.choice:hover{filter:brightness(1.08)}
+@media (max-width:480px){.bigchoice{grid-template-columns:1fr}.choice{min-height:110px}}
+.ulist{display:grid;gap:8px;margin-top:12px}.urow{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:var(--ink);background:var(--surface2)}
+.urow .un{font:700 13px var(--fm);color:var(--blue-ink);background:var(--blue-soft);border-radius:6px;padding:2px 6px}.urow .ut{flex:1;min-width:0}.urow .us{white-space:nowrap;font-size:14px}
 .cta{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}.btn.big{min-height:52px;font-size:16.5px;padding:10px 18px}
 .tile.big{padding:18px;border-left:4px solid var(--blue)}.tile.big b{font-size:17px;margin-bottom:4px}
 .bnav{display:none}
@@ -223,9 +231,9 @@ footer.foot{border-top:1px solid var(--line);margin-top:30px;padding-top:14px;co
     <button class="menu-btn" id="menuBtn" aria-label="Abrir menú de módulos" aria-expanded="false" aria-controls="side">
       <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
-    <a class="brand" href="#/inicio" aria-label="Inicio del curso SEC RIC">
+    <a class="brand" href="#/inicio" aria-label="Inicio del curso Instalador Clase D">
       <span class="lg" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="#0B2545"/></svg></span>
-      <span>Curso SEC · RIC<small>Instalaciones domiciliarias BT</small></span>
+      <span>Instalador Clase D<small>Certificación · RIC · SEC</small></span>
     </a>
     <div class="search" role="search">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
@@ -246,9 +254,9 @@ footer.foot{border-top:1px solid var(--line);margin-top:30px;padding-top:14px;co
 </div>
 <nav class="bnav" id="bnav" aria-label="Navegación rápida">
   <a href="#/inicio" data-b="inicio"><span aria-hidden="true">⌂</span>Inicio</a>
-  <a href="#/ric" data-b="ric"><span aria-hidden="true">📘</span>Estudiar</a>
-  <a href="#/evaluar" data-b="evaluar" class="ev"><span aria-hidden="true">★</span>Evaluar</a>
-  <a href="#/simulador" data-b="simulador"><span aria-hidden="true">⏱</span>Simulador</a>
+  <a href="#/estudiar" data-b="estudiar"><span aria-hidden="true">📘</span>Estudiar</a>
+  <a href="#/evaluar" data-b="evaluar" class="ev"><span aria-hidden="true">📝</span>Evaluarme</a>
+  <a href="#/repaso" data-b="repaso"><span aria-hidden="true">↻</span>Repaso</a>
   <button type="button" data-menu><span aria-hidden="true">☰</span>Menú</button>
 </nav>
 <script>window.onerror=function(m){var e=document.getElementById("main");if(e&&!e.dataset.ok){e.innerHTML='<div class="note bad" style="margin:16px 0"><b>No se pudo iniciar el curso en este navegador.</b><br>Actualiza iOS/Safari o abre la página en Safari (no en la vista previa). Detalle: '+String(m).replace(/</g,"&lt;")+'</div>'}};</script>
